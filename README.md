@@ -1,5 +1,5 @@
-# ANTLRBase
-The base cmake setup for a C++ project that generates an ANTLR lexer and parser.
+# VCalcBase
+The base cmake setup for VCalc assignment.
 
 Author: Braedy Kuzma (braedy@ualberta.ca)
 
@@ -11,24 +11,9 @@ Author: Braedy Kuzma (braedy@ualberta.ca)
        encounter an issue, let Braedy know and we can fix it.
   1. Make a directory that you intend to build the project in and change into
      that directory.
-  1. Run `cmake <path-to-ANTLR-Base>`.
+  1. Run `cmake <path-to-VCalc-Base>`.
   1. Run `make`.
   1. Done.
-
-## For new assignments
-  1. Create a new _empty_ repository (do not initialize with anything) on
-     GitHub.
-  1. Use the "import code from another repository" option.
-  1. Input the HTTPS clone url from ANTLRBase. Wait for the import to finish.
-  1. Edit grammar related cmake sections. (`GRAMMAR_NAME` and `ANTLR_NAMESPACE`
-     in the base directory's `CMakeLists.txt`, rename and edit
-     `grammar/placeholder.g4` accordingly).
-  1. Rename and change `placeholder.cpp` and `placeholder.h`. Change
-     `src/CMakeLists.txt` accordingly.
-  1. Distribute.
-
-Follow the pulling in [upstream changes](#pulling-in-upstream-changes) section
-below to get new updates.
 
 ## Pulling in upstream changes</a>
   1. Add the upstream as a remote using `git remote add upstream <clone-link>`.
