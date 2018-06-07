@@ -40,8 +40,7 @@ LLVM_OPTIONS="-DLLVM_BUILD_TOOLS=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_INCLUDE_TESTS
 # install directory will be used.
 SRC_DIR="$HOME/llvm/" # The directory you've checked out llvm into.
 BLD_DIR="$SRC_DIR/build" # The directory llvm will be built to.
-INS_DIR="$SRC_DIR/install" # The directory you will install to if you enable
-                           # a custom install in step 3. REMEMBER this.
+INS_DIR="$LLVM_INS" # DON'T TOUCH THIS. SEE README.
 
 # Sudo trap.
 # This is here because I don't want you creating files as root and possibly
