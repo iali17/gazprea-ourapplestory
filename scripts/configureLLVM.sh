@@ -34,12 +34,14 @@
 #   Enables local docs building. Requires doxygen?
 LLVM_OPTIONS="-DLLVM_BUILD_TOOLS=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_INCLUDE_TESTS=OFF -DLLVM_BUILD_EXAMPLES=OFF -DLLVM_INCLUDE_EXAMPLES=OFF -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_OPTIMIZED_TABLEGEN=ON"
 
+# STEP 1: CHOOSE PATHS.
 # Ideally these are absolute paths so you can run this script from anywhere.
 # Read the note below the sudo trap (the whole if statement) about how the
 # install directory will be used.
-SRC_DIR="$HOME/dev/llvm/llvm/" # The directory you've checked out llvm into.
-BLD_DIR="$HOME/dev/opt/llvmb/" # The directory llvm will be built to.
-INS_DIR="$LLVM_DIR" # Don't touch this. See README.
+SRC_DIR="$HOME/llvm/" # The directory you've checked out llvm into.
+BLD_DIR="$SRC_DIR/build" # The directory llvm will be built to.
+INS_DIR="$SRC_DIR/install" # The directory you will install to if you enable
+                           # a custom install in step 3. REMEMBER this.
 
 # Sudo trap.
 # This is here because I don't want you creating files as root and possibly
@@ -63,7 +65,7 @@ cd "$BLD_DIR"
 # automatically find them in your personal project.
 
 # -------------------------
-# STEP 1: CHOOSE BUILD TYPE.
+# STEP 2: CHOOSE BUILD TYPE.
 # UNCOMMENT ONLY ONE BUILD TYPE. I recommend release.
 
 # DEBUG BUILD (full debug build for use with debugger, quite large and
@@ -82,7 +84,8 @@ cd "$BLD_DIR"
 # but any time you step into llvm the compiler will be lost until you return).
 BUILD="RELEASE"
 
-# STEP 2: CHOOSE INSTALL METHOD.
+# STEP 3: CHOOSE INSTALL METHOD.
+# You must have set up an install directory in step 1 to use this.
 # If you want to install to a custom directory then SWAP THE COMMENT BELOW.
 # USE_INSTALL="-DCMAKE_INSTALL_PREFIX=$INS_DIR"
 USE_INSTALL=""
