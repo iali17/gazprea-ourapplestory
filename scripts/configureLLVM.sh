@@ -13,7 +13,7 @@
 # LLVM_BUILD_TOOLS:
 #   Builds all of the tools by default in the "all" target. I've disabled it
 #   here so as to not clutter your build.
-# LLVM_ENABLE_ASSERTIONS: 
+# LLVM_ENABLE_ASSERTIONS:
 #   Potential slow down, usually disabled in non-debug builds. I've enabled
 #   them permanently because they're useful for catching things. Feel free to
 #   disable if you want, but I'll be running with them on.
@@ -25,7 +25,7 @@
 # LLVM_PARALLEL_COMPILE_JOBS:
 #   Defines the maximum number of parallel compiling threads. Useful if your
 #   computer can't handle the compilation (linking is usually the issue and I'm
-#   not sure if this overrides the -j argument to make) 
+#   not sure if this overrides the -j argument to make)
 # LLVM_PARALLEL_LINK_JOBS:
 #   Defines the maximum number of parallel linking threads. Useful if your
 #   computer can't handle all of the linking (if your computer is lagging/
@@ -34,14 +34,12 @@
 #   Enables local docs building. Requires doxygen?
 LLVM_OPTIONS="-DLLVM_BUILD_TOOLS=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_INCLUDE_TESTS=OFF -DLLVM_BUILD_EXAMPLES=OFF -DLLVM_INCLUDE_EXAMPLES=OFF -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_OPTIMIZED_TABLEGEN=ON"
 
-CXX_FLAGS="-std=c++11"
-
 # Ideally these are absolute paths so you can run this script from anywhere.
 # Read the note below the sudo trap (the whole if statement) about how the
 # install directory will be used.
 SRC_DIR="$HOME/dev/llvm/llvm/" # The directory you've checked out llvm into.
 BLD_DIR="$HOME/dev/opt/llvmb/" # The directory llvm will be built to.
-INS_DIR="$HOME/dev/opt/llvmi/" # The directory llvm will be installed to.
+INS_DIR="$LLVM_DIR" # Don't touch this. See README.
 
 # Sudo trap.
 # This is here because I don't want you creating files as root and possibly
@@ -56,29 +54,37 @@ cd "$BLD_DIR"
 
 # Personally I'm not a fan of installing this to my / partition because it can
 # be large (debug can be >20GB depending on options) and cleanup is hard due to
-# the lack of an uninstall target and root permissions. I've included two
-# versions of each command, one that uses the above INS_DIR as the install
-# prefix for the llvm installation and one that uses the default prefix (i.e.
+# the lack of an uninstall target and root permissions. I've included the
+# ability to use a custom install destination (INS_DIR -> LLVM_DIR) prefix for
+# the llvm installation and one that uses the default prefix (i.e.
 # /usr/{bin,lib}). The first one will not require root permissions (you own
 # the install directory) but requires additional setup for your own project.
 # The second one should install the required files somewhere that cmake can
 # automatically find them in your personal project.
 
-# UNCOMMENT ONLY ONE LINE.
-# I recommend release.
+# -------------------------
+# STEP 1: CHOOSE BUILD TYPE.
+# UNCOMMENT ONLY ONE BUILD TYPE. I recommend release.
 
-# DEBUG BUILD (debug flags up, helps a lot in gdb)
-# cmake ../llvm -DCMAKE_BUILD_TYPE="Debug" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_LINKER=gold -DCMAKE_INSTALL_PREFIX="$INS_DIR" "$LLVM_OPTIONS"
-# cmake ../llvm -DCMAKE_BUILD_TYPE="Debug" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_LINKER=gold "$LLVM_OPTIONS"
+# DEBUG BUILD (full debug build for use with debugger, quite large and
+# unoptimised).
+# BUILD="DEBUG"
 
-# MINSIZEREL BUILD (minimum size release build, faster, but prioritises small size)
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="MinSizeRel" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" -DCMAKE_INSTALL_PREFIX="$INS_DIR" "$LLVM_OPTIONS"
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="MinSizeRel" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" "$LLVM_OPTIONS"
+# MINSIZEREL BUILD (minimum size release build, faster, but prioritises small
+# size).
+# BUILD="MINSIZEREL"
 
-# RELWITHDEBINFO BUILD (builds optimised code with debug info, gives the debugger a chance but whole section can be optimised away)
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" -DCMAKE_INSTALL_PREFIX="$INS_DIR" "$LLVM_OPTIONS"
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" "$LLVM_OPTIONS"
+# RELWITHDEBINFO BUILD (builds optimised code with debug info, gives the
+# debugger a chance but whole section can be optimised away).
+# BUILD="RELWITHDEBINFO"
 
-# RELEASE BUILD (builds optimised code, you can still use this with a debugger but any time you step into llvm the compiler will be lost until you return)
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" -DCMAKE_INSTALL_PREFIX="$INS_DIR" "$LLVM_OPTIONS"
-# cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_USE_LINKER="gold" "$LLVM_OPTIONS"
+# RELEASE BUILD (builds optimised code, you can still use this with a debugger
+# but any time you step into llvm the compiler will be lost until you return).
+BUILD="RELEASE"
+
+# STEP 2: CHOOSE INSTALL METHOD.
+# If you want to install to a custom directory then SWAP THE COMMENT BELOW.
+# USE_INSTALL="-DCMAKE_INSTALL_PREFIX=$INS_DIR"
+USE_INSTALL=""
+
+cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="$BUILD" -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_LINKER=gold "$USE_INSTALL" "$LLVM_OPTIONS"
