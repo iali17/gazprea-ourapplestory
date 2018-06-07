@@ -36,8 +36,8 @@ LLVM_OPTIONS="-DLLVM_BUILD_TOOLS=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_INCLUDE_TESTS
 
 # STEP 1: CHOOSE PATHS.
 # Ideally these are absolute paths so you can run this script from anywhere.
-# Read the note below the sudo trap (the whole if statement) about how the
-# install directory will be used.
+# Read the note below the sudo trap (the trap is the whole if statement)
+# about how the install directory will be used.
 SRC_DIR="$HOME/llvm/" # The directory you've checked out llvm into.
 BLD_DIR="$SRC_DIR/build" # The directory llvm will be built to.
 INS_DIR="$LLVM_INS" # DON'T TOUCH THIS. SEE README.
