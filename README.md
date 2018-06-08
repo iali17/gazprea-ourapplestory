@@ -59,7 +59,7 @@ you have some knowledge of what's going on inside the script.
 
 ### On university machines
 You won't be building LLVM on the university machines: AICT wouldn't be very
-happy with you. Instead, we are providing a _RELEASE_ build available for
+happy with you. Instead, we are providing a **RELEASE** build available for
 everyone.
   1. Instructions waiting on IST.
 
