@@ -29,12 +29,20 @@ you have some knowledge of what's going on inside the script.
      CUSTOM INSTALL DIRECTORY THEN YOU SHOULD SET IT IN YOUR **ENVIRONMENT**.
      If you want to install to the system directories then you can skip this
      step.
-     1. Open `~/.bashrc`.
-     1. Add these lines:
-        ```bash
-        export LLVM_INS="<ABSOLUTE PATH TO INSTALL DIRECTORY>"
-        export LLVM_DIR="$LLVM_INS/lib/cmake/llvm/" # Don't change me.
-        ```
+     1. Enable building in CLion:
+        1. Open settings in CLion (File > Settings).
+        1. Open Build, Execution, Deployment.
+        1. Click "..." beside the Environment field.
+        1. Click the "+" in the top right.
+        1. Set the name to `LLVM_DIR` and the value to
+           `<ABSOLUTE PATH TO INSTALL DIRECTORY>/lib/cmake/llvm`
+     1. Enable manual building:
+        1. Open `~/.bashrc`.
+        1. Add these lines to enable manual build:
+           ```bash
+           export LLVM_INS="<ABSOLUTE PATH TO INSTALL DIRECTORY>"
+           export LLVM_DIR="$LLVM_INS/lib/cmake/llvm/" # Don't change me.
+           ```
   1. Choose your build type. The default (`Release`) is already uncommented.
      If you want to change it then you should comment the `Release` line and
      uncomment another line.
