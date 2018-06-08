@@ -6,6 +6,9 @@ include(ExternalProject) # Required to download and build external projects (i.e
 find_package(Git REQUIRED) # Need git to download ANTLR through ExternalProject.
 find_package(Java COMPONENTS Runtime REQUIRED) # Need java to run ANTLR, but only the runtime.
 
+# Ensure we have LLVM.
+include("${CMAKE_SOURCE_DIR}/cmake/get_llvm.cmake")
+
 # Set C++ standards.
 set(CMAKE_CXX_STANDARD 11)
 
