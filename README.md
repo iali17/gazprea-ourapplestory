@@ -82,7 +82,9 @@ everyone.
   1. Run `make`.
   1. Done.
 
-## Pulling in upstream changes</a>
+## Pulling in upstream changes
+If there are updates to your assignment you can retrieve them using the
+instructions here.
   1. Add the upstream as a remote using `git remote add upstream <clone-link>`.
   1. Fetch updates from the upstream using `git fetch upstream`
   1. Merge the updates into a local branch using
