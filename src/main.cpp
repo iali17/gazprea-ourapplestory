@@ -1,5 +1,5 @@
-#include "placeholderLexer.h"
-#include "placeholderParser.h"
+#include "VCalcLexer.h"
+#include "VCalcParser.h"
 
 #include "ANTLRFileStream.h"
 #include "CommonTokenStream.h"
@@ -18,9 +18,9 @@ int main(int argc, char **argv) {
 
   // Open the file then parse and lex it.
   antlr4::ANTLRFileStream afs(argv[1]);
-  placeholder::placeholderLexer lexer(&afs);
+  vcalc::VCalcLexer lexer(&afs);
   antlr4::CommonTokenStream tokens(&lexer);
-  placeholder::placeholderParser parser(&tokens);
+  vcalc::VCalcParser parser(&tokens);
 
   // Get the root of the parse tree. Use your base rule name.
   antlr4::tree::ParseTree *tree = parser.file();
