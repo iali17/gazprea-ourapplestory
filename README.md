@@ -44,6 +44,7 @@ you have some knowledge of what's going on inside the script.
            ```bash
            export LLVM_INS="<ABSOLUTE PATH TO INSTALL DIRECTORY>"
            export LLVM_DIR="$LLVM_INS/lib/cmake/llvm/" # Don't change me.
+           export PATH="$LLVM_INS/bin/:$PATH" # Don't change me
            ```
   1. Choose your build type. The default (`Release`) is already uncommented.
      If you want to change it then you should comment the `Release` line and
