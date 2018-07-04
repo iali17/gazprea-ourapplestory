@@ -17,10 +17,12 @@ things briefly here that are better explained there. The steps here will expect
 you have some knowledge of what's going on inside the script.
 
   1. Checkout LLVM to a desired directory from
-     [OUR FORK](https://github.com/cmput415/llvm) and change the directory in
-     your script.
+     [OUR FORK](https://github.com/cmput415/llvm), checkout the 6.0.0 release,
+     and change the directory in your script.
      1. `cd <source_parent>`
      1. `git clone git@github.com:cmput415/llvm.git`
+     1. `cd llvm`
+     1. `git checkout release_60`
      1. In `configureLLVM.sh` change `SRC_DIR` to `<source_parent>/llvm`. This
         should be an absolute path.
   1. Pick your build directory. The default is a subdirectory of the source
