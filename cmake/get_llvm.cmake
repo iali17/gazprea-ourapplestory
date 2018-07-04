@@ -14,6 +14,6 @@ if(NOT ("${LLVM_VERSION_MAJOR}" EQUAL 6 AND
   message(FATAL_ERROR "LLVM version incompatible.")
 endif()
 
-# Add llvm specific pieces to our biuild.
+# Add llvm specific pieces to our build.
 include_directories("${LLVM_INCLUDE_DIRS}")
 add_definitions("${LLVM_DEFINITIONS}")
