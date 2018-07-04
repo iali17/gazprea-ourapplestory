@@ -10,7 +10,7 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 # build we don't know.
 if(NOT ("${LLVM_VERSION_MAJOR}" EQUAL 6 AND
         "${LLVM_VERSION_MINOR}" EQUAL 0 AND
-        "${LLVM_VERSION_PATCH}" EQUAL 0))
+        "${LLVM_VERSION_PATCH}" EQUAL 1))
   message(FATAL_ERROR "LLVM version incompatible.")
 endif()
 
