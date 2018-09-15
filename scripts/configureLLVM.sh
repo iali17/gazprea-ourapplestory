@@ -84,9 +84,9 @@ cd "$BLD_DIR"
 BUILD="RELEASE"
 
 # STEP 3: CHOOSE INSTALL METHOD.
-# You must have set up an install directory in step 1 to use this.
-# If you want to install to a custom directory then SWAP THE COMMENT BELOW.
-# USE_INSTALL="-DCMAKE_INSTALL_PREFIX=$INS_DIR"
-USE_INSTALL=""
+# If you want to install to system directories you will need to swap the comment
+# below. This is at *your own risk* and is truly not necessary.
+USE_INSTALL="-DCMAKE_INSTALL_PREFIX=$INS_DIR"
+# USE_INSTALL=""
 
 cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="$BUILD" -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_LINKER=gold "$USE_INSTALL" "$LLVM_OPTIONS"
