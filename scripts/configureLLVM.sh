@@ -34,6 +34,7 @@
 #   Enables local docs building. Requires doxygen?
 LLVM_OPTIONS="-DLLVM_BUILD_TOOLS=OFF -DLLVM_BUILD_TESTS=OFF -DLLVM_INCLUDE_TESTS=OFF -DLLVM_BUILD_EXAMPLES=OFF -DLLVM_INCLUDE_EXAMPLES=OFF -DLLVM_ENABLE_ASSERTIONS=ON -DLLVM_OPTIMIZED_TABLEGEN=ON"
 
+# -------------------------
 # STEP 1: CHOOSE PATHS.
 # Ideally these are absolute paths so you can run this script from anywhere.
 # Read the note below the sudo trap (the trap is the whole if statement)
@@ -83,10 +84,22 @@ cd "$BLD_DIR"
 # but any time you step into llvm the compiler will be lost until you return).
 BUILD="RELEASE"
 
+# -------------------------
 # STEP 3: CHOOSE INSTALL METHOD.
 # If you want to install to system directories you will need to swap the comment
 # below. This is at *your own risk* and is truly not necessary.
 USE_INSTALL="-DCMAKE_INSTALL_PREFIX=$INS_DIR"
 # USE_INSTALL=""
 
-cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="$BUILD" -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_USE_LINKER=gold "$USE_INSTALL" "$LLVM_OPTIONS"
+# -------------------------
+# STEP 4: IGNORE THIS.
+# These are things that need to be done without you thinking about it.
+
+# If we're on MacOS, we can't use the gold linker. It's an ELF-only tool.
+USE_GOLD=""
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+   USE_GOLD="-DLLVM_USE_LINKER=gold"
+fi
+
+cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE="$BUILD" -DLLVM_TARGETS_TO_BUILD=X86 "$USE_GOLD" "$USE_INSTALL" "$LLVM_OPTIONS"
