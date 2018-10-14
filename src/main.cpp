@@ -1,5 +1,5 @@
-#include "VCalcLexer.h"
-#include "VCalcParser.h"
+#include "GazpreaLexer.h"
+#include "GazpreaParser.h"
 
 #include "ANTLRFileStream.h"
 #include "CommonTokenStream.h"
@@ -18,9 +18,9 @@ int main(int argc, char **argv) {
 
   // Open the file then parse and lex it.
   antlr4::ANTLRFileStream afs(argv[1]);
-  vcalc::VCalcLexer lexer(&afs);
+  gazprea::GazpreaLexer lexer(&afs);
   antlr4::CommonTokenStream tokens(&lexer);
-  vcalc::VCalcParser parser(&tokens);
+  gazprea::GazpreaParser parser(&tokens);
 
   // Get the root of the parse tree. Use your base rule name.
   antlr4::tree::ParseTree *tree = parser.file();

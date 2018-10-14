@@ -1,18 +1,18 @@
 # Gather our source files in this directory.
 set(
-  vcalc_src_files
+  gazprea_src_files
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
 )
 
 # Build our executable from the source files.
-add_executable(vcalc ${vcalc_src_files})
-target_include_directories(vcalc PUBLIC ${ANTLR_GEN_DIR})
+add_executable(gazc ${gazprea_src_files})
+target_include_directories(gazc PUBLIC ${ANTLR_GEN_DIR})
 
 # Ensure that the antlr4-runtime is available.
-add_dependencies(vcalc antlr)
+add_dependencies(gazc antlr)
 
 # Add the antlr runtime and parser as libraries to link.
-target_link_libraries(vcalc parser antlr4-runtime)
+target_link_libraries(gazc parser antlr4-runtime)
 
 # Symbolic link our executable to the base directory so we don't have to go searching for it.
-symlink_to_bin("vcalc")
+symlink_to_bin("gazc")

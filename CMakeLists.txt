@@ -22,8 +22,8 @@ include("${CMAKE_SOURCE_DIR}/cmake/symlink_to_bin.cmake")
 include("${CMAKE_SOURCE_DIR}/cmake/get_antlr.cmake")
 
 # Set up paths and info to generate ANTLR sources with.
-set(GRAMMAR_NAME "VCalc")
-set(ANTLR_NAMESPACE "vcalc")
+set(GRAMMAR_NAME "Gazprea")
+set(ANTLR_NAMESPACE "gazprea")
 
 # Generate sources.
 include("${CMAKE_SOURCE_DIR}/cmake/antlr_generate.cmake")

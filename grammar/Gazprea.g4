@@ -1,4 +1,4 @@
-grammar VCalc;
+grammar Gazprea;
 
 file: .*? EOF;
 

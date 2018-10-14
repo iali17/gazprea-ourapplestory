@@ -1,14 +1,14 @@
-# VCalcBase
-The base cmake setup for VCalc assignment.
+# GazpreaBase
+The base cmake setup for Gazprea assignment.
 
 Author: Braedy Kuzma (braedy@ualberta.ca)
 
 # Usage
 ## Installing LLVM
-In this assignment and your final project you will be working with LLVM. Due
-to the complex nature (and size) of the project we did not want to include LLVM
-as a subproject. Therefore, there is some additional setup required to get your
-build up and running.
+You will be working with LLVM in this project. Due to the complex nature (and
+size) of the project we did not want to include LLVM as a subproject.
+Therefore, there is some additional setup required to get your build up and
+running.
 
 ### On a personal machine
 The first thing you should do is have a look into the `configureLLVM.sh` script
@@ -73,7 +73,7 @@ everyone.
        encounter an issue, let Braedy know and we can fix it.
   1. Make a directory that you intend to build the project in and change into
      that directory.
-  1. Run `cmake <path-to-VCalc-Base>`.
+  1. Run `cmake <path-to-Gazprea-Base>`.
   1. Run `make`.
   1. Done.
 
