@@ -32,4 +32,7 @@ include("${CMAKE_SOURCE_DIR}/cmake/antlr_generate.cmake")
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # Build the source directory.
-add_subdirectory("${CMAKE_SOURCE_DIR}/src")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+# Build the runtime directory.
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/runtime")
