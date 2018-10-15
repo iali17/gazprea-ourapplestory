@@ -2,26 +2,30 @@
   "inDir": "<inDir>",
   "outDir": "<outDir>",
   "testedExecutablePaths": {
-    "<team id>": "<path_to_vcalc_exe>"
+    "<team id>": "<path_to_gazc_exe>"
+  },
+  "runtimes": {
+    "<team id>": "<path_to_libgazrt.so>"
   },
   "toolchains": {
-    "vcalc": [
+    "gazprea": [
       {
-        "stepName": "vcalc",
+        "stepName": "gazc",
         "executablePath": "$EXE",
         "arguments": [
           "$INPUT",
           "$OUTPUT"
           ],
-        "output": "vcalc.ll"
+        "output": "gazc.ll"
       },
       {
         "stepName": "lli",
         "executablePath": "/cshome/c415/415-resources/llvmi/bin/lli",
         "arguments": [
-         "$INPUT"
+          "$INPUT"
         ],
-        "output": "-"
+        "output": "-",
+        "usesRuntime": true
       }
     ]
   }
