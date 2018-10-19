@@ -1,67 +1,83 @@
 grammar Gazprea;
 
-file: .*? EOF;
+file: (statement | procedure)* EOF;
 
-// TODO: generators and filters and matrices and casting
+// TODO: add labels for many of the expr and etc (ex left=expr)
 expr
-    : Integer                                                       #integerExpr
+    : Real                                                          #realExpr
+    | Integer                                                       #integerExpr
+    | NULL                                                          #nullExpr
     | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
+    | '(' expr COMMA expr (COMMA expr)* ')'                         #tupleExpr
+    | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
+    | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
-    | <assoc=right> left=expr EXP right=expr                        #expExpr
+    | <assoc=right> left=expr EXP right=expr                        #exponentExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #mulExpr
     | left=expr op=(ADD | SUB) right=expr                           #addExpr
-    // TODO: by
     | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #lessExpr
     | left=expr op=(EEQL | NEQL) right=expr                         #eqlExpr
     | left=expr AND right=expr                                      #andExpr
     | left=expr op=(OR | XOR) right=expr                            #orExpr
-    // TODO : ||
     ;
 
-// TODO: is there precendence
 statement
-    : assignment
+    : declaration
+    | assignment
     | conditional
     | loop
     | block
     | stream
-    | CONTINUE
-    | BREAK
-    | RETURN
+    | typeDefine
+    | CONTINUE SEMICOLON
+    | BREAK SEMICOLON
+    | RETURN SEMICOLON
     ;
 
+declaration
+    : CONST? VAR? type? Identifier EQL expr SEMICOLON
+    ;
+
+// TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
-    : specifier? type? Identifier EQL expr
-    | specifier? type? Identifier EQL 'null'
+    : Identifier EQL expr SEMICOLON                                         #normalAss
+    | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #tupleAss
     ;
 
 conditional
-    : IF expr statement* ( ELSE IF statement )* (ELSE statement)?
+    : IF expr block (ELSE IF block)* (ELSE block)?
     ;
 
-// TODO: predicated and iterative loop probably needs changing
 loop
-    : LOOP statement*                                                       #infiniteLoop
-    | LOOP WHILE expr? statement* (WHILE expr SEMICOLON)?                   #predicatedLoop
-    | LOOP Identifier IN expr (COMMA Identifier IN expr)* statement*        #iteratorLoop
+    : LOOP statement?                                                       #infiniteLoop
+    | LOOP (WHILE expr) statement?                                          #predicatedLoop
+    | LOOP statement? (WHILE expr SEMICOLON)                                #doLoop
+    | LOOP Identifier IN expr (COMMA Identifier IN expr)* statement?        #iteratorLoop
     ;
 
 block
-    : '{' statement* '}'
+    : '{' decBlock? bodyBlock? '}'
     ;
 
-// TODO: ??
+decBlock
+    :  declaration+
+    ;
+
+bodyBlock
+    : statement+
+    ;
+
 stream
-    : expr '->' 'out'
-    | Identifier '<-' 'inp';
+    : expr '->' Identifier SEMICOLON                                #outStream
+    | Identifier '<-' Identifier SEMICOLON                          #inStream
+    ;
 
-
-specifier
-    : CONST
-    | VAR
+// TODO: probably could be better
+typeDefine
+    : TYPEDEF type Identifier SEMICOLON
     ;
 
 type
@@ -69,13 +85,14 @@ type
     | CHARACTER
     | INTEGER
     | REAL
-    | TUPLE
-    | INTERVAL
-    | VECTOR
-    | STRING
-    | MATRIX
+    | TUPLE '(' type COMMA type (COMMA type)* ')'
+    | Identifier
     ;
 
+
+procedure
+    : PROCEDURE Identifier '(' (type Identifier (COMMA type Identifier)* )? ')' block
+    ;
 
 
 
@@ -109,6 +126,7 @@ CHARACTER: 'character';
 COLUMNS: 'columns';
 CONST: 'const';
 CONTINUE: 'continue';
+E: 'e';
 ELSE: 'else';
 FALSE: 'false';
 FILTER: 'filter';
@@ -142,10 +160,17 @@ VECTOR: 'vector';
 WHILE: 'while';
 XOR: 'xor';
 
-COMMENT: '/*' .*? '*/' ;
+BlockComment: '/*' .*? '*/' ;
+LineComment: '//' .*? '\n' ;
 
-Integer: [0-9]+ ;
+Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
 Identifier: [a-zA-Z][a-zA-Z0-9]* ;
+Boolean: TRUE | FALSE;
+Real: ([0-9][0-9_]*)? '.' [0-9_]* E (ADD | SUB)? Integer;
+Character: '\'' [a-zA-Z] '\'' ;
+
+
+
 
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
