@@ -2,13 +2,13 @@ grammar Gazprea;
 
 file: .*? EOF;
 
-
+// TODO: generators and filters and matrices and casting
 expr
     : Integer                                                       #integerExpr
     | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
+    | Identifier '[' expr ']'                                       #indexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
-    // TODO: generators and filters and matrices
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #expExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #mulExpr
@@ -21,6 +21,7 @@ expr
     // TODO : ||
     ;
 
+// TODO: is there precendence
 statement
     : assignment
     | conditional
@@ -52,6 +53,7 @@ block
     : '{' statement* '}'
     ;
 
+// TODO: ??
 stream
     : expr '->' 'out'
     | Identifier '<-' 'inp';
