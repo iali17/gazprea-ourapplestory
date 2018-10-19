@@ -5,13 +5,31 @@ file: .*? EOF;
 
 
 
-statement: declaration
-    | assignment
+statement
+    : assignment
     | conditional
     | loop
     | block
     | stream
+    | CONTINUE
+    | BREAK
     ;
+
+assignment: ;
+
+conditional
+    : IF expr statement* ( ELSE IF statement )* (ELSE statement)?
+    ;
+
+// TODO: predicated loop can have the expr behind the statement
+loop
+    : loop statement*                                       #infiniteLoop
+    | loop expr statement*                                  #predicatedLoop
+    | loop IDENTIFIER IN expr (COMMA IDENTIFIER IN expr)* statement*        #iteratorLoop
+
+
+
+
 
 
 
@@ -28,6 +46,7 @@ LESST: '<' ;
 MORET: '>' ;
 SEMICOLON: ';' ;
 DOTDOT: '..';
+COMMA: ',';
 
 AND: 'and';
 AS: 'as';
@@ -71,12 +90,6 @@ VAR: 'var';
 VECTOR: 'vector';
 WHILE: 'while';
 XOR: 'xor';
-
-POOL: 'pool' ;
-FI: 'fi' ;
-INT: 'int' ;
-PRINT: 'print' ;
-
 
 COMMENT: '/*' .*? '*/' ;
 
