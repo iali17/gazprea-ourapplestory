@@ -3,6 +3,7 @@ grammar Gazprea;
 file: (statement | procedure)* EOF;
 
 // TODO: add labels for many of the expr and etc (ex left=expr)
+// TODO TUPLE DOESNT WORK
 expr
     : Real                                                          #realExpr
     | Integer                                                       #integerExpr
@@ -32,6 +33,7 @@ statement
     | block
     | stream
     | typeDefine
+    | procedureCall
     | CONTINUE SEMICOLON
     | BREAK SEMICOLON
     | RETURN SEMICOLON
@@ -78,6 +80,10 @@ stream
 // TODO: probably could be better
 typeDefine
     : TYPEDEF type Identifier SEMICOLON
+    ;
+
+procedureCall
+    : CALL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON
     ;
 
 type
@@ -154,7 +160,7 @@ STREAM_STATE: 'stream_state';
 STRING: 'string';
 TRUE: 'true';
 TUPLE: 'tuple';
-TYPEDEF: 'tuple';
+TYPEDEF: 'typedef';
 VAR: 'var';
 VECTOR: 'vector';
 WHILE: 'while';
@@ -166,7 +172,7 @@ LineComment: '//' .*? '\n' ;
 Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
 Identifier: [a-zA-Z][a-zA-Z0-9]* ;
 Boolean: TRUE | FALSE;
-Real: ([0-9][0-9_]*)? '.' [0-9_]* E (ADD | SUB)? Integer;
+Real: ([0-9][0-9_]*)? '.' [0-9_]* (E (ADD | SUB)? Integer)?;
 Character: '\'' [a-zA-Z] '\'' ;
 
 
