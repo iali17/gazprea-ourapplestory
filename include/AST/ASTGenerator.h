@@ -10,7 +10,6 @@
 class ASTGenerator : public gazprea::GazpreaBaseVisitor {
 public:
     ASTGenerator();
-
 private:
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
     antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;

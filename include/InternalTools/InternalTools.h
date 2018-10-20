@@ -19,7 +19,7 @@ class InternalTools {
 public:
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
 
-public:
+    //tools
     llvm::Value *getConsi32(int64_t val);
     llvm::Value *getConsi64(int64_t val);
 protected:

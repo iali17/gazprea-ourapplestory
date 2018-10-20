@@ -7,7 +7,8 @@
 #include "../include/AST/ASTGenerator.h"
 
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
-    return GazpreaBaseVisitor::visitFile(ctx);
+    GazpreaBaseVisitor::visitFile(ctx);
+    return (ASTNode *) new FileNode();
 }
 
 antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) {

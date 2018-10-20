@@ -11,5 +11,6 @@
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 #include "AST/ASTNodes/BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/FileNode.h"
 
 #endif //GAZPREABASE_AST_H
