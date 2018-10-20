@@ -1,13 +1,14 @@
 grammar Gazprea;
 
-file: (statement | procedure)* EOF;
+//file: (statement | procedure)* EOF;
+file: procedure* EOF;
 
 // TODO: add labels for many of the expr and etc (ex left=expr)
 // TODO TUPLE DOESNT WORK
 expr
     : Real                                                          #realExpr
     | Integer                                                       #integerExpr
-    | NULL                                                          #nullExpr
+    | NULLT                                                         #nullExpr
     | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
     | '(' expr COMMA expr (COMMA expr)* ')'                         #tupleExpr
@@ -146,7 +147,7 @@ LENGTH: 'length';
 LOOP: 'loop' ;
 MATRIX: 'matrix';
 NOT: 'not';
-NULL: 'null';
+NULLT: 'null';
 OR: 'or';
 PROCEDURE: 'procedure';
 REAL: 'real';
