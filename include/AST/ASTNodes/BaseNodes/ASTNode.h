@@ -20,4 +20,6 @@ protected:
     int type = UNDEF;
     void setType(int newType);
 };
+
+
 #endif //GAZPREABASE_ASTNODE_H
