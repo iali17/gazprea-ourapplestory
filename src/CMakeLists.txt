@@ -4,7 +4,7 @@ set(
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/ExternalTools/ExternalTools.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/InternalTools/InternalTools.cpp"
-        ../include/globals.h)
+        ../include/globals.h ../include/AST/ASTNodes/ASTNode.h ../include/AST/AST.h AST/ASTNodes/ASTNode.cpp ../include/AST/ASTGenerator.h AST/ASTGenerator.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})
