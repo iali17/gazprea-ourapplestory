@@ -4,7 +4,7 @@ set(
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/ExternalTools/ExternalTools.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/InternalTools/InternalTools.cpp"
-        ../include/globals.h ../include/AST/ASTNodes/BaseNodes/ASTNode.h ../include/AST/AST.h AST/ASTNodes/BaseNodes/ASTNode.cpp ../include/AST/ASTGenerator.h AST/ASTGenerator.cpp ../include/AST/ASTNodes/BaseNodes/InfixNode.h ../include/AST/ASTNodes/BaseNodes/UnaryNode.h AST/ASTNodes/BaseNodes/InfixNode.cpp AST/ASTNodes/BaseNodes/UnaryNode.cpp ../include/AST/ASTNodes/BaseNodes/BlockNode.h AST/ASTNodes/BaseNodes/BlockNode.cpp ../include/AST/ASTNodes/FileNode.h AST/ASTNodes/FileNode.cpp ../include/CodeGenerator/CodeGenerator.h CodeGenerator/CodeGenerator.cpp ../include/AST/ASTVisitor/ASTBaseVisitor.h ../include/AST/ASTVisitor/ASTVisitor.h)
+        ../include/globals.h ../include/AST/ASTNodes/BaseNodes/ASTNode.h ../include/AST/AST.h AST/ASTNodes/BaseNodes/ASTNode.cpp ../include/AST/ASTGenerator.h AST/ASTGenerator.cpp ../include/AST/ASTNodes/BaseNodes/InfixNode.h ../include/AST/ASTNodes/BaseNodes/UnaryNode.h AST/ASTNodes/BaseNodes/InfixNode.cpp AST/ASTNodes/BaseNodes/UnaryNode.cpp ../include/AST/ASTNodes/BaseNodes/BlockNode.h AST/ASTNodes/BaseNodes/BlockNode.cpp ../include/AST/ASTNodes/FileNode.h AST/ASTNodes/FileNode.cpp ../include/CodeGenerator/CodeGenerator.h CodeGenerator/CodeGenerator.cpp ../include/AST/ASTVisitor/ASTBaseVisitor.h ../include/AST/ASTVisitor/ASTVisitor.h ../include/InternalTools/CondBuilder.h InternalTools/CondBuilder.cpp globals.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

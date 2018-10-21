@@ -13,7 +13,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_os_ostream.h"
 #include "llvm/IR/Verifier.h"
-#include "globals.h"
+#include "InternalTools/InternalTools.h"
 
 #define INTFORMAT_STR  "intFormatStr"
 #define CHARFORMAT_STR "charFormatStr"

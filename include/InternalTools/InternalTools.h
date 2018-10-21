@@ -18,13 +18,17 @@
 class InternalTools {
 public:
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
-
+    void setUpTypes();
     //tools
     llvm::Value *getConsi32(int64_t val);
     llvm::Value *getConsi64(int64_t val);
+    llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
+                             llvm::Value *arrP, llvm::Value *replaceVal);
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
+
+
 };
 #endif //VCALCBASE_INTERNALTOOLS_H

@@ -6,12 +6,17 @@
 #include <llvm/IR/IRBuilder.h>
 #include <ExternalTools/ExternalTools.h>
 
+
+extern llvm::Type *i64Ty;
+extern llvm::Type *i32Ty;
+extern llvm::Type *intTy;
+extern llvm::Type *i8Ty;
+extern llvm::Type *charTy;
+
 ExternalTools::ExternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
 
 }
-
-
 
 void ExternalTools::registerCalloc() {
     // Declare calloc. Returns char *, takes array size, element size.
@@ -48,13 +53,13 @@ llvm::Value *ExternalTools::aliCalloc(llvm::Value *arrSize, int elementSize, boo
 void ExternalTools::registerFree() {
     // Declare calloc. Returns char *, takes array size, element size.
     llvm::FunctionType *fTy = llvm::TypeBuilder<void (void *), false>::get(*globalCtx);
-    auto *freeFunc        = llvm::cast<llvm::Function>(mod->getOrInsertFunction("free", fTy));
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("free", fTy));
 }
 
 void ExternalTools::aliFree(llvm::Value *p) {
     llvm::Value *charP = ir->CreatePointerCast(p, charTy->getPointerTo());
     llvm::Function *myFree = mod->getFunction("free");
-    llvm::Value *x = ir->CreateCall(myFree, {charP});
+    ir->CreateCall(myFree, {charP});
 }
 
 /**
@@ -82,13 +87,15 @@ void ExternalTools::registerPrintf() {
                     mod->getOrInsertGlobal(INTFORMAT_STR, intFormatStr->getType())
             );
 
+    intFormatStrLoc->setInitializer(intFormatStr);
+
     auto *charFormatStrLoc =
             llvm::cast<llvm::GlobalVariable>(
                     mod->getOrInsertGlobal(CHARFORMAT_STR, charFormatStr->getType())
             );
 
     // Set the location to be initialised by the constant.
-    intFormatStrLoc->setInitializer(intFormatStr);
+    charFormatStrLoc->setInitializer(intFormatStr);
 
     auto *spaceStrLoc =
             llvm::cast<llvm::GlobalVariable>(
@@ -161,7 +168,8 @@ void ExternalTools::printInt(llvm::Value *val) {
 }
 
 /**
- * This function prints a string.
+ * This function prints a string. This function may not get used since we may want to call print char
+ * while generating the code
  * @param str - pointer to character vector
  */
 void ExternalTools::printStr(llvm::Value *str) {
