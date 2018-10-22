@@ -4,6 +4,5 @@
 
 #include <AST/ASTNodes/BaseNodes/BlockNode.h>
 
-BlockNode::BlockNode(std::vector<ASTNode *> *nodes) : nodes(nodes) {}
-
-BlockNode::BlockNode() {}
+BlockNode::BlockNode(ASTNode *declBlock, ASTNode *stateBlock) : declBlock(declBlock),
+                                                                              stateBlock(stateBlock) {}

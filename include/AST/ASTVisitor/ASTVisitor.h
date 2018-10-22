@@ -12,6 +12,7 @@ class ASTVisitor {
 public:
     virtual llvm::Value* visit(ASTNode   *node) = 0;
     virtual llvm::Value* visit(FileNode  *node) = 0;
+    virtual llvm::Value* visit(BasicBlockNode *node) = 0;
     virtual llvm::Value* visit(BlockNode *node) = 0;
 };
 

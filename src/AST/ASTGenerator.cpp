@@ -3,6 +3,10 @@
 //
 
 #include <AST/ASTGenerator.h>
+#include <AST/ASTNodes/BaseNodes/BasicBlockNode.h>
+#include <AST/ASTNodes/ProcedureNode.h>
+#include <AST/ASTNodes/ReturnNode.h>
+#include <AST/ASTNodes/BaseNodes/INTNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -16,7 +20,7 @@ antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentEx
 }
 
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
-    return GazpreaBaseVisitor::visitIntegerExpr(ctx);
+    return (ASTNode *) new INTNode(std::stoi(ctx->getText()));
 }
 
 antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) {
@@ -120,15 +124,33 @@ antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLo
 }
 
 antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx) {
-    return GazpreaBaseVisitor::visitBlock(ctx);
+    ASTNode *declBlock;
+    ASTNode *bodyBlock;
+
+    if(ctx->decBlock())  declBlock = (ASTNode *) visit(ctx->decBlock());
+    else declBlock = new BasicBlockNode();
+    if(ctx->bodyBlock()) bodyBlock = (ASTNode *) visit(ctx->bodyBlock());
+    else bodyBlock = new BasicBlockNode();
+
+    return (ASTNode *) new BlockNode(declBlock, bodyBlock);
 }
 
 antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContext *ctx) {
-    return GazpreaBaseVisitor::visitDecBlock(ctx);
+    auto *statements = new std::vector<ASTNode *>;
+    unsigned int i;
+    for(i=0;i<ctx->declaration().size();i++){
+        statements->push_back( (ASTNode *) visit(ctx->declaration()[i]));
+    }
+    return (ASTNode *) new BasicBlockNode(statements);
 }
 
 antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockContext *ctx) {
-    return GazpreaBaseVisitor::visitBodyBlock(ctx);
+    auto *statements = new std::vector<ASTNode *>;
+    unsigned int i;
+    for(i=0;i<ctx->statement().size();i++){
+        statements->push_back( (ASTNode *) visit(ctx->statement()[i]));
+    }
+    return (ASTNode *) new BasicBlockNode(statements);
 }
 
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
@@ -152,7 +174,29 @@ antlrcpp::Any ASTGenerator::visitType(gazprea::GazpreaParser::TypeContext *ctx) 
 }
 
 antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureContext *ctx) {
-    return GazpreaBaseVisitor::visitProcedure(ctx);
+    std::string retType = "void";
+    if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
+    BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->block());
+    ParamNode *params = (ParamNode *) (ASTNode *) visit(ctx->params());
+    return (ASTNode *) new ProcedureNode(params, block, retType, ctx->Identifier()->getText());
 }
 
 ASTGenerator::ASTGenerator() {}
+
+/**
+ * TODO - this
+ * @param ctx
+ * @return
+ */
+antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *ctx) {
+    return (ASTNode *) new ParamNode();
+}
+
+antlrcpp::Any ASTGenerator::visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) {
+    return nullptr;
+}
+
+antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) {
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    return (ASTNode *) new ReturnNode(expr);
+}

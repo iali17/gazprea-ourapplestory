@@ -5,4 +5,4 @@
 
 FileNode::FileNode() {}
 
-FileNode::FileNode(std::vector<ASTNode *> *nodes) : BlockNode(nodes) {}
+FileNode::FileNode(std::vector<ASTNode *> *nodes) : BasicBlockNode(nodes) {}

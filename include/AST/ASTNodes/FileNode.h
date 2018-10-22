@@ -4,9 +4,9 @@
 
 #ifndef GAZPREABASE_FILENODE_H
 #define GAZPREABASE_FILENODE_H
-#include "BaseNodes/BlockNode.h"
+#include "BaseNodes/BasicBlockNode.h"
 
-class FileNode : public BlockNode {
+class FileNode : public BasicBlockNode {
 public:
     FileNode(std::vector<ASTNode *> *nodes);
 

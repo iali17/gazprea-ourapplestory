@@ -60,7 +60,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(BlockNode *node) {
+llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
     return nullptr;
 }
 

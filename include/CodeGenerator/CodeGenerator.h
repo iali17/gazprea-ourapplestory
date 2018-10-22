@@ -30,7 +30,7 @@ public:
     }
 
     llvm::Value* visit(FileNode  *node) override;
-    llvm::Value* visit(BlockNode *node) override;
+    llvm::Value* visit(BasicBlockNode *node) override;
     llvm::Value* visit(ASTNode   *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
@@ -49,8 +49,8 @@ protected:
         globalCtx = new llvm::LLVMContext;
         ir        = new llvm::IRBuilder<>(*globalCtx);
         mod       = new llvm::Module("gazprea", *globalCtx);
-        et = new ExternalTools(globalCtx, ir, mod);
-        it = new InternalTools(globalCtx, ir, mod);
+        et        = new ExternalTools(globalCtx, ir, mod);
+        it        = new InternalTools(globalCtx, ir, mod);
     }
 
     /**

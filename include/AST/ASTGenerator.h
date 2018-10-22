@@ -48,6 +48,10 @@ private:
     antlrcpp::Any visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) override;
     antlrcpp::Any visitType(gazprea::GazpreaParser::TypeContext *ctx) override;
     antlrcpp::Any visitProcedure(gazprea::GazpreaParser::ProcedureContext *ctx) override;
+    antlrcpp::Any visitParams(gazprea::GazpreaParser::ParamsContext *ctx) override;
+    antlrcpp::Any visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) override;
+    antlrcpp::Any visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) override;
+
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

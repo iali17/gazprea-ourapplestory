@@ -37,7 +37,8 @@ statement
     | procedureCall
     | CONTINUE SEMICOLON
     | BREAK SEMICOLON
-    | RETURN SEMICOLON
+    | returnCall
+    | returnStat
     ;
 
 declaration
@@ -96,13 +97,20 @@ type
     | Identifier
     ;
 
+params
+    : '(' (type Identifier (COMMA type Identifier)* )? ')';
 
-procedure
-    : PROCEDURE Identifier '(' (type Identifier (COMMA type Identifier)* )? ')' block
+returnStat
+    : RETURNS type
     ;
 
+returnCall
+    : RETURN expr SEMICOLON
+    ;
 
-
+procedure
+    : PROCEDURE Identifier params returnStat? block
+    ;
 
 //-------------------------------------------------
 
