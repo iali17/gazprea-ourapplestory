@@ -10,6 +10,8 @@
 llvm::Value *CondBuilder::createIf(llvm::Value *cond, std::string label) {
     assert(status == CREATED);
 
+    curFunction = ir->GetInsertBlock()->getParent();
+
     basicBlocks = new std::vector<llvm::BasicBlock *>();
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*globalCtx, label, curFunction);
     llvm::BasicBlock *nextBB = llvm::BasicBlock::Create(*globalCtx, "Next");
@@ -66,6 +68,7 @@ llvm::Value *CondBuilder::finalize(std::string label) {
 
     curFunction->getBasicBlockList().push_back(mergeBB);
     ir->SetInsertPoint(mergeBB);
+    status = FINALIZED;
     return nullptr;
 }
 
@@ -85,7 +88,6 @@ llvm::BasicBlock *CondBuilder::endLast(std::string label) {
 
 CondBuilder::CondBuilder(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(globalCtx),
                                                                                                        ir(ir), mod(mod) {
-    curFunction = ir->GetInsertBlock()->getParent();
     mergeBB = llvm::BasicBlock::Create(*globalCtx, "merge");
     hasElse = false;
     status  = CREATED;

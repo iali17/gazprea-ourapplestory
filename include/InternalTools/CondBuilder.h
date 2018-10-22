@@ -9,6 +9,7 @@
 #define CREATED      0
 #define STARTED      1
 #define MUSTFINALIZE 2
+#define FINALIZED    3
 /**
  * HOW TO USE:
  *  - Create builder

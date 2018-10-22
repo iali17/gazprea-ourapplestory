@@ -16,6 +16,7 @@
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
+#include "InternalTools/WhileBuilder.h"
 #include "ExternalTools/ExternalTools.h"
 
 class CodeGenerator : public ASTBaseVisitor {
