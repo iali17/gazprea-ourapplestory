@@ -11,6 +11,8 @@
 class BlockNode : public ASTNode {
 public:
     BlockNode(ASTNode *declBlock, ASTNode *stateBlock);
+    ASTNode *getDeclBlock() const;
+    ASTNode *getStateBlock() const;
 
 protected:
     ASTNode *declBlock;

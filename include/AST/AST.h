@@ -12,5 +12,9 @@
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 #include "AST/ASTNodes/BaseNodes/BlockNode.h"
 #include "AST/ASTNodes/FileNode.h"
+#include "AST/ASTNodes/ProcedureNode.h"
+#include "ASTNodes/ReturnNode.h"
+#include "ASTNodes/ParamNode.h"
+#include "ASTNodes/BaseNodes/INTNode.h"
 
 #endif //GAZPREABASE_AST_H

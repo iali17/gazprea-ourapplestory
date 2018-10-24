@@ -12,55 +12,23 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 
 llvm::Value *CodeGenerator::visit(FileNode *node) {
-    //THIS IS A TEST !!!!! HERE I AM MAKING A MAIN FUNCTION TO TEST WITH
-    llvm::FunctionType *mainTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
-
+    // register external functions
     et->registerPrintf();
-    auto *mainFunc = llvm::cast<llvm::Function>(mod->getOrInsertFunction("main", mainTy));
+    et->registerFree();
+    et->registerCalloc();
 
-    // Create an entry block and set the inserter.
-    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", mainFunc);
-    ir->SetInsertPoint(entry);
-
-    //THIS IS A TEST
-    CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
-    llvm::Value *ptr = ir->CreateAlloca(intTy);
-    llvm::Value *val = it->getConsi32(5);
-
-    ir->CreateStore(val, ptr);
-    llvm::Value *cond0 = ir->CreateICmpSGE(ir->CreateLoad(ptr), it->getConsi32(3));
-
-    condBuilder->createIf(cond0);
-    ir->CreateStore(it->getConsi32(2), ptr);
-    et->printInt(it->getConsi32(5));
-    condBuilder->createElseIf(cond0, "hoii");
-    ir->CreateStore(it->getConsi32(3), ptr);
-    condBuilder->createElseIf(cond0);
-    et->printInt(it->getConsi32(4));
-    ir->CreateStore(it->getConsi32(5), ptr);
-    condBuilder->createElse();
-    ir->CreateStore(it->getConsi32(9), ptr);
-    condBuilder->finalize();
-
-    WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
-
-    ir->CreateStore(it->getConsi32(0), ptr);
-    whileBuilder->beginWhile();
-    val = ir->CreateLoad(ptr);
-    llvm::Value *cond = ir->CreateICmpSLT(val, it->getConsi32(5));
-    whileBuilder->insertControl(cond);
-    et->printInt(val);
-    val = ir->CreateAdd(val, it->getConsi32(1));
-    ir->CreateStore(val, ptr);
-    whileBuilder->endWhile();
-
-    auto trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
-    llvm::Value *ret = llvm::ConstantInt::get(intTy, trueValue, true);
-    ir->CreateRet(ret);
+    unsigned long i = 0;
+    for(i = 0; i < node->nodes->size(); i++){
+        ASTBaseVisitor::visit(node->nodes->at(i));
+    }
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
+    unsigned long i = 0;
+    for(i = 0; i < node->nodes->size(); i++){
+        ASTBaseVisitor::visit(node->nodes->at(i));
+    }
     return nullptr;
 }
 
@@ -69,4 +37,34 @@ llvm::Value *CodeGenerator::visit(ASTNode *node) {
 }
 
 CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
+}
+
+llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
+    //TODO - actual fcn type and params
+    llvm::FunctionType *funcTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
+
+    auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
+
+    // Create an entry block and set the inserter.
+    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
+    ir->SetInsertPoint(entry);
+
+    visit(node->getFullBlock());
+
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(ParamNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(ReturnNode *node) {
+
+    llvm::Value * ret = visit(node->getExpr());
+    ir->CreateRet(ret);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(INTNode *node) {
+    return it->getConsi32(node->value);
 }

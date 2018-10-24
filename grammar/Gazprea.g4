@@ -175,17 +175,16 @@ VECTOR: 'vector';
 WHILE: 'while';
 XOR: 'xor';
 
-BlockComment: '/*' .*? '*/' ;
-LineComment: '//' .*? '\n' ;
 
-Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
+Integer: (ADD | SUB)? [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
 Identifier: [a-zA-Z][a-zA-Z0-9]* ;
 Boolean: TRUE | FALSE;
 Real: ([0-9][0-9_]*)? '.' [0-9_]* (E (ADD | SUB)? Integer)?;
 Character: '\'' [a-zA-Z] '\'' ;
 
-
-
+// skip comments
+BlockComment: '/*' .*? '*/' -> skip ;
+LineComment: '//' .*? '\n'-> skip ;
 
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;

@@ -32,6 +32,10 @@ public:
     llvm::Value* visit(FileNode  *node) override;
     llvm::Value* visit(BasicBlockNode *node) override;
     llvm::Value* visit(ASTNode   *node) override;
+    llvm::Value* visit(ProcedureNode  *node) override;
+    llvm::Value* visit(ParamNode *node) override;
+    llvm::Value* visit(ReturnNode *node) override;
+    llvm::Value* visit(INTNode *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

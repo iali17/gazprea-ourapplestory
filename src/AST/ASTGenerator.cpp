@@ -7,12 +7,22 @@
 #include <AST/ASTNodes/ProcedureNode.h>
 #include <AST/ASTNodes/ReturnNode.h>
 #include <AST/ASTNodes/BaseNodes/INTNode.h>
+#include <AST/ASTNodes/DeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
-    GazpreaBaseVisitor::visitFile(ctx);
-    return (ASTNode *) new FileNode();
+    auto *procedures = new std::vector<ASTNode *>;
+    unsigned long i;
+    for (i = 0; i < ctx->procedure().size(); i++){
+        //printf("%lu\n", i);
+        ASTNode * p = (ASTNode *) visit(ctx->procedure().at(i));
+        if (nullptr == p){
+            printf("yes\n");
+        }
+        procedures->push_back(p);
+    }
+    return (ASTNode *) new FileNode(procedures);
 }
 
 antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) {
@@ -20,7 +30,8 @@ antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentEx
 }
 
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
-    return (ASTNode *) new INTNode(std::stoi(ctx->getText()));
+    int val = std::stoi(ctx->getText());
+    return (ASTNode *) new INTNode(val);
 }
 
 antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) {
@@ -128,9 +139,9 @@ antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx
     ASTNode *bodyBlock;
 
     if(ctx->decBlock())  declBlock = (ASTNode *) visit(ctx->decBlock());
-    else declBlock = new BasicBlockNode();
+    else declBlock = new BasicBlockNode(new std::vector<ASTNode *>);
     if(ctx->bodyBlock()) bodyBlock = (ASTNode *) visit(ctx->bodyBlock());
-    else bodyBlock = new BasicBlockNode();
+    else bodyBlock = new BasicBlockNode(new std::vector<ASTNode *>);
 
     return (ASTNode *) new BlockNode(declBlock, bodyBlock);
 }
@@ -148,7 +159,13 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
     for(i=0;i<ctx->statement().size();i++){
-        statements->push_back( (ASTNode *) visit(ctx->statement()[i]));
+        ASTNode * node = (ASTNode *) visit(ctx->statement()[i]);
+        if (dynamic_cast<DeclNode *>(ctx->statement()[i])) {
+            std::cerr << "Declaration does not precede procedure body: " << ctx->statement()[i]->getText() << "\n";
+            std::cerr << "Aborting...\n";
+            exit(1);
+        }
+        statements->push_back( node );
     }
     return (ASTNode *) new BasicBlockNode(statements);
 }
@@ -178,7 +195,8 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->block());
     ParamNode *params = (ParamNode *) (ASTNode *) visit(ctx->params());
-    return (ASTNode *) new ProcedureNode(params, block, retType, ctx->Identifier()->getText());
+    ASTNode * p = (ASTNode *) new ProcedureNode(params, block, retType, ctx->Identifier()->getText());
+    return (ASTNode *) p;
 }
 
 ASTGenerator::ASTGenerator() {}
@@ -189,6 +207,13 @@ ASTGenerator::ASTGenerator() {}
  * @return
  */
 antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *ctx) {
+    //TODO - get parameter node done
+    unsigned long i;
+    for (i = 0; i < ctx->Identifier().size(); i++){
+        ctx->type().at(i);
+        ctx->Identifier().at(i);
+    }
+
     return (ASTNode *) new ParamNode();
 }
 

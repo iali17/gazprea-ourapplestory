@@ -6,3 +6,11 @@
 
 BlockNode::BlockNode(ASTNode *declBlock, ASTNode *stateBlock) : declBlock(declBlock),
                                                                               stateBlock(stateBlock) {}
+
+ASTNode *BlockNode::getDeclBlock() const {
+    return declBlock;
+}
+
+ASTNode *BlockNode::getStateBlock() const {
+    return stateBlock;
+}
