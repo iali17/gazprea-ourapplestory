@@ -10,14 +10,17 @@
 
 class ASTVisitor {
 public:
-    virtual llvm::Value* visit(ASTNode   *node) = 0;
-    virtual llvm::Value* visit(FileNode  *node) = 0;
+    virtual llvm::Value* visit(ASTNode   *node)      = 0;
+    virtual llvm::Value* visit(FileNode  *node)      = 0;
     virtual llvm::Value* visit(BasicBlockNode *node) = 0;
-    virtual llvm::Value* visit(BlockNode *node) = 0;
+    virtual llvm::Value* visit(BlockNode *node)      = 0;
     virtual llvm::Value* visit(ProcedureNode  *node) = 0;
-    virtual llvm::Value* visit(ParamNode *node) = 0;
-    virtual llvm::Value* visit(ReturnNode *node) = 0;
-    virtual llvm::Value* visit(INTNode *node) = 0;
+    virtual llvm::Value* visit(ParamNode *node)      = 0;
+    virtual llvm::Value* visit(ReturnNode *node)     = 0;
+    virtual llvm::Value* visit(INTNode *node)        = 0;
+    virtual llvm::Value* visit(RealNode *node)       = 0;
+    virtual llvm::Value* visit(CharNode *node)       = 0;
+    virtual llvm::Value* visit(BoolNode *node)       = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

@@ -7,6 +7,7 @@
 #include <AST/ASTNodes/ProcedureNode.h>
 #include <AST/ASTNodes/ReturnNode.h>
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
+#include <AST/ASTNodes/TerminalNodes/RealNode.h>
 #include <AST/ASTNodes/DeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
@@ -43,7 +44,8 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
-    return GazpreaBaseVisitor::visitRealExpr(ctx);
+    float val = std::stof(ctx->Real()->getText());
+    return (ASTNode *) new RealNode(val);
 }
 
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
@@ -197,9 +199,9 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
     std::string retType = "void";
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->block());
-    ParamNode *params = (ParamNode *) (ASTNode *) visit(ctx->params());
+    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProcedureNode(params, block, retType, ctx->Identifier()->getText());
-    return (ASTNode *) p;
+    return p;
 }
 
 ASTGenerator::ASTGenerator() {}
@@ -210,14 +212,16 @@ ASTGenerator::ASTGenerator() {}
  * @return
  */
 antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *ctx) {
-    //TODO - get parameter node done
+    //returns a vector or parameter nodes
+    auto *paramVec = new std::vector<ASTNode *>;
     unsigned long i;
     for (i = 0; i < ctx->Identifier().size(); i++){
         ctx->type().at(i);
         ctx->Identifier().at(i);
+        paramVec->push_back(new ParamNode(ctx->type().at(i)->getText(), ctx->Identifier().at(i)->getText()));
     }
 
-    return (ASTNode *) new ParamNode();
+    return (std::vector<ASTNode *> *) paramVec;
 }
 
 antlrcpp::Any ASTGenerator::visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) {

@@ -11,7 +11,7 @@ expr
     | NULLT                                                         #nullExpr
     | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
-    | '(' expr COMMA expr (COMMA expr)* ')'                         #tupleExpr
+    | '(' expr (COMMA expr)+')'                                     #tupleExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
