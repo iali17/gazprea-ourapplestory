@@ -12,7 +12,7 @@ expr
     | Identifier                                                    #identifierExpr
     | Character                                                     #charExpr
     | '(' expr ')'                                                  #brackExpr
-    | '(' expr COMMA expr (COMMA expr)* ')'                         #tupleExpr
+    | tuple                                                         #tupleExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
@@ -113,12 +113,17 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-real
+real    // todo: clean this shit
     : Integer Decimal Exponent
     | Integer Decimal
     | Decimal Exponent
     | Integer Exponent
     ;
+
+tuple
+    : '(' expr COMMA expr (COMMA expr)* ')'
+    ;
+
 
 
 //-------------------------------------------------
