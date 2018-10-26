@@ -6,12 +6,13 @@ file: procedure* EOF;
 // TODO: add labels for many of the expr and etc (ex left=expr)
 // TODO TUPLE DOESNT WORK
 expr
-    : Real                                                          #realExpr
+    : real                                                          #realExpr
     | Integer                                                       #integerExpr
     | NULLT                                                         #nullExpr
     | Identifier                                                    #identifierExpr
+    | Character                                                     #charExpr
     | '(' expr ')'                                                  #brackExpr
-    | '(' expr COMMA expr (COMMA expr)* ')'                         #tupleExpr
+    | '(' expr (COMMA expr)+')'                                     #tupleExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
@@ -48,7 +49,8 @@ assignment
     ;
 
 declaration
-    : CONST? (VAR | type) type* Identifier EQL expr SEMICOLON
+    : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
+    | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     ;
 
 conditional
@@ -67,7 +69,7 @@ block
     ;
 
 decBlock
-    :  declaration+
+    : declaration+
     ;
 
 bodyBlock
@@ -105,12 +107,20 @@ returnStat
     ;
 
 returnCall
-    : RETURN expr SEMICOLON
+    : RETURN expr? SEMICOLON
     ;
 
 procedure
     : PROCEDURE Identifier params returnStat? block
     ;
+
+real
+    : Integer Decimal Exponent
+    | Integer Decimal
+    | Decimal Exponent
+    | Integer Exponent
+    ;
+
 
 //-------------------------------------------------
 
@@ -163,8 +173,8 @@ RETURN: 'return';
 RETURNS: 'returns';
 REVERSE: 'reverse';
 ROWS: 'rows';
-STD_INPUT: 'std_input';
-STD_OUTPUT: 'std_output';
+STD_INPUT: 'std_input()';
+STD_OUTPUT: 'std_output()';
 STREAM_STATE: 'stream_state';
 STRING: 'string';
 TRUE: 'true';
@@ -176,15 +186,22 @@ WHILE: 'while';
 XOR: 'xor';
 
 
-Integer: (ADD | SUB)? [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
+
+// Skip whitespace
+WS : [ \t\r\n]+ -> skip ;
+
+Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
 Identifier: [a-zA-Z][a-zA-Z0-9]* ;
 Boolean: TRUE | FALSE;
-Real: ([0-9][0-9_]*)? '.' [0-9_]* (E (ADD | SUB)? Integer)?;
-Character: '\'' [a-zA-Z] '\'' ;
+
+Decimal: '.' [0-9_]* ;
+Exponent: E (ADD | SUB)? Integer;
+
+
+
+Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
+String: '\'' .*? '\'' ;  //TODO: for part 2
 
 // skip comments
 BlockComment: '/*' .*? '*/' -> skip ;
 LineComment: '//' .*? '\n'-> skip ;
-
-// Skip whitespace
-WS : [ \t\r\n]+ -> skip ;

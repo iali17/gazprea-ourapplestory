@@ -11,3 +11,11 @@ int ASTNode::getType() const {
 void ASTNode::setType(int newType){
     type = newType;
 }
+
+llvm::Type *ASTNode::getLlvmType() const {
+    return llvmType;
+}
+
+void ASTNode::setLlvmType(llvm::Type *llvmType) {
+    ASTNode::llvmType = llvmType;
+}

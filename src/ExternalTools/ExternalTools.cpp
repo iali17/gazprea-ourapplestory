@@ -230,3 +230,27 @@ void ExternalTools::printReal(llvm::Value *val) {
 
     ir->CreateCall(printfFunc, {formatStr, val});
 }
+
+void ExternalTools::registerScanf() {
+    llvm::FunctionType *fTy = llvm::TypeBuilder<int (char *, ...), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("scanf", fTy));
+}
+
+/**
+ * @param scanString - the string used for reading, USE THE PREDEFINED CONSTANT STRINGS
+ * @return pointer to the read value or null otherwise
+ */
+llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *scanTo) {
+    llvm::Function *scanfFunc = mod->getFunction("scanf");
+
+    // Get your string to print.
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INTFORMAT_STR));
+
+    // Call printf. Printing multiple values is easy: just add to the {}.
+    llvm::Value *formatStr =
+            ir->CreatePointerCast(formatStrGlobal, scanfFunc->arg_begin()->getType());
+
+
+    ir->CreateCall(scanfFunc, {formatStr, scanTo});
+    return nullptr;
+}

@@ -12,8 +12,8 @@
 
 class CastTable {
 public:
-    void typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr);
-    void upCast(llvm::Value *type, llvm::Value *expr);
+    llvm::Value *typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr);
+    llvm::Value *upCast(llvm::Type *type, llvm::Value *expr);
 
     int getType(llvm::Type *expr);
 
