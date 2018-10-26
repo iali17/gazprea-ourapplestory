@@ -48,7 +48,8 @@ assignment
     ;
 
 declaration
-    : CONST? (VAR | type) type* Identifier EQL expr SEMICOLON
+    : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
+    | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     ;
 
 conditional
@@ -163,8 +164,8 @@ RETURN: 'return';
 RETURNS: 'returns';
 REVERSE: 'reverse';
 ROWS: 'rows';
-STD_INPUT: 'std_input';
-STD_OUTPUT: 'std_output';
+STD_INPUT: 'std_input()';
+STD_OUTPUT: 'std_output()';
 STREAM_STATE: 'stream_state';
 STRING: 'string';
 TRUE: 'true';
