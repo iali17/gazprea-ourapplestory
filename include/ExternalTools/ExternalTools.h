@@ -35,6 +35,10 @@ public:
     void registerFree();
     void aliFree(llvm::Value * p);
 
+    //scanf
+    void registerScanf();
+    llvm::Value *aliScanf(std::string consScanString, llvm::Value *scanTo);
+
     //printing
     void registerPrintf();
     void printStaticStr(std::string constStr);

@@ -26,6 +26,7 @@ public:
     llvm::Value *getConsi64(int64_t val);
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
                              llvm::Value *arrP, llvm::Value *replaceVal);
+    llvm::Type *getTypeFromString(std::string strType);
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

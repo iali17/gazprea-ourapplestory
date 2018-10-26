@@ -6,16 +6,6 @@
 
 #include "AST/ASTNodes/ProcedureNode.h"
 
-ProcedureNode::ProcedureNode(ParamNode *paramNode, BlockNode *blockNode, const std::string &retType,
-                             const std::string &procedureName) : paramNode(paramNode), blockNode(blockNode),
-                                                                 retType(retType), procedureName(procedureName) {
-    type = -5;
-}
-
-ParamNode *ProcedureNode::getParamNode() const {
-    return paramNode;
-}
-
 BlockNode *ProcedureNode::getBlockNode() const {
     return blockNode;
 }
@@ -36,4 +26,12 @@ BasicBlockNode *ProcedureNode::getFullBlock() {
     full->insert(full->end(), bb1->nodes->begin(), bb1->nodes->end());
     full->insert(full->end(), bb2->nodes->begin(), bb2->nodes->end());
     return new BasicBlockNode(full);
+}
+
+ProcedureNode::ProcedureNode(std::vector<ASTNode *> *paramNodes, BlockNode *blockNode, const std::string &retType,
+                             const std::string &procedureName) : paramNodes(paramNodes), blockNode(blockNode),
+                                                                 retType(retType), procedureName(procedureName) {}
+
+std::vector<ASTNode *> *ProcedureNode::getParamNodes() const {
+    return paramNodes;
 }

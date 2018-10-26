@@ -12,16 +12,18 @@
 
 class ProcedureNode : public ASTNode {
 public:
-    ProcedureNode(ParamNode *paramNode, BlockNode *blockNode, const std::string &retType,
+    ProcedureNode(std::vector<ASTNode *> *paramNodes, BlockNode *blockNode, const std::string &retType,
                   const std::string &procedureName);
 
-    ParamNode *getParamNode() const;
     BlockNode *getBlockNode() const;
     BasicBlockNode *getFullBlock();
     const std::string &getRetType() const;
     const std::string &getProcedureName() const;
+
+    std::vector<ASTNode *> *getParamNodes() const;
+
 protected:
-    ParamNode *paramNode;
+    std::vector<ASTNode *> *paramNodes;
     BlockNode *blockNode;
     std::string retType;
     std::string procedureName;
