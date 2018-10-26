@@ -46,7 +46,7 @@ statement
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
-    | Identifier COMMA Identifier (COMMA Identifier)* EQL expr              #pythonTupleAss
+    | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
 
 declaration
@@ -120,7 +120,7 @@ procedure
 real    // todo: clean this shit
     : Integer Decimal Exponent
     | Integer Decimal
-    | Decimal Exponent
+    | Decimal Exponent?
     | Integer Exponent
     ;
 
