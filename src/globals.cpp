@@ -9,3 +9,4 @@ llvm::Type *i8Ty;
 llvm::Type *intTy;
 llvm::Type *charTy;
 llvm::Type *realTy;
+llvm::Type *boolTy;
