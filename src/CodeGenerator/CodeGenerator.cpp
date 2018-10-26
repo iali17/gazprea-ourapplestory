@@ -67,8 +67,8 @@ llvm::Value *CodeGenerator::visit(ParamNode *node) {
     return ASTBaseVisitor::visit(node);
 }
 
+//TODO - return void when needed
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
-
     llvm::Value * ret = visit(node->getExpr());
     ir->CreateRet(ret);
     return nullptr;
