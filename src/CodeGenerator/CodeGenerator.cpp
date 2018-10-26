@@ -16,6 +16,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerPrintf();
     et->registerFree();
     et->registerCalloc();
+    et->registerScanf();
 
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
@@ -51,6 +52,12 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
     ir->SetInsertPoint(entry);
 
+    /* scanf boy
+    llvm::Value * ptr = ir->CreateAlloca(intTy);
+    et->aliScanf(INTFORMAT_STR, ptr);
+    et->printInt(ir->CreateLoad(ptr));
+    et->printStaticStr(EOLN_STR);
+     */
     visit(node->getFullBlock());
 
     return nullptr;
@@ -69,4 +76,20 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
 
 llvm::Value *CodeGenerator::visit(INTNode *node) {
     return it->getConsi32(node->value);
+}
+
+llvm::Value *CodeGenerator::visit(RealNode *node) {
+    double val = node->getVal();
+    return it->getReal(val);
+}
+
+llvm::Value *CodeGenerator::visit(CharNode *node) {
+    char val = node->getVal();
+    return it->geti8(val);
+}
+
+llvm::Value *CodeGenerator::visit(BoolNode *node) {
+    bool val = node->getVal();
+    //return it->geti1(val);
+    return ASTBaseVisitor::visit(node);
 }

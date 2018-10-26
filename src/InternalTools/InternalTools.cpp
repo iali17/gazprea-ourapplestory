@@ -69,3 +69,23 @@ void InternalTools::setUpTypes() {
     charTy = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
 }
+
+llvm::Type *InternalTools::getTypeFromString(std::string strType) {
+    //TODO - this function is mean to be used in the declarations in the AST
+    if      (strType == "integer"){
+        return intTy;
+    }
+    else if (strType == "real"){
+        return realTy;
+    }
+    else if (strType == "char"){
+        return i8Ty;
+    }
+    else if (strType == "boolean"){
+        //return boolTy;
+    }
+    else if (strType == "void"){
+        //return boolTy;
+    }
+    return nullptr;
+}

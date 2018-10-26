@@ -37,6 +37,9 @@ public:
     llvm::Value* visit(ParamNode *node) override;
     llvm::Value* visit(ReturnNode *node) override;
     llvm::Value* visit(INTNode *node) override;
+    llvm::Value* visit(RealNode *node) override;
+    llvm::Value* visit(CharNode *node) override;
+    llvm::Value* visit(BoolNode *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

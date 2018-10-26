@@ -16,5 +16,8 @@
 #include "ASTNodes/ReturnNode.h"
 #include "ASTNodes/ParamNode.h"
 #include "AST/ASTNodes/TerminalNodes/INTNode.h"
+#include "ASTNodes/TerminalNodes/RealNode.h"
+#include "ASTNodes/TerminalNodes/CharNode.h"
+#include "ASTNodes/TerminalNodes/BoolNode.h"
 
 #endif //GAZPREABASE_AST_H
