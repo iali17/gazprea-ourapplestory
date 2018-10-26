@@ -46,10 +46,13 @@ statement
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #tupleAss
+    | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
     ;
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
+    |  CONST? (VAR | type) type* Identifier EQL Identifier
+    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     ;
 
