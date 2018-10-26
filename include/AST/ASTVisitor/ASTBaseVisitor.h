@@ -5,7 +5,7 @@
 #ifndef GAZPREABASE_ASTBASEVISITOR_H
 #define GAZPREABASE_ASTBASEVISITOR_H
 
-#include <AST/ASTNodes/BaseNodes/INTNode.h>
+#include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include "ASTVisitor.h"
 
 
@@ -31,13 +31,10 @@ public:
         else if (dynamic_cast<ReturnNode *>(node)) {
             return visit((ReturnNode *) node);
         }
-        else if (dynamic_cast<ReturnNode *>(node)) {
-            return visit((ReturnNode *) node);
-        }
         else if (dynamic_cast<INTNode *>(node)) {
             return visit((INTNode *) node);
         }
-        fprintf(stderr, "unrecognized class\n");
+        fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
 

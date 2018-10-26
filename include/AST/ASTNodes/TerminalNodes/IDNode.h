@@ -6,7 +6,7 @@
 #define GAZPREABASE_IDNODE_H
 
 #include <string>
-#include "ASTNode.h"
+#include "../BaseNodes/ASTNode.h"
 
 class IDNode : public ASTNode {
 public:

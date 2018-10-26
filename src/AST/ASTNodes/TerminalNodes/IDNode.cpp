@@ -2,7 +2,7 @@
 // Created by iali on 10/22/18.
 //
 
-#include <AST/ASTNodes/BaseNodes/IDNode.h>
+#include <AST/ASTNodes/TerminalNodes/IDNode.h>
 #include <string>
 
 IDNode::IDNode() = default;

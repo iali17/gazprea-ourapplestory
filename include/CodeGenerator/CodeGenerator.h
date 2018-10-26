@@ -18,6 +18,7 @@
 #include "InternalTools/CondBuilder.h"
 #include "InternalTools/WhileBuilder.h"
 #include "ExternalTools/ExternalTools.h"
+#include "Scope/SymbolTable.h"
 
 class CodeGenerator : public ASTBaseVisitor {
 public:
@@ -47,7 +48,7 @@ protected:
     char * outFile;
 
     /**
-     * itialize all the llvm stuff
+     * initialize all the llvm stuff
      */
     void prepare() {
         globalCtx = new llvm::LLVMContext;

@@ -4,12 +4,21 @@
 
 #include <InternalTools/InternalTools.h>
 
-
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *realTy;
+
+llvm::Value *InternalTools::getReal(double val) {
+    return llvm::ConstantFP::get(realTy, val);
+}
+
+llvm::Value *InternalTools::geti8(int64_t val) {
+    uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(val));
+    return llvm::ConstantInt::get(i8Ty, trueValue, true);
+}
 
 llvm::Value *InternalTools::getConsi32(int64_t val) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(val));
@@ -53,12 +62,10 @@ llvm::Value *InternalTools::safeReplace(llvm::Value *safePtr, llvm::Value *cond,
 }
 
 void InternalTools::setUpTypes() {
-
     i64Ty  = llvm::TypeBuilder<llvm::types::i<64>, true>::get(*globalCtx);
     i32Ty  = llvm::TypeBuilder<llvm::types::i<32>, true>::get(*globalCtx);
     intTy  = llvm::TypeBuilder<llvm::types::i<32>, true>::get(*globalCtx);
     i8Ty   = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     charTy = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
-
+    realTy = llvm::Type::getFloatTy(*globalCtx);
 }
-

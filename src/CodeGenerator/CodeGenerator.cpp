@@ -4,12 +4,12 @@
 
 #include <CodeGenerator/CodeGenerator.h>
 
-
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *realTy;
 
 llvm::Value *CodeGenerator::visit(FileNode *node) {
     // register external functions
@@ -42,6 +42,8 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //TODO - actual fcn type and params
     llvm::FunctionType *funcTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
+    //llvm::ArrayRef<llvm::Type *> *params =  new llvm::ArrayRef<llvm::Type *>;
+    //llvm::FunctionType::get(intTy, params);
 
     auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
 

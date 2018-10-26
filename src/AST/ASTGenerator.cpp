@@ -6,7 +6,7 @@
 #include <AST/ASTNodes/BaseNodes/BasicBlockNode.h>
 #include <AST/ASTNodes/ProcedureNode.h>
 #include <AST/ASTNodes/ReturnNode.h>
-#include <AST/ASTNodes/BaseNodes/INTNode.h>
+#include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include <AST/ASTNodes/DeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
@@ -103,7 +103,10 @@ antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementCont
 }
 
 antlrcpp::Any ASTGenerator::visitDeclaration(gazprea::GazpreaParser::DeclarationContext *ctx) {
-    return GazpreaBaseVisitor::visitDeclaration(ctx);
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+
+    //TODO check the return type, compare with declared type and null, add to symbol table
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) {

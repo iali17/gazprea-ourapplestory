@@ -15,12 +15,13 @@
 #include "llvm/IR/Verifier.h"
 #include "InternalTools/InternalTools.h"
 
-#define INTFORMAT_STR  "intFormatStr"
-#define CHARFORMAT_STR "charFormatStr"
-#define EOLN_STR       "eolnStr"
-#define SPACE_STR      "spaceStr"
-#define OPENSQRB_STR   "openSqrBStr"
-#define CLOSESQRB_STR  "closeSqrBStr"
+#define INTFORMAT_STR   "intFormatStr"
+#define CHARFORMAT_STR  "charFormatStr"
+#define FLOATFORMAT_STR "floatFormatStr"
+#define EOLN_STR        "eolnStr"
+#define SPACE_STR       "spaceStr"
+#define OPENSQRB_STR    "openSqrBStr"
+#define CLOSESQRB_STR   "closeSqrBStr"
 
 class ExternalTools {
 public:
@@ -38,6 +39,7 @@ public:
     void registerPrintf();
     void printStaticStr(std::string constStr);
     void printInt(llvm::Value * val);
+    void printReal(llvm::Value * val);
     void printStr(llvm::Value *val);
     void printChar(llvm::Value *val);
 

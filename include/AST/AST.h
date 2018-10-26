@@ -15,6 +15,6 @@
 #include "AST/ASTNodes/ProcedureNode.h"
 #include "ASTNodes/ReturnNode.h"
 #include "ASTNodes/ParamNode.h"
-#include "ASTNodes/BaseNodes/INTNode.h"
+#include "AST/ASTNodes/TerminalNodes/INTNode.h"
 
 #endif //GAZPREABASE_AST_H

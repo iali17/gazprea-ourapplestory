@@ -41,14 +41,14 @@ statement
     | returnStat
     ;
 
-declaration
-    : CONST? VAR? type? Identifier EQL expr SEMICOLON
-    ;
-
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #tupleAss
+    ;
+
+declaration
+    : CONST? (VAR | type) type* Identifier EQL expr SEMICOLON
     ;
 
 conditional

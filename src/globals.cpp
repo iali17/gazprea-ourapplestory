@@ -8,3 +8,4 @@ llvm::Type *i32Ty;
 llvm::Type *i8Ty;
 llvm::Type *intTy;
 llvm::Type *charTy;
+llvm::Type *realTy;

@@ -12,10 +12,10 @@ extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *realTy;
 
 ExternalTools::ExternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
-
 }
 
 void ExternalTools::registerCalloc() {
@@ -73,12 +73,13 @@ void ExternalTools::registerPrintf() {
     printfFunc->addAttribute(1u, llvm::Attribute::NoCapture);
 
     // Create the constant data array of characters.
-    llvm::Constant *intFormatStr  = llvm::ConstantDataArray::getString(*globalCtx, "%d");
-    llvm::Constant *charFormatStr = llvm::ConstantDataArray::getString(*globalCtx, "%c");
-    llvm::Constant *spaceStr      = llvm::ConstantDataArray::getString(*globalCtx, " ");
-    llvm::Constant *eolnStr       = llvm::ConstantDataArray::getString(*globalCtx, "\n");
-    llvm::Constant *openSqrBStr   = llvm::ConstantDataArray::getString(*globalCtx, "[");
-    llvm::Constant *closeSqrBStr  = llvm::ConstantDataArray::getString(*globalCtx, "]");
+    llvm::Constant *intFormatStr   = llvm::ConstantDataArray::getString(*globalCtx, "%d");
+    llvm::Constant *charFormatStr  = llvm::ConstantDataArray::getString(*globalCtx, "%c");
+    llvm::Constant *floatFormatStr = llvm::ConstantDataArray::getString(*globalCtx, "%f");
+    llvm::Constant *spaceStr       = llvm::ConstantDataArray::getString(*globalCtx, " ");
+    llvm::Constant *eolnStr        = llvm::ConstantDataArray::getString(*globalCtx, "\n");
+    llvm::Constant *openSqrBStr    = llvm::ConstantDataArray::getString(*globalCtx, "[");
+    llvm::Constant *closeSqrBStr   = llvm::ConstantDataArray::getString(*globalCtx, "]");
 
     // Create the global space we will use. The string "intFormatStr" is the name you will need to
     // to use to ask for this value later to get it from the module.
@@ -95,7 +96,15 @@ void ExternalTools::registerPrintf() {
             );
 
     // Set the location to be initialised by the constant.
-    charFormatStrLoc->setInitializer(intFormatStr);
+    charFormatStrLoc->setInitializer(charFormatStr);
+
+    auto *floatFormatStrLoc =
+            llvm::cast<llvm::GlobalVariable>(
+                    mod->getOrInsertGlobal(FLOATFORMAT_STR, floatFormatStr->getType())
+            );
+
+    // Set the location to be initialised by the constant.
+    floatFormatStrLoc->setInitializer(floatFormatStr);
 
     auto *spaceStrLoc =
             llvm::cast<llvm::GlobalVariable>(
@@ -202,4 +211,21 @@ void ExternalTools::printChar(llvm::Value *ch) {
             ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
 
     ir->CreateCall(printfFunc, {formatStr, ch});
+}
+
+/**
+ * printf a float
+ * @param val - llvm float type
+ */
+void ExternalTools::printReal(llvm::Value *val) {
+    llvm::Function *printfFunc = mod->getFunction("printf");
+
+    // Get your string to print.
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(FLOATFORMAT_STR));
+
+    // Call printf. Printing multiple values is easy: just add to the {}.
+    llvm::Value *formatStr =
+            ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
+
+    ir->CreateCall(printfFunc, {formatStr, val});
 }
