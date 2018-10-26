@@ -4,7 +4,7 @@ grammar Gazprea;
 file: procedure* EOF;
 
 // TODO: add labels for many of the expr and etc (ex left=expr)
-// TODO TUPLE DOESNT WORK
+// TODO TUPLE
 expr
     : real                                                          #realExpr
     | Integer                                                       #integerExpr
@@ -12,10 +12,8 @@ expr
     | Identifier                                                    #identifierExpr
     | Character                                                     #charExpr
     | '(' expr ')'                                                  #brackExpr
-    | tuple                                                         #tupleExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
-    | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -45,7 +43,6 @@ statement
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
-    | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #tupleAss
     ;
 
 declaration
@@ -95,7 +92,6 @@ type
     | CHARACTER
     | INTEGER
     | REAL
-    | TUPLE '(' type COMMA type (COMMA type)* ')'
     | Identifier
     ;
 
@@ -121,9 +117,7 @@ real    // todo: clean this shit
     | Integer Exponent
     ;
 
-tuple
-    : '(' expr COMMA expr (COMMA expr)* ')'
-    ;
+
 
 
 
