@@ -8,6 +8,13 @@
 
 #ifndef VCALCBASE_SCOPE_H
 #define VCALCBASE_SCOPE_H
+/*
+ * TODO
+ *  - resolveUserType
+ *  - addUserType
+ *  - add map name, llvm:Type*
+ *  Methods are only to be called from type->Identifier
+ */
 class Scope {
 public:
     Scope(const std::string &name);

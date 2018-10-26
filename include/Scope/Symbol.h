@@ -23,6 +23,5 @@ protected:
     std::string name;
     int type;
     llvm::Value *ptr;
-    llvm::Type  *llvmType;
 };
 #endif //VCALCBASE_SYMBOL_H

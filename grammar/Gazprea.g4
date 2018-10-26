@@ -200,14 +200,11 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
+Exponent: E (ADD | SUB)? Integer;
 Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
 Identifier: [a-zA-Z][a-zA-Z0-9]* ;
 Boolean: TRUE | FALSE;
-
 Decimal: '.' [0-9_]* ;
-Exponent: E (ADD | SUB)? Integer;
-
-
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2
