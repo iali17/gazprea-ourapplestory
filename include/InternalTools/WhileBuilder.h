@@ -6,8 +6,6 @@
 #define GAZPREABASE_WHILEBUILDER_H
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
-#include "../../../../llvm-ins/include/llvm/IR/BasicBlock.h"
-#include "../../../../llvm-ins/include/llvm/IR/IRBuilder.h"
 
 #define CREATED      0
 #define STARTED      1
