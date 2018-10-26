@@ -226,15 +226,11 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
 }
 
 antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
-    /* TODO - remove garbo
-    float integerPart = 0;
-    if (ctx->Integer())
-        integerPart = std::stof(ctx->Integer()->getText());
-    float decimalPart = 0;
-    if (ctx->Decimal())
-        decimalPart = std::stof(ctx->Decimal()->getText());
-    */
-    float val;
+    std::string strVal = ctx->getText();
+    std::string str2Val;
+
+    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
+    float val = std::stof(str2Val);
     return (ASTNode *) new RealNode(val);
 }
 
