@@ -3,17 +3,19 @@ grammar Gazprea;
 //file: (statement | procedure)* EOF;
 file: procedure* EOF;
 
-// TODO: add labels for many of the expr and etc (ex left=expr)
+// TODO: check for precendence
 // TODO TUPLE
 expr
     : real                                                          #realExpr
     | Integer                                                       #integerExpr
     | NULLT                                                         #nullExpr
-    | Identifier                                                    #identifierExpr
     | Character                                                     #charExpr
+    | tuple                                                         #tupleExpr
+    | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
+    | Identifier '.' (Identifier | Integer)                         #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -43,6 +45,7 @@ statement
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
+    | Identifier COMMA Identifier (COMMA Identifier)* EQL expr              #pythonTupleAss
     ;
 
 declaration
@@ -93,6 +96,7 @@ type
     | INTEGER
     | REAL
     | Identifier
+    | tupleType
     ;
 
 params
@@ -117,9 +121,13 @@ real    // todo: clean this shit
     | Integer Exponent
     ;
 
+tuple
+    : '(' expr COMMA expr (COMMA expr)* ')'
+    ;
 
-
-
+tupleType
+    : TUPLE '(' type Identifier? COMMA type Identifier? (COMMA type Identifier?)* ')'
+    ;
 
 //-------------------------------------------------
 
