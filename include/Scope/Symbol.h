@@ -15,8 +15,6 @@ public:
     llvm::Value *getPtr() const;
     void setPtr(llvm::Value *ptr);
     int getType() const;
-    llvm::Type *getLLVMType() const;
-    void setLLVMType(llvm::Type *llvmType);
 
 protected:
     std::string scopeName;
