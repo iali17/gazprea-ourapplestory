@@ -31,9 +31,8 @@ private:
     antlrcpp::Any visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) override;
     antlrcpp::Any visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) override;
     antlrcpp::Any visitStatement(gazprea::GazpreaParser::StatementContext *ctx) override;
-    //antlrcpp::Any visitDeclaration(gazprea::GazpreaParser::DeclarationContext *ctx) override;
     antlrcpp::Any visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) override;
-    antlrcpp::Any visitTupleAss(gazprea::GazpreaParser::TupleAssContext *ctx) override;
+    antlrcpp::Any visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) override;
     antlrcpp::Any visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) override;
     antlrcpp::Any visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLoopContext *ctx) override;
     antlrcpp::Any visitPredicatedLoop(gazprea::GazpreaParser::PredicatedLoopContext *ctx) override;
@@ -51,6 +50,9 @@ private:
     antlrcpp::Any visitParams(gazprea::GazpreaParser::ParamsContext *ctx) override;
     antlrcpp::Any visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) override;
     antlrcpp::Any visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) override;
+    antlrcpp::Any visitReal(gazprea::GazpreaParser::RealContext *ctx) override;
+    antlrcpp::Any visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) override;
+    antlrcpp::Any visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) override;
 
 };
 

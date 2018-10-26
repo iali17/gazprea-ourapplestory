@@ -3,19 +3,19 @@ grammar Gazprea;
 //file: (statement | procedure)* EOF;
 file: procedure* EOF;
 
-// TODO: add labels for many of the expr and etc (ex left=expr)
-// TODO TUPLE DOESNT WORK
+// TODO: check for precendence
+// TODO TUPLE
 expr
     : real                                                          #realExpr
     | Integer                                                       #integerExpr
     | NULLT                                                         #nullExpr
-    | Identifier                                                    #identifierExpr
     | Character                                                     #charExpr
+    | tuple                                                         #tupleExpr
+    | Identifier                                                    #identifierExpr
     | '(' expr ')'                                                  #brackExpr
-    | '(' expr (COMMA expr)+')'                                     #tupleExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
-    | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
+    | Identifier '.' (Identifier | Integer)                         #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -45,11 +45,14 @@ statement
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
-    | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #tupleAss
+    | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
+    | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
+    |  CONST? (VAR | type) type* Identifier EQL Identifier
+    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     ;
 
@@ -95,8 +98,8 @@ type
     | CHARACTER
     | INTEGER
     | REAL
-    | TUPLE '(' type COMMA type (COMMA type)* ')'
     | Identifier
+    | tupleType
     ;
 
 params
@@ -114,13 +117,20 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-real
+real    // todo: clean this shit
     : Integer Decimal Exponent
     | Integer Decimal
-    | Decimal Exponent
+    | Decimal Exponent?
     | Integer Exponent
     ;
 
+tuple
+    : '(' expr COMMA expr (COMMA expr)* ')'
+    ;
+
+tupleType
+    : TUPLE '(' type Identifier? COMMA type Identifier? (COMMA type Identifier?)* ')'
+    ;
 
 //-------------------------------------------------
 
