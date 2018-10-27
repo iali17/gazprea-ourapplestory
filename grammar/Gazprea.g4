@@ -6,8 +6,8 @@ file: ( typeDefine | procedure )* EOF;
 // TODO: check for precendence
 // TODO TUPLE
 expr
-    : real                                                 #realExpr
-    | Integer                                                       #integerExpr
+    : Integer                                                       #integerExpr
+    | real                                                          #realExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
@@ -32,12 +32,12 @@ statement
     | assignment
     | conditional
     | loop
-    | block
     | stream
     | procedureCall
     | CONTINUE SEMICOLON
     | BREAK SEMICOLON
     | returnCall
+    | block
     ;
 
 // TODO : remember to do a check in tuple ass where expr must be a tuple
@@ -59,10 +59,10 @@ conditional
     ;
 
 loop
-    : LOOP statement?                                                       #infiniteLoop
-    | LOOP (WHILE expr) statement?                                          #predicatedLoop
-    | LOOP statement? (WHILE expr SEMICOLON)                                #doLoop
-    | LOOP Identifier IN expr (COMMA Identifier IN expr)* statement?        #iteratorLoop
+    : LOOP block                                                       #infiniteLoop
+    | LOOP (WHILE expr) block                                          #predicatedLoop
+    | LOOP block (WHILE expr SEMICOLON)                                #doLoop
+    | LOOP Identifier IN expr (COMMA Identifier IN expr)* block        #iteratorLoop
     ;
 
 //TODO - this ugly a block can be single non-block statement
@@ -126,6 +126,7 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
+//the last line matches integer so i swapped the order in expr
 real
     : Integer? '.' (Integer | Decimal) Exponent?
     | Integer '.'? Exponent?

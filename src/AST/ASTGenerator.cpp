@@ -127,15 +127,15 @@ antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::Conditional
 }
 
 antlrcpp::Any ASTGenerator::visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLoopContext *ctx) {
-    return GazpreaBaseVisitor::visitInfiniteLoop(ctx);
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()));
 }
 
 antlrcpp::Any ASTGenerator::visitPredicatedLoop(gazprea::GazpreaParser::PredicatedLoopContext *ctx) {
-    return GazpreaBaseVisitor::visitPredicatedLoop(ctx);
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->expr()), (ASTNode *) visit(ctx->block()));
 }
 
 antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *ctx) {
-    return GazpreaBaseVisitor::visitDoLoop(ctx);
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->expr()), (ASTNode *) visit(ctx->block()));
 }
 
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {

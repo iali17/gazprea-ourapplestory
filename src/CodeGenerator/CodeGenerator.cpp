@@ -48,7 +48,6 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //llvm::FunctionType::get(intTy, params);
 
     auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
-
     // Create an entry block and set the inserter.
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
     ir->SetInsertPoint(entry);
@@ -111,5 +110,32 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
         visit(node->getBlocks()->at(i));
     }
     condBuilder->finalize();
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(LoopNode *node) {
+    WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
+    whileBuilder->beginWhile();
+    if(node->getControl())
+        whileBuilder->insertControl(visit(node->getControl()));
+    else
+        whileBuilder->insertControl(it->geti1(1));
+    visit(node->getBody());
+    whileBuilder->endWhile();
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
+    WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
+    whileBuilder->beginWhile();
+    visit(node->getBody());
+    whileBuilder->insertControl(visit(node->getControl()));
+    whileBuilder->endWhile();
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(InLoopNode *node) {
+    //todo - hopefully we can handle the iterator (in) in it's own node
+    //                THEN WE CAN DELETE THIS CLASS
     return nullptr;
 }
