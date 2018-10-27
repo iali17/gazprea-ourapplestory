@@ -54,15 +54,42 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
 }
 
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
+    // http://releases.llvm.org/3.5.2/docs/tutorial/LangImpl3.html#function-code-generation
+
     //TODO - BUILD FUNCTION TYPE PROPERLY
-    llvm::FunctionType *funcTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
+    auto paramsList = node->getParamNodes();
+    std::vector<llvm::Type *> params (paramsList.size(), llvm::Type::getInt32PtrTy(*globalCtx));
+    llvm::FunctionType *funcTy = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(*globalCtx), params, false);
+
+    llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
+
+    if (F->getName() != node->getProcedureName()) {
+        F->eraseFromParent();
+        F = mod->getFunction(node->getProcedureName());
+
+        if (!F->empty()) {
+            //TODO: error message
+            std::cout << "error here" << "\n";
+            return nullptr;
+        }
+
+        if(F->arg_size() != paramsList->size()) {
+            //TODO: error message
+            std::cout << "error here" << "\n";
+            return nullptr;
+        }
+    }
+
+    // TODO: need the return type to not be a string but rather a type
+    auto retType = node->getRetType();
+
     //TODO - BEFORE PUSHING SCOPE ADD FUNCTION DECL
     symbolTable->pushNewScope();
     //TODO - REGISTER THOSE VARIABLES
     //llvm::ArrayRef<llvm::GazpreaType *> *params =  new llvm::ArrayRef<llvm::GazpreaType *>;
     //llvm::FunctionType::get(intTy, params);
 
-    auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
+    //auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
     // Create an entry block and set the inserter.
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
     ir->SetInsertPoint(entry);
