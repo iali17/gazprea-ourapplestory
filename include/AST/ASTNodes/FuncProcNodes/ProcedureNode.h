@@ -6,17 +6,14 @@
 #define GAZPREABASE_PROCEDURENODE_H
 
 #include <llvm/IR/Type.h>
-#include "AST/ASTNodes/BaseNodes/BasicBlockNode.h"
-#include "AST/ASTNodes/BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
 #include "ParamNode.h"
 
-class ProcedureNode : public ASTNode {
+class ProcedureNode : public BaseBlockParent {
 public:
-    ProcedureNode(std::vector<ASTNode *> *paramNodes, BlockNode *blockNode, const std::string &retType,
+    ProcedureNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
                   const std::string &procedureName);
 
-    BlockNode *getBlockNode() const;
-    BasicBlockNode *getFullBlock();
     const std::string &getRetType() const;
     const std::string &getProcedureName() const;
 
@@ -24,7 +21,6 @@ public:
 
 protected:
     std::vector<ASTNode *> *paramNodes;
-    BlockNode *blockNode;
     std::string retType;
     std::string procedureName;
 };

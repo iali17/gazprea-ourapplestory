@@ -30,24 +30,25 @@ public:
         write();
     }
 
-    llvm::Value* visit(FileNode  *node) override;
+    llvm::Value* visit(FileNode       *node) override;
     llvm::Value* visit(BasicBlockNode *node) override;
-    llvm::Value* visit(ASTNode   *node) override;
+    llvm::Value* visit(ASTNode        *node) override;
     llvm::Value* visit(ProcedureNode  *node) override;
-    llvm::Value* visit(ParamNode *node) override;
-    llvm::Value* visit(ReturnNode *node) override;
-    llvm::Value* visit(INTNode *node) override;
-    llvm::Value* visit(RealNode *node) override;
-    llvm::Value* visit(CharNode *node) override;
-    llvm::Value* visit(BoolNode *node) override;
-    llvm::Value* visit(CondNode *node) override;
-    llvm::Value* visit(LoopNode *node) override;
-    llvm::Value* visit(DoLoopNode *node) override;
-    llvm::Value* visit(InLoopNode *node) override;
+    llvm::Value* visit(ParamNode      *node) override;
+    llvm::Value* visit(ReturnNode     *node) override;
+    llvm::Value* visit(INTNode        *node) override;
+    llvm::Value* visit(RealNode       *node) override;
+    llvm::Value* visit(CharNode       *node) override;
+    llvm::Value* visit(BoolNode       *node) override;
+    llvm::Value* visit(CondNode       *node) override;
+    llvm::Value* visit(LoopNode       *node) override;
+    llvm::Value* visit(DoLoopNode     *node) override;
+    llvm::Value* visit(InLoopNode     *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
+    SymbolTable       * symbolTable;
 
     InternalTools *it;
     ExternalTools *et;
@@ -58,11 +59,12 @@ protected:
      * initialize all the llvm stuff
      */
     void prepare() {
-        globalCtx = new llvm::LLVMContext;
-        ir        = new llvm::IRBuilder<>(*globalCtx);
-        mod       = new llvm::Module("gazprea", *globalCtx);
-        et        = new ExternalTools(globalCtx, ir, mod);
-        it        = new InternalTools(globalCtx, ir, mod);
+        globalCtx   = new llvm::LLVMContext;
+        ir          = new llvm::IRBuilder<>(*globalCtx);
+        mod         = new llvm::Module("gazprea", *globalCtx);
+        et          = new ExternalTools(globalCtx, ir, mod);
+        it          = new InternalTools(globalCtx, ir, mod);
+        symbolTable = new SymbolTable();
     }
 
     /**

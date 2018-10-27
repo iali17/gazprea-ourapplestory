@@ -16,11 +16,11 @@ public:
         if      (dynamic_cast<FileNode *>(node)) {
             return visit((FileNode *) node);
         }
+        else if (dynamic_cast<BlockNode *>(node)) {
+            return visit(((BlockNode *) node)->getFullBlock());
+        }
         else if (dynamic_cast<BasicBlockNode *>(node)) {
             return visit((BasicBlockNode *) node);
-        }
-        else if (dynamic_cast<BlockNode *>(node)) {
-            return visit((BlockNode *) node);
         }
         else if (dynamic_cast<ProcedureNode *>(node)) {
             return visit((ProcedureNode *) node);

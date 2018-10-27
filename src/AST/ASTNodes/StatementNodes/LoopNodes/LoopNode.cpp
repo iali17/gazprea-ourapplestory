@@ -4,6 +4,8 @@
 
 #include "AST/ASTNodes/StatementNodes/LoopNodes/LoopNode.h"
 
-LoopNode::LoopNode(ASTNode *body) : BaseLoopNode(body) {}
+LoopNode::LoopNode(ASTNode *body) : BaseLoopNode(body) {
+    control = nullptr;
+}
 
-LoopNode::LoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode(body, control) {}
+LoopNode::LoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode((BlockNode *) body, control) {}

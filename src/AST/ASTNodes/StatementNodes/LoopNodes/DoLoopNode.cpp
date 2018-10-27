@@ -4,4 +4,4 @@
 
 #include "AST/ASTNodes/StatementNodes/LoopNodes/DoLoopNode.h"
 
-DoLoopNode::DoLoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode(body, control) {}
+DoLoopNode::DoLoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode((BlockNode *) body, control) {}

@@ -4,4 +4,4 @@
 
 #include "AST/ASTNodes/StatementNodes/LoopNodes/InLoopNode.h"
 
-InLoopNode::InLoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode(body, control) {}
+InLoopNode::InLoopNode(ASTNode *body, ASTNode *control) : BaseLoopNode((BlockNode *) body, control) {}

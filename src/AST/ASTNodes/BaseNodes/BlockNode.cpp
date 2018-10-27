@@ -14,3 +14,13 @@ ASTNode *BlockNode::getDeclBlock() const {
 ASTNode *BlockNode::getStateBlock() const {
     return stateBlock;
 }
+
+BasicBlockNode *BlockNode::getFullBlock() {
+    auto bb1 = (BasicBlockNode *) declBlock;
+    auto bb2 = (BasicBlockNode *) stateBlock;//new std::vector<ASTNode *>;
+    auto full = new std::vector<ASTNode *>;
+    full->insert(full->end(), bb1->nodes->begin(), bb1->nodes->end());
+    full->insert(full->end(), bb2->nodes->begin(), bb2->nodes->end());
+    return new BasicBlockNode(full);
+    return nullptr;
+}

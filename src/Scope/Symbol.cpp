@@ -6,7 +6,9 @@
 #include <Scope/Symbol.h>
 
 Symbol::Symbol(const std::string &scopeName, const std::string &name, int type) : scopeName(scopeName), name(name),
-                                                                                  type(type) {}
+                                                                                  type(type) {
+    constant = false;
+}
 
 int Symbol::getType() const {
     return type;

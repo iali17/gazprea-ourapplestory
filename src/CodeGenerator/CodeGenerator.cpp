@@ -19,18 +19,24 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerCalloc();
     et->registerScanf();
 
+    symbolTable->pushNewScope("_globalScope_");
+
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
         ASTBaseVisitor::visit(node->nodes->at(i));
     }
+
+    symbolTable->popScope();
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
+    symbolTable->pushNewScope();
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
         ASTBaseVisitor::visit(node->nodes->at(i));
     }
+    symbolTable->popScope();
     return nullptr;
 }
 
@@ -42,8 +48,11 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
 }
 
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
-    //TODO - actual fcn type and params
+    //TODO - BUILD FUNCTION TYPE PROPERLY
     llvm::FunctionType *funcTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
+    //TODO - BEFORE PUSHING SCOPE ADD FUNCTION DECL
+    //symbolTable->pushNewScope();
+    //TODO - REGISTER THOSE VARIABLES
     //llvm::ArrayRef<llvm::Type *> *params =  new llvm::ArrayRef<llvm::Type *>;
     //llvm::FunctionType::get(intTy, params);
 
@@ -52,8 +61,9 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
     ir->SetInsertPoint(entry);
 
-    visit(node->getFullBlock());
+    visit(node->getBlock());
 
+    //symbolTable->popScope();
     return nullptr;
 }
 
@@ -120,7 +130,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
         whileBuilder->insertControl(visit(node->getControl()));
     else
         whileBuilder->insertControl(it->geti1(1));
-    visit(node->getBody());
+    visit(node->getBlock());
     whileBuilder->endWhile();
     return nullptr;
 }
@@ -128,7 +138,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileBuilder->beginWhile();
-    visit(node->getBody());
+    visit(node->getBlock());
     whileBuilder->insertControl(visit(node->getControl()));
     whileBuilder->endWhile();
     return nullptr;

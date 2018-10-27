@@ -4,22 +4,22 @@
 
 #ifndef GAZPREABASE_BASELOOPNODE_H
 #define GAZPREABASE_BASELOOPNODE_H
-#include "AST/ASTNodes/BaseNodes/ASTNode.h"
+#include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
 
 /**
  * intended to represent a loop with 2 main components
  *  - control (expression, iterator, or none)
  *  - block
  */
-class BaseLoopNode : public ASTNode {
+class BaseLoopNode : public BaseBlockParent {
 public:
-    BaseLoopNode(ASTNode *body);
-    BaseLoopNode(ASTNode *body, ASTNode *control);
-    ASTNode *getBody() const;
+    BaseLoopNode(ASTNode *control);
+
     ASTNode *getControl() const;
 
+    BaseLoopNode(BlockNode *blockNode, ASTNode *control);
+
 protected:
-    ASTNode * body;
     ASTNode * control;
 };
 #endif //GAZPREABASE_BASELOOPNODE_H

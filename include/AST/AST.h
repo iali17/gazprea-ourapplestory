@@ -11,6 +11,7 @@
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 #include "AST/ASTNodes/BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
 #include "AST/ASTNodes/FileNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProcedureNode.h"
 #include "AST/ASTNodes/StatementNodes/ReturnNode.h"

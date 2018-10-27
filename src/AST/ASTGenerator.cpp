@@ -203,7 +203,7 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->block());
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
-    ASTNode * p = (ASTNode *) new ProcedureNode(params, block, retType, ctx->Identifier()->getText());
+    ASTNode * p = (ASTNode *) new ProcedureNode(block, params, retType, ctx->Identifier()->getText());
     return p;
 }
 

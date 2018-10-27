@@ -20,5 +20,6 @@ protected:
     std::string name;
     int type;
     llvm::Value *ptr;
+    bool constant;
 };
 #endif //VCALCBASE_SYMBOL_H

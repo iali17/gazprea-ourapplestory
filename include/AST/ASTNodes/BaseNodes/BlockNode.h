@@ -13,6 +13,7 @@ public:
     BlockNode(ASTNode *declBlock, ASTNode *stateBlock);
     ASTNode *getDeclBlock() const;
     ASTNode *getStateBlock() const;
+    BasicBlockNode *getFullBlock();
 
 protected:
     ASTNode *declBlock;
