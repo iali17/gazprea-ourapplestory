@@ -61,6 +61,18 @@ public:
         else if (dynamic_cast<DeclNode *>(node)) {
             return visit((DeclNode *) node);
         }
+        else if (dynamic_cast<IDNode *>(node)) {
+            return visit((IDNode *) node);
+        }
+        else if (dynamic_cast<InputNode *>(node)) {
+            return visit((InputNode *) node);
+        }
+        else if (dynamic_cast<OutputNode *>(node)) {
+            return visit((OutputNode *) node);
+        }
+        else if (dynamic_cast<StreamDeclNode *>(node)) {
+            return visit((StreamDeclNode *) node);
+        }
         fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -81,6 +93,10 @@ public:
     llvm::Value* visit(DoLoopNode *node) override { return nullptr;};
     llvm::Value* visit(DeclNode *node) override { return nullptr;};
     llvm::Value* visit(AssignNode *node) override { return nullptr;};
+    llvm::Value* visit(IDNode *node) override { return nullptr;};
+    llvm::Value* visit(InputNode *node) override { return nullptr;};
+    llvm::Value* visit(OutputNode *node) override { return nullptr;};
+    llvm::Value* visit(StreamDeclNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

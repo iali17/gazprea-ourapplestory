@@ -9,13 +9,15 @@
 // TODO - figure out best way to represent node types
 #include <llvm/IR/Type.h>
 
-#define NULLTY -2
-#define UNDEF  -1
-#define BOOLEAN 0
-#define INTEGER 1
-#define VECTOR  2
-#define REAL    3
-#define CHAR    4
+#define NULLTY   -2
+#define UNDEF    -1
+#define INSTREAM  0
+#define OUTSTREAM 1
+#define BOOLEAN   2
+#define INTEGER   3
+#define VECTOR    4
+#define REAL      5
+#define CHAR      6
 
 class ASTNode  {
 public:

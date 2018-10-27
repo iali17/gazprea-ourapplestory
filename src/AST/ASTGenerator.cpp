@@ -92,7 +92,7 @@ antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
-    return GazpreaBaseVisitor::visitIdentifierExpr(ctx);
+    return (ASTNode *) new IDNode(ctx->Identifier()->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
@@ -179,11 +179,12 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
 }
 
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
-    return GazpreaBaseVisitor::visitOutStream(ctx);
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr);
 }
 
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
-    return GazpreaBaseVisitor::visitInStream(ctx);
+    return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
@@ -248,14 +249,33 @@ antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) 
 }
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
-    return GazpreaBaseVisitor::visitStreamDecl(ctx);
+    int type;
+    if(ctx->STD_INPUT())
+        type = INSTREAM;
+    else
+        type = OUTSTREAM;
+    return (ASTNode *) new StreamDeclNode(ctx->Identifier()->getText(), type);
 }
 
 antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
-    return (ASTNode *) visit(ctx->expr());
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    bool constant  = (nullptr == ctx->CONST());
+    std::string id = ctx->Identifier()->getText();
+    std::vector<std::string> *typeVec = new std::vector<std::string>();
+
+    unsigned int i;
+    for(i = 0; i < ctx->type().size(); i++){
+        typeVec->push_back(ctx->type().at(i)->getText());
+    }
+
+    return (ASTNode *) new DeclNode(expr, constant, id, typeVec);
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
     char val = ctx->getText().at(0);
     return (ASTNode *) new CharNode(val);
+}
+
+antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) {
+    return GazpreaBaseVisitor::visitProcedureCallDecl(ctx);
 }

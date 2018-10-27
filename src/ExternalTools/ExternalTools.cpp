@@ -214,6 +214,20 @@ void ExternalTools::printChar(llvm::Value *ch) {
     ir->CreateCall(printfFunc, {formatStr, ch});
 }
 
+void ExternalTools::printBoolean(llvm::Value *val) {
+    llvm::Function *printfFunc = mod->getFunction("printf");
+
+    // Get your string to print.
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INTFORMAT_STR));
+
+    // Call printf. Printing multiple values is easy: just add to the {}.
+    llvm::Value *formatStr =
+            ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
+
+    llvm::Value * b = ir->CreateIntCast(val, intTy, true);
+    ir->CreateCall(printfFunc, {formatStr, b});
+}
+
 /**
  * printf a float
  * @param val - llvm float type
@@ -252,5 +266,40 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
 
 
     ir->CreateCall(scanfFunc, {formatStr, scanTo});
+    return nullptr;
+}
+
+void ExternalTools::print(llvm::Value *val) {
+    llvm::Type * llvmType = val->getType();
+    if(llvmType->isIntegerTy(32)){
+        printInt(val);
+    }
+    else if(llvmType->isIntegerTy(8)){
+        printChar(val);
+    }
+    else if(llvmType->isIntegerTy(1)){
+        printBoolean(val);
+    }
+    else if(llvmType->isFloatTy()){
+        printReal(val);
+    }
+
+    printStaticStr(EOLN_STR);
+}
+
+llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
+    llvm::Type * llvmType = scanTo->getType();
+    if     (llvmType == intTy->getPointerTo()){
+        return aliScanf(INTFORMAT_STR, scanTo);
+    }
+    else if(llvmType == charTy->getPointerTo()){
+        return aliScanf(CHARFORMAT_STR, scanTo);
+    }
+    else if(llvmType == boolTy->getPointerTo()){
+        return aliScanf(INTFORMAT_STR, scanTo);
+    }
+    else if(llvmType == realTy->getPointerTo()){
+        return aliScanf(FLOATFORMAT_STR, scanTo);
+    }
     return nullptr;
 }

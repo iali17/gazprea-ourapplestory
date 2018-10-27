@@ -38,6 +38,7 @@ public:
     //scanf
     void registerScanf();
     llvm::Value *aliScanf(std::string consScanString, llvm::Value *scanTo);
+    llvm::Value *aliScanf(llvm::Value *scanTo);
 
     //printing
     void registerPrintf();
@@ -46,6 +47,8 @@ public:
     void printReal(llvm::Value * val);
     void printStr(llvm::Value *val);
     void printChar(llvm::Value *val);
+    void printBoolean(llvm::Value *val);
+    void print(llvm::Value * val);
 
 protected:
     llvm::LLVMContext * globalCtx;
