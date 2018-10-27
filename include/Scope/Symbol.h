@@ -4,7 +4,6 @@
 
 #include <string>
 #include <llvm/IR/Value.h>
-
 #ifndef VCALCBASE_SYMBOL_H
 #define VCALCBASE_SYMBOL_H
 

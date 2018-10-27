@@ -10,6 +10,7 @@ extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
+extern llvm::Type *boolTy;
 
 llvm::Value *CodeGenerator::visit(FileNode *node) {
     // register external functions
@@ -52,12 +53,6 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
     ir->SetInsertPoint(entry);
 
-    /* scanf boy
-    llvm::Value * ptr = ir->CreateAlloca(intTy);
-    et->aliScanf(INTFORMAT_STR, ptr);
-    et->printInt(ir->CreateLoad(ptr));
-    et->printStaticStr(EOLN_STR);
-     */
     visit(node->getFullBlock());
 
     return nullptr;
@@ -67,10 +62,14 @@ llvm::Value *CodeGenerator::visit(ParamNode *node) {
     return ASTBaseVisitor::visit(node);
 }
 
-//TODO - return void when needed
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
-    llvm::Value * ret = visit(node->getExpr());
-    ir->CreateRet(ret);
+    if (node->getExpr() == nullptr){
+        ir->CreateRetVoid();
+    }
+    else {
+        llvm::Value *ret = visit(node->getExpr());
+        ir->CreateRet(ret);
+    }
     return nullptr;
 }
 
@@ -90,6 +89,5 @@ llvm::Value *CodeGenerator::visit(CharNode *node) {
 
 llvm::Value *CodeGenerator::visit(BoolNode *node) {
     bool val = node->getVal();
-    //return it->geti1(val);
-    return ASTBaseVisitor::visit(node);
+    return it->geti1(val);
 }

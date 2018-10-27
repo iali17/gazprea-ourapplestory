@@ -1,7 +1,7 @@
 grammar Gazprea;
 
 //file: (statement | procedure)* EOF;
-file: procedure* EOF;
+file: ( typeDefine | procedure )* EOF;
 
 // TODO: check for precendence
 // TODO TUPLE
@@ -34,7 +34,6 @@ statement
     | loop
     | block
     | stream
-    | typeDefine
     | procedureCall
     | CONTINUE SEMICOLON
     | BREAK SEMICOLON

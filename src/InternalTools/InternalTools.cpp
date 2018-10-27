@@ -16,6 +16,11 @@ llvm::Value *InternalTools::getReal(double val) {
     return llvm::ConstantFP::get(realTy, val);
 }
 
+llvm::Value *InternalTools::geti1(int64_t val) {
+    uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(val));
+    return llvm::ConstantInt::get(boolTy, trueValue, true);
+}
+
 llvm::Value *InternalTools::geti8(int64_t val) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(val));
     return llvm::ConstantInt::get(i8Ty, trueValue, true);

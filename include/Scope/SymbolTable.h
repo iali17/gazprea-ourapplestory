@@ -14,7 +14,9 @@ public:
     void pushNewScope(std::string newScopeName);
     void pushNewScope();
     void addSymbol(std::string newSymbolName, int type);
-    Symbol* resolveSymbol(std::string symbolName);
+    void addUserType(std::string newTypeName, llvm::Type* newType);
+    UserType * resolveUserType(std::string userTypeName);
+    Symbol   * resolveSymbol(std::string symbolName);
     void popScope();
 
 protected:

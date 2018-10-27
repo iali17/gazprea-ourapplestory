@@ -8,6 +8,7 @@
 
 Scope::Scope(const std::string &name) : name(name) {
     symbols        = new std::map<std::string, Symbol*>;
+    typeSymbols    = new std::map<std::string, UserType*>;
     enclosingScope = nullptr;
 }
 
@@ -24,12 +25,29 @@ Scope *Scope::getEnclosingScope() const {
 }
 
 Scope::Scope(const std::string &name,  Scope *enclosingScope) : name(name), enclosingScope(enclosingScope) {
-    symbols = new std::map<std::string, Symbol*>;
+    symbols     = new std::map<std::string, Symbol*>;
+    typeSymbols = new std::map<std::string, UserType*>;
 }
 
 Symbol *Scope::resolveSymbol(std::string symbolName) {
     auto iter = symbols->find(symbolName);
     if(iter == symbols->end())
+        return nullptr;
+    else
+        return iter->second;
+}
+
+void Scope::addUserType(std::string newTypeName, llvm::Type* newType) {
+    if (enclosingScope != nullptr) {
+        std::cerr << "Type defined in non-global context\nAborting...\n";
+        exit(1);
+    }
+    typeSymbols->insert(std::pair<std::string, UserType*> (newTypeName, new UserType(newTypeName, newType)));
+}
+
+UserType *Scope::resolveUserType(std::string userTypeName) {
+    auto iter = typeSymbols->find(userTypeName);
+    if(iter == typeSymbols->end())
         return nullptr;
     else
         return iter->second;

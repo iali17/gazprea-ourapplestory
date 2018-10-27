@@ -221,7 +221,9 @@ antlrcpp::Any ASTGenerator::visitReturnStat(gazprea::GazpreaParser::ReturnStatCo
 }
 
 antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) {
-    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    ASTNode * expr = nullptr;
+    if(ctx->expr())
+        expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new ReturnNode(expr);
 }
 
@@ -240,4 +242,9 @@ antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclCo
 
 antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
     return (ASTNode *) visit(ctx->expr());
+}
+
+antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
+    char val = ctx->getText().at(0);
+    return (ASTNode *) new CharNode(val);
 }

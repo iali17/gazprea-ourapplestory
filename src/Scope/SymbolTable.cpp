@@ -46,3 +46,21 @@ std::string SymbolTable::getNewScopeString(){
 void SymbolTable::pushNewScope() {
     pushNewScope(getNewScopeString());
 }
+
+void SymbolTable::addUserType(std::string newTypeName, llvm::Type *newType) {
+    scopeStack->top()->addUserType(newTypeName, newType);
+}
+
+UserType *SymbolTable::resolveUserType(std::string userTypeName) {
+    Scope  *scope = scopeStack->top();
+    UserType * userType = nullptr;
+
+    while(scope != nullptr) {
+        userType = scope->resolveUserType(userTypeName);
+
+        if(userType != nullptr)
+            break;
+        scope = scope->getEnclosingScope();
+    }
+    return userType;
+}

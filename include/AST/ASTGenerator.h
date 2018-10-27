@@ -53,6 +53,7 @@ private:
     antlrcpp::Any visitReal(gazprea::GazpreaParser::RealContext *ctx) override;
     antlrcpp::Any visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) override;
     antlrcpp::Any visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) override;
+    antlrcpp::Any visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) override;
 
 };
 

@@ -20,6 +20,7 @@ public:
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
     void setUpTypes();
     //tools
+    llvm::Value *geti1(int64_t val);
     llvm::Value *geti8(int64_t val);
     llvm::Value *getReal(double val);
     llvm::Value *getConsi32(int64_t val);
