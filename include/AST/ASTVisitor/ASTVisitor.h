@@ -21,6 +21,7 @@ public:
     virtual llvm::Value* visit(RealNode *node)       = 0;
     virtual llvm::Value* visit(CharNode *node)       = 0;
     virtual llvm::Value* visit(BoolNode *node)       = 0;
+    virtual llvm::Value* visit(CondNode *node)       = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

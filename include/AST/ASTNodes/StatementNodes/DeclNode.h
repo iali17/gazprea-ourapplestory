@@ -6,7 +6,7 @@
 #define GAZPREABASE_DECLNODE_H
 
 #include <string>
-#include "BaseNodes/UnaryNode.h"
+#include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
 class DeclNode : public UnaryNode  {
 public:

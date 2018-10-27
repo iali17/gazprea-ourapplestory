@@ -2,9 +2,9 @@
 // Created by kyle on 22/10/18.
 //
 
-#include <AST/ASTNodes/ProcedureNode.h>
+#include <AST/ASTNodes/FuncProcNodes/ProcedureNode.h>
 
-#include "AST/ASTNodes/ProcedureNode.h"
+#include "AST/ASTNodes/FuncProcNodes/ProcedureNode.h"
 
 BlockNode *ProcedureNode::getBlockNode() const {
     return blockNode;

@@ -2,7 +2,7 @@
 // Created by iali on 10/22/18.
 //
 
-#include <AST/ASTNodes/DeclNode.h>
+#include <AST/ASTNodes/StatementNodes/DeclNode.h>
 #include <string>
 
 DeclNode::DeclNode(ASTNode *expr, const std::string &ID,

@@ -91,3 +91,25 @@ llvm::Value *CodeGenerator::visit(BoolNode *node) {
     bool val = node->getVal();
     return it->geti1(val);
 }
+
+llvm::Value *CodeGenerator::visit(CondNode *node) {
+    CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
+
+    unsigned long i = 0;
+    for(i = 0; i < node->getConds()->size(); i++){
+        if(i){
+            condBuilder->createElseIf(visit(node->getConds()->at(i)));
+        }
+        else {
+            condBuilder->createIf(visit(node->getConds()->at(i)));
+        }
+        visit(node->getBlocks()->at(i));
+    }
+
+    if(node->isHasElse()){
+        condBuilder->createElse();
+        visit(node->getBlocks()->at(i));
+    }
+    condBuilder->finalize();
+    return nullptr;
+}

@@ -5,7 +5,7 @@
 #ifndef GAZPREABASE_PARAMNODE_H
 #define GAZPREABASE_PARAMNODE_H
 
-#include "BaseNodes/ASTNode.h"
+#include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
 /**
  * This class is basically empty TODO - everything

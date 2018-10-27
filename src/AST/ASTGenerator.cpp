@@ -4,11 +4,11 @@
 
 #include <AST/ASTGenerator.h>
 #include <AST/ASTNodes/BaseNodes/BasicBlockNode.h>
-#include <AST/ASTNodes/ProcedureNode.h>
-#include <AST/ASTNodes/ReturnNode.h>
+#include <AST/ASTNodes/FuncProcNodes/ProcedureNode.h>
+#include <AST/ASTNodes/StatementNodes/ReturnNode.h>
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include <AST/ASTNodes/TerminalNodes/RealNode.h>
-#include <AST/ASTNodes/DeclNode.h>
+#include <AST/ASTNodes/StatementNodes/DeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -112,7 +112,18 @@ antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTu
 }
 
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
-    return GazpreaBaseVisitor::visitConditional(ctx);
+    std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
+    std::vector<ASTNode *> *blocks = new std::vector<ASTNode *>;
+
+    unsigned long int i;
+    for(i = 0; i < ctx->expr().size(); i++){
+        conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
+    }
+    for(i = 0; i < ctx->block().size(); i++){
+        blocks->push_back((ASTNode *) visit(ctx->block().at(i)));
+    }
+
+    return (ASTNode *) new CondNode(conds, blocks);
 }
 
 antlrcpp::Any ASTGenerator::visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLoopContext *ctx) {

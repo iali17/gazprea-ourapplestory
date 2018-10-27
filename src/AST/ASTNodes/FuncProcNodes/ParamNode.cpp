@@ -2,7 +2,7 @@
 // Created by kyle on 22/10/18.
 //
 
-#include "AST/ASTNodes/ParamNode.h"
+#include "AST/ASTNodes/FuncProcNodes/ParamNode.h"
 
 ParamNode::ParamNode(const std::string &declaredType, const std::string &varName) : declaredType(declaredType),
                                                                                     varName(varName) {}

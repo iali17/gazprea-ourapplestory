@@ -5,7 +5,7 @@
 #ifndef GAZPREABASE_RETURNNODE_H
 #define GAZPREABASE_RETURNNODE_H
 
-#include "BaseNodes/UnaryNode.h"
+#include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
 class ReturnNode : public UnaryNode {
 public:

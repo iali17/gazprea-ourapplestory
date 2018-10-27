@@ -6,7 +6,7 @@
 #define GAZPREABASE_ASSIGNNODE_H
 
 #include <string>
-#include "BaseNodes/UnaryNode.h"
+#include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
 
 class AssignNode : public UnaryNode  {

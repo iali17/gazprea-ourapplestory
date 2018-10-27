@@ -43,6 +43,9 @@ public:
         else if (dynamic_cast<BoolNode *>(node)) {
             return visit((BoolNode *) node);
         }
+        else if (dynamic_cast<CondNode *>(node)) {
+            return visit((CondNode *) node);
+        }
         fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -57,6 +60,7 @@ public:
     llvm::Value* visit(RealNode *node) override { return nullptr;};
     llvm::Value* visit(CharNode *node) override { return nullptr;};
     llvm::Value* visit(BoolNode *node) override { return nullptr;};
+    llvm::Value* visit(CondNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

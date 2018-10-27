@@ -38,7 +38,6 @@ statement
     | CONTINUE SEMICOLON
     | BREAK SEMICOLON
     | returnCall
-    | returnStat
     ;
 
 // TODO : remember to do a check in tuple ass where expr must be a tuple
@@ -56,7 +55,7 @@ declaration
     ;
 
 conditional
-    : IF expr block (ELSE IF block)* (ELSE block)?
+    : IF expr block (ELSE IF expr block)* (ELSE block)?
     ;
 
 loop
@@ -66,8 +65,19 @@ loop
     | LOOP Identifier IN expr (COMMA Identifier IN expr)* statement?        #iteratorLoop
     ;
 
+//TODO - this ugly a block can be single non-block statement
 block
     : '{' decBlock? bodyBlock? '}'
+    | ( declaration
+      | assignment
+      | conditional
+      | loop
+      | stream
+      | procedureCall
+      | CONTINUE SEMICOLON
+      | BREAK SEMICOLON
+      | returnCall
+      )
     ;
 
 decBlock
@@ -119,7 +129,6 @@ procedure
 real
     : Integer? '.' (Integer | Decimal) Exponent?
     | Integer '.'? Exponent?
-
     ;
 
 tuple

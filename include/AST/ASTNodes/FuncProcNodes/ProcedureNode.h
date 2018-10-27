@@ -6,8 +6,8 @@
 #define GAZPREABASE_PROCEDURENODE_H
 
 #include <llvm/IR/Type.h>
-#include "BaseNodes/BasicBlockNode.h"
-#include "BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BasicBlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BlockNode.h"
 #include "ParamNode.h"
 
 class ProcedureNode : public ASTNode {
