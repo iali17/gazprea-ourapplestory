@@ -1,0 +1,14 @@
+procedure main() returns integer {
+  var out = std_output();               // comments
+  integer x = 1;
+  x = x + x;
+  x -> out;
+    int y = 1;
+
+
+  const var tuple(integer a, integer b) i = (2,2);
+
+x, y = (4,4);
+  /* commments */
+  return 0;
+}

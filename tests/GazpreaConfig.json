@@ -2,7 +2,7 @@
   "inDir": "<inDir>",
   "outDir": "<outDir>",
   "testedExecutablePaths": {
-    "<team id>": "<path_to_gazc_exe>"
+    "<gazprea-ourapplestory>": "<path_to_gazc_exe>"
   },
   "runtimes": {
     "<team id>": "<path_to_libgazrt.so>"

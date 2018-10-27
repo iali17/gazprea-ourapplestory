@@ -6,7 +6,7 @@ file: procedure* EOF;
 // TODO: check for precendence
 // TODO TUPLE
 expr
-    : real                                                          #realExpr
+    : real                                                 #realExpr
     | Integer                                                       #integerExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
@@ -45,12 +45,12 @@ statement
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
-    | Identifier COMMA Identifier (COMMA Identifier)* EQL expr              #pythonTupleAss
+    | Identifier COMMA Identifier (COMMA Identifier)* EQL expr SEMICOLON    #pythonTupleAss
     ;
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
+    | CONST? (VAR | type) type* Identifier (EQL expr)? SEMICOLON               #normalDecl
     ;
 
 conditional
@@ -114,11 +114,9 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-real    // todo: clean this shit
-    : Integer Decimal Exponent
-    | Integer Decimal
-    | Decimal Exponent
-    | Integer Exponent
+real
+    : Integer? '.' (Integer | Decimal) Exponent?
+    | Integer '.'? Exponent?
     ;
 
 tuple
@@ -197,14 +195,11 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
-Identifier: [a-zA-Z][a-zA-Z0-9]* ;
-Boolean: TRUE | FALSE;
-
-Decimal: '.' [0-9_]* ;
 Exponent: E (ADD | SUB)? Integer;
-
-
+Integer: [0-9][0-9_]* ;
+Decimal: [0-9_]+ ;
+Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
+Boolean: TRUE | FALSE;
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2
