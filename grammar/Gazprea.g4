@@ -6,7 +6,7 @@ file: ( typeDefine | procedure )* EOF;
 // TODO: check for precendence
 // TODO TUPLE
 expr
-    : real                                                          #realExpr
+    : real                                                 #realExpr
     | Integer                                                       #integerExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
@@ -116,11 +116,10 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-real    // todo: clean this shit
-    : Integer Decimal Exponent
-    | Integer Decimal
-    | Decimal Exponent?
-    | Integer Exponent
+real
+    : Integer? '.' (Integer | Decimal) Exponent?
+    | Integer '.'? Exponent?
+
     ;
 
 tuple
@@ -200,10 +199,11 @@ XOR: 'xor';
 WS : [ \t\r\n]+ -> skip ;
 
 Exponent: E (ADD | SUB)? Integer;
-Integer: [0-9][0-9_]* ;  // TODO: refer to 7.3.4 in spec
-Identifier: [a-zA-Z][a-zA-Z0-9]* ;
+Integer: [0-9][0-9_]* ;
+Decimal: [0-9_]+ ;
+Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
 Boolean: TRUE | FALSE;
-Decimal: '.' [0-9_]* ;
+
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2
