@@ -10,6 +10,7 @@ extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
+extern llvm::Type *boolTy;
 
 llvm::Value *InternalTools::getReal(double val) {
     return llvm::ConstantFP::get(realTy, val);
@@ -68,6 +69,7 @@ void InternalTools::setUpTypes() {
     i8Ty   = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     charTy = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
+    boolTy = llvm::Type::getInt1Ty(*globalCtx);
 }
 
 llvm::Type *InternalTools::getTypeFromString(std::string strType) {

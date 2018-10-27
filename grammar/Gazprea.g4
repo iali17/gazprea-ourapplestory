@@ -45,12 +45,15 @@ statement
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL expr SEMICOLON                                         #normalAss
-    | Identifier COMMA Identifier (COMMA Identifier)* EQL expr SEMICOLON    #pythonTupleAss
+    | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
+    | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    | CONST? (VAR | type) type* Identifier (EQL expr)? SEMICOLON               #normalDecl
+    |  CONST? (VAR | type) type* Identifier EQL Identifier
+    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
+    | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     ;
 
 conditional
@@ -117,6 +120,7 @@ procedure
 real
     : Integer? '.' (Integer | Decimal) Exponent?
     | Integer '.'? Exponent?
+
     ;
 
 tuple
@@ -200,6 +204,7 @@ Integer: [0-9][0-9_]* ;
 Decimal: [0-9_]+ ;
 Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
 Boolean: TRUE | FALSE;
+
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2

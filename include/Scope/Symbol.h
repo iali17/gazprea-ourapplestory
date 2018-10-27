@@ -15,14 +15,11 @@ public:
     llvm::Value *getPtr() const;
     void setPtr(llvm::Value *ptr);
     int getType() const;
-    llvm::Type *getLLVMType() const;
-    void setLLVMType(llvm::Type *llvmType);
 
 protected:
     std::string scopeName;
     std::string name;
     int type;
     llvm::Value *ptr;
-    llvm::Type  *llvmType;
 };
 #endif //VCALCBASE_SYMBOL_H

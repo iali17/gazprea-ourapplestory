@@ -44,8 +44,7 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
-    float val = std::stof(ctx->Real()->getText());
-    return (ASTNode *) new RealNode(val);
+    return GazpreaBaseVisitor::visitRealExpr(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
@@ -104,19 +103,12 @@ antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementCont
     return GazpreaBaseVisitor::visitStatement(ctx);
 }
 
-antlrcpp::Any ASTGenerator::visitDeclaration(gazprea::GazpreaParser::DeclarationContext *ctx) {
-    ASTNode * expr = (ASTNode *) visit(ctx->expr());
-
-    //TODO check the return type, compare with declared type and null, add to symbol table
-    return nullptr;
-}
-
 antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) {
     return GazpreaBaseVisitor::visitNormalAss(ctx);
 }
 
-antlrcpp::Any ASTGenerator::visitTupleAss(gazprea::GazpreaParser::TupleAssContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleAss(ctx);
+antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
+    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
@@ -231,4 +223,21 @@ antlrcpp::Any ASTGenerator::visitReturnStat(gazprea::GazpreaParser::ReturnStatCo
 antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new ReturnNode(expr);
+}
+
+antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
+    std::string strVal = ctx->getText();
+    std::string str2Val;
+
+    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
+    float val = std::stof(str2Val);
+    return (ASTNode *) new RealNode(val);
+}
+
+antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
+    return GazpreaBaseVisitor::visitStreamDecl(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
+    return (ASTNode *) visit(ctx->expr());
 }
