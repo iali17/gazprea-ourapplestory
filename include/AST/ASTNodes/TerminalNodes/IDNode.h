@@ -13,6 +13,8 @@ public:
     const std::string &getID() const;
     IDNode();
 
+    IDNode(const std::string &ID);
+
     IDNode(int type, const std::string &ID);
 
 protected:

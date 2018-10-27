@@ -26,5 +26,9 @@
 #include "ASTNodes/TerminalNodes/RealNode.h"
 #include "ASTNodes/TerminalNodes/CharNode.h"
 #include "ASTNodes/TerminalNodes/BoolNode.h"
+#include "ASTNodes/TerminalNodes/IDNode.h"
+#include "ASTNodes/TerminalNodes/InputNode.h"
+#include "ASTNodes/TerminalNodes/OutputNode.h"
+#include "ASTNodes/TerminalNodes/StreamDecl.h"
 
 #endif //GAZPREABASE_AST_H

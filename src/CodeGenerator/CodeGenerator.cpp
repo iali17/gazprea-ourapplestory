@@ -186,21 +186,58 @@ llvm::Value *CodeGenerator::visit(InLoopNode *node) {
 llvm::Value *CodeGenerator::visit(DeclNode *node) {
     //TODO - account for null
     llvm::Value *val = visit(node->getExpr());
+    llvm::Value* ptr = nullptr;
 
     if      (node->getTypeIds()->size() == 0){
-        llvm::Value* ptr = ir->CreateAlloca(val->getType());
+        ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
     else if (node->getTypeIds()->size() == 1){
-        llvm::Value* ptr = ir->CreateAlloca(symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef());
+        ptr = ir->CreateAlloca(symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
+
+    symbolTable->resolveSymbol(node->getID())->setPtr(ptr);
     //TODO - ALL OTHER CASES
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
+    llvm::Value *val = visit(node->getExpr());
+    //TODO - IMPLICIT UPCAST WHEN NEEDED
+    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
+    ir->CreateStore(val, ptr);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(IDNode *node) {
+    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
+    return ir->CreateLoad(ptr);
+}
+
+llvm::Value *CodeGenerator::visit(InputNode *node) {
+    if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
+        std::cerr << "Not proper stream\nAborting...\n";
+        exit(1);
+    }
+    llvm::Value *ptr = symbolTable->resolveSymbol(node->getStoreID())->getPtr();
+    et->aliScanf(ptr);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(OutputNode *node) {
+    if(symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
+        std::cerr << "Not proper stream\nAborting...\n";
+        exit(1);
+    }
+    llvm::Value *expr = visit(node->getExpr());
+    et->print(expr);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
+    symbolTable->addSymbol(node->getId(), node->getType(), false);
     return nullptr;
 }

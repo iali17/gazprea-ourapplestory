@@ -12,3 +12,5 @@ const std::string &IDNode::getID() const {
 }
 
 IDNode::IDNode(int type, const std::string &ID) : ID(ID) {setType(type); }
+
+IDNode::IDNode(const std::string &ID) : ID(ID) {}

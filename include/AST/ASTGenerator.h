@@ -54,7 +54,7 @@ private:
     antlrcpp::Any visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) override;
     antlrcpp::Any visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) override;
     antlrcpp::Any visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) override;
-
+    antlrcpp::Any visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
