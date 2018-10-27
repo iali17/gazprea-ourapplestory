@@ -4,16 +4,8 @@
 
 #include "Scope/UserType.h"
 
-UserType::UserType(const std::string &name, llvm::Type *typeDef) : name(name), typeDef(typeDef) {}
-
 UserType::UserType(const std::string &name, llvm::Type *typeDef,
-                   const std::unordered_map<std::string, llvm::Type *> &members) : name(name), typeDef(typeDef),
+                   const std::unordered_map<std::string, llvm::Type *> &members) : GazpreaType(name, typeDef),
                                                                                    members(members) {}
 
-const std::string &UserType::getName() const {
-    return name;
-}
-
-llvm::Type *UserType::getTypeDef() const {
-    return typeDef;
-}
+UserType::UserType(const std::string &name, llvm::Type *typeDef) : GazpreaType(name, typeDef) {}

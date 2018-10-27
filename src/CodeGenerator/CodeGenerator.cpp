@@ -21,6 +21,12 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
 
     symbolTable->pushNewScope("_globalScope_");
 
+    //add base types
+    symbolTable->addBaseType("boolean"  , boolTy);
+    symbolTable->addBaseType("character", charTy);
+    symbolTable->addBaseType("integer"  , intTy);
+    symbolTable->addBaseType("real"     , realTy);
+
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
         ASTBaseVisitor::visit(node->nodes->at(i));
@@ -51,9 +57,9 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //TODO - BUILD FUNCTION TYPE PROPERLY
     llvm::FunctionType *funcTy = llvm::TypeBuilder<int(), false>::get(*globalCtx);
     //TODO - BEFORE PUSHING SCOPE ADD FUNCTION DECL
-    //symbolTable->pushNewScope();
+    symbolTable->pushNewScope();
     //TODO - REGISTER THOSE VARIABLES
-    //llvm::ArrayRef<llvm::Type *> *params =  new llvm::ArrayRef<llvm::Type *>;
+    //llvm::ArrayRef<llvm::GazpreaType *> *params =  new llvm::ArrayRef<llvm::GazpreaType *>;
     //llvm::FunctionType::get(intTy, params);
 
     auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
@@ -63,7 +69,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
     visit(node->getBlock());
 
-    //symbolTable->popScope();
+    symbolTable->popScope();
     return nullptr;
 }
 
@@ -147,5 +153,27 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
 llvm::Value *CodeGenerator::visit(InLoopNode *node) {
     //todo - hopefully we can handle the iterator (in) in it's own node
     //                THEN WE CAN DELETE THIS CLASS
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(DeclNode *node) {
+    //TODO - account for null
+    llvm::Value *val = visit(node->getExpr());
+
+    if      (node->getTypeIds()->size() == 0){
+        llvm::Value* ptr = ir->CreateAlloca(val->getType());
+        ir->CreateStore(val, ptr);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
+    }
+    else if (node->getTypeIds()->size() == 1){
+        llvm::Value* ptr = ir->CreateAlloca(symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef());
+        ir->CreateStore(val, ptr);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
+    }
+    //TODO - ALL OTHER CASES
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(AssignNode *node) {
     return nullptr;
 }

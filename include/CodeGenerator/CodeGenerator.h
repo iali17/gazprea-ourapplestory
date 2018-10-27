@@ -44,6 +44,8 @@ public:
     llvm::Value* visit(LoopNode       *node) override;
     llvm::Value* visit(DoLoopNode     *node) override;
     llvm::Value* visit(InLoopNode     *node) override;
+    llvm::Value* visit(DeclNode       *node) override;
+    llvm::Value* visit(AssignNode     *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

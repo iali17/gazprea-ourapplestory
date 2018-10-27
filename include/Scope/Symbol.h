@@ -14,6 +14,9 @@ public:
     llvm::Value *getPtr() const;
     void setPtr(llvm::Value *ptr);
     int getType() const;
+    const std::string &getName() const;
+    bool isConstant() const;
+    Symbol(const std::string &scopeName, const std::string &name, int type, bool constant);
 
 protected:
     std::string scopeName;

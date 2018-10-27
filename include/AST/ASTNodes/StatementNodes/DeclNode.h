@@ -10,12 +10,15 @@
 
 class DeclNode : public UnaryNode  {
 public:
-    DeclNode(ASTNode *expr, const std::string &ID, const std::string &type_id, int newType);
     const std::string &getID() const;
+    DeclNode(ASTNode *expr, bool constant, const std::string &ID, std::vector<std::string> *typeIds);
+    bool isConstant() const;
+    std::vector<std::string> *getTypeIds() const;
 
 protected:
+    bool constant;
     std::string ID;
-    std::string type_id;
+    std::vector<std::string> *typeIds;
 };
 
 

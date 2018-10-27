@@ -6,20 +6,16 @@
 #define GAZPREABASE_USERTYPE_H
 #include <unordered_map>
 #include <llvm/IR/Type.h>
+#include "GazpreaType.h"
 
-class UserType {
+class UserType : public GazpreaType {
 public:
-    UserType(const std::string &name, llvm::Type *typeDef,
-             const std::unordered_map<std::string, llvm::Type *> &members);
     UserType(const std::string &name, llvm::Type *typeDef);
 
-    const std::string &getName() const;
-
-    llvm::Type *getTypeDef() const;
+    UserType(const std::string &name, llvm::Type *typeDef,
+             const std::unordered_map<std::string, llvm::Type *> &members);
 
 protected:
-    std::string name;
-    llvm::Type* typeDef;
     std::unordered_map<std::string, llvm::Type* > members;
 };
 #endif //GAZPREABASE_USERTYPE_H

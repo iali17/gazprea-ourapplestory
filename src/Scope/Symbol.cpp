@@ -22,3 +22,15 @@ void Symbol::setPtr(llvm::Value *ptr) {
     Symbol::ptr = ptr;
 }
 
+const std::string &Symbol::getName() const {
+    return name;
+}
+
+bool Symbol::isConstant() const {
+    return constant;
+}
+
+Symbol::Symbol(const std::string &scopeName, const std::string &name, int type, bool constant) : scopeName(scopeName),
+                                                                                                 name(name), type(type),
+                                                                                                 constant(constant) {}
+

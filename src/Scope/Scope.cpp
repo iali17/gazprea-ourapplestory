@@ -8,7 +8,7 @@
 
 Scope::Scope(const std::string &name) : name(name) {
     symbols        = new std::map<std::string, Symbol*>;
-    typeSymbols    = new std::map<std::string, UserType*>;
+    typeSymbols    = new std::map<std::string, GazpreaType*>;
     enclosingScope = nullptr;
 }
 
@@ -26,7 +26,7 @@ Scope *Scope::getEnclosingScope() const {
 
 Scope::Scope(const std::string &name,  Scope *enclosingScope) : name(name), enclosingScope(enclosingScope) {
     symbols     = new std::map<std::string, Symbol*>;
-    typeSymbols = new std::map<std::string, UserType*>;
+    typeSymbols = new std::map<std::string, GazpreaType*>;
 }
 
 Symbol *Scope::resolveSymbol(std::string symbolName) {
@@ -39,13 +39,21 @@ Symbol *Scope::resolveSymbol(std::string symbolName) {
 
 void Scope::addUserType(std::string newTypeName, llvm::Type* newType) {
     if (enclosingScope != nullptr) {
-        std::cerr << "Type defined in non-global context\nAborting...\n";
+        std::cerr << "GazpreaType defined in non-global context\nAborting...\n";
         exit(1);
     }
-    typeSymbols->insert(std::pair<std::string, UserType*> (newTypeName, new UserType(newTypeName, newType)));
+    typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, new UserType(newTypeName, newType)));
 }
 
-UserType *Scope::resolveUserType(std::string userTypeName) {
+void Scope::addBaseType(std::string newTypeName, llvm::Type *newType) {
+    if (enclosingScope != nullptr) {
+        std::cerr << "GazpreaType defined in non-global context\nAborting...\n";
+        exit(1);
+    }
+    typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, new GazpreaType(newTypeName, newType)));
+}
+
+GazpreaType *Scope::resolveType(std::string userTypeName) {
     auto iter = typeSymbols->find(userTypeName);
     if(iter == typeSymbols->end())
         return nullptr;
@@ -53,4 +61,6 @@ UserType *Scope::resolveUserType(std::string userTypeName) {
         return iter->second;
 }
 
-
+void Scope::addSymbol(std::string newSymbolName, int type, bool constant) {
+    symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, constant)));
+}

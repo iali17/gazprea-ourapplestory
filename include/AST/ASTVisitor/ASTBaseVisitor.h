@@ -55,6 +55,12 @@ public:
         else if (dynamic_cast<InLoopNode *>(node)) {
             return visit((InLoopNode *) node);
         }
+        else if (dynamic_cast<AssignNode *>(node)) {
+            return visit((AssignNode *) node);
+        }
+        else if (dynamic_cast<DeclNode *>(node)) {
+            return visit((DeclNode *) node);
+        }
         fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -73,6 +79,8 @@ public:
     llvm::Value* visit(LoopNode *node) override { return nullptr;};
     llvm::Value* visit(InLoopNode *node) override { return nullptr;};
     llvm::Value* visit(DoLoopNode *node) override { return nullptr;};
+    llvm::Value* visit(DeclNode *node) override { return nullptr;};
+    llvm::Value* visit(AssignNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

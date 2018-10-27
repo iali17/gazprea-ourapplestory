@@ -21,6 +21,10 @@ void SymbolTable::addSymbol(std::string newSymbolName, int type) {
     scopeStack->top()->addSymbol(newSymbolName, type);
 }
 
+void SymbolTable::addSymbol(std::string newSymbolName, int type, bool isConstant) {
+    scopeStack->top()->addSymbol(newSymbolName, type, isConstant);
+}
+
 void SymbolTable::popScope() {
     scopeStack->pop();
 }
@@ -51,12 +55,16 @@ void SymbolTable::addUserType(std::string newTypeName, llvm::Type *newType) {
     scopeStack->top()->addUserType(newTypeName, newType);
 }
 
-UserType *SymbolTable::resolveUserType(std::string userTypeName) {
+void SymbolTable::addBaseType(std::string baseTypeName, llvm::Type *newType) {
+    scopeStack->top()->addBaseType(baseTypeName, newType);
+}
+
+GazpreaType *SymbolTable::resolveType(std::string userTypeName) {
     Scope  *scope = scopeStack->top();
-    UserType * userType = nullptr;
+    GazpreaType * userType = nullptr;
 
     while(scope != nullptr) {
-        userType = scope->resolveUserType(userTypeName);
+        userType = scope->resolveType(userTypeName);
 
         if(userType != nullptr)
             break;

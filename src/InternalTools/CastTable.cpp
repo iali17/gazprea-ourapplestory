@@ -29,7 +29,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
     llvm::Value *lValueLoad = ir->CreateLoad(leftExpr);
     llvm::Value *rValueLoad = ir->CreateLoad(rightExpr);
 
-    // Type of left and right expr
+    // GazpreaType of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();
 
@@ -42,7 +42,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
     std::string lTypeString = typeTable[lType][lType];
     std::string rTypeString = typeTable[rType][rType];
 
-    // Type cast to bool
+    // GazpreaType cast to bool
     if(castType == "bool") {
         // Cast from int to bool
         if(lTypeString == "int" || rTypeString == "int") {
@@ -67,7 +67,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
         }
     }
 
-    // Type cast to char
+    // GazpreaType cast to char
     else if(castType == "char") {
         // Cast from bool to char
         if(lTypeString == "bool" || rTypeString == "bool") {
@@ -89,7 +89,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
         }
     }
 
-    // Type cast to int
+    // GazpreaType cast to int
     else if(castType == "int") {
         // Cast from bool to int
         if(lTypeString == "bool" || rTypeString == "bool") {
@@ -120,7 +120,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
         }
     }
 
-    // Type cast to float
+    // GazpreaType cast to float
     else if(castType == "float") {
         // Cast from bool to float
         if(lTypeString == "bool" || rTypeString == "bool") {
@@ -160,7 +160,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
 llvm::Value *CastTable::upCast(llvm::Type *type, llvm::Value *expr) {
     llvm::Value *exprLoad = ir->CreateLoad(expr);
 
-    // Type of expr
+    // GazpreaType of expr
     llvm::Type *exprType = exprLoad->getType();
 
     // Position in table

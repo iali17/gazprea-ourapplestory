@@ -11,12 +11,14 @@
 class SymbolTable {
 public:
     SymbolTable();
+    GazpreaType * resolveType(std::string userTypeName);
+    Symbol      * resolveSymbol(std::string symbolName);
     void pushNewScope(std::string newScopeName);
     void pushNewScope();
     void addSymbol(std::string newSymbolName, int type);
+    void addSymbol(std::string newSymbolName, int type, bool isConstant = false);
     void addUserType(std::string newTypeName, llvm::Type* newType);
-    UserType * resolveUserType(std::string userTypeName);
-    Symbol   * resolveSymbol(std::string symbolName);
+    void addBaseType(std::string baseTypeName, llvm::Type *newType);
     void popScope();
 
 protected:

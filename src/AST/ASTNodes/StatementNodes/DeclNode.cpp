@@ -5,10 +5,17 @@
 #include <AST/ASTNodes/StatementNodes/DeclNode.h>
 #include <string>
 
-DeclNode::DeclNode(ASTNode *expr, const std::string &ID,
-        const std::string &type_id, int newType)
-        : UnaryNode(expr), ID(ID), type_id(type_id) {setType(newType);}
-
 const std::string &DeclNode::getID() const {
     return ID;
+}
+
+DeclNode::DeclNode(ASTNode *expr, bool constant, const std::string &ID, std::vector<std::string> *typeIds) : UnaryNode(
+        expr), constant(constant), ID(ID), typeIds(typeIds) {}
+
+bool DeclNode::isConstant() const {
+    return constant;
+}
+
+std::vector<std::string> *DeclNode::getTypeIds() const {
+    return typeIds;
 }

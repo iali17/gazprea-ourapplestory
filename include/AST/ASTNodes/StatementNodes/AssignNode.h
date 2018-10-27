@@ -12,9 +12,7 @@
 class AssignNode : public UnaryNode  {
 public:
     AssignNode(ASTNode *expr, const std::string &ID);
-
     const std::string &getID() const;
-
 
 protected:
     std::string ID;

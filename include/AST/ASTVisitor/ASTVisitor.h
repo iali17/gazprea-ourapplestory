@@ -25,6 +25,8 @@ public:
     virtual llvm::Value* visit(DoLoopNode *node)     = 0;
     virtual llvm::Value* visit(LoopNode *node)       = 0;
     virtual llvm::Value* visit(InLoopNode *node)     = 0;
+    virtual llvm::Value* visit(AssignNode *node)     = 0;
+    virtual llvm::Value* visit(DeclNode *node)       = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

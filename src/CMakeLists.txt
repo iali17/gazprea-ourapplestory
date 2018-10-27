@@ -7,6 +7,7 @@ set(
         "${CMAKE_CURRENT_SOURCE_DIR}/Scope/Scope.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Scope/Symbol.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Scope/SymbolTable.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Scope/GazpreaType.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/AST/ASTNodes/TerminalNodes/RealNode.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/AST/ASTNodes/TerminalNodes/CharNode.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/AST/ASTNodes/TerminalNodes/BoolNode.cpp"
