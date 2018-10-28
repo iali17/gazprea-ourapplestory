@@ -18,6 +18,8 @@ public:
     bool isConstant() const;
     Symbol(const std::string &scopeName, const std::string &name, int type, bool constant);
 
+    Symbol(const std::string &scopeName, const std::string &name, int type, llvm::Value *ptr, bool constant);
+
 protected:
     std::string scopeName;
     std::string name;

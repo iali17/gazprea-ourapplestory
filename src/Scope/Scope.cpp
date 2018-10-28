@@ -64,3 +64,7 @@ GazpreaType *Scope::resolveType(std::string userTypeName) {
 void Scope::addSymbol(std::string newSymbolName, int type, bool constant) {
     symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, constant)));
 }
+
+void Scope::addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr) {
+    symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, constant, ptr)));
+}
