@@ -26,6 +26,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("character", charTy);
     symbolTable->addBaseType("integer"  , intTy);
     symbolTable->addBaseType("real"     , realTy);
+    symbolTable->addBaseType("void"     , llvm::Type::getVoidTy(*globalCtx));
 
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
@@ -59,18 +60,23 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //TODO - BUILD FUNCTION TYPE PROPERLY
     std::vector<ASTNode *>  paramsList = *node->getParamNodes();
     std::vector<llvm::Type *> params;
-    // TODO: need the return type to not be a string but rather a type
+    std::cout << "what in the fuck " << node->getRetType() << "\n";
+
     llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
         params.push_back(it.operator*()->getLlvmType());
+        std::cout << ((ParamNode *) it.operator*())->getDeclaredType()  << "\n";
     }
 
     llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
 
+    std::cout <<"this is it " << funcTy->getFunctionNumParams() << std::endl;
+
     llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
 
     if (F->getName() != node->getProcedureName()) {
+        printf("yes?\n");
         F->eraseFromParent();
         F = mod->getFunction(node->getProcedureName());
 
@@ -90,13 +96,13 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
     //TODO - BEFORE PUSHING SCOPE ADD FUNCTION
     symbolTable->pushNewScope();
+    printf("fuck\n");
     //TODO - REGISTER THOSE VARIABLES
     llvm::Value* ptr = nullptr;
     llvm::Value* val = nullptr;
-    unsigned idx = 0;
-    for (llvm::Function::arg_iterator AI = F->arg_begin(); idx != paramsList.size();
-        ++AI, ++idx) {
-        continue;
+    unsigned Idx = 0;
+    for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != paramsList.size(); ++AI, ++Idx){
+        
     }
 
     //llvm::ArrayRef<llvm::GazpreaType *> *params =  new llvm::ArrayRef<llvm::GazpreaType *>;
@@ -104,6 +110,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
     //auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
     // Create an entry block and set the inserter.
+
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
