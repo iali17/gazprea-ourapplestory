@@ -10,7 +10,7 @@ const std::string &DeclNode::getID() const {
 }
 
 DeclNode::DeclNode(ASTNode *expr, bool constant, const std::string &ID, std::vector<std::string> *typeIds, int newType) : UnaryNode(
-        expr), constant(constant), ID(ID), typeIds(typeIds) {setType(newType)}
+        expr), constant(constant), ID(ID), typeIds(typeIds) {setType(newType);}
 
 bool DeclNode::isConstant() const {
     return constant;

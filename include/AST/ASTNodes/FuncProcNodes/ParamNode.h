@@ -7,9 +7,6 @@
 
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
-/**
- * This class is basically empty TODO - everything
- */
 class ParamNode : public ASTNode {
 public:
     ParamNode(const std::string &declaredType, const std::string &varName);
