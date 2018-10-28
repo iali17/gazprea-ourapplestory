@@ -194,12 +194,13 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
-    std::vector<ASTNode*> exprNodes;
-    for(int i = 0; i < ctx->expr().size(); ++i) {
+    std::vector<ASTNode*> *exprNodes = new std::vector<ASTNode*>;
+    std::cout <<  ctx->expr().size() << std::endl;
+    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
-        exprNodes.push_back(node);
+        exprNodes->push_back(node);
     }
-    return (ASTNode *) new CallNode(&exprNodes, ctx->Identifier()->getText());
+    return (ASTNode *) new CallNode(exprNodes, ctx->Identifier()->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitType(gazprea::GazpreaParser::TypeContext *ctx) {

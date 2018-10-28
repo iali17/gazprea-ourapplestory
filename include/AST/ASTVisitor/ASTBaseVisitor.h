@@ -7,6 +7,7 @@
 
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include "ASTVisitor.h"
+#include <iostream>
 
 
 class ASTBaseVisitor : public ASTVisitor {
@@ -73,6 +74,9 @@ public:
         else if (dynamic_cast<StreamDeclNode *>(node)) {
             return visit((StreamDeclNode *) node);
         }
+        else if (dynamic_cast<CallNode *>(node)) {
+            return visit((CallNode *) node);
+        }
         fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -97,6 +101,7 @@ public:
     llvm::Value* visit(InputNode *node) override { return nullptr;};
     llvm::Value* visit(OutputNode *node) override { return nullptr;};
     llvm::Value* visit(StreamDeclNode *node) override { return nullptr;};
+    llvm::Value* visit(CallNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

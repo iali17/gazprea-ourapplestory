@@ -6,6 +6,7 @@
 #define GAZPREABASE_ASTVISITOR_H
 
 #include <llvm/IR/Value.h>
+#include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include "../AST.h"
 
 class ASTVisitor {
@@ -31,6 +32,7 @@ public:
     virtual llvm::Value* visit(InputNode *node)      = 0;
     virtual llvm::Value* visit(OutputNode *node)     = 0;
     virtual llvm::Value* visit(StreamDeclNode *node) = 0;
+    virtual llvm::Value* visit(CallNode *node)         = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

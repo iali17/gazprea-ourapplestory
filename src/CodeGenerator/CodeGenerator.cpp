@@ -93,6 +93,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     for (auto AI = F->arg_begin(); idx != F->arg_size(); ++AI, ++idx){
         auto *p = (ParamNode *) paramsList.at(idx);
         symbolTable->addSymbol(p->getVarName(), p->getType(), false, AI);
+        AI->setName(p->getVarName());
     }
 
 
@@ -250,4 +251,19 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
 llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     symbolTable->addSymbol(node->getId(), node->getType(), false);
     return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(CallNode *node) {
+    llvm::Function *func = mod->getFunction(node->getProcedureName());
+    std::cout << "Calls " << node->getProcedureName() << "\n";
+    std::vector<llvm::Value *> dumb;
+
+    for (unsigned int i =0; i < node->getExprNodes()->size(); ++i) {
+        llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
+        dumb.push_back(dumb2);
+    }
+
+    printf("Finishes the good shit\n");
+
+    return ir->CreateCall(func, dumb);
 }
