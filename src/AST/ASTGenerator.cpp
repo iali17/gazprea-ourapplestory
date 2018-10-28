@@ -9,6 +9,7 @@
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include <AST/ASTNodes/TerminalNodes/RealNode.h>
 #include <AST/ASTNodes/StatementNodes/DeclNode.h>
+#include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -166,7 +167,7 @@ antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContex
 antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
-    for(i=0;i<ctx->statement().size();i++){
+    for(i=0;i<ctx->statement().size(); ++i){
         ASTNode * node = (ASTNode *) visit(ctx->statement()[i]);
         if (dynamic_cast<DeclNode *>(ctx->statement()[i])) {
             std::cerr << "Declaration does not precede procedure body: " << ctx->statement()[i]->getText() << "\n";
@@ -192,7 +193,12 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
-    return GazpreaBaseVisitor::visitProcedureCall(ctx);
+    std::vector<ASTNode*> exprNodes;
+    for(int i = 0; i < ctx->expr().size(); ++i) {
+        ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
+        exprNodes.push_back(node);
+    }
+    return (ASTNode *) new CallNode(&exprNodes, ctx->Identifier()->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitType(gazprea::GazpreaParser::TypeContext *ctx) {

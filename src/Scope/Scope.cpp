@@ -66,5 +66,5 @@ void Scope::addSymbol(std::string newSymbolName, int type, bool constant) {
 }
 
 void Scope::addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr) {
-    symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, constant, ptr)));
+    symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, ptr, constant )));
 }
