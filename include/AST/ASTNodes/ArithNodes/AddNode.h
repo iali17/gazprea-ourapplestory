@@ -7,8 +7,8 @@
 
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 
-class IntAddNode : public InfixNode {
+class AddNode : public InfixNode {
 public:
-    IntAddNode(ASTNode *left, ASTNode *right);
+    AddNode(ASTNode *left, ASTNode *right);
 };
 #endif //GAZPREABASE_INTADDNODE_H

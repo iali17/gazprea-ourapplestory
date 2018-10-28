@@ -6,9 +6,9 @@
 #define GAZPREABASE_INTMULNODE_H
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 
-class IntMulNode : public InfixNode {
+class MulNode : public InfixNode {
 public:
-    IntMulNode(ASTNode *left, ASTNode *right);
+    MulNode(ASTNode *left, ASTNode *right);
 
 };
 #endif //GAZPREABASE_INTMULNODE_H

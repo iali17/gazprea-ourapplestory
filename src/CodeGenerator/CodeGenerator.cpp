@@ -251,3 +251,23 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     symbolTable->addSymbol(node->getId(), node->getType(), false);
     return nullptr;
 }
+
+llvm::Value *CodeGenerator::visit(AddNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(SubNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(MulNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(DivNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(RemNode *node) {
+    return ASTBaseVisitor::visit(node);
+}

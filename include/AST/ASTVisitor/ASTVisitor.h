@@ -30,6 +30,11 @@ public:
     virtual llvm::Value* visit(IDNode *node)         = 0;
     virtual llvm::Value* visit(InputNode *node)      = 0;
     virtual llvm::Value* visit(OutputNode *node)     = 0;
+    virtual llvm::Value* visit(AddNode *node)        = 0;
+    virtual llvm::Value* visit(SubNode *node)        = 0;
+    virtual llvm::Value* visit(MulNode *node)        = 0;
+    virtual llvm::Value* visit(DivNode *node)        = 0;
+    virtual llvm::Value* visit(RemNode *node)        = 0;
     virtual llvm::Value* visit(StreamDeclNode *node) = 0;
 };
 
