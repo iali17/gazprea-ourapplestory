@@ -6,8 +6,8 @@
 #define GAZPREABASE_INTDIVNODE_H
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 
-class IntDivNode : public InfixNode {
+class DivNode : public InfixNode {
 public:
-    IntDivNode(ASTNode *left, ASTNode *right);
+    DivNode(ASTNode *left, ASTNode *right);
 };
 #endif //GAZPREABASE_INTDIVNODE_H

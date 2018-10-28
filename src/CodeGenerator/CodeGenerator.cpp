@@ -255,7 +255,6 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::cout << "Calls " << node->getProcedureName() << "\n";
     std::vector<llvm::Value *> dumb;
 
     for (unsigned int i =0; i < node->getExprNodes()->size(); ++i) {
@@ -263,7 +262,25 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
         dumb.push_back(dumb2);
     }
 
-    printf("Finishes the good shit\n");
-
     return ir->CreateCall(func, dumb);
+}
+
+llvm::Value *CodeGenerator::visit(AddNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(SubNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(MulNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(DivNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
+llvm::Value *CodeGenerator::visit(RemNode *node) {
+    return ASTBaseVisitor::visit(node);
 }

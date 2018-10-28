@@ -81,11 +81,30 @@ antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitAddExpr(gazprea::GazpreaParser::AddExprContext *ctx) {
-    return GazpreaBaseVisitor::visitAddExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    if(ctx->op->getType() == gazprea::GazpreaParser::ADD) {
+        return (ASTNode *) new AddNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::SUB) {
+        return (ASTNode *) new SubNode(left, right);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext *ctx) {
-    return GazpreaBaseVisitor::visitMulExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    if(ctx->op->getType() == gazprea::GazpreaParser::MUL) {
+        return (ASTNode *) new MulNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::DIV) {
+        return (ASTNode *) new DivNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::REM) {
+        return (ASTNode *) new RemNode(left, right);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
@@ -195,7 +214,6 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
     std::vector<ASTNode*> *exprNodes = new std::vector<ASTNode*>;
-    std::cout <<  ctx->expr().size() << std::endl;
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);

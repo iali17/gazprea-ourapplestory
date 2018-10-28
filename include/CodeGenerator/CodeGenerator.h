@@ -51,6 +51,11 @@ public:
     llvm::Value* visit(OutputNode     *node) override;
     llvm::Value* visit(StreamDeclNode *node) override;
     llvm::Value* visit(CallNode       *node) override;
+    llvm::Value* visit(AddNode        *node) override;
+    llvm::Value* visit(SubNode        *node) override;
+    llvm::Value* visit(MulNode        *node) override;
+    llvm::Value* visit(DivNode        *node) override;
+    llvm::Value* visit(RemNode        *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

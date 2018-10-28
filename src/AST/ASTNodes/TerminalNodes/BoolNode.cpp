@@ -8,4 +8,4 @@ bool BoolNode::getVal() const {
     return val;
 }
 
-BoolNode::BoolNode(bool val) : val(val) {}
+BoolNode::BoolNode(bool val) : val(val) {setType(BOOLEAN);}
