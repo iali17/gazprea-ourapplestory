@@ -104,7 +104,8 @@ antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementCont
 }
 
 antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) {
-    return GazpreaBaseVisitor::visitNormalAss(ctx);
+    ASTNode *expr = (ASTNode *) visit(ctx->expr());
+    return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
@@ -268,7 +269,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         typeVec->push_back(ctx->type().at(i)->getText());
     }
 
-    return (ASTNode *) new DeclNode(expr, constant, id, typeVec);
+    return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {

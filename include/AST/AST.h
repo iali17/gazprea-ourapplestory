@@ -30,5 +30,10 @@
 #include "ASTNodes/TerminalNodes/InputNode.h"
 #include "ASTNodes/TerminalNodes/OutputNode.h"
 #include "ASTNodes/TerminalNodes/StreamDecl.h"
+#include "ASTNodes/ArithNodes/IntAddNode.h"
+#include "ASTNodes/ArithNodes/IntDivNode.h"
+#include "ASTNodes/ArithNodes/IntMulNode.h"
+#include "ASTNodes/ArithNodes/IntSubNode.h"
+
 
 #endif //GAZPREABASE_AST_H
