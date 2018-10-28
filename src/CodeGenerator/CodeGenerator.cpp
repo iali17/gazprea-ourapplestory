@@ -57,9 +57,16 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     // http://releases.llvm.org/3.5.2/docs/tutorial/LangImpl3.html#function-code-generation
 
     //TODO - BUILD FUNCTION TYPE PROPERLY
-    auto paramsList = node->getParamNodes();
-    std::vector<llvm::Type *> params (paramsList.size(), llvm::Type::getInt32PtrTy(*globalCtx));
-    llvm::FunctionType *funcTy = llvm::FunctionType::get(llvm::Type::getInt32PtrTy(*globalCtx), params, false);
+    std::vector<ASTNode *>  paramsList = *node->getParamNodes();
+    std::vector<llvm::Type *> params;
+    // TODO: need the return type to not be a string but rather a type
+    llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
+
+    for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
+        params.push_back(it.operator*()->getLlvmType());
+    }
+
+    llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
 
     llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
 
@@ -69,29 +76,35 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
         if (!F->empty()) {
             //TODO: error message
-            std::cout << "error here" << "\n";
+            std::cout << "redefinition of function" << "\n";
             return nullptr;
         }
 
-        if(F->arg_size() != paramsList->size()) {
+        if(F->arg_size() != paramsList.size()) {
             //TODO: error message
-            std::cout << "error here" << "\n";
+            std::cout << "redefinition of function with different # args" << "\n";
             return nullptr;
         }
     }
 
-    // TODO: need the return type to not be a string but rather a type
-    auto retType = node->getRetType();
 
-    //TODO - BEFORE PUSHING SCOPE ADD FUNCTION DECL
+    //TODO - BEFORE PUSHING SCOPE ADD FUNCTION
     symbolTable->pushNewScope();
     //TODO - REGISTER THOSE VARIABLES
+    llvm::Value* ptr = nullptr;
+    llvm::Value* val = nullptr;
+    unsigned idx = 0;
+    for (llvm::Function::arg_iterator AI = F->arg_begin(); idx != paramsList.size();
+        ++AI, ++idx) {
+        continue;
+    }
+
     //llvm::ArrayRef<llvm::GazpreaType *> *params =  new llvm::ArrayRef<llvm::GazpreaType *>;
     //llvm::FunctionType::get(intTy, params);
 
     //auto *func = llvm::cast<llvm::Function>(mod->getOrInsertFunction(node->getProcedureName(), funcTy));
     // Create an entry block and set the inserter.
-    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", func);
+    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
     visit(node->getBlock());
