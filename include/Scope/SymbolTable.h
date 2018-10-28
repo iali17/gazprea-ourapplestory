@@ -17,6 +17,7 @@ public:
     void pushNewScope();
     void addSymbol(std::string newSymbolName, int type);
     void addSymbol(std::string newSymbolName, int type, bool isConstant = false);
+    void addSymbol(std::string newSymbolName, int type, bool isConstant, llvm::Value *ptr);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string baseTypeName, llvm::Type *newType);
     void popScope();

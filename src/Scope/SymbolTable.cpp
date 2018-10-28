@@ -72,3 +72,7 @@ GazpreaType *SymbolTable::resolveType(std::string userTypeName) {
     }
     return userType;
 }
+
+void SymbolTable::addSymbol(std::string newSymbolName, int type, bool isConstant, llvm::Value *ptr) {
+    scopeStack->top()->addSymbol(newSymbolName, type, isConstant, ptr);
+}

@@ -22,6 +22,7 @@ public:
 
     void addSymbol(std::string newSymbolName, int type);
     void addSymbol(std::string newSymbolName, int type, bool constant);
+    void addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string newTypeName, llvm::Type* newType);
 protected:
