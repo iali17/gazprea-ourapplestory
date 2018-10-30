@@ -92,6 +92,36 @@ public:
         else if (dynamic_cast<RemNode *>(node)) {
             return visit((RemNode *) node);
         }
+        else if (dynamic_cast<EQNode *>(node)) {
+            return visit((EQNode *) node);
+        }
+        else if (dynamic_cast<NEQNode *>(node)) {
+            return visit((NEQNode *) node);
+        }
+        else if (dynamic_cast<LTNode *>(node)) {
+            return visit((LTNode *) node);
+        }
+        else if (dynamic_cast<GTNode *>(node)) {
+            return visit((GTNode *) node);
+        }
+        else if (dynamic_cast<NegateNode *>(node)) {
+            return visit((NegateNode *) node);
+        }
+        else if (dynamic_cast<AndNode *>(node)) {
+            return visit((AndNode *) node);
+        }
+        else if (dynamic_cast<OrNode *>(node)) {
+            return visit((OrNode *) node);
+        }
+        else if (dynamic_cast<XOrNode *>(node)) {
+            return visit((XOrNode *) node);
+        }
+        else if (dynamic_cast<LTENode *>(node)) {
+            return visit((LTENode *) node);
+        }
+        else if (dynamic_cast<GTENode *>(node)) {
+            return visit((GTENode *) node);
+        }
         fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -122,6 +152,16 @@ public:
     llvm::Value* visit(MulNode *node) override { return nullptr;};
     llvm::Value* visit(DivNode *node) override { return nullptr;};
     llvm::Value* visit(RemNode *node) override { return nullptr;};
+    llvm::Value* visit(EQNode *node) override { return nullptr;};
+    llvm::Value* visit(NEQNode *node) override { return nullptr;};
+    llvm::Value* visit(GTNode *node) override { return nullptr;};
+    llvm::Value* visit(LTNode *node) override { return nullptr;};
+    llvm::Value* visit(AndNode *node) override { return nullptr;};
+    llvm::Value* visit(OrNode *node) override { return nullptr;};
+    llvm::Value* visit(XOrNode *node) override { return nullptr;};
+    llvm::Value* visit(NegateNode *node) override { return nullptr;};
+    llvm::Value* visit(GTENode *node) override { return nullptr;};
+    llvm::Value* visit(LTENode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

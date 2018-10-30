@@ -4,9 +4,9 @@
 
 #ifndef GAZPREABASE_INTDIVNODE_H
 #define GAZPREABASE_INTDIVNODE_H
-#include "AST/ASTNodes/BaseNodes/InfixNode.h"
+#include "AST/ASTNodes/BaseNodes/ArithNode.h"
 
-class DivNode : public InfixNode {
+class DivNode : public ArithNode {
 public:
     DivNode(ASTNode *left, ASTNode *right);
 };

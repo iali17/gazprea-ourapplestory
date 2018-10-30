@@ -5,9 +5,9 @@
 #ifndef GAZPREABASE_INTADDNODE_H
 #define GAZPREABASE_INTADDNODE_H
 
-#include "AST/ASTNodes/BaseNodes/InfixNode.h"
+#include "AST/ASTNodes/BaseNodes/ArithNode.h"
 
-class AddNode : public InfixNode {
+class AddNode : public ArithNode {
 public:
     AddNode(ASTNode *left, ASTNode *right);
 };

@@ -56,6 +56,16 @@ public:
     llvm::Value* visit(MulNode        *node) override;
     llvm::Value* visit(DivNode        *node) override;
     llvm::Value* visit(RemNode        *node) override;
+    llvm::Value* visit(EQNode         *node) override;
+    llvm::Value* visit(NEQNode        *node) override;
+    llvm::Value* visit(GTNode         *node) override;
+    llvm::Value* visit(LTNode         *node) override;
+    llvm::Value* visit(GTENode        *node) override;
+    llvm::Value* visit(LTENode        *node) override;
+    llvm::Value* visit(AndNode        *node) override;
+    llvm::Value* visit(OrNode         *node) override;
+    llvm::Value* visit(XOrNode        *node) override;
+    llvm::Value* visit(NegateNode     *node) override;
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

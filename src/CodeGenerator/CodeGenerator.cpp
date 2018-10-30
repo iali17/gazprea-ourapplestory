@@ -264,23 +264,3 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
 
     return ir->CreateCall(func, dumb);
 }
-
-llvm::Value *CodeGenerator::visit(AddNode *node) {
-    return ASTBaseVisitor::visit(node);
-}
-
-llvm::Value *CodeGenerator::visit(SubNode *node) {
-    return ASTBaseVisitor::visit(node);
-}
-
-llvm::Value *CodeGenerator::visit(MulNode *node) {
-    return ASTBaseVisitor::visit(node);
-}
-
-llvm::Value *CodeGenerator::visit(DivNode *node) {
-    return ASTBaseVisitor::visit(node);
-}
-
-llvm::Value *CodeGenerator::visit(RemNode *node) {
-    return ASTBaseVisitor::visit(node);
-}

@@ -37,7 +37,17 @@ public:
     virtual llvm::Value* visit(DivNode *node)        = 0;
     virtual llvm::Value* visit(RemNode *node)        = 0;
     virtual llvm::Value* visit(StreamDeclNode *node) = 0;
-    virtual llvm::Value* visit(CallNode *node)         = 0;
+    virtual llvm::Value* visit(CallNode *node)       = 0;
+    virtual llvm::Value* visit(EQNode *node)         = 0;
+    virtual llvm::Value* visit(NEQNode *node)        = 0;
+    virtual llvm::Value* visit(GTNode *node)         = 0;
+    virtual llvm::Value* visit(LTNode *node)         = 0;
+    virtual llvm::Value* visit(AndNode *node)        = 0;
+    virtual llvm::Value* visit(OrNode *node)         = 0;
+    virtual llvm::Value* visit(XOrNode *node)        = 0;
+    virtual llvm::Value* visit(NegateNode *node)     = 0;
+    virtual llvm::Value* visit(GTENode *node)        = 0;
+    virtual llvm::Value* visit(LTENode *node)        = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

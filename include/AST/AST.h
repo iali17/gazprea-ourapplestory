@@ -35,6 +35,18 @@
 #include "AST/ASTNodes/ArithNodes/MulNode.h"
 #include "AST/ASTNodes/ArithNodes/SubNode.h"
 #include "AST/ASTNodes/ArithNodes/RemNode.h"
-
+#include "AST/ASTNodes/BaseNodes/ArithNode.h"
+#include "AST/ASTNodes/BaseNodes/CompNode.h"
+#include "AST/ASTNodes/BaseNodes/BitArithNode.h"
+#include "AST/ASTNodes/CompNodes/EQNode.h"
+#include "AST/ASTNodes/CompNodes/NEQNode.h"
+#include "AST/ASTNodes/CompNodes/GTNode.h"
+#include "AST/ASTNodes/CompNodes/LTNode.h"
+#include "AST/ASTNodes/CompNodes/GTENode.h"
+#include "AST/ASTNodes/CompNodes/LTENode.h"
+#include "AST/ASTNodes/CompNodes/NegateNode.h"
+#include "AST/ASTNodes/ArithNodes/AndNode.h"
+#include "AST/ASTNodes/ArithNodes/OrNode.h"
+#include "AST/ASTNodes/ArithNodes/XOrNode.h"
 
 #endif //GAZPREABASE_AST_H

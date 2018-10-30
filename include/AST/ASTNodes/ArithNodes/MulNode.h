@@ -4,9 +4,9 @@
 
 #ifndef GAZPREABASE_INTMULNODE_H
 #define GAZPREABASE_INTMULNODE_H
-#include "AST/ASTNodes/BaseNodes/InfixNode.h"
+#include "AST/ASTNodes/BaseNodes/ArithNode.h"
 
-class MulNode : public InfixNode {
+class MulNode : public ArithNode {
 public:
     MulNode(ASTNode *left, ASTNode *right);
 

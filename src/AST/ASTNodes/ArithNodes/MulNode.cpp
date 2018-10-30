@@ -4,4 +4,4 @@
 
 #include "AST/AST.h"
 
-MulNode::MulNode(ASTNode *left, ASTNode *right) : InfixNode(left, right) {}
+MulNode::MulNode(ASTNode *left, ASTNode *right) : ArithNode(left, right) {}

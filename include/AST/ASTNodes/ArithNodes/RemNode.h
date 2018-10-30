@@ -4,9 +4,9 @@
 
 #ifndef GAZPREABASE_REMNODE_H
 #define GAZPREABASE_REMNODE_H
-#include "AST/ASTNodes/BaseNodes/InfixNode.h"
+#include "AST/ASTNodes/BaseNodes/ArithNode.h"
 
-class RemNode : public InfixNode {
+class RemNode : public ArithNode {
 public:
     RemNode(ASTNode *left, ASTNode *right);
 };
