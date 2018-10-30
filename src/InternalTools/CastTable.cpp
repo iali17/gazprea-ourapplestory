@@ -14,6 +14,10 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
+CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir) : globalCtx(globalctx), ir(ir) {
+    // Do nothing
+}
+
 int CastTable::getType(llvm::Type *expr) {
     if(expr == i64Ty || expr == i32Ty || expr == i8Ty || expr == intTy)
         return 2;
@@ -29,7 +33,7 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
     llvm::Value *lValueLoad = ir->CreateLoad(leftExpr);
     llvm::Value *rValueLoad = ir->CreateLoad(rightExpr);
 
-    // GazpreaType of left and right expr
+    // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();
 
@@ -143,21 +147,26 @@ llvm::Value *CastTable::typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr) 
         // Cast from int to float
         else if(lTypeString == "int" || rTypeString == "int") {
             if(lTypeString == "int") {
+                ir->CreateSIToFP(lValueLoad, realTy);
 
+                std::cout << "left upcast\n";
             }
             else {
+                ir->CreateSIToFP(rValueLoad, realTy);
 
+                std::cout << "right upcast\n";
             }
         }
     }
 
+    // TODO: Better error code
     // Invalid cast, return error
     else {
-
+        std::cerr << "Implicit cast\n";
     }
 }
 
-llvm::Value *CastTable::upCast(llvm::Type *type, llvm::Value *expr) {
+llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *expr) {
     llvm::Value *exprLoad = ir->CreateLoad(expr);
 
     // GazpreaType of expr
@@ -173,26 +182,54 @@ llvm::Value *CastTable::upCast(llvm::Type *type, llvm::Value *expr) {
 
     // Casting expr to bool
     if(typeString == "bool"){
+        if(exprString == "char") {
+
+        }
+        else if(exprString == "int") {
+
+        }
 
     }
 
     // Casting expr to char
     else if(typeString == "char") {
+        if(exprString == "bool") {
 
+        }
+        else if(exprString == "int") {
+
+        }
     }
 
     // Casting expr to int
     else if(typeString == "int") {
+        if(exprString == "bool") {
 
+        }
+        else if(exprString == "char") {
+
+        }
+        else if(exprString == "float") {
+            ir->CreateFPToSI(exprLoad, type);
+        }
     }
 
     // Casting expr to float
     else if(typeString == "float") {
+        if(exprString == "bool") {
 
+        }
+        else if(exprString == "char") {
+
+        }
+        else if(exprString == "int") {
+
+        }
     }
 
+    // TODO: Better error code
     // Can't cast to type, return an error
     else {
-
+        std::cerr << "Implicit cast\n";
     }
 }

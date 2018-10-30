@@ -257,7 +257,7 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
     llvm::Function *func = mod->getFunction(node->getProcedureName());
     std::vector<llvm::Value *> dumb;
 
-    for (unsigned int i =0; i < node->getExprNodes()->size(); ++i) {
+    for (unsigned int i = 0; i < node->getExprNodes()->size(); ++i) {
         llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
         dumb.push_back(dumb2);
     }
