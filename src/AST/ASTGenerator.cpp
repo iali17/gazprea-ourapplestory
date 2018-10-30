@@ -334,6 +334,7 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
     // char will be one character inside a single quotation so we just need to get the second element
     char val = ctx->getText().at(1);
     std::string trueVal = ctx->getText();
+
     if (trueVal[1] == '\\') {
         if (trueVal[2] == 'n' ) {
             val = 0x0A;
@@ -355,7 +356,6 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
             val = 0x5C;
         }
     }
-
 
     return (ASTNode *) new CharNode(val);
 }
