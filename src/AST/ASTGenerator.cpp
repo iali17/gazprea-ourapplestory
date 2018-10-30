@@ -302,6 +302,7 @@ antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) 
     std::string str2Val;
 
     std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
+    std::cout << str2Val << "\n";
     float val = std::stof(str2Val);
     return (ASTNode *) new RealNode(val);
 }
@@ -330,7 +331,32 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
-    char val = ctx->getText().at(0);
+    // char will be one character inside a single quotation so we just need to get the second element
+    char val = ctx->getText().at(1);
+    std::string trueVal = ctx->getText();
+
+    if (trueVal[1] == '\\') {
+        if (trueVal[2] == 'n' ) {
+            val = 0x0A;
+        } else if (trueVal[2] == '0' ) {
+            val = 0x00;
+        } else if (trueVal[2] == 'a' ) {
+            val = 0x07;
+        } else if (trueVal[2] == 'b' ) {
+            val = 0x08;
+        } else if (trueVal[2] == 't' ) {
+            val = 0x09;
+        } else if (trueVal[2] == 'r' ) {
+            val = 0x0D;
+        } else if (trueVal[2] == '"' ) {
+            val = 0x22;
+        } else if (trueVal[2] == '\'' ) {
+            val = 0x27;
+        } else if (trueVal[2] == '\\' ) {
+            val = 0x5C;
+        }
+    }
+
     return (ASTNode *) new CharNode(val);
 }
 

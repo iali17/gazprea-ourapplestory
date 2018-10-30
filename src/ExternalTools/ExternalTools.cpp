@@ -284,7 +284,7 @@ void ExternalTools::print(llvm::Value *val) {
         printReal(val);
     }
 
-    printStaticStr(EOLN_STR);
+    //printStaticStr(EOLN_STR);
 }
 
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {

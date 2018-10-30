@@ -77,14 +77,14 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
         if (!F->empty()) {
             //TODO: error message
-            std::cout << "redefinition of function" << "\n";
-            return nullptr;
+            std::cerr << "redefinition of function" << "\n";
+            exit(1);
         }
 
         if(F->arg_size() != paramsList.size()) {
             //TODO: error message
-            std::cout << "redefinition of function with different # args" << "\n";
-            return nullptr;
+            std::cerr << "redefinition of function with different # args" << "\n";
+            exit(1);
         }
     }
 
@@ -257,9 +257,25 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
     llvm::Function *func = mod->getFunction(node->getProcedureName());
     std::vector<llvm::Value *> dumb;
 
+    // TODO: All the other types :(
     for (unsigned int i = 0; i < node->getExprNodes()->size(); ++i) {
-        llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
-        dumb.push_back(dumb2);
+        if ((node->getExprNodes()->at(i)->getType()) == CHAR) {
+            llvm::Value* ptr = ir->CreateAlloca(charTy);
+            llvm::Value* val = visit(node->getExprNodes()->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        } else if ((node->getExprNodes()->at(i)->getType()) == INTEGER) {
+            llvm::Value* ptr = ir->CreateAlloca(intTy);
+            llvm::Value* val = visit(node->getExprNodes()->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        } else {
+            // We are passing in a variable
+            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
+            dumb.push_back(dumb2);
+        }
+
+
     }
 
     return ir->CreateCall(func, dumb);
