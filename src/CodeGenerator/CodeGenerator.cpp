@@ -258,8 +258,16 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
     std::vector<llvm::Value *> dumb;
 
     for (unsigned int i = 0; i < node->getExprNodes()->size(); ++i) {
-        llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
-        dumb.push_back(dumb2);
+        if ((node->getExprNodes()->at(i)->getType()) != INTEGER) {
+            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
+            dumb.push_back(dumb2);
+        } else {
+            llvm::Value* ptr = ir->CreateAlloca(intTy);
+            llvm::Value* val = visit(node->getExprNodes()->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        }
+
     }
 
     return ir->CreateCall(func, dumb);
