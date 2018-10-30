@@ -17,6 +17,7 @@
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
 #include "InternalTools/WhileBuilder.h"
+#include "InternalTools/CastTable.h"
 #include "ExternalTools/ExternalTools.h"
 #include "Scope/SymbolTable.h"
 
@@ -61,6 +62,7 @@ protected:
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
     SymbolTable       * symbolTable;
+    CastTable         * ct;
 
     InternalTools *it;
     ExternalTools *et;
@@ -77,6 +79,7 @@ protected:
         et          = new ExternalTools(globalCtx, ir, mod);
         it          = new InternalTools(globalCtx, ir, mod);
         symbolTable = new SymbolTable();
+        ct          = new CastTable(globalCtx, ir);
     }
 
     /**

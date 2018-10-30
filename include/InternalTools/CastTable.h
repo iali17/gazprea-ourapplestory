@@ -5,14 +5,18 @@
 #ifndef GAZPREABASE_CASTTABLE_H
 #define GAZPREABASE_CASTTABLE_H
 
+#include <iostream>
+
 #include <llvm/IR/IRBuilder.h>
 #include "InternalTools.h"
 #include "globals.h"
 
 class CastTable {
 public:
+    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir);
+
     llvm::Value *typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr);
-    llvm::Value *upCast(llvm::Type *type, llvm::Value *expr);
+    llvm::Value *varCast(llvm::Type *type, llvm::Value *expr);
 
     int getType(llvm::Type *expr);
 
