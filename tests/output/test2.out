@@ -1,0 +1,31 @@
+; ModuleID = 'gazprea'
+source_filename = "gazprea"
+
+@intFormatStr = global [3 x i8] c"%d\00"
+@charFormatStr = global [3 x i8] c"%c\00"
+@floatFormatStr = global [3 x i8] c"%f\00"
+@spaceStr = global [2 x i8] c" \00"
+@eolnStr = global [2 x i8] c"\0A\00"
+@openSqrBStr = global [2 x i8] c"[\00"
+@closeSqrBStr = global [2 x i8] c"]\00"
+
+declare i32 @printf(i8* noalias nocapture, ...)
+
+declare void @free(i8*)
+
+; Function Attrs: nounwind
+declare noalias i8* @calloc(i64, i64) #0
+
+declare i32 @scanf(i8*, ...)
+
+define i32 @main() {
+entry:
+  %0 = alloca i32
+  store i32 1, i32* %0
+  %1 = alloca float
+  store float 1.000000e+00, float* %1
+  %2 = load i32, i32* %0
+  ret i32 %2
+}
+
+attributes #0 = { nounwind }

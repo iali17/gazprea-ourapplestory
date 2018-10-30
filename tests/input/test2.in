@@ -1,8 +1,8 @@
 procedure main() returns integer {
   integer x = 1;
-  real y = 1.0;
+  integer y = 1;
 
-  x = x + y;
+  y = x + y;
 
   return x;
 }

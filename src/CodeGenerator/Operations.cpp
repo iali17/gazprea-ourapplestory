@@ -4,12 +4,11 @@
 
 #include "CodeGenerator/CodeGenerator.h"
 
-
 llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value *leftValue = visit(node->getLeft());
     llvm::Value *rightValue = visit(node->getRight());
 
-    ct->typeCast(leftValue,rightValue);
+    ct->typePromotion(leftValue,rightValue);
     return ASTBaseVisitor::visit(node);
 }
 

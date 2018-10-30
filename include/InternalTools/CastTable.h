@@ -15,7 +15,7 @@ class CastTable {
 public:
     CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir);
 
-    llvm::Value *typeCast(llvm::Value *leftExpr, llvm::Value *rightExpr);
+    llvm::Value *typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr);
 
     int getType(llvm::Type *expr);
@@ -25,6 +25,11 @@ private:
                                     {"bool", "char", "int", "float"},
                                     {"bool", "char", "int", "float"},
                                     {"null", "null", "int", "float"}};
+
+    std::string typePTable[4][4] = { {"bool", "null", "null", "null"},
+                                     {"null", "char", "null", "null"},
+                                     {"null", "null", "int", "float"},
+                                     {"null", "null", "float", "float"}};
 
 protected:
     llvm::LLVMContext * globalCtx;
