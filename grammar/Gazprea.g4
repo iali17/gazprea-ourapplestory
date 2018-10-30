@@ -47,6 +47,7 @@ assignment
     | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
 
+//TODO - non initialized declaration
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
     |  CONST? (VAR | type) type* Identifier EQL Identifier

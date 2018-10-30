@@ -57,15 +57,45 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
 }
 
 antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) {
-    return GazpreaBaseVisitor::visitLessExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    if(ctx->op->getType() == gazprea::GazpreaParser::LESST){
+        return (ASTNode *) new LTNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::LESSTE){
+        return (ASTNode *) new LTENode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::MORET){
+        return (ASTNode *) new GTNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::MORETE){
+        return (ASTNode *) new GTENode(left, right);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitEqlExpr(gazprea::GazpreaParser::EqlExprContext *ctx) {
-    return GazpreaBaseVisitor::visitEqlExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    if(ctx->op->getType() == gazprea::GazpreaParser::EEQL){
+        return (ASTNode *) new EQNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::NEQL){
+        return (ASTNode *) new NEQNode(left, right);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitOrExpr(gazprea::GazpreaParser::OrExprContext *ctx) {
-    return GazpreaBaseVisitor::visitOrExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    if(ctx->op->getType() == gazprea::GazpreaParser::OR){
+        return (ASTNode *) new OrNode(left, right);
+    }
+    else if(ctx->op->getType() == gazprea::GazpreaParser::XOR){
+        return (ASTNode *) new XOrNode(left, right);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitDomainExpr(gazprea::GazpreaParser::DomainExprContext *ctx) {
@@ -116,7 +146,9 @@ antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::Identifi
 }
 
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
-    return GazpreaBaseVisitor::visitAndExpr(ctx);
+    ASTNode * left  = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+    return (ASTNode *) new AndNode(left, right);
 }
 
 antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementContext *ctx) {
