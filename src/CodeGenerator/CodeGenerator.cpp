@@ -260,7 +260,7 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
     for (unsigned int i = 0; i < node->getExprNodes()->size(); ++i) {
         if ((node->getExprNodes()->at(i)->getType()) == CHAR) {
             llvm::Value* ptr = ir->CreateAlloca(charTy);
-            llvm::Value* val = visit(node->getExprNodes()->at(i));=
+            llvm::Value* val = visit(node->getExprNodes()->at(i));
             ir->CreateStore(val, ptr);
             dumb.push_back(ptr);
         } else if ((node->getExprNodes()->at(i)->getType()) == INTEGER) {

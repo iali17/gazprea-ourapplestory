@@ -330,7 +330,8 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
-    char val = ctx->getText().at(0);
+    // char will be one character inside a single quotation so we just need to get the second element
+    char val = ctx->getText().at(1);
     return (ASTNode *) new CharNode(val);
 }
 
