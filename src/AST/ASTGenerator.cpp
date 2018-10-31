@@ -10,6 +10,7 @@
 #include <AST/ASTNodes/TerminalNodes/RealNode.h>
 #include <AST/ASTNodes/StatementNodes/DeclNode.h>
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
+#include <AST/ASTNodes/StatementNodes/CastExprNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -41,7 +42,9 @@ antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
-    return GazpreaBaseVisitor::visitCastExpr(ctx);
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+
+    return (ASTNode *) new CastExprNode(expr, ctx->type()->getText());
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {

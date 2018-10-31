@@ -28,6 +28,7 @@ public:
     virtual llvm::Value* visit(InLoopNode *node)     = 0;
     virtual llvm::Value* visit(AssignNode *node)     = 0;
     virtual llvm::Value* visit(DeclNode *node)       = 0;
+    virtual llvm::Value* visit(CastExprNode *node)   = 0;
     virtual llvm::Value* visit(IDNode *node)         = 0;
     virtual llvm::Value* visit(InputNode *node)      = 0;
     virtual llvm::Value* visit(OutputNode *node)     = 0;

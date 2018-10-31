@@ -29,9 +29,9 @@ int CastTable::getType(llvm::Type *expr) {
         return 0;
 }
 
-llvm::Value *CastTable::typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr) {
-    llvm::Value *lValueLoad = ir->CreateLoad(leftExpr);
-    llvm::Value *rValueLoad = ir->CreateLoad(rightExpr);
+llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
+    //llvm::Value *lValueLoad = ir->CreateLoad(leftExpr);
+    //llvm::Value *rValueLoad = ir->CreateLoad(rightExpr);
 
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
@@ -197,12 +197,14 @@ llvm::Value *CastTable::typePromotion(llvm::Value *leftExpr, llvm::Value *rightE
      */
 }
 
-llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *expr) {
+llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
+    // TODO: Gotta fix casting, giving a segfault
+
     // Value of expr
-    llvm::Value *exprLoad = ir->CreateLoad(expr);
+    //llvm::Value *exprLoad = ir->CreateLoad(expr);
 
     // GazpreaType of expr
     llvm::Type *exprType = exprLoad->getType();
@@ -253,7 +255,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *expr) {
     // Casting expr to float
     else if(typeString == "float") {
         if(exprString == "bool") {
-            ir->CreateFPToSI(exprLoad,intTy);
+            ir->CreateFPToSI(exprLoad, intTy);
             ir->CreateICmpNE(exprLoad, zero, "floatToBool");
         }
         else if(exprString == "char") {

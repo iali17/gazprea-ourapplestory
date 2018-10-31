@@ -62,6 +62,9 @@ public:
         else if (dynamic_cast<DeclNode *>(node)) {
             return visit((DeclNode *) node);
         }
+        else if (dynamic_cast<CastExprNode *>(node)) {
+            return visit((CastExprNode *) node);
+        }
         else if (dynamic_cast<IDNode *>(node)) {
             return visit((IDNode *) node);
         }
@@ -142,6 +145,7 @@ public:
     llvm::Value* visit(DoLoopNode *node) override { return nullptr;};
     llvm::Value* visit(DeclNode *node) override { return nullptr;};
     llvm::Value* visit(AssignNode *node) override { return nullptr;};
+    llvm::Value* visit(CastExprNode *node) override { return nullptr;};
     llvm::Value* visit(IDNode *node) override { return nullptr;};
     llvm::Value* visit(InputNode *node) override { return nullptr;};
     llvm::Value* visit(OutputNode *node) override { return nullptr;};
