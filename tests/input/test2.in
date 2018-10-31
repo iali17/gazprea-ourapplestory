@@ -1,6 +1,6 @@
 procedure main() returns integer {
   integer x = 1;
-  float y = as<real>(x);
+  real y = as<real>(x);
 
   return x;
 }

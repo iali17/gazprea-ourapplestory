@@ -263,7 +263,8 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             ir->CreateSIToFP(exprLoad, realTy, "intToFloat");
         }
         else if(exprString == "int") {
-            ir->CreateSIToFP(exprLoad, realTy, "intToFloat");
+            //need to return the casted value, other wise the casted value is never used
+            return ir->CreateSIToFP(exprLoad, realTy, "intToFloat");
         }
     }
 
