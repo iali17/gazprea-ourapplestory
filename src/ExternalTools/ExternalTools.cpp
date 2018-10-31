@@ -242,7 +242,7 @@ void ExternalTools::printReal(llvm::Value *val) {
     llvm::Value *formatStr =
             ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
 
-    ir->CreateCall(printfFunc, {formatStr, val});
+    ir->CreateCall(printfFunc, {formatStr, ir->CreateFPExt(val, llvm::Type::getDoubleTy(*globalCtx))});
 }
 
 void ExternalTools::registerScanf() {
@@ -284,7 +284,7 @@ void ExternalTools::print(llvm::Value *val) {
         printReal(val);
     }
 
-    //printStaticStr(EOLN_STR);
+    printStaticStr(EOLN_STR);
 }
 
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {

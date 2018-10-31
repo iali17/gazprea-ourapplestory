@@ -128,7 +128,7 @@ llvm::Value *CodeGenerator::visit(INTNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(RealNode *node) {
-    double val = node->getVal();
+    float val = node->getVal();
     return it->getReal(val);
 }
 
@@ -269,13 +269,16 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
             llvm::Value* val = visit(node->getExprNodes()->at(i));
             ir->CreateStore(val, ptr);
             dumb.push_back(ptr);
+        }  else if ((node->getExprNodes()->at(i)->getType()) == REAL) {
+            llvm::Value *ptr = ir->CreateAlloca(realTy);
+            llvm::Value *val = visit(node->getExprNodes()->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
         } else {
             // We are passing in a variable
             llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
             dumb.push_back(dumb2);
         }
-
-
     }
 
     return ir->CreateCall(func, dumb);

@@ -12,7 +12,7 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-llvm::Value *InternalTools::getReal(double val) {
+llvm::Value *InternalTools::getReal(float val) {
     return llvm::ConstantFP::get(realTy, val);
 }
 

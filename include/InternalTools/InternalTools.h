@@ -22,7 +22,7 @@ public:
     //tools
     llvm::Value *geti1(int64_t val);
     llvm::Value *geti8(int64_t val);
-    llvm::Value *getReal(double val);
+    llvm::Value *getReal(float val);
     llvm::Value *getConsi32(int64_t val);
     llvm::Value *getConsi64(int64_t val);
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,

@@ -305,7 +305,6 @@ antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) 
     std::string str2Val;
 
     std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
-    std::cout << str2Val << "\n";
     float val = std::stof(str2Val);
     return (ASTNode *) new RealNode(val);
 }
