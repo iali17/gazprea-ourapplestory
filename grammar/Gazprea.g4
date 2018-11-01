@@ -8,6 +8,7 @@ file: ( typeDefine | procedure )* EOF;
 expr
     : Integer                                                       #integerExpr
     | real                                                          #realExpr
+    | (TRUE|FALSE)                                                  #boolExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
@@ -213,7 +214,7 @@ Exponent: E (ADD | SUB)? Integer;
 Integer: [0-9][0-9_]* ;
 Decimal: [0-9_]+ ;
 Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
-Boolean: TRUE | FALSE;
+Boolean: (TRUE | FALSE);
 
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;

@@ -1,31 +1,39 @@
 procedure main() returns integer {
+  boolean s = true;
   integer u = 58;
   character v = 'a';
-  real w = 97.0;
+  real w = -97.0;
 
   character x = as<character>(u);
+  character y = as<character>(s);
 
   integer a = as<integer>(v);
   integer b = as<integer>(w);
+  integer c = as<integer>(s);
 
+  real h = as<real>(s);
   real i = as<real>(u);
   real j = as<real>(v);
 
   var out = std_output();
 
   // Print default types
+  s -> out;
   u -> out;
   v -> out;
   w -> out;
 
   // Print cast to character
   x -> out;
+  y -> out;
 
   // Print cast to integer
   a -> out;
   b -> out;
+  c -> out;
 
   // Print cast to real
+  h -> out;
   i -> out;
   j -> out;
 

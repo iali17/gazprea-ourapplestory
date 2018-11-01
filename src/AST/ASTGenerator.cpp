@@ -300,6 +300,20 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
     return (ASTNode *) new ReturnNode(expr);
 }
 
+
+antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) {
+    std::string strExpr = ctx->getText();
+    if(strExpr == "true") {
+        bool val = true;
+        return (ASTNode *) new BoolNode(val);
+    }
+    else if(strExpr == "false" || strExpr == "null") {
+        bool val = false;
+        return (ASTNode *) new BoolNode(val);
+    }
+    return nullptr;
+}
+
 antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
     std::string strVal = ctx->getText();
     std::string str2Val;

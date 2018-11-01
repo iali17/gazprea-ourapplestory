@@ -23,16 +23,13 @@ int CastTable::getType(llvm::Type *expr) {
         return 2;
     else if(expr == realTy)
         return 3;
-    else if(expr == charTy || i8Ty)
-        return 1;
     else if(expr == boolTy)
         return 0;
+    else if(expr == charTy || i8Ty)
+        return 1;
 }
 
 llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
-    //llvm::Value *lValueLoad = ir->CreateLoad(leftExpr);
-    //llvm::Value *rValueLoad = ir->CreateLoad(rightExpr);
-
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();
@@ -61,140 +58,6 @@ llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rVal
     else {
         std::cerr << "No implicit conversion possible\n";
     }
-
-
-    // MAYBE DELETE? since the only type promotion is int->float
-    // If kyle is doing it in the ast is there a need for this function.
-    /*
-    // GazpreaType cast to bool
-    if(castType == "bool") {
-        // Cast from int to bool
-        if(lTypeString == "int" || rTypeString == "int") {
-            uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
-            llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
-
-            if(lTypeString == "int") {
-                ir->CreateICmpNE(lValueLoad, zero, "cast");
-            }
-            else {
-                ir->CreateICmpNE(rValueLoad, zero, "cast");
-            }
-        }
-        // Cast from char to bool
-        else if(lTypeString == "char" || rTypeString == "char") {
-            if(lTypeString == "char") {
-
-            }
-            else {
-
-            }
-        }
-    }
-
-    // GazpreaType cast to char
-    else if(castType == "char") {
-        // Cast from bool to char
-        if(lTypeString == "bool" || rTypeString == "bool") {
-            if(lTypeString == "bool") {
-
-            }
-            else {
-
-            }
-        }
-        // Cast from int to char
-        else if(lTypeString == "int" || rTypeString == "int") {
-            if(lTypeString == "int") {
-
-            }
-            else {
-
-            }
-        }
-        else {
-            std::cout << "Cast unnecessary\n";
-        }
-    }
-
-    // GazpreaType cast to int
-    else if(castType == "int") {
-        // Cast from bool to int
-        if(lTypeString == "bool" || rTypeString == "bool") {
-            if(lTypeString == "bool") {
-
-            }
-            else {
-
-            }
-        }
-        // Cast from char to int
-        else if(lTypeString == "char" || rTypeString == "char") {
-            if(lTypeString == "char") {
-
-            }
-            else {
-
-            }
-        }
-        // Cast from float to int
-        else if(lTypeString == "float" || rTypeString == "float") {
-            if(lTypeString == "float") {
-
-            }
-            else {
-
-            }
-        }
-        else {
-            std::cout << "Cast unnecessary\n";
-        }
-    }
-
-    // GazpreaType cast to float
-    else if(castType == "float") {
-        // Cast from bool to float
-        if(lTypeString == "bool" || rTypeString == "bool") {
-            if(lTypeString == "bool") {
-
-            }
-            else {
-
-            }
-        }
-        // Cast from char to float
-        else if(lTypeString == "char" || rTypeString == "char") {
-            if(lTypeString == "char") {
-
-            }
-            else {
-
-            }
-        }
-        // Cast from int to float
-        else if(lTypeString == "int" || rTypeString == "int") {
-            if(lTypeString == "int") {
-                ir->CreateSIToFP(lValueLoad, realTy);
-
-                std::cout << "left upcast\n";
-            }
-            else {
-                ir->CreateSIToFP(rValueLoad, realTy);
-
-                std::cout << "right upcast\n";
-            }
-        }
-        else {
-            std::cout << "Cast unnecessary\n";
-        }
-    }
-
-    // TODO: Better error code
-    // Invalid cast, return error
-    else {
-        std::cerr << "Implicit cast\n";
-    }
-
-     */
 }
 
 llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
@@ -218,19 +81,19 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Casting expr to bool
     if(typeString == "bool"){
         if(exprString == "char") {
-            ir->CreateSExt(exprLoad, intTy);
-            ir->CreateICmpNE(exprLoad, zero, "charToBool");
+            llvm::Value *temp = ir->CreateZExt(exprLoad, intTy, "charToInt");
+            return ir->CreateICmpNE(temp, zero, "charToBool");
         }
         else if(exprString == "int") {
-            ir->CreateICmpNE(exprLoad, zero, "intToBool");
+            return ir->CreateICmpNE(exprLoad, zero, "intToBool");
         }
     }
 
     // Casting expr to char
     else if(typeString == "char") {
         if(exprString == "bool") {
-            ir->CreateSExt(exprLoad, intTy, "boolToInt");
-            ir->CreateTrunc(exprLoad, charTy, "intToChar");
+            llvm::Value *temp = ir->CreateZExt(exprLoad, intTy, "boolToInt");
+            return ir->CreateTrunc(temp, charTy, "intToChar");
         }
         else if(exprString == "int") {
             return ir->CreateTrunc(exprLoad, charTy, "intToChar");
@@ -240,7 +103,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Casting expr to int
     else if(typeString == "int") {
         if(exprString == "bool") {
-            ir->CreateSExt(exprLoad, intTy, "boolToInt");
+            return ir->CreateZExt(exprLoad, intTy, "boolToInt");
         }
         else if(exprString == "char") {
             return ir->CreateSExt(exprLoad, intTy, "charToInt");
@@ -253,14 +116,12 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Casting expr to real
     else if(typeString == "real") {
         if(exprString == "bool") {
-            //ir->CreateFPToSI(exprLoad, intTy);
-            return ir->CreateSIToFP(exprLoad, realTy, "boolToReal");
+            return ir->CreateUIToFP(exprLoad, realTy, "boolToReal");
         }
         else if(exprString == "char") {
-            return ir->CreateSIToFP(exprLoad, realTy, "intToReal");
+            return ir->CreateSIToFP(exprLoad, realTy, "charToReal");
         }
         else if(exprString == "int") {
-            //need to return the casted value, other wise the casted value is never used
             return ir->CreateSIToFP(exprLoad, realTy, "intToReal");
         }
     }

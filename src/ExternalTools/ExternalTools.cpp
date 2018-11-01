@@ -224,7 +224,7 @@ void ExternalTools::printBoolean(llvm::Value *val) {
     llvm::Value *formatStr =
             ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
 
-    llvm::Value * b = ir->CreateIntCast(val, intTy, true);
+    llvm::Value * b = ir->CreateZExt(val, intTy);
     ir->CreateCall(printfFunc, {formatStr, b});
 }
 
