@@ -284,8 +284,9 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
     return ir->CreateCall(func, dumb);
 }
 
-// Ask kyle how this node stuff works
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr = visit(node->getExpr());
-    return ct->varCast(realTy, expr);
+    llvm::Type *type = symbolTable->resolveType(node->getTypeString())->getTypeDef();
+
+    return ct->varCast(type, expr);
 }

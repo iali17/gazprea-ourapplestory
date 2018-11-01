@@ -1,6 +1,33 @@
 procedure main() returns integer {
-  integer x = 1;
-  real y = as<real>(x);
+  integer u = 58;
+  character v = 'a';
+  real w = 97.0;
 
-  return x;
+  character x = as<character>(u);
+
+  integer a = as<integer>(v);
+  integer b = as<integer>(w);
+
+  real i = as<real>(u);
+  real j = as<real>(v);
+
+  var out = std_output();
+
+  // Print default types
+  u -> out;
+  v -> out;
+  w -> out;
+
+  // Print cast to character
+  x -> out;
+
+  // Print cast to integer
+  a -> out;
+  b -> out;
+
+  // Print cast to real
+  i -> out;
+  j -> out;
+
+  return a;
 }

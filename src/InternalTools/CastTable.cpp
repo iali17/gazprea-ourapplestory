@@ -19,11 +19,11 @@ CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir) : glob
 }
 
 int CastTable::getType(llvm::Type *expr) {
-    if(expr == i64Ty || expr == i32Ty || expr == i8Ty || expr == intTy)
+    if(expr == i64Ty || expr == i32Ty || expr == intTy)
         return 2;
     else if(expr == realTy)
         return 3;
-    else if(expr == charTy)
+    else if(expr == charTy || i8Ty)
         return 1;
     else if(expr == boolTy)
         return 0;
@@ -50,12 +50,12 @@ llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rVal
         std::cout << "No conversion necessary\n";
     }
     // Only viable cast for scalars: int -> real
-    else if(castType == "float") {
+    else if(castType == "real") {
         if(lTypeString == "int") {
-            ir->CreateSIToFP(lValueLoad, realTy, "upCastIntToReal");
+            return ir->CreateSIToFP(lValueLoad, realTy, "upCastIntToReal");
         }
         else {
-            ir->CreateSIToFP(rValueLoad, realTy, "upCastIntToreal");
+            return ir->CreateSIToFP(rValueLoad, realTy, "upCastIntToreal");
         }
     }
     else {
@@ -201,11 +201,6 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
-    // TODO: Gotta fix casting, giving a segfault
-
-    // Value of expr
-    //llvm::Value *exprLoad = ir->CreateLoad(expr);
-
     // GazpreaType of expr
     llvm::Type *exprType = exprLoad->getType();
 
@@ -216,6 +211,9 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Cast type
     std::string exprString = typeTable[exprPos][exprPos];
     std::string typeString = typeTable[exprPos][typePos];
+
+    //std::cout << exprString << std::endl;
+    //std::cout << typeString << std::endl;
 
     // Casting expr to bool
     if(typeString == "bool"){
@@ -235,7 +233,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             ir->CreateTrunc(exprLoad, charTy, "intToChar");
         }
         else if(exprString == "int") {
-            ir->CreateTrunc(exprLoad, charTy, "intToChar");
+            return ir->CreateTrunc(exprLoad, charTy, "intToChar");
         }
     }
 
@@ -245,26 +243,25 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             ir->CreateSExt(exprLoad, intTy, "boolToInt");
         }
         else if(exprString == "char") {
-            ir->CreateSExt(exprLoad, intTy, "charToInt");
+            return ir->CreateSExt(exprLoad, intTy, "charToInt");
         }
-        else if(exprString == "float") {
-            ir->CreateFPToSI(exprLoad, intTy, "floatToInt");
+        else if(exprString == "real") {
+            return ir->CreateFPToSI(exprLoad, intTy, "realToInt");
         }
     }
 
-    // Casting expr to float
-    else if(typeString == "float") {
+    // Casting expr to real
+    else if(typeString == "real") {
         if(exprString == "bool") {
-            ir->CreateFPToSI(exprLoad, intTy);
-            ir->CreateICmpNE(exprLoad, zero, "floatToBool");
+            //ir->CreateFPToSI(exprLoad, intTy);
+            return ir->CreateSIToFP(exprLoad, realTy, "boolToReal");
         }
         else if(exprString == "char") {
-            ir->CreateSExt(exprLoad, intTy, "charToInt");
-            ir->CreateSIToFP(exprLoad, realTy, "intToFloat");
+            return ir->CreateSIToFP(exprLoad, realTy, "intToReal");
         }
         else if(exprString == "int") {
             //need to return the casted value, other wise the casted value is never used
-            return ir->CreateSIToFP(exprLoad, realTy, "intToFloat");
+            return ir->CreateSIToFP(exprLoad, realTy, "intToReal");
         }
     }
 

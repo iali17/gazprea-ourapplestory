@@ -21,15 +21,15 @@ public:
     int getType(llvm::Type *expr);
 
 private:
-    std::string typeTable[4][4] = { {"bool", "char", "int", "float"},
-                                    {"bool", "char", "int", "float"},
-                                    {"bool", "char", "int", "float"},
-                                    {"null", "null", "int", "float"}};
+    std::string typeTable[4][4] = { {"bool", "char", "int", "real"},
+                                    {"bool", "char", "int", "real"},
+                                    {"bool", "char", "int", "real"},
+                                    {"null", "null", "int", "real"}};
 
     std::string typePTable[4][4] = { {"bool", "null", "null", "null"},
                                      {"null", "char", "null", "null"},
-                                     {"null", "null", "int", "float"},
-                                     {"null", "null", "float", "float"}};
+                                     {"null", "null", "int", "real"},
+                                     {"null", "null", "real", "real"}};
 
 protected:
     llvm::LLVMContext * globalCtx;
