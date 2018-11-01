@@ -14,6 +14,12 @@ extern llvm::Type *boolTy;
 llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -32,7 +38,12 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
 llvm::Value *CodeGenerator::visit(SubNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
-    //Todo promote
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -50,6 +61,12 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
 llvm::Value *CodeGenerator::visit(MulNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -68,6 +85,12 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
 llvm::Value *CodeGenerator::visit(DivNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -86,6 +109,12 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
 llvm::Value *CodeGenerator::visit(RemNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -104,6 +133,12 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
 llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -122,6 +157,12 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
 llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -140,6 +181,12 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
 llvm::Value *CodeGenerator::visit(GTNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -158,6 +205,12 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
 llvm::Value *CodeGenerator::visit(LTNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -176,6 +229,12 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
 llvm::Value *CodeGenerator::visit(GTENode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -194,6 +253,12 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
 llvm::Value *CodeGenerator::visit(LTENode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -212,6 +277,12 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
 llvm::Value *CodeGenerator::visit(AndNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -221,6 +292,12 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
 llvm::Value *CodeGenerator::visit(OrNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 
@@ -230,6 +307,12 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
 llvm::Value *CodeGenerator::visit(XOrNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
     //Todo promote
     assert(left->getType() == right->getType());
 

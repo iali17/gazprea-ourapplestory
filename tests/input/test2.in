@@ -1,6 +1,6 @@
 procedure main() returns integer {
   boolean s = true;
-  integer u = 58;
+  integer u = -58;
   character v = 'a';
   real w = -97.0;
 

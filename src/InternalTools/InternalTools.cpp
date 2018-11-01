@@ -12,6 +12,13 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
+InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
+    pair pair1;
+    pair1.left = leftV;
+    pair1.right = rightV;
+    return pair1;
+}
+
 llvm::Value *InternalTools::getReal(float val) {
     return llvm::ConstantFP::get(realTy, val);
 }

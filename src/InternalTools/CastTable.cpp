@@ -14,7 +14,7 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir) : globalCtx(globalctx), ir(ir) {
+CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it) : globalCtx(globalctx), ir(ir), it(it) {
     // Do nothing
 }
 
@@ -29,7 +29,7 @@ int CastTable::getType(llvm::Type *expr) {
         return 1;
 }
 
-llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
+InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();
@@ -45,18 +45,20 @@ llvm::Value *CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rVal
 
     if(castType == lTypeString && castType == rTypeString) {
         std::cout << "No conversion necessary\n";
+        return it->makePair(lValueLoad, rValueLoad);
     }
     // Only viable cast for scalars: int -> real
     else if(castType == "real") {
         if(lTypeString == "int") {
-            return ir->CreateSIToFP(lValueLoad, realTy, "upCastIntToReal");
+            return it->makePair(ir->CreateSIToFP(lValueLoad, realTy, "upCastIntToReal"), rValueLoad);
         }
         else {
-            return ir->CreateSIToFP(rValueLoad, realTy, "upCastIntToreal");
+            return it->makePair(lValueLoad, ir->CreateSIToFP(rValueLoad, realTy, "upCastIntToreal"));
         }
     }
     else {
         std::cerr << "No implicit conversion possible\n";
+        return it->makePair(lValueLoad, rValueLoad);
     }
 }
 
@@ -88,7 +90,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             return ir->CreateICmpNE(exprLoad, zero, "intToBool");
         }
     }
-
+    // TODO: Fix stuff to char
     // Casting expr to char
     else if(typeString == "char") {
         if(exprString == "bool") {
@@ -119,7 +121,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             return ir->CreateUIToFP(exprLoad, realTy, "boolToReal");
         }
         else if(exprString == "char") {
-            return ir->CreateSIToFP(exprLoad, realTy, "charToReal");
+            return ir->CreateUIToFP(exprLoad, realTy, "charToReal");
         }
         else if(exprString == "int") {
             return ir->CreateSIToFP(exprLoad, realTy, "intToReal");
