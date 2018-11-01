@@ -110,6 +110,15 @@ antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) {
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    if     (ctx->SUB()){
+        ASTNode * zero = (ASTNode *) new INTNode(0);
+        return (ASTNode *) new SubNode(zero, expr);
+    }
+    else if(ctx->NOT()){
+        return (ASTNode *) new NegateNode(expr);
+    }
+
     return GazpreaBaseVisitor::visitUnaryExpr(ctx);
 }
 
