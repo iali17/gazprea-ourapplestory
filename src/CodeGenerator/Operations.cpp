@@ -3,67 +3,328 @@
 //
 
 #include "CodeGenerator/CodeGenerator.h"
+extern llvm::Type *i64Ty;
+extern llvm::Type *i32Ty;
+extern llvm::Type *intTy;
+extern llvm::Type *i8Ty;
+extern llvm::Type *charTy;
+extern llvm::Type *realTy;
+extern llvm::Type *boolTy;
 
 llvm::Value *CodeGenerator::visit(AddNode *node) {
-    llvm::Value *leftValue = visit(node->getLeft());
-    llvm::Value *rightValue = visit(node->getRight());
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
 
-    ct->typePromotion(leftValue,rightValue);
-    return ASTBaseVisitor::visit(node);
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateAdd(left, right, "iaddtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFAdd(left, right, "faddtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(SubNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateSub(left, right, "iaddtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFSub(left, right, "faddtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(MulNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateMul(left, right, "imultmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFMul(left, right, "fmultmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(DivNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateSDiv(left, right, "idivtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFDiv(left, right, "fdivtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(RemNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateSRem(left, right, "iremtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFRem(left, right, "fremtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(EQNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpEQ(left, right, "ieqtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUEQ(left, right, "feqtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(NEQNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpNE(left, right, "ineqtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUNE(left, right, "fneqtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(GTNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpSGT(left, right, "igttmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUGT(left, right, "fgttmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(LTNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpSLT(left, right, "ilttmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpULT(left, right, "flttmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(GTENode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpSGE(left, right, "igtetmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpOGE(left, right, "fgtetmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(LTENode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        return ir->CreateICmpSLE(left, right, "iltetmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpOLE(left, right, "fltetmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(AndNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    return ir->CreateAnd(left, right, "andtmp");
 }
 
 llvm::Value *CodeGenerator::visit(OrNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    return ir->CreateOr(left, right, "andtmp");
 }
 
 llvm::Value *CodeGenerator::visit(XOrNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    //Todo promote
+    assert(left->getType() == right->getType());
+
+    return ir->CreateXor(left, right, "andtmp");
 }
 
 llvm::Value *CodeGenerator::visit(NegateNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value * expr  = visit(node->getExpr());
+
+    if (expr->getType() == realTy){
+        return ir->CreateFNeg(expr, "fnegtmp");
+    }
+
+    return ir->CreateNeg(expr, "negtmp");
 }

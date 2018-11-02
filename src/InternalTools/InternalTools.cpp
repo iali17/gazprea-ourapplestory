@@ -12,6 +12,13 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
+InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
+    pair pair1;
+    pair1.left = leftV;
+    pair1.right = rightV;
+    return pair1;
+}
+
 llvm::Value *InternalTools::getReal(float val) {
     return llvm::ConstantFP::get(realTy, val);
 }
@@ -73,6 +80,6 @@ void InternalTools::setUpTypes() {
     intTy  = llvm::TypeBuilder<llvm::types::i<32>, true>::get(*globalCtx);
     i8Ty   = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     charTy = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
+    boolTy = llvm::TypeBuilder<llvm::types::i<1>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
-    boolTy = llvm::Type::getInt1Ty(*globalCtx);
 }

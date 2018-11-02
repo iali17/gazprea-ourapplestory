@@ -27,6 +27,7 @@ private:
     antlrcpp::Any visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) override;
     antlrcpp::Any visitAddExpr(gazprea::GazpreaParser::AddExprContext *ctx) override;
     antlrcpp::Any visitMulExpr(gazprea::GazpreaParser::MulExprContext *ctx) override;
+    antlrcpp::Any visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) override;
     antlrcpp::Any visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) override;
     antlrcpp::Any visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) override;
     antlrcpp::Any visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) override;

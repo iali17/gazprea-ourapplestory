@@ -13,9 +13,9 @@
 
 class CastTable {
 public:
-    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir);
+    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it);
 
-    llvm::Value *typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr);
+    InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr);
 
     int getType(llvm::Type *expr);
@@ -34,6 +34,7 @@ private:
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
+    InternalTools * it;
 };
 
 #endif //GAZPREABASE_CASTTABLE_H

@@ -17,6 +17,12 @@
 
 class InternalTools {
 public:
+    struct pair{
+        pair():left(nullptr),right(nullptr){};
+        llvm::Value *left;
+        llvm::Value *right;
+    };
+
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
     void setUpTypes();
     //tools
@@ -27,6 +33,7 @@ public:
     llvm::Value *getConsi64(int64_t val);
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
                              llvm::Value *arrP, llvm::Value *replaceVal);
+    pair makePair(llvm::Value *left, llvm::Value *right);
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

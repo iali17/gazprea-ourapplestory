@@ -113,6 +113,15 @@ antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) {
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    if     (ctx->SUB()){
+        ASTNode * zero = (ASTNode *) new INTNode(0);
+        return (ASTNode *) new SubNode(zero, expr);
+    }
+    else if(ctx->NOT()){
+        return (ASTNode *) new NegateNode(expr);
+    }
+
     return GazpreaBaseVisitor::visitUnaryExpr(ctx);
 }
 
@@ -301,6 +310,20 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
     if(ctx->expr())
         expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new ReturnNode(expr);
+}
+
+
+antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) {
+    std::string strExpr = ctx->getText();
+    if(strExpr == "true") {
+        bool val = true;
+        return (ASTNode *) new BoolNode(val);
+    }
+    else if(strExpr == "false" || strExpr == "null") {
+        bool val = false;
+        return (ASTNode *) new BoolNode(val);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {

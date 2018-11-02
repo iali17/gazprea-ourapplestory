@@ -286,7 +286,11 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
 
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr = visit(node->getExpr());
+    llvm::Type *typeS = expr->getType();
+
     llvm::Type *type = symbolTable->resolveType(node->getTypeString())->getTypeDef();
+
+
 
     return ct->varCast(type, expr);
 }
