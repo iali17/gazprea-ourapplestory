@@ -4,7 +4,18 @@
 
 #include "AST/ASTNodes/StatementNodes/TupleDeclNode.h"
 
-TupleDeclNode::TupleDeclNode(ASTNode *expr, std::vector<std::string> *typeID, std::vector<std::string> *identifierID,
-                             bool constant, const std::string &ID) : UnaryNode(expr), typeID(typeID),
-                                                                     identifierID(identifierID), constant(constant),
-                                                                     ID(ID) {}
+TupleDeclNode::TupleDeclNode(
+        ASTNode *expr, std::vector<std::string> *typeID,
+        std::vector<std::string> *identifierID, bool constant, const std::string &ID
+        )
+        : UnaryNode(expr), typeID(typeID), identifierID(identifierID), constant(constant), ID(ID) {}
+
+const std::string &TupleDeclNode::getID() const {
+    return ID;
+}
+
+
+bool TupleDeclNode::isConstant() const {
+    return constant;
+}
+

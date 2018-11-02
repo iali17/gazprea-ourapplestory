@@ -16,7 +16,8 @@ public:
 
     std::vector<std::string> * typeID;
     std::vector<std::string> * identifierID;
-
+    bool isConstant() const;
+    const std::string &getID() const;
 
 protected:
     bool constant;
