@@ -6,14 +6,14 @@ file: ( typeDefine | procedure )* EOF;
 // TODO: check for precendence
 // TODO TUPLE
 expr
-    : Integer                                                       #integerExpr
+    : '(' expr ')'                                                  #brackExpr
+    | Integer                                                       #integerExpr
     | real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
     | Identifier                                                    #identifierExpr
-    | '(' expr ')'                                                  #brackExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | Identifier '.' (Identifier | Integer)                         #tupleIndexExpr

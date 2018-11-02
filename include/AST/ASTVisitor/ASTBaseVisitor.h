@@ -125,7 +125,7 @@ public:
         else if (dynamic_cast<GTENode *>(node)) {
             return visit((GTENode *) node);
         }
-        fprintf(stderr, "Unrecognized class\n");
+        //fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
 

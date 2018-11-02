@@ -43,6 +43,26 @@ llvm::Value *InternalTools::getConsi64(int64_t val) {
     return llvm::ConstantInt::get(i64Ty, trueValue, true);
 }
 
+bool InternalTools::setNull(llvm::Type * type, llvm::Value * ptr) {
+    if(type == boolTy){
+        ir->CreateStore(geti1(0), ptr);
+        return true;
+    }
+    else if (type == i8Ty){
+        ir->CreateStore(geti8(0), ptr);
+        return true;
+    }
+    else if(type == intTy){
+        ir->CreateStore(getConsi32(0), ptr);
+        return true;
+    }
+    else if(type == realTy){
+        ir->CreateStore(getReal(0), ptr);
+        return true;
+    }
+    return false;
+}
+
 InternalTools::InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
     setUpTypes();

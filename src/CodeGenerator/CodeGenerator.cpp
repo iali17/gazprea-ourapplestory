@@ -148,10 +148,12 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     unsigned long i = 0;
     for(i = 0; i < node->getConds()->size(); i++){
         if(i){
-            condBuilder->createElseIf(visit(node->getConds()->at(i)));
+            llvm::Value *cond = visit(node->getConds()->at(i));
+            condBuilder->createElseIf(ct->varCast(boolTy, cond));
         }
         else {
-            condBuilder->createIf(visit(node->getConds()->at(i)));
+            llvm::Value *cond = visit(node->getConds()->at(i));
+            condBuilder->createIf(ct->varCast(boolTy, cond));
         }
         visit(node->getBlocks()->at(i));
     }
@@ -167,10 +169,13 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
 llvm::Value *CodeGenerator::visit(LoopNode *node) {
     WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileBuilder->beginWhile();
-    if(node->getControl())
-        whileBuilder->insertControl(visit(node->getControl()));
+    if(node->getControl()) {
+        llvm::Value *cond = visit(node->getControl());
+        whileBuilder->insertControl(ct->varCast(boolTy, cond));
+    }
     else
         whileBuilder->insertControl(it->geti1(1));
+
     visit(node->getBlock());
     whileBuilder->endWhile();
     return nullptr;
@@ -180,7 +185,8 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileBuilder->beginWhile();
     visit(node->getBlock());
-    whileBuilder->insertControl(visit(node->getControl()));
+    llvm::Value *cond = visit(node->getControl());
+    whileBuilder->insertControl(ct->varCast(boolTy, cond));
     whileBuilder->endWhile();
     return nullptr;
 }
@@ -203,7 +209,15 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
     else if (node->getTypeIds()->size() == 1){
-        ptr = ir->CreateAlloca(symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef());
+        llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+        ptr = ir->CreateAlloca(type);
+        if(val == nullptr) {
+            if (!(it->setNull(type, ptr))){
+                std::cerr << "Unable to initialize to null\n";
+            }
+            symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+            return nullptr;
+        }
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
@@ -214,17 +228,24 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
+    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     llvm::Value *val = visit(node->getExpr());
     //TODO - IMPLICIT UPCAST WHEN NEEDED
-    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
-    ir->CreateStore(val, ptr);
+    if(val) {
+        ir->CreateStore(val, ptr);
+    }
+    else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
+            std::cerr << "Unable to initialize to null\n";
+    }
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(IDNode *node) {
+    if(node->getID() == "null"){
+        return nullptr;
+    }
 
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
-
     return ir->CreateLoad(ptr);
 }
 
