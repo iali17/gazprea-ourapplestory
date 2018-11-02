@@ -18,6 +18,7 @@
 #define VECTOR    4
 #define REAL      5
 #define CHAR      6
+#define TUPLE     7
 
 class ASTNode  {
 public:

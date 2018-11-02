@@ -1,7 +1,7 @@
 //
 // Created by kyle on 20/10/18.
 //
-
+#include <algorithm>
 #include <AST/ASTGenerator.h>
 #include <AST/ASTNodes/BaseNodes/BasicBlockNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureNode.h>
@@ -11,6 +11,7 @@
 #include <AST/ASTNodes/StatementNodes/DeclNode.h>
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include <AST/ASTNodes/StatementNodes/CastExprNode.h>
+#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -33,7 +34,9 @@ antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentEx
 }
 
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
-    int val = std::stoi(ctx->getText());
+    std::string rawStr = ctx->getText();
+    rawStr.erase(std::remove(rawStr.begin(), rawStr.end(), '_'), rawStr.end());     // remove the underscores
+    int val = std::stoi(rawStr);
     return (ASTNode *) new INTNode(val);
 }
 
@@ -303,6 +306,8 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
 antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
     std::string strVal = ctx->getText();
     std::string str2Val;
+    strVal.erase(std::remove(strVal.begin(), strVal.end(), '_'), strVal.end());     // remove the underscores
+
 
     std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
     float val = std::stof(str2Val);
@@ -319,9 +324,20 @@ antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
-    ASTNode * expr = (ASTNode *) visit(ctx->expr());
-    bool constant  = (nullptr == ctx->CONST());
+    ASTNode *expr = (ASTNode *) visit(ctx->expr());
+    bool constant = (nullptr == ctx->CONST());
     std::string id = ctx->Identifier()->getText();
+    std::string ty = ctx->type(0)->getText();
+
+    // if decl is a tuple decl then
+    if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+
+
+
+    }
+
+
+
     std::vector<std::string> *typeVec = new std::vector<std::string>();
 
     unsigned int i;
@@ -365,3 +381,24 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
 antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) {
     return GazpreaBaseVisitor::visitProcedureCallDecl(ctx);
 }
+
+antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
+    return GazpreaBaseVisitor::visitProcedureCallAss(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
+    std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
+    unsigned long int i;
+    for(i = 0; i < ctx->expr().size(); i++){
+        conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
+    }
+
+
+    return (ASTNode *) new TupleNode(conds);
+}
+
+antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
+    // todo
+    return nullptr;
+}
+

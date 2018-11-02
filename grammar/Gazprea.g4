@@ -127,19 +127,24 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-//the last line matches integer so i swapped the order in expr
+//todo 1._2e3 doesnt work
 real
     : Integer? '.' (Integer | Decimal) Exponent?
     | Integer '.'? Exponent?
     ;
 
 tuple
-    : '(' expr COMMA expr (COMMA expr)* ')'
+    : '(' expr (COMMA expr)+ ')'
     ;
 
 tupleType
-    : TUPLE '(' type Identifier? COMMA type Identifier? (COMMA type Identifier?)* ')'
+    : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)* ')'
     ;
+
+tupleTypeIdentifier
+    : type Identifier?
+    ;
+
 
 //-------------------------------------------------
 
@@ -209,7 +214,7 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Exponent: E (ADD | SUB)? Integer;
+Exponent: E '_'* (ADD | SUB)? Decimal;
 Integer: [0-9][0-9_]* ;
 Decimal: [0-9_]+ ;
 Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;

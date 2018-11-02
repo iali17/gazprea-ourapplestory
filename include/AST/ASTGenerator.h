@@ -55,6 +55,10 @@ private:
     antlrcpp::Any visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) override;
     antlrcpp::Any visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) override;
     antlrcpp::Any visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) override;
+    antlrcpp::Any visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) override;
+    antlrcpp::Any visitTuple(gazprea::GazpreaParser::TupleContext *ctx) override;
+    antlrcpp::Any visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) override;
+
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

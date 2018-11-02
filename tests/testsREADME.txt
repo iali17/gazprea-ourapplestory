@@ -20,5 +20,11 @@ should work for realz:
     int . dec exp
         . dec
         . dec exp
+
+    int _ int _ . _ int _ e _ + _ int _
+
+
+
+
 should not:
         .     exp
