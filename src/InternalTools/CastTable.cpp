@@ -77,8 +77,13 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     std::string exprString = typeTable[exprPos][exprPos];
     std::string typeString = typeTable[exprPos][typePos];
 
+    // Casting to same type
+    if(typeString == exprString) {
+        return exprLoad;
+    }
+
     // Casting expr to bool
-    if(typeString == "bool"){
+    else if(typeString == "bool"){
         if(exprString == "char") {
             llvm::Value *temp = ir->CreateZExt(exprLoad, intTy, "charToInt");
             return ir->CreateICmpNE(temp, zero, "charToBool");
@@ -145,5 +150,6 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Can't cast to type, return an error
     else {
         std::cerr << "Implicit cast\n";
+        exit(1);
     }
 }
