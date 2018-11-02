@@ -159,7 +159,6 @@ MORETE: '>=' ;
 SEMICOLON: ';' ;
 DOTDOT: '..';
 COMMA: ',';
-
 AND: 'and';
 AS: 'as';
 BOOLEAN: 'boolean';
@@ -170,7 +169,6 @@ CHARACTER: 'character';
 COLUMNS: 'columns';
 CONST: 'const';
 CONTINUE: 'continue';
-E: 'e';
 ELSE: 'else';
 FALSE: 'false';
 FILTER: 'filter';
@@ -209,7 +207,6 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Exponent: E '_'* (ADD | SUB)? [0-9_]+;
 Integer: [0-9][0-9_]* ;
 
 Real
@@ -217,9 +214,11 @@ Real
     | Integer '.'? Exponent?
     ;
 
-Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
-Boolean: (TRUE | FALSE);
+Exponent: 'e' '_'* (ADD | SUB)? [0-9_]+;
 
+Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
+
+Boolean: (TRUE | FALSE);
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2

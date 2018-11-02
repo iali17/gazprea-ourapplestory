@@ -1,19 +1,25 @@
 procedure main () returns integer {
+  var out = std_output();               // declare out
+
 
 real a = 1.         ;
-real a = 1.2        ;
-real a = 1.e3       ;
-real a = 1.2e3      ;
-real a = 1e3        ;
-real a = .2         ;
-real a = .2e3       ;
+real b = 1.2        ;
+real c = 1.e3       ;
+real d = 1.2e3      ;
+real e = 1e3        ;
+real f = .2         ;
+real g = .2e3       ;
 
-rea a = 1_2_._3_ e_-_4_ ;
+real h = 1_2_._3_e_-_4_ ;
 
-
-
-
-
+a -> out;
+b -> out;
+c -> out;
+d -> out;
+e -> out;
+f -> out;
+g -> out;
+h -> out;
 
 return 0;
 }

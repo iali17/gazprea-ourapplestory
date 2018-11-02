@@ -51,8 +51,12 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
-    return GazpreaBaseVisitor::visitRealExpr(ctx);
-}
+    std::string strVal = ctx->getText();
+    std::string str2Val;
+
+    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} ); // remove _
+    float val = std::stof(str2Val);
+    return (ASTNode *) new RealNode(val);}
 
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
     return GazpreaBaseVisitor::visitBrackExpr(ctx);
@@ -319,16 +323,6 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
     return nullptr;
 }
 
-antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
-    std::string strVal = ctx->getText();
-    std::string str2Val;
-    strVal.erase(std::remove(strVal.begin(), strVal.end(), '_'), strVal.end());     // remove the underscores
-
-
-    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
-    float val = std::stof(str2Val);
-    return (ASTNode *) new RealNode(val);
-}
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
     int type;
