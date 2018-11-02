@@ -12,6 +12,7 @@
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include <AST/ASTNodes/StatementNodes/CastExprNode.h>
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
+#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -341,21 +342,21 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+//        auto tupleType = visit(ctx->type(0));         // get the tuple type
+        //        return (ASTNode *) new TupleDeclNode(stuff);
+        return nullptr;
 
+    } else
+        { // else it's a normal decl
+        auto *typeVec = new std::vector<std::string>();
 
+        unsigned int i;
+        for (i = 0; i < ctx->type().size(); i++) {
+            typeVec->push_back(ctx->type().at(i)->getText());
+        }
 
+        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
     }
-
-
-
-    std::vector<std::string> *typeVec = new std::vector<std::string>();
-
-    unsigned int i;
-    for(i = 0; i < ctx->type().size(); i++){
-        typeVec->push_back(ctx->type().at(i)->getText());
-    }
-
-    return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
@@ -420,7 +421,14 @@ antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
-    // todo
-    return nullptr;
+    //
+
+
+//        auto *typeVec = new std::vector<std::string>();
+//        auto *IDVec = new std::vector<std::string>();
+//
+//
+//        return (ASTNode *) new TupleDeclNode(expr, typeVec, IDVec,ID);
+   return nullptr;
 }
 

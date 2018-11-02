@@ -28,6 +28,7 @@ expr
     | left=expr op=(OR | XOR) right=expr                            #orExpr
     ;
 
+// todo may need to label continue and break
 statement
     : declaration
     | assignment
@@ -107,10 +108,11 @@ procedureCall
 type
     : BOOLEAN
     | CHARACTER
-    | INTEGER
+    | INTEGER //'[' Integer ']'
     | REAL
     | Identifier
     | tupleType
+    // | STRING '[' Integer ']'
     ;
 
 params
