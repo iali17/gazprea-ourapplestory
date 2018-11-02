@@ -4,4 +4,6 @@
 
 #include "AST/ASTNodes/TerminalNodes/TupleNode.h"
 
-TupleNode::TupleNode(std::vector<ASTNode *> *insideElement) : insideElement(insideElement) {}
+TupleNode::TupleNode(std::vector<ASTNode *> *insideElement) : insideElement(insideElement) {
+    type = TUPLE;
+}

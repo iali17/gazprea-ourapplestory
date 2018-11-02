@@ -28,6 +28,7 @@ expr
     | left=expr op=(OR | XOR) right=expr                            #orExpr
     ;
 
+// todo may need to label continue and break
 statement
     : declaration
     | assignment
@@ -54,6 +55,7 @@ declaration
     |  CONST? (VAR | type) type* Identifier EQL Identifier
     '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
+    |  CONST? (VAR | type) type* Identifier SEMICOLON                       #emptyDecl
     ;
 
 conditional
@@ -107,10 +109,11 @@ procedureCall
 type
     : BOOLEAN
     | CHARACTER
-    | INTEGER
+    | INTEGER //'[' Integer ']'
     | REAL
     | Identifier
     | tupleType
+    // | STRING '[' Integer ']'
     ;
 
 params
