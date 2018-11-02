@@ -14,7 +14,7 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it) : globalCtx(globalctx), ir(ir), it(it) {
+CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod) : globalCtx(globalctx), ir(ir), it(it), mod(mod) {
     // Do nothing
 }
 
@@ -77,9 +77,6 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     std::string exprString = typeTable[exprPos][exprPos];
     std::string typeString = typeTable[exprPos][typePos];
 
-    //std::cout << exprString << std::endl;
-    //std::cout << typeString << std::endl;
-
     // Casting expr to bool
     if(typeString == "bool"){
         if(exprString == "char") {
@@ -90,7 +87,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             return ir->CreateICmpNE(exprLoad, zero, "intToBool");
         }
     }
-    // TODO: Fix stuff to char
+
     // Casting expr to char
     else if(typeString == "char") {
         if(exprString == "bool") {
@@ -98,6 +95,22 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             return ir->CreateTrunc(temp, charTy, "intToChar");
         }
         else if(exprString == "int") {
+            CondBuilder *cb = new CondBuilder(globalCtx, ir, mod);
+
+            llvm::Value *exprStore = ir->CreateAlloca(intTy);
+            ir->CreateStore(exprLoad, exprStore);
+
+            // If integer is negative, perform subtraction
+            // Otherwise, skip
+            llvm::Value *cond = ir->CreateICmpSLT(exprLoad, zero);
+            cb->createIf(cond, "intToChar");;
+
+            llvm::Value *temp = ir->CreateSub(zero, exprLoad);
+            ir->CreateStore(temp, exprStore);
+
+            cb->finalize("intToChar");
+
+            exprLoad = ir->CreateLoad(exprStore);
             return ir->CreateTrunc(exprLoad, charTy, "intToChar");
         }
     }
