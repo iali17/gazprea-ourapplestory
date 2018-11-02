@@ -64,7 +64,7 @@ conditional
 
 loop
     : LOOP block                                                       #infiniteLoop
-    | LOOP (WHILE expr) block                                          #predicatedLoop
+    | LOOP WHILE expr block                                            #predicatedLoop
     | LOOP block (WHILE expr SEMICOLON)                                #doLoop
     | LOOP Identifier IN expr (COMMA Identifier IN expr)* block        #iteratorLoop
     ;

@@ -199,11 +199,11 @@ antlrcpp::Any ASTGenerator::visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLo
 }
 
 antlrcpp::Any ASTGenerator::visitPredicatedLoop(gazprea::GazpreaParser::PredicatedLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->expr()), (ASTNode *) visit(ctx->block()));
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()));
 }
 
 antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->expr()), (ASTNode *) visit(ctx->block()));
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()));
 }
 
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {
