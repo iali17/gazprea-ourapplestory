@@ -12,6 +12,7 @@
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include <AST/ASTNodes/StatementNodes/CastExprNode.h>
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
+#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -51,16 +52,18 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
-    return GazpreaBaseVisitor::visitRealExpr(ctx);
-}
+    std::string strVal = ctx->getText();
+    std::string str2Val;
+
+    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} ); // remove _
+    float val = std::stof(str2Val);
+    return (ASTNode *) new RealNode(val);}
 
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
     return (ASTNode *) visit(ctx->expr());
 }
 
-antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
-}
+
 
 antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
@@ -152,9 +155,6 @@ antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext 
     return nullptr;
 }
 
-antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleExpr(ctx);
-}
 
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
     return (ASTNode *) new IDNode(ctx->Identifier()->getText());
@@ -177,9 +177,7 @@ antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssCont
     return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText());
 }
 
-antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
-    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
-}
+
 
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
     std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
@@ -328,16 +326,6 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
     return nullptr;
 }
 
-antlrcpp::Any ASTGenerator::visitReal(gazprea::GazpreaParser::RealContext *ctx) {
-    std::string strVal = ctx->getText();
-    std::string str2Val;
-    strVal.erase(std::remove(strVal.begin(), strVal.end(), '_'), strVal.end());     // remove the underscores
-
-
-    std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} );
-    float val = std::stof(str2Val);
-    return (ASTNode *) new RealNode(val);
-}
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
     int type;
@@ -360,17 +348,20 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+//        auto tupleType = visit(ctx->type(0));         // get the tuple type
+        //        return (ASTNode *) new TupleDeclNode(stuff);
+        return nullptr;
 
+    } else { // else it's a normal decl
+        auto *typeVec = new std::vector<std::string>();
+
+        unsigned int i;
+        for (i = 0; i < ctx->type().size(); i++) {
+            typeVec->push_back(ctx->type().at(i)->getText());
+        }
+
+        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
     }
-
-    std::vector<std::string> *typeVec = new std::vector<std::string>();
-
-    unsigned int i;
-    for(i = 0; i < ctx->type().size(); i++){
-        typeVec->push_back(ctx->type().at(i)->getText());
-    }
-
-    return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
 }
 
 antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) {
@@ -411,19 +402,38 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
     return GazpreaBaseVisitor::visitProcedureCallAss(ctx);
 }
 
+antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
+    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
+    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
+}
+
+// this just calls visitTuple
+antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
+    return GazpreaBaseVisitor::visitTupleExpr(ctx);
+}
+
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
-    std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
+    auto *conds  = new std::vector<ASTNode *>;
     unsigned long int i;
     for(i = 0; i < ctx->expr().size(); i++){
         conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
     }
 
-
     return (ASTNode *) new TupleNode(conds);
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
-    // todo
-    return nullptr;
+    //
+
+
+//        auto *typeVec = new std::vector<std::string>();
+//        auto *IDVec = new std::vector<std::string>();
+//
+//
+//        return (ASTNode *) new TupleDeclNode(expr, typeVec, IDVec,ID);
+   return nullptr;
 }
 

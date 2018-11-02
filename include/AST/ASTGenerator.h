@@ -51,7 +51,6 @@ private:
     antlrcpp::Any visitParams(gazprea::GazpreaParser::ParamsContext *ctx) override;
     antlrcpp::Any visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) override;
     antlrcpp::Any visitReturnCall(gazprea::GazpreaParser::ReturnCallContext *ctx) override;
-    antlrcpp::Any visitReal(gazprea::GazpreaParser::RealContext *ctx) override;
     antlrcpp::Any visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) override;
     antlrcpp::Any visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) override;
     antlrcpp::Any visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) override;
@@ -59,6 +58,7 @@ private:
     antlrcpp::Any visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) override;
     antlrcpp::Any visitTuple(gazprea::GazpreaParser::TupleContext *ctx) override;
     antlrcpp::Any visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) override;
+
 
 };
 

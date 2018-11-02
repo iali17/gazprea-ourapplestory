@@ -8,7 +8,7 @@ file: ( typeDefine | procedure )* EOF;
 expr
     : '(' expr ')'                                                  #brackExpr
     | Integer                                                       #integerExpr
-    | real                                                          #realExpr
+    | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
@@ -28,6 +28,7 @@ expr
     | left=expr op=(OR | XOR) right=expr                            #orExpr
     ;
 
+// todo may need to label continue and break
 statement
     : declaration
     | assignment
@@ -54,6 +55,7 @@ declaration
     |  CONST? (VAR | type) type* Identifier EQL Identifier
     '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
+    |  CONST? (VAR | type) type* Identifier SEMICOLON                       #emptyDecl
     ;
 
 conditional
@@ -107,10 +109,11 @@ procedureCall
 type
     : BOOLEAN
     | CHARACTER
-    | INTEGER
+    | INTEGER //'[' Integer ']'
     | REAL
     | Identifier
     | tupleType
+    // | STRING '[' Integer ']'
     ;
 
 params
@@ -128,18 +131,12 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-//todo 1._2e3 doesnt work
-real
-    : Integer? '.' (Integer | Decimal) Exponent?
-    | Integer '.'? Exponent?
-    ;
-
 tuple
     : '(' expr (COMMA expr)+ ')'
     ;
 
 tupleType
-    : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)* ')'
+    : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)+ ')'
     ;
 
 tupleTypeIdentifier
@@ -165,7 +162,6 @@ MORETE: '>=' ;
 SEMICOLON: ';' ;
 DOTDOT: '..';
 COMMA: ',';
-
 AND: 'and';
 AS: 'as';
 BOOLEAN: 'boolean';
@@ -176,7 +172,6 @@ CHARACTER: 'character';
 COLUMNS: 'columns';
 CONST: 'const';
 CONTINUE: 'continue';
-E: 'e';
 ELSE: 'else';
 FALSE: 'false';
 FILTER: 'filter';
@@ -215,12 +210,18 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Exponent: E '_'* (ADD | SUB)? Decimal;
 Integer: [0-9][0-9_]* ;
-Decimal: [0-9_]+ ;
-Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
-Boolean: (TRUE | FALSE);
 
+Real
+    : Integer? '.' [0-9_]+ Exponent?
+    | Integer '.'? Exponent?
+    ;
+
+Exponent: 'e' '_'* (ADD | SUB)? [0-9_]+;
+
+Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
+
+Boolean: (TRUE | FALSE);
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2
