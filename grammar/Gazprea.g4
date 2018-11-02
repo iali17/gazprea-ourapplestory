@@ -7,8 +7,8 @@ file: ( typeDefine | procedure )* EOF;
 // TODO TUPLE
 expr
     : Integer                                                       #integerExpr
-    | real                                                          #realExpr
-    | (TRUE|FALSE)                                                  #boolExpr
+    | Real                                                          #realExpr
+    | (TRUE | FALSE)                                                #boolExpr
     | NULLT                                                         #nullExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
@@ -128,18 +128,12 @@ procedure
     : PROCEDURE Identifier params returnStat? block
     ;
 
-//todo 1._2e3 doesnt work
-real
-    : Integer? '.' (Integer | Decimal) Exponent?
-    | Integer '.'? Exponent?
-    ;
-
 tuple
     : '(' expr (COMMA expr)+ ')'
     ;
 
 tupleType
-    : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)* ')'
+    : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)+ ')'
     ;
 
 tupleTypeIdentifier
@@ -215,9 +209,14 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Exponent: E '_'* (ADD | SUB)? Decimal;
+Exponent: E '_'* (ADD | SUB)? [0-9_]+;
 Integer: [0-9][0-9_]* ;
-Decimal: [0-9_]+ ;
+
+Real
+    : Integer? '.' [0-9_]+ Exponent?
+    | Integer '.'? Exponent?
+    ;
+
 Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
 Boolean: (TRUE | FALSE);
 

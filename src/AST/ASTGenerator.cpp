@@ -58,9 +58,7 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
     return GazpreaBaseVisitor::visitBrackExpr(ctx);
 }
 
-antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
-}
+
 
 antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
@@ -152,9 +150,6 @@ antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext 
     return nullptr;
 }
 
-antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleExpr(ctx);
-}
 
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
     return (ASTNode *) new IDNode(ctx->Identifier()->getText());
@@ -175,9 +170,7 @@ antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssCont
     return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText());
 }
 
-antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
-    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
-}
+
 
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
     std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
@@ -409,13 +402,25 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
     return GazpreaBaseVisitor::visitProcedureCallAss(ctx);
 }
 
+antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
+    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
+    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
+}
+
+// this just calls visitTuple
+antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
+    return GazpreaBaseVisitor::visitTupleExpr(ctx);
+}
+
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
-    std::vector<ASTNode *> *conds  = new std::vector<ASTNode *>;
+    auto *conds  = new std::vector<ASTNode *>;
     unsigned long int i;
     for(i = 0; i < ctx->expr().size(); i++){
         conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
     }
-
 
     return (ASTNode *) new TupleNode(conds);
 }
