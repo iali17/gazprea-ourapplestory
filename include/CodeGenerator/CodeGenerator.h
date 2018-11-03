@@ -68,12 +68,17 @@ public:
     llvm::Value* visit(OrNode         *node) override;
     llvm::Value* visit(XOrNode        *node) override;
     llvm::Value* visit(NegateNode     *node) override;
+    llvm::Value* visit(ContinueNode   *node) override;
+    llvm::Value* visit(BreakNode      *node) override;
+
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
     SymbolTable       * symbolTable;
     CastTable         * ct;
+
+    std::stack<WhileBuilder *> *whileStack;
 
     InternalTools *it;
     ExternalTools *et;
@@ -91,6 +96,7 @@ protected:
         it          = new InternalTools(globalCtx, ir, mod);
         symbolTable = new SymbolTable();
         ct          = new CastTable(globalCtx, ir, it, mod);
+        whileStack  = new std::stack<WhileBuilder *>;
     }
 
     /**

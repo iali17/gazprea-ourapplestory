@@ -28,17 +28,29 @@ expr
     | left=expr op=(OR | XOR) right=expr                            #orExpr
     ;
 
-// todo may need to label continue and break
-statement
+continueStat
+    : CONTINUE SEMICOLON
+    ;
+
+breakStat
+    : BREAK SEMICOLON
+    ;
+
+single_statement
     : declaration
     | assignment
     | conditional
     | loop
     | stream
     | procedureCall
-    | CONTINUE SEMICOLON
-    | BREAK SEMICOLON
+    | continueStat
+    | breakStat
     | returnCall
+    ;
+
+// todo may need to label continue and break
+statement
+    : single_statement
     | block
     ;
 
@@ -72,16 +84,7 @@ loop
 //TODO - this ugly a block can be single non-block statement
 block
     : '{' decBlock? bodyBlock? '}'
-    | ( declaration
-      | assignment
-      | conditional
-      | loop
-      | stream
-      | procedureCall
-      | CONTINUE SEMICOLON
-      | BREAK SEMICOLON
-      | returnCall
-      )
+    |  single_statement
     ;
 
 decBlock

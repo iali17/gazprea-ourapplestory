@@ -18,6 +18,8 @@
 #include "AST/ASTNodes/StatementNodes/CondNode.h"
 #include "AST/ASTNodes/StatementNodes/DeclNode.h"
 #include "AST/ASTNodes/StatementNodes/AssignNode.h"
+#include "AST/ASTNodes/StatementNodes/BreakNode.h"
+#include "AST/ASTNodes/StatementNodes/ContinueNode.h"
 #include "AST/ASTNodes/StatementNodes/CastExprNode.h"
 #include "AST/ASTNodes/StatementNodes/LoopNodes/LoopNode.h"
 #include "AST/ASTNodes/StatementNodes/LoopNodes/DoLoopNode.h"
