@@ -230,8 +230,10 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     llvm::Value *val = visit(node->getExpr());
 
-    //TODO - IMPLICIT UPCAST WHEN NEEDED
     if(val) {
+        if(ptr->getType()->getPointerElementType() == realTy)
+            val = ct->varCast(realTy, val);
+
         ir->CreateStore(val, ptr);
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){

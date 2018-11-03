@@ -36,6 +36,7 @@
 #include "AST/ASTNodes/ArithNodes/MulNode.h"
 #include "AST/ASTNodes/ArithNodes/SubNode.h"
 #include "AST/ASTNodes/ArithNodes/RemNode.h"
+#include "AST/ASTNodes/ArithNodes/ExpNode.h"
 #include "AST/ASTNodes/BaseNodes/ArithNode.h"
 #include "AST/ASTNodes/BaseNodes/CompNode.h"
 #include "AST/ASTNodes/BaseNodes/BitArithNode.h"

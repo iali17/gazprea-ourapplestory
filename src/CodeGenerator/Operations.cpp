@@ -126,6 +126,49 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     return nullptr;
 }
 
+// Todo: Somehow insert power function for llvm
+llvm::Value *CodeGenerator::visit(ExpNode *node) {
+    llvm::Value * left = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+    InternalTools::pair retVal;
+
+    retVal = ct->typePromotion(left, right);
+    left = retVal.left;
+    right = retVal.right;
+
+    assert(left->getType() == right->getType());
+
+    if(left->getType() == intTy){
+        WhileBuilder *wb = new WhileBuilder(globalCtx, ir, mod);
+        llvm::Value *zero = it->getConsi32(0);
+        llvm::Value *i;
+
+        llvm::Value *iPtr = ir->CreateAlloca(intTy);
+        ir->CreateStore(right, iPtr);
+
+        llvm::Value *leftPtr = ir->CreateAlloca(intTy);
+        ir->CreateStore(left, leftPtr);
+
+        wb->beginWhile();
+
+        i = ir->CreateLoad(iPtr);
+
+        wb->insertControl(ir->CreateICmpNE(zero, i));
+
+        llvm::Value *leftLoad = ir->CreateLoad(leftPtr);
+
+
+        wb->endWhile();
+
+        return ir->CreateSRem(left, right, "iremtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFRem(left, right, "fremtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+}
+
 llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());

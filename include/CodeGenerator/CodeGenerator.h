@@ -58,6 +58,7 @@ public:
     llvm::Value* visit(MulNode        *node) override;
     llvm::Value* visit(DivNode        *node) override;
     llvm::Value* visit(RemNode        *node) override;
+    llvm::Value* visit(ExpNode        *node) override;
     llvm::Value* visit(EQNode         *node) override;
     llvm::Value* visit(NEQNode        *node) override;
     llvm::Value* visit(GTNode         *node) override;

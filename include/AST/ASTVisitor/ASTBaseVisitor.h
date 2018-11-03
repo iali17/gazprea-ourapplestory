@@ -95,6 +95,9 @@ public:
         else if (dynamic_cast<RemNode *>(node)) {
             return visit((RemNode *) node);
         }
+        else if (dynamic_cast<ExpNode *>(node)) {
+            return visit((ExpNode *) node);
+        }
         else if (dynamic_cast<EQNode *>(node)) {
             return visit((EQNode *) node);
         }
@@ -156,6 +159,7 @@ public:
     llvm::Value* visit(MulNode *node) override { return nullptr;};
     llvm::Value* visit(DivNode *node) override { return nullptr;};
     llvm::Value* visit(RemNode *node) override { return nullptr;};
+    llvm::Value* visit(ExpNode *node) override {return nullptr;};
     llvm::Value* visit(EQNode *node) override { return nullptr;};
     llvm::Value* visit(NEQNode *node) override { return nullptr;};
     llvm::Value* visit(GTNode *node) override { return nullptr;};

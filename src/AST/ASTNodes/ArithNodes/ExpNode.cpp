@@ -1,0 +1,7 @@
+//
+// Created by ali5 on 11/2/18.
+//
+
+#include "AST/AST.h"
+
+ExpNode::ExpNode(ASTNode *left, ASTNode *right) : ArithNode(left, right) {}

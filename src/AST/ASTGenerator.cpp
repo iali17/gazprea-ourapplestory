@@ -31,7 +31,10 @@ antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) 
 }
 
 antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) {
-    return GazpreaBaseVisitor::visitExponentExpr(ctx);
+    ASTNode * left = (ASTNode *) visit(ctx->left);
+    ASTNode * right = (ASTNode *) visit(ctx->right);
+
+    return (ASTNode *) new ExpNode(left, right);
 }
 
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
