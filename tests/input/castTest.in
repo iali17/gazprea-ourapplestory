@@ -30,29 +30,21 @@ procedure main() returns integer {
       v -> out;
       w -> out;
 
-      '\n' -> out;
-
       // Print cast to boolean
       e -> out;
       f -> out;
       g -> out;
-
-      '\n' -> out;
 
       // Print cast to character
       x -> out;
       y -> out;
       z -> out;
 
-      '\n' -> out;
-
       // Print cast to integer
       a -> out;
       b -> out;
       c -> out;
       d -> out;
-
-      '\n' -> out;
 
       // Print cast to real
       h -> out;
