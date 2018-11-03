@@ -88,7 +88,13 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
         }
     }
 
+    //new scope
     symbolTable->pushNewScope();
+
+    //preserve old while stack
+    auto *oldWhileStack = whileStack;
+    whileStack = new std::stack<WhileBuilder *>;
+
     size_t idx = 0;
     for (auto AI = F->arg_begin(); idx != F->arg_size(); ++AI, ++idx){
         auto *p = (ParamNode *) paramsList.at(idx);
@@ -105,6 +111,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     visit(node->getBlock());
 
     symbolTable->popScope();
+    whileStack = oldWhileStack;
     return nullptr;
 }
 
@@ -168,6 +175,7 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
 
 llvm::Value *CodeGenerator::visit(LoopNode *node) {
     WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
+    whileStack->push(whileBuilder);
     whileBuilder->beginWhile();
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
@@ -178,16 +186,19 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
 
     visit(node->getBlock());
     whileBuilder->endWhile();
+    whileStack->pop();
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     WhileBuilder *whileBuilder = new WhileBuilder(globalCtx, ir, mod);
+    whileStack->push(whileBuilder);
     whileBuilder->beginWhile();
     visit(node->getBlock());
     llvm::Value *cond = visit(node->getControl());
     whileBuilder->insertControl(ct->varCast(boolTy, cond));
     whileBuilder->endWhile();
+    whileStack->pop();
     return nullptr;
 }
 
@@ -313,4 +324,23 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Type *type = symbolTable->resolveType(node->getTypeString())->getTypeDef();
 
     return ct->varCast(type, expr);
+}
+
+llvm::Value *CodeGenerator::visit(ContinueNode *node) {
+    if(whileStack->top()){
+        ir->CreateBr(whileStack->top()->getStartWhileBB());
+    }
+    else {
+        std::cout << "Continue statement does not reside in while loop\n";
+    }
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(BreakNode *node) {
+    if(whileStack->top()){
+        ir->CreateBr(whileStack->top()->getMergeBB());
+    }
+    else {
+        std::cout << "Continue statement does not reside in while loop\n";
+    }
 }

@@ -128,6 +128,12 @@ public:
         else if (dynamic_cast<GTENode *>(node)) {
             return visit((GTENode *) node);
         }
+        else if (dynamic_cast<ContinueNode *>(node)) {
+            return visit((ContinueNode *) node);
+        }
+        else if (dynamic_cast<BreakNode *>(node)) {
+            return visit((BreakNode *) node);
+        }
         //fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -170,6 +176,8 @@ public:
     llvm::Value* visit(NegateNode *node) override { return nullptr;};
     llvm::Value* visit(GTENode *node) override { return nullptr;};
     llvm::Value* visit(LTENode *node) override { return nullptr;};
+    llvm::Value* visit(ContinueNode *node) override { return nullptr;};
+    llvm::Value* visit(BreakNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

@@ -50,6 +50,8 @@ public:
     virtual llvm::Value* visit(NegateNode *node)     = 0;
     virtual llvm::Value* visit(GTENode *node)        = 0;
     virtual llvm::Value* visit(LTENode *node)        = 0;
+    virtual llvm::Value* visit(ContinueNode *node)   = 0;
+    virtual llvm::Value* visit(BreakNode *node)      = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H
