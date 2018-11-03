@@ -1,9 +1,15 @@
 procedure main() returns integer {
     integer x = 5;
+    real y = 5.0;
+    boolean z = true;
+    character c = 'a';
 
+    var out = out_stdout();
 
+    x -> out;
+    y -> out;
+    z -> out;
+    c -> out;
 
-
-
-
+    return 0;
 }
