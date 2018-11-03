@@ -279,6 +279,7 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
     }
     llvm::Value *expr = visit(node->getExpr());
     et->print(expr);
+    et->printStaticStr(EOLN_STR);
     return nullptr;
 }
 

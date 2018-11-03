@@ -5,6 +5,7 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include <ExternalTools/ExternalTools.h>
+#include <InternalTools/CondBuilder.h>
 
 
 extern llvm::Type *i64Ty;
@@ -81,6 +82,8 @@ void ExternalTools::registerPrintf() {
     llvm::Constant *eolnStr        = llvm::ConstantDataArray::getString(*globalCtx, "\n");
     llvm::Constant *openSqrBStr    = llvm::ConstantDataArray::getString(*globalCtx, "[");
     llvm::Constant *closeSqrBStr   = llvm::ConstantDataArray::getString(*globalCtx, "]");
+    llvm::Constant *trueStr        = llvm::ConstantDataArray::getString(*globalCtx, "T");
+    llvm::Constant *falseStr       = llvm::ConstantDataArray::getString(*globalCtx, "F");
 
     // Create the global space we will use. The string "intFormatStr" is the name you will need to
     // to use to ask for this value later to get it from the module.
@@ -98,6 +101,21 @@ void ExternalTools::registerPrintf() {
 
     // Set the location to be initialised by the constant.
     charFormatStrLoc->setInitializer(charFormatStr);
+
+    auto *trueFormatStrLoc =
+            llvm::cast<llvm::GlobalVariable>(
+                    mod->getOrInsertGlobal(TRUE_STR, trueStr->getType())
+            );
+
+    trueFormatStrLoc->setInitializer(trueStr);
+
+    auto *falseFormatStrLoc =
+            llvm::cast<llvm::GlobalVariable>(
+                    mod->getOrInsertGlobal(FALSE_STR, falseStr->getType())
+            );
+
+    // Set the location to be initialised by the constant.
+    falseFormatStrLoc->setInitializer(falseStr);
 
     auto *floatFormatStrLoc =
             llvm::cast<llvm::GlobalVariable>(
@@ -215,17 +233,14 @@ void ExternalTools::printChar(llvm::Value *ch) {
 }
 
 void ExternalTools::printBoolean(llvm::Value *val) {
-    llvm::Function *printfFunc = mod->getFunction("printf");
+    //bless the condbuilder
+    CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
 
-    // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INTFORMAT_STR));
-
-    // Call printf. Printing multiple values is easy: just add to the {}.
-    llvm::Value *formatStr =
-            ir->CreatePointerCast(formatStrGlobal, printfFunc->arg_begin()->getType());
-
-    llvm::Value * b = ir->CreateZExt(val, intTy);
-    ir->CreateCall(printfFunc, {formatStr, b});
+    condBuilder->createIf(val);
+        printStaticStr(TRUE_STR);
+    condBuilder->createElse();
+        printStaticStr(FALSE_STR);
+    condBuilder->finalize();
 }
 
 /**
@@ -284,7 +299,7 @@ void ExternalTools::print(llvm::Value *val) {
         printReal(val);
     }
 
-    printStaticStr(EOLN_STR);
+    //printStaticStr(EOLN_STR);
 }
 
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {

@@ -1,0 +1,7 @@
+procedure main() returns integer {
+	var out = std_output();
+	0 - 1 -> out;
+	0 - 2 -> out;
+	0 - 3 -> out;
+	return 0;
+}

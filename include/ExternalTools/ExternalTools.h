@@ -22,6 +22,8 @@
 #define SPACE_STR       "spaceStr"
 #define OPENSQRB_STR    "openSqrBStr"
 #define CLOSESQRB_STR   "closeSqrBStr"
+#define TRUE_STR        "T"
+#define FALSE_STR       "F"
 
 class ExternalTools {
 public:

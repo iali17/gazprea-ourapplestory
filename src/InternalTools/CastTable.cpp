@@ -44,7 +44,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     std::string rTypeString = typePTable[rType][rType];
 
     if(castType == lTypeString && castType == rTypeString) {
-        std::cout << "No conversion necessary\n";
+        //std::cout << "No conversion necessary\n";
         return it->makePair(lValueLoad, rValueLoad);
     }
     // Only viable cast for scalars: int -> real

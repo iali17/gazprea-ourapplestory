@@ -1,0 +1,8 @@
+procedure main() returns integer {
+	var out = std_output();
+	0 / 1 -> out;
+	1 / 2 -> out;
+	6 / 2 -> out;
+	7 / 2 -> out;
+	return 0;
+}
