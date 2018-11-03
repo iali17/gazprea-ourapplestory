@@ -301,8 +301,10 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
         CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
         condBuilder->createIf(ir->CreateICmpEQ(val, t));
             ir->CreateStore(one, scanTo);
-        //condBuilder->createElseIf(ir->CreateICmpEQ(val, t));
-        //    ir->CreateStore(zero, scanTo);
+        condBuilder->endIf();
+        condBuilder->createElseIf(ir->CreateICmpEQ(val, f));
+            ir->CreateStore(zero, scanTo);
+        //condBuilder->endIf(); //if this is commented in and we remove the call to the same function in createElse, we have problems
         condBuilder->createElse();
             ir->CreateStore(zero, scanTo);
         condBuilder->finalize();

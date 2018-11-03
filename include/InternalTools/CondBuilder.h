@@ -24,6 +24,7 @@ public:
     llvm::Value *createElseIf(llvm::Value *cond, std::string label = "ElseIf");
     llvm::Value *createElse(std::string label = "Else");
     llvm::Value *finalize(std::string label = "End");
+    llvm::Value *endIf();
 
     CondBuilder(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
 
@@ -42,5 +43,6 @@ protected:
 
     //void createBlocks();
     llvm::BasicBlock *endLast(std::string label = "");
+    llvm::BasicBlock *last;
 };
 #endif //GAZPREABASE_CONDBUILDER_H

@@ -28,12 +28,12 @@ llvm::Value *CondBuilder::createIf(llvm::Value *cond, std::string label) {
 
 llvm::Value *CondBuilder::createElseIf(llvm::Value *cond, std::string label) {
     assert(status == STARTED);
-
-    llvm::BasicBlock *curBB = endLast();
+/*
+    llvm::BasicBlock *curBB = last;//endLast();
 
     curFunction->getBasicBlockList().push_back(curBB);
     ir->SetInsertPoint(curBB);
-
+*/
     llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*globalCtx, label);
     llvm::BasicBlock *nextBB = llvm::BasicBlock::Create(*globalCtx, "Next");
     basicBlocks->push_back(thenBB);
@@ -46,11 +46,13 @@ llvm::Value *CondBuilder::createElseIf(llvm::Value *cond, std::string label) {
 }
 
 llvm::Value *CondBuilder::createElse(std::string label) {
+    //endIf();
     assert(status == STARTED);
-
+/*
     llvm::BasicBlock *curBB = endLast();
     curFunction->getBasicBlockList().push_back(curBB);
-    ir->SetInsertPoint(curBB);
+    ir->SetInsertPoint(curBB);*/
+    endIf();
     hasElse = true;
 
     status = MUSTFINALIZE;
@@ -91,4 +93,11 @@ CondBuilder::CondBuilder(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, ll
     mergeBB = llvm::BasicBlock::Create(*globalCtx, "merge");
     hasElse = false;
     status  = CREATED;
+}
+
+llvm::Value *CondBuilder::endIf() {
+    llvm::BasicBlock *curBB = endLast();
+    curFunction->getBasicBlockList().push_back(curBB);
+    ir->SetInsertPoint(curBB);
+    return nullptr;
 }
