@@ -10,6 +10,7 @@ expr
     | Real                                                          #realExpr
     | (TRUE | FALSE)                                                #boolExpr
     | NULLT                                                         #nullExpr
+    | IDENTITY                                                      #identityExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
     | Identifier                                                    #identifierExpr

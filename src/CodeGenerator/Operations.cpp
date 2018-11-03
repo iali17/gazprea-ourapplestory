@@ -20,7 +20,6 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -67,7 +66,6 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -91,7 +89,6 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -115,7 +112,6 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -139,7 +135,6 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -163,7 +158,6 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -187,7 +181,6 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -211,7 +204,6 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -235,7 +227,6 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -259,7 +250,6 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     if(left->getType() == intTy){
@@ -283,7 +273,6 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     return ir->CreateAnd(left, right, "andtmp");
@@ -298,7 +287,6 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     return ir->CreateOr(left, right, "andtmp");
@@ -313,7 +301,6 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
     left = retVal.left;
     right = retVal.right;
 
-    //Todo promote
     assert(left->getType() == right->getType());
 
     return ir->CreateXor(left, right, "andtmp");

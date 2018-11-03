@@ -317,7 +317,7 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
         bool val = true;
         return (ASTNode *) new BoolNode(val);
     }
-    else if(strExpr == "false" || strExpr == "null") {
+    else if(strExpr == "false") {
         bool val = false;
         return (ASTNode *) new BoolNode(val);
     }

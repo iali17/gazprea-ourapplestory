@@ -196,7 +196,6 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value* ptr = nullptr;
 
-
     if      (node->getTypeIds()->size() == 0){
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
@@ -215,6 +214,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *val = visit(node->getExpr());
+
     //TODO - IMPLICIT UPCAST WHEN NEEDED
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     ir->CreateStore(val, ptr);
@@ -286,11 +286,8 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
 
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr = visit(node->getExpr());
-    llvm::Type *typeS = expr->getType();
 
     llvm::Type *type = symbolTable->resolveType(node->getTypeString())->getTypeDef();
-
-
 
     return ct->varCast(type, expr);
 }
