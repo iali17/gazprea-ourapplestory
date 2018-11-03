@@ -6,15 +6,15 @@ file: ( typeDefine | procedure )* EOF;
 // TODO: check for precendence
 // TODO TUPLE
 expr
-    : Integer                                                       #integerExpr
+    : '(' expr ')'                                                  #brackExpr
+    | Integer                                                       #integerExpr
     | Real                                                          #realExpr
-    | (TRUE | FALSE)                                                #boolExpr
+    | (TRUE|FALSE)                                                  #boolExpr
     | NULLT                                                         #nullExpr
     | IDENTITY                                                      #identityExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
     | Identifier                                                    #identifierExpr
-    | '(' expr ')'                                                  #brackExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | Identifier '.' (Identifier | Integer)                         #tupleIndexExpr
@@ -65,7 +65,7 @@ conditional
 
 loop
     : LOOP block                                                       #infiniteLoop
-    | LOOP (WHILE expr) block                                          #predicatedLoop
+    | LOOP WHILE expr block                                            #predicatedLoop
     | LOOP block (WHILE expr SEMICOLON)                                #doLoop
     | LOOP Identifier IN expr (COMMA Identifier IN expr)* block        #iteratorLoop
     ;

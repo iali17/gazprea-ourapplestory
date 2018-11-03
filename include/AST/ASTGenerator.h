@@ -59,7 +59,6 @@ private:
     antlrcpp::Any visitTuple(gazprea::GazpreaParser::TupleContext *ctx) override;
     antlrcpp::Any visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) override;
 
-
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
