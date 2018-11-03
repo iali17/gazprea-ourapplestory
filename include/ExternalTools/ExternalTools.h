@@ -16,6 +16,7 @@
 #include "InternalTools/InternalTools.h"
 
 #define INTFORMAT_STR   "intFormatStr"
+#define BOOLFORMAT_STR  "charFormatStr"
 #define CHARFORMAT_STR  "charFormatStr"
 #define FLOATFORMAT_STR "floatFormatStr"
 #define EOLN_STR        "eolnStr"

@@ -167,6 +167,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
     }
 
     std::cerr << "Unrecognized type during arithmetic operation\n";
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(EQNode *node) {

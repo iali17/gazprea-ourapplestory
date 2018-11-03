@@ -344,4 +344,5 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
     else {
         std::cout << "Continue statement does not reside in while loop\n";
     }
+    return nullptr;
 }

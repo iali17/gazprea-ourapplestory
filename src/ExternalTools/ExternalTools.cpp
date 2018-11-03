@@ -273,14 +273,44 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
     llvm::Function *scanfFunc = mod->getFunction("scanf");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INTFORMAT_STR));
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(constScanString));
 
     // Call printf. Printing multiple values is easy: just add to the {}.
     llvm::Value *formatStr =
             ir->CreatePointerCast(formatStrGlobal, scanfFunc->arg_begin()->getType());
 
+    //TODO - check stream state
 
-    ir->CreateCall(scanfFunc, {formatStr, scanTo});
+    //bool only garbage
+    if(scanTo->getType()->getPointerElementType() == boolTy){
+        uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>('T'));
+        llvm::Value * t = llvm::ConstantInt::get(i8Ty, trueValue, true);
+        trueValue = static_cast<uint64_t>(static_cast<int64_t>('F'));
+        llvm::Value * f = llvm::ConstantInt::get(i8Ty, trueValue, true);
+        trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
+        llvm::Value * zero = llvm::ConstantInt::get(boolTy, trueValue, true);
+        trueValue = static_cast<uint64_t>(static_cast<int64_t>(1));
+        llvm::Value * one  = llvm::ConstantInt::get(boolTy, trueValue, true);
+
+
+        llvm::Value * tmp = ir->CreateAlloca(charTy);
+        ir->CreateCall(scanfFunc, {formatStr, tmp});
+        llvm::Value *val = ir->CreateLoad(tmp);
+
+        //TODO - change after cond builder is fixed
+        CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
+        condBuilder->createIf(ir->CreateICmpEQ(val, t));
+            ir->CreateStore(one, scanTo);
+        //condBuilder->createElseIf(ir->CreateICmpEQ(val, t));
+        //    ir->CreateStore(zero, scanTo);
+        condBuilder->createElse();
+            ir->CreateStore(zero, scanTo);
+        condBuilder->finalize();
+    }
+    else {
+        ir->CreateCall(scanfFunc, {formatStr, scanTo});
+    }
+
     return nullptr;
 }
 
@@ -311,7 +341,7 @@ llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
         return aliScanf(CHARFORMAT_STR, scanTo);
     }
     else if(llvmType == boolTy->getPointerTo()){
-        return aliScanf(INTFORMAT_STR, scanTo);
+        return aliScanf(BOOLFORMAT_STR, scanTo);
     }
     else if(llvmType == realTy->getPointerTo()){
         return aliScanf(FLOATFORMAT_STR, scanTo);
