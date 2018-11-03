@@ -1,0 +1,44 @@
+// Increments variable
+procedure increment(integer x) {
+    x = x + 1;
+    return;
+}
+
+// Decrements variable
+procedure decrement(integer x) {
+    x = x - 1;
+    return;
+}
+
+// Returns factorial of integer
+procedure factorial(integer x) {
+    integer temp = 1;
+    integer i = x;
+
+    loop while x > 0 {
+        temp = temp * x;
+        call decrement(x);
+    }
+
+    // Set return variable
+    x = temp;
+
+    return;
+}
+
+procedure main() returns integer {
+    const integer x = 5;
+    var out = std_output();
+
+    x -> out;
+
+    call factorial(x);
+
+    x -> out;
+
+    call increment(x);
+
+    x -> out;
+
+    return 0;
+}
