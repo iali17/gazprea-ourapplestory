@@ -236,7 +236,7 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
     unsigned int i;
     for(i=0;i<ctx->statement().size(); ++i){
         ASTNode * node = (ASTNode *) visit(ctx->statement()[i]);
-        if (dynamic_cast<DeclNode *>(ctx->statement()[i])) {
+        if (dynamic_cast<DeclNode *>(node)) {
             std::cerr << "Declaration does not precede procedure body: " << ctx->statement()[i]->getText() << "\n";
             std::cerr << "Aborting...\n";
             exit(1);
