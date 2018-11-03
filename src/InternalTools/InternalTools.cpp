@@ -103,3 +103,4 @@ void InternalTools::setUpTypes() {
     boolTy = llvm::TypeBuilder<llvm::types::i<1>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
 }
+

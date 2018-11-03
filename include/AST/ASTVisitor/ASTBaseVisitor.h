@@ -8,6 +8,7 @@
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include "ASTVisitor.h"
 #include <iostream>
+#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 
 
 class ASTBaseVisitor : public ASTVisitor {
@@ -134,6 +135,9 @@ public:
         else if (dynamic_cast<BreakNode *>(node)) {
             return visit((BreakNode *) node);
         }
+        else if (dynamic_cast<ProcedureCallNode *>(node)) {
+            return visit((ProcedureCallNode *) node);
+        }
         //fprintf(stderr, "Unrecognized class\n");
         return nullptr;
     };
@@ -178,6 +182,7 @@ public:
     llvm::Value* visit(LTENode *node) override { return nullptr;};
     llvm::Value* visit(ContinueNode *node) override { return nullptr;};
     llvm::Value* visit(BreakNode *node) override { return nullptr;};
+    llvm::Value* visit(ProcedureCallNode *node) override { return nullptr;};
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

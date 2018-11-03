@@ -13,6 +13,7 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
 #include <fstream>
+#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -71,6 +72,10 @@ public:
     llvm::Value* visit(NegateNode     *node) override;
     llvm::Value* visit(ContinueNode   *node) override;
     llvm::Value* visit(BreakNode      *node) override;
+    llvm::Value* visit(ProcedureCallNode      *node) override;
+
+
+    std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *exprNode);
 
 protected:
     llvm::LLVMContext * globalCtx;

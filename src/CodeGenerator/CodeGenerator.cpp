@@ -290,31 +290,7 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb;
-
-    // TODO: All the other types :(
-    for (unsigned int i = 0; i < node->getExprNodes()->size(); ++i) {
-        if ((node->getExprNodes()->at(i)->getType()) == CHAR) {
-            llvm::Value* ptr = ir->CreateAlloca(charTy);
-            llvm::Value* val = visit(node->getExprNodes()->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else if ((node->getExprNodes()->at(i)->getType()) == INTEGER) {
-            llvm::Value* ptr = ir->CreateAlloca(intTy);
-            llvm::Value* val = visit(node->getExprNodes()->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        }  else if ((node->getExprNodes()->at(i)->getType()) == REAL) {
-            llvm::Value *ptr = ir->CreateAlloca(realTy);
-            llvm::Value *val = visit(node->getExprNodes()->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else {
-            // We are passing in a variable
-            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) node->getExprNodes()->at(i))->getID())->getPtr();
-            dumb.push_back(dumb2);
-        }
-    }
+    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNodes());
 
     return ir->CreateCall(func, dumb);
 }
@@ -344,4 +320,66 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
     else {
         std::cout << "Continue statement does not reside in while loop\n";
     }
+}
+
+llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
+    llvm::Function *func = mod->getFunction(node->getProcedureName());
+    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNode());
+
+    llvm::Value *val = ir->CreateCall(func, dumb);
+    llvm::Value* ptr = nullptr;
+
+    if      (node->getTypeIds()->size() == 0){
+        ptr = ir->CreateAlloca(val->getType());
+        ir->CreateStore(val, ptr);
+        symbolTable->addSymbol(node->getVarName(), node->getType(), true);
+    }
+    else if (node->getTypeIds()->size() == 1){
+        llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+        ptr = ir->CreateAlloca(type);
+        if(val == nullptr) {
+            if (!(it->setNull(type, ptr))){
+                std::cerr << "Unable to initialize to null\n";
+            }
+            symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant(), ptr);
+            return nullptr;
+        }
+        ir->CreateStore(val, ptr);
+        symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant());
+    }
+
+    symbolTable->resolveSymbol(node->getVarName())->setPtr(ptr);
+
+    return nullptr;
+}
+
+std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *exprNode) {
+    std::vector<llvm::Value *> dumb;
+
+    // TODO: All the other types :(
+    for (unsigned int i = 0; i < exprNode->size(); ++i) {
+        if ((exprNode->at(i)->getType()) == CHAR) {
+            llvm::Value* ptr = ir->CreateAlloca(charTy);
+            llvm::Value* val = visit(exprNode->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        } else if ((exprNode->at(i)->getType()) == INTEGER) {
+            llvm::Value* ptr = ir->CreateAlloca(intTy);
+            llvm::Value* val = visit(exprNode->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        }  else if ((exprNode->at(i)->getType()) == REAL) {
+            llvm::Value *ptr = ir->CreateAlloca(realTy);
+            llvm::Value *val = visit(exprNode->at(i));
+            ir->CreateStore(val, ptr);
+            dumb.push_back(ptr);
+        } else {
+            // We are passing in a variable
+            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) exprNode->at(i))->getID())->getPtr();
+            dumb.push_back(dumb2);
+        }
+    }
+
+    return dumb;
+
 }

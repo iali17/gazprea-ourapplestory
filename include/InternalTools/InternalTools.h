@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include "AST/ASTNodes/BaseNodes/ASTNode.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/TypeBuilder.h"
@@ -35,9 +36,12 @@ public:
                              llvm::Value *arrP, llvm::Value *replaceVal);
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
+
+
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
 };
+
 #endif //VCALCBASE_INTERNALTOOLS_H

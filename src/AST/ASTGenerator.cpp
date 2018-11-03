@@ -13,6 +13,7 @@
 #include <AST/ASTNodes/StatementNodes/CastExprNode.h>
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 #include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
+#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -401,7 +402,25 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) {
-    return GazpreaBaseVisitor::visitProcedureCallDecl(ctx);
+    std::string id = ctx->Identifier(0)->getText();
+    std::string ty = ctx->type(0)->getText();
+    std::string procedureName = ctx->Identifier(1)->getText();
+    bool constant = (nullptr == ctx->CONST());
+
+    std::vector<ASTNode*> *exprNodes = new std::vector<ASTNode*>;
+
+    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+        ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
+        exprNodes->push_back(node);
+    }
+
+    auto *typeVec = new std::vector<std::string>();
+    unsigned int i;
+    for (i = 0; i < ctx->type().size(); i++) {
+        typeVec->push_back(ctx->type().at(i)->getText());
+    }
+
+    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant);
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
