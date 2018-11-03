@@ -1,0 +1,35 @@
+procedure main() returns integer {
+      real y = 1.0;
+      var out = std_output();
+
+      // Type promotion for Arithmetic
+      // Addition
+      y = y + 10;
+      y -> out;
+
+      // Subtraction
+      y = y - 2;
+      y -> out;
+
+      // Division
+      y = y / 3;
+      y -> out;
+
+      // Multiplication
+      y = y * 4;
+      y -> out;
+
+      // Remainder
+      y = y % 4;
+      y -> out;
+
+      // Unary negative
+      y = -25;
+      y -> out;
+
+      // Unary positive
+      y = +25;
+      y ->out;
+
+      return 0;
+}
