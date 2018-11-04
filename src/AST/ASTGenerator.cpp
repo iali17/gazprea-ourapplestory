@@ -498,4 +498,13 @@ antlrcpp::Any ASTGenerator::visitBreakStat(gazprea::GazpreaParser::BreakStatCont
     return (ASTNode *) new BreakNode();
 }
 
+antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) {
+    ASTNode * right;
+    if(ctx->STD_INPUT()){
+        right = (ASTNode *) new IDNode("std_input()");
+    } else {
+        right = (ASTNode *) new IDNode("std_output()");
+    }
 
+    return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText());
+}

@@ -29,6 +29,9 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("real"     , realTy);
     symbolTable->addBaseType("void"     , llvm::Type::getVoidTy(*globalCtx));
 
+    symbolTable->addSymbol("std_input()" ,  INSTREAM, false);
+    symbolTable->addSymbol("std_output()", OUTSTREAM, false);
+
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
         ASTBaseVisitor::visit(node->nodes->at(i));
@@ -240,9 +243,24 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
-    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
-    llvm::Value *val = visit(node->getExpr());
+    Symbol *left, *right;
+    left = symbolTable->resolveSymbol(node->getID());
+    if(dynamic_cast<IDNode *>(node->getExpr())){
+        IDNode * idNode = (IDNode *) node->getExpr();
+        right = symbolTable->resolveSymbol(idNode->getID());
+        if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
+            left->getType() != right->getType()){
+            std::cerr << "Incompatable stream assignment\n";
+            return nullptr;
+        }
+        else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
+            left->getType() == right->getType()){
+            return nullptr;
+        }
+    }
 
+    llvm::Value *val = visit(node->getExpr());
+    llvm::Value *ptr = left->getPtr();
     if(val) {
         if(ptr->getType()->getPointerElementType() == realTy)
             val = ct->varCast(realTy, val);
