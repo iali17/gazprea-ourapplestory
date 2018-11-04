@@ -11,7 +11,7 @@ const std::string &ProcedureCallNode::getProcedureName() const {
     return procedureName;
 }
 
-std::vector<ASTNode *> *ProcedureCallNode::getExprNode() const {
+std::vector<ParamNode *> *ProcedureCallNode::getExprNode() const {
     return exprNode;
 }
 
@@ -24,7 +24,11 @@ bool ProcedureCallNode::isConstant() const {
 }
 
 ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
-                                     std::vector<ASTNode *> *exprNode, std::vector<std::string> *typeIds, bool constant)
+                                     std::vector<ParamNode *> *exprNode, std::vector<std::string> *typeIds, bool constant)
                                      : varName(varName), procedureName(procedureName), exprNode(exprNode),
                                      typeIds(typeIds), constant(constant) {}
+
+ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
+                                     std::vector<ParamNode *> *exprNode) : varName(varName), procedureName(procedureName),
+                                                                         exprNode(exprNode) {}
 

@@ -13,15 +13,15 @@
 class CallNode : public ASTNode {
 public:
 
-    CallNode(std::vector<ASTNode *> *exprNodes, const std::string &procedureName);
+    CallNode(std::vector<ParamNode *> *exprNodes, const std::string &procedureName);
 
-    std::vector<ASTNode *> *getExprNodes() const;
+    std::vector<ParamNode *> *getExprNodes() const;
 
     const std::string &getProcedureName() const;
 
 
 protected:
-    std::vector<ASTNode *> *exprNodes;
+    std::vector<ParamNode *> *exprNodes;
     std::string procedureName;
 };
 

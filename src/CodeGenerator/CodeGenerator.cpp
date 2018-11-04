@@ -116,7 +116,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(ParamNode *node) {
-    return ASTBaseVisitor::visit(node);
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
@@ -331,12 +331,11 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     llvm::Value *val = ir->CreateCall(func, dumb);
     llvm::Value* ptr = nullptr;
 
-    if      (node->getTypeIds()->size() == 0){
+    if (node->getTypeIds()->size() == 0){
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getVarName(), node->getType(), true);
-    }
-    else if (node->getTypeIds()->size() == 1){
+    } else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
         ptr = ir->CreateAlloca(type);
         if(val == nullptr) {
@@ -353,35 +352,4 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     symbolTable->resolveSymbol(node->getVarName())->setPtr(ptr);
 
     return nullptr;
-}
-
-std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *exprNode) {
-    std::vector<llvm::Value *> dumb;
-
-    // TODO: All the other types :(
-    for (unsigned int i = 0; i < exprNode->size(); ++i) {
-        if ((exprNode->at(i)->getType()) == CHAR) {
-            llvm::Value* ptr = ir->CreateAlloca(charTy);
-            llvm::Value* val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else if ((exprNode->at(i)->getType()) == INTEGER) {
-            llvm::Value* ptr = ir->CreateAlloca(intTy);
-            llvm::Value* val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        }  else if ((exprNode->at(i)->getType()) == REAL) {
-            llvm::Value *ptr = ir->CreateAlloca(realTy);
-            llvm::Value *val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else {
-            // We are passing in a variable
-            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) exprNode->at(i))->getID())->getPtr();
-            dumb.push_back(dumb2);
-        }
-    }
-
-    return dumb;
-
 }

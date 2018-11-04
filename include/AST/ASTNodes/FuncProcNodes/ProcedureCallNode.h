@@ -7,13 +7,16 @@
 
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 #include <string>
+#include "AST/ASTNodes/FuncProcNodes/ParamNode.h"
 
 class ProcedureCallNode : public ASTNode {
 public:
-    ProcedureCallNode(const std::string &varName, const std::string &procedureName, std::vector<ASTNode *> *exprNode,
+    ProcedureCallNode(const std::string &varName, const std::string &procedureName, std::vector<ParamNode *> *exprNode,
                       std::vector<std::string> *typeIds, bool constant);
+    ProcedureCallNode(const std::string &varName, const std::string &procedureName, std::vector<ParamNode *> *exprNode);
+
     const std::string &getVarName() const;
-    std::vector<ASTNode *> *getExprNode() const;
+    std::vector<ParamNode *> *getExprNode() const;
     const std::string &getProcedureName() const;
     std::vector<std::string> *getTypeIds() const;
     bool isConstant() const;
@@ -21,7 +24,7 @@ public:
 protected:
     std::string varName;
     std::string procedureName;
-    std::vector<ASTNode *> *exprNode;
+    std::vector<ParamNode *> *exprNode;
     std::vector<std::string> *typeIds;
     bool constant;
 };

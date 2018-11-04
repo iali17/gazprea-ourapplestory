@@ -5,11 +5,11 @@
 #include <string>
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 
-CallNode::CallNode(std::vector<ASTNode *> *exprNodes, const std::string &procedureName) : exprNodes(exprNodes),
+CallNode::CallNode(std::vector<ParamNode *> *exprNodes, const std::string &procedureName) : exprNodes(exprNodes),
                                                                                           procedureName(
                                                                                                   procedureName) {}
 
-std::vector<ASTNode *> *CallNode::getExprNodes() const {
+std::vector<ParamNode *> *CallNode::getExprNodes() const {
     return exprNodes;
 }
 
