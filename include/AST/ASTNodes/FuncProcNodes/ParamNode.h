@@ -9,17 +9,18 @@
 
 class ParamNode : public ASTNode {
 public:
-    ParamNode(const std::string &declaredType, const std::string &varName);
+    ParamNode(const std::string &declaredType, const std::string &varName, bool isVar);
 
-protected:
-public:
     const std::string &getDeclaredType() const;
 
     const std::string &getVarName() const;
 
+    bool isIsVar() const;
+
 protected:
     std::string declaredType;
     std::string varName;
+    bool isVar;
 };
 
 #endif //GAZPREABASE_PARAMNODE_H

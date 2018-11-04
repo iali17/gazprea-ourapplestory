@@ -121,8 +121,11 @@ type
     // | STRING '[' Integer ']'
     ;
 
+param
+    : VAR? type Identifier;
+
 params
-    : '(' (type Identifier (COMMA type Identifier)* )? ')';
+    : '('  (param (COMMA  param)* )? ')';
 
 returnStat
     : RETURNS type
