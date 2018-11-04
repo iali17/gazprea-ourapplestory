@@ -12,7 +12,7 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ParamNode *> *exprNode) {
+std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *exprNode) {
     std::vector<llvm::Value *> dumb;
 
     // TODO: All the other types :(

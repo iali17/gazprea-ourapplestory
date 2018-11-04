@@ -299,11 +299,10 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
     //returns a vector or parameter nodes
     auto *paramVec = new std::vector<ASTNode *>;
     unsigned long i;
-    for (i = 0; i < ctx->Identifier().size(); i++){
-        bool constant = true;
-        if (!ctx->VAR().empty()) constant = (nullptr != ctx->VAR().at(i));
-        std::cout << "here is the constant "
-        paramVec->push_back(new ParamNode(ctx->type().at(i)->getText(), ctx->Identifier().at(i)->getText(), constant));
+    for (i = 0; i < ctx->param().size(); i++){
+        bool constant = nullptr != ctx->param().at(i)->VAR();
+        paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
+                ctx->param().at(i)->Identifier()->getText(), constant));
     }
 
     return (std::vector<ASTNode *> *) paramVec;
