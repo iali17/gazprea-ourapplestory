@@ -12,17 +12,33 @@
 #define FINALIZED    3
 /**
  * HOW TO USE:
- *  - Create builder
- *  - create if, write your block
- *  - create as many else ifs as you want with you blocks following them
- *  - you can create and else if you want, with you block of code following it
- *  - finalize you statement
+ *
+ *  CondBuilder *cb = new CondBuilder(globalCtx, ir, mod); //CREATE RIGHT BEFORE USE
+ *
+ *  cb->beginIf(LLVM_CONDITION);
+ *      < YOUR LLVM CODE HERE >
+ *  cb->endIf();
+ *
+ *  // BEGIN ELSE IF (OPTIONAL)
+ *  // USE AS MANY AS YOU WANT
+ *  cb->beginElseIf(LLVM_CONDITION);
+ *      < YOUR LLVM CODE HERE >
+ *  cb->endIf();
+ *  // END ELSE IF
+ *
+ *  //BEGIN ELSE (OPTIONAL)
+ *  cb->beginElse(LLVM_CONDITION);
+ *      < YOUR LLVM CODE HERE >
+ *  //END ELSE (NOTE THAT WE DO NOT CALL endIf() after an else
+ *
+ *  cb->finalize();
+ *
  */
 class CondBuilder {
 public:
-    llvm::Value *createIf(llvm::Value *cond, std::string label = "Then");
-    llvm::Value *createElseIf(llvm::Value *cond, std::string label = "ElseIf");
-    llvm::Value *createElse(std::string label = "Else");
+    llvm::Value *beginIf(llvm::Value *cond, std::string label = "Then");
+    llvm::Value *beginElseIf(llvm::Value *cond, std::string label = "ElseIf");
+    llvm::Value *beginElse(std::string label = "Else");
     llvm::Value *finalize(std::string label = "End");
     llvm::Value *endIf();
 
