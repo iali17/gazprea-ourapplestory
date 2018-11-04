@@ -21,7 +21,6 @@ antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) 
     auto *procedures = new std::vector<ASTNode *>;
     unsigned long i;
     for (i = 0; i < ctx->procedure().size(); i++){
-        //printf("%lu\n", i);
         ASTNode * p = (ASTNode *) visit(ctx->procedure().at(i));
         if (nullptr == p){
             printf("yes\n");
@@ -303,7 +302,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
     auto *paramVec = new std::vector<ASTNode *>;
     unsigned long i;
     for (i = 0; i < ctx->param().size(); i++){
-        bool constant = nullptr != ctx->param().at(i)->VAR();
+        bool constant = nullptr == ctx->param().at(i)->VAR();
         paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
                 ctx->param().at(i)->Identifier()->getText(), constant));
     }

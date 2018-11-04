@@ -12,32 +12,32 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *exprNode) {
+std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
     std::vector<llvm::Value *> dumb;
 
     // TODO: All the other types :(
-    for (unsigned int i = 0; i < exprNode->size(); ++i) {
-        if ((exprNode->at(i)->getType()) == CHAR) {
+    for (unsigned int i = 0; i < arguNode->size(); ++i) {
+        if ((arguNode->at(i)->getType()) == CHAR) {
             llvm::Value* ptr = ir->CreateAlloca(charTy);
-            llvm::Value* val = visit(exprNode->at(i));
+            llvm::Value* val = visit(arguNode->at(i));
             ir->CreateStore(val, ptr);
             dumb.push_back(ptr);
-        } else if ((exprNode->at(i)->getType()) == INTEGER) {
+        } else if ((arguNode->at(i)->getType()) == INTEGER) {
             llvm::Value* ptr = ir->CreateAlloca(intTy);
-            llvm::Value* val = visit(exprNode->at(i));
+            llvm::Value* val = visit(arguNode->at(i));
             ir->CreateStore(val, ptr);
             dumb.push_back(ptr);
-        }  else if ((exprNode->at(i)->getType()) == REAL) {
+        }  else if ((arguNode->at(i)->getType()) == REAL) {
             llvm::Value *ptr = ir->CreateAlloca(realTy);
-            llvm::Value *val = visit(exprNode->at(i));
+            llvm::Value *val = visit(arguNode->at(i));
             ir->CreateStore(val, ptr);
             dumb.push_back(ptr);
         } else {
             // We are passing in a variable
             llvm::Value *dumb2;
-            ParamNode *yes = dynamic_cast<ParamNode *>(exprNode->at(i));
+            ParamNode *yes = dynamic_cast<ParamNode *>(paramNode->at(i));
             bool constant = yes->isIsVar();
-            Symbol * wtf = symbolTable->resolveSymbol(((IDNode *) exprNode->at(i))->getID());
+            Symbol * wtf = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
 
             if (!constant) {
                 if (!wtf->isConstant()){

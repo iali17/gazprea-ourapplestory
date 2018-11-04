@@ -117,6 +117,11 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
     symbolTable->popScope();
     whileStack = oldWhileStack;
+
+    if(!F->getEntryBlock().getTerminator()){
+        ir->CreateRetVoid();
+    }
+
     return nullptr;
 }
 
@@ -312,7 +317,7 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec());
+    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec(), node->getExprNodes());
 
     return ir->CreateCall(func, dumb);
 }
@@ -348,7 +353,7 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
 llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec());
+    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec(), node->getExprNode());
 
     llvm::Value *val = ir->CreateCall(func, dumb);
     llvm::Value* ptr = nullptr;
