@@ -9,6 +9,7 @@
 #include "Symbol.h"
 #include <map>
 #include "UserType.h"
+#include "FunctionSymbol.h"
 
 class Scope {
 public:
@@ -25,6 +26,7 @@ public:
     void addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string newTypeName, llvm::Type* newType);
+    void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
 protected:
     std::string name;
     std::map<std::string, Symbol*>   *symbols;

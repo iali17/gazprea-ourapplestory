@@ -2,11 +2,12 @@
 // Created by kyle on 08/10/18.
 //
 
-#include <string>
-#include <llvm/IR/Value.h>
 #ifndef VCALCBASE_SYMBOL_H
 #define VCALCBASE_SYMBOL_H
 
+#include <string>
+#include <llvm/IR/Value.h>
+#include "../AST/AST.h"
 // Pretty much taken from the notes and refactored for C++
 class Symbol {
 public:

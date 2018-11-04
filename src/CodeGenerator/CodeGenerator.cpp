@@ -71,6 +71,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
         params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
     }
 
+    symbolTable->addFunctionSymbol(node->getProcedureName(), node->getType(), node->getParamNodes());
     llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
 
     llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
@@ -309,8 +310,9 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(CallNode *node) {
+    FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNodes());
+    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec());
 
     return ir->CreateCall(func, dumb);
 }
@@ -344,8 +346,9 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
 }
 
 llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
+    FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNode());
+    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec());
 
     llvm::Value *val = ir->CreateCall(func, dumb);
     llvm::Value* ptr = nullptr;
