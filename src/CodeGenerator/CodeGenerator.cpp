@@ -18,6 +18,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerFree();
     et->registerCalloc();
     et->registerScanf();
+    et->registerPow();
 
     symbolTable->pushNewScope("_globalScope_");
 

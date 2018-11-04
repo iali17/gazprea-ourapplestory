@@ -64,6 +64,34 @@ void ExternalTools::aliFree(llvm::Value *p) {
     ir->CreateCall(myFree, {charP});
 }
 
+void ExternalTools::registerPow() {
+    llvm::FunctionType *fTy = llvm::TypeBuilder<double (double, double), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("pow", fTy));
+}
+
+llvm::Value *ExternalTools::aliPow(llvm::Value *left, llvm::Value *right) {
+    llvm::Value *dblLeft;
+    llvm::Value *dblRight;
+    llvm::Value *ret;
+
+    // get the function and create call
+    llvm::Function *myPow = mod->getFunction("pow");
+
+    if(left->getType() == intTy){
+        dblLeft  = ir->CreateSIToFP(left,  llvm::Type::getDoubleTy(*globalCtx));
+        dblRight = ir->CreateSIToFP(right, llvm::Type::getDoubleTy(*globalCtx));
+        ret = ir->CreateCall(myPow, {dblLeft, dblRight});
+        ret = ir->CreateFPToSI(ret, intTy);
+
+    } else {
+        dblLeft  = ir->CreateFPExt(left,  llvm::Type::getDoubleTy(*globalCtx));
+        dblRight = ir->CreateFPExt(right, llvm::Type::getDoubleTy(*globalCtx));
+        ret = ir->CreateCall(myPow, {dblLeft, dblRight});
+        ret = ir->CreateFPCast(ret, realTy);
+    }
+    return ret;
+}
+
 /**
  * register printf and create global string constants
  */

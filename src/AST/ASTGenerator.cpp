@@ -249,6 +249,9 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
             exit(1);
         }
         statements->push_back( node );
+        if((dynamic_cast<BreakNode *>(node)) || (dynamic_cast<ContinueNode *>(node))){
+            break;
+        }
     }
     return (ASTNode *) new BasicBlockNode(statements);
 }
