@@ -108,11 +108,11 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
             // If integer is negative, perform subtraction
             // Otherwise, skip
             llvm::Value *cond = ir->CreateICmpSLT(exprLoad, zero);
-            cb->createIf(cond, "intToChar");;
+            cb->beginIf(cond, "intToChar");;
 
             llvm::Value *temp = ir->CreateSub(zero, exprLoad);
             ir->CreateStore(temp, exprStore);
-
+            cb->endIf();
             cb->finalize("intToChar");
 
             exprLoad = ir->CreateLoad(exprStore);

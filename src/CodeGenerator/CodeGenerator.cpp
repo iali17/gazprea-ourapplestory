@@ -156,17 +156,18 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     for(i = 0; i < node->getConds()->size(); i++){
         if(i){
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->createElseIf(ct->varCast(boolTy, cond));
+            condBuilder->beginElseIf(ct->varCast(boolTy, cond));
         }
         else {
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->createIf(ct->varCast(boolTy, cond));
+            condBuilder->beginIf(ct->varCast(boolTy, cond));
         }
         visit(node->getBlocks()->at(i));
+        condBuilder->endIf();
     }
 
     if(node->isHasElse()){
-        condBuilder->createElse();
+        condBuilder->beginElse();
         visit(node->getBlocks()->at(i));
     }
     condBuilder->finalize();

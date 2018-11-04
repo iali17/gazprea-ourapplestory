@@ -236,9 +236,10 @@ void ExternalTools::printBoolean(llvm::Value *val) {
     //bless the condbuilder
     CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
 
-    condBuilder->createIf(val);
+    condBuilder->beginIf(val);
         printStaticStr(TRUE_STR);
-    condBuilder->createElse();
+    condBuilder->endIf();
+    condBuilder->beginElse();
         printStaticStr(FALSE_STR);
     condBuilder->finalize();
 }
@@ -299,11 +300,13 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
 
         //TODO - change after cond builder is fixed
         CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
-        condBuilder->createIf(ir->CreateICmpEQ(val, t));
+        condBuilder->beginIf(ir->CreateICmpEQ(val, t));
             ir->CreateStore(one, scanTo);
-        //condBuilder->createElseIf(ir->CreateICmpEQ(val, t));
-        //    ir->CreateStore(zero, scanTo);
-        condBuilder->createElse();
+        condBuilder->endIf();
+        condBuilder->beginElseIf(ir->CreateICmpEQ(val, f));
+            ir->CreateStore(zero, scanTo);
+        condBuilder->endIf();
+        condBuilder->beginElse();
             ir->CreateStore(zero, scanTo);
         condBuilder->finalize();
     }
@@ -328,8 +331,6 @@ void ExternalTools::print(llvm::Value *val) {
     else if(llvmType->isFloatTy()){
         printReal(val);
     }
-
-    //printStaticStr(EOLN_STR);
 }
 
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {

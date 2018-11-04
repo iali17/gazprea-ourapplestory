@@ -1,0 +1,24 @@
+procedure main() returns integer {
+	var out = std_output();
+
+	if (0) {
+		0 -> out;
+	}
+	else if (0) {
+		0 -> out;
+	}
+	else if (1) {
+		if (0) {
+			0 -> out;
+		}
+		else {
+			1 -> out;
+		}
+	}
+	else {
+		2 -> out;
+	}
+
+	return 0;
+}
+
