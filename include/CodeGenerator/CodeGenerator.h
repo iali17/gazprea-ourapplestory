@@ -75,7 +75,7 @@ public:
     llvm::Value* visit(ProcedureCallNode      *node) override;
 
 
-    std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *exprNode);
+    std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
 
 protected:
     llvm::LLVMContext * globalCtx;
