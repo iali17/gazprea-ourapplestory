@@ -8,6 +8,9 @@
 #include <llvm/IR/Value.h>
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
+#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
+#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
+#include <AST/ASTNodes/TypeNodes/TupleType.h>
 #include "../AST.h"
 
 class ASTVisitor {
@@ -54,6 +57,10 @@ public:
     virtual llvm::Value* visit(ContinueNode *node)   = 0;
     virtual llvm::Value* visit(BreakNode *node)      = 0;
     virtual llvm::Value* visit(ProcedureCallNode *node)      = 0;
+    virtual llvm::Value* visit(TupleNode *node)      = 0;
+    virtual llvm::Value* visit(TupleDeclNode *node)  = 0;
+    virtual llvm::Value* visit(TupleType *node)      = 0;
+
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

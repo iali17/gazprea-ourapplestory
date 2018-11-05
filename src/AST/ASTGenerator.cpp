@@ -359,7 +359,6 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
-
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)));
 
     } else { // else it's a normal decl
@@ -457,13 +456,13 @@ antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx
     auto *conds  = new std::vector<ASTNode *>;
     unsigned long int i;
     for(i = 0; i < ctx->expr().size(); i++){
-        conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
+        conds->push_back((ASTNode *) visit(ctx->expr(i)));
     }
     return (ASTNode *) new TupleNode(conds);
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
-    std::vector<ASTNode *> * typeIdNodes = {};
+    auto *typeIdNodes = new std::vector<ASTNode *>;
 
     for (auto typeId : ctx->tupleTypeIdentifier()) {
         typeIdNodes->push_back(visit(typeId));
@@ -474,6 +473,7 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
 
 // everything inside the tuple() is a empty decl
 antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) {
+
     ASTNode *expr = (ASTNode *) new IDNode("null");
     bool constant = false;
 
@@ -481,7 +481,7 @@ antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::Tup
     typeVec->push_back(ctx->type()->getText());
 
     if (ctx->Identifier() == nullptr) {
-        return (ASTNode *) new DeclNode(expr, constant, nullptr, typeVec, expr->getType());
+        return (ASTNode *) new DeclNode(expr, constant, "", typeVec, expr->getType());
     } else {
         return (ASTNode *) new DeclNode(expr, constant, ctx->Identifier()->getText(), typeVec, expr->getType());
     }
