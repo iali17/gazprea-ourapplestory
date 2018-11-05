@@ -154,12 +154,15 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value* ptr = nullptr;
 
 
-    if      (node->getTypeIds()->size() == 0){
+    if      (node->getTypeIds()->empty()){
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+
+        node->setLlvmType(type);
+
         ptr = ir->CreateAlloca(type);
         if(val == nullptr) {
             if (!(it->setNull(type, ptr))){
@@ -244,7 +247,6 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     return nullptr;
 }
 
-
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr = visit(node->getExpr());
 
@@ -274,12 +276,36 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
 }
 
 
+// todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
-    visit(node->getExpr());
+//    symbolTable->pushNewScope();
+
+//    visit(node->getExpr());
+    visit(node->getTupleTypes());
+
+
+
+
+
+//    symbolTable->popScope();
+
     return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(TupleType *node) {
+    auto * declNodes = node->getDecls();
+    auto members = new std::vector<llvm::Type *>;
+
+    for (auto element : * declNodes) {
+        members->push_back(element->getLlvmType());
+
+    }
+
+    llvm::StructType * newStruct = llvm::StructType::create(*members, "s");
+//    newStruct->setBody(*members);
+
+
+
     return nullptr;
 }
 
