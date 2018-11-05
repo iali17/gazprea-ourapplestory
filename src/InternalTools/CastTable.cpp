@@ -29,6 +29,7 @@ int CastTable::getType(llvm::Type *expr) {
         return 1;
 }
 
+// This function is to check cast promotion without the use of the keyword: as
 InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
@@ -64,6 +65,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     }
 }
 
+// This function is for casting with the use of the keyword: as
 llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);

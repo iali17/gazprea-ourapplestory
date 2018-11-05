@@ -8,6 +8,7 @@
 #include "../AST/ASTNodes/ErrorNodes/ErrorNode.h"
 #include <iostream>
 
+// This class takes an ErrorNode and prints the error associated with it
 class ErrorBuilder {
 public:
     ErrorBuilder() = default;
