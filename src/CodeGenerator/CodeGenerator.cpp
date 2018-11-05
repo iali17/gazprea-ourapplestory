@@ -273,19 +273,13 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
 }
 
 
-llvm::Value *CodeGenerator::visit(TupleNode *node) {
-//    for (auto expr : *node->getElements()) {
-//        std::cout << expr << "\n";
-//    }
-    return ASTBaseVisitor::visit(node);
-}
-
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
-    return ASTBaseVisitor::visit(node);
+    visit(node->getExpr());
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(TupleType *node) {
-    return ASTBaseVisitor::visit(node);
+    return nullptr;
 }
 
 
