@@ -69,7 +69,9 @@ llvm::Value *WhileBuilder::endWhile(std::string label) {
     assert(status == MUSTFINALIZE);
     status = FINALIZED;
 
-    ir->CreateBr(startWhileBB);
+    //if (not(postControlBlock->getTerminator()))
+    if (not(curFunction->getBasicBlockList().back().getTerminator()))
+        ir->CreateBr(startWhileBB);
 
     mergeBB->setName(label);
     curFunction->getBasicBlockList().push_back(mergeBB);
