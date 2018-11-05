@@ -52,5 +52,6 @@
 #include "AST/ASTNodes/ArithNodes/AndNode.h"
 #include "AST/ASTNodes/ArithNodes/OrNode.h"
 #include "AST/ASTNodes/ArithNodes/XOrNode.h"
+#include "AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h"
 
 #endif //GAZPREABASE_AST_H

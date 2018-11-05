@@ -14,14 +14,15 @@
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 #include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
+#include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
     auto *procedures = new std::vector<ASTNode *>;
     unsigned long i;
-    for (i = 0; i < ctx->procedure().size(); i++){
-        ASTNode * p = (ASTNode *) visit(ctx->procedure().at(i));
+    for (i = 0; i < ctx->termsAndConditions().size(); i++){
+        ASTNode * p = (ASTNode *) visit(ctx->termsAndConditions().at(i));
         if (nullptr == p){
             printf("yes\n");
         }
@@ -424,7 +425,18 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
         typeVec->push_back(ctx->type().at(i)->getText());
     }
 
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant);
+    int operation = PLUS;
+    if (ctx->op) {
+        if (ctx->op->getType() == gazprea::GazpreaParser::NOT) {
+            operation = NEG;
+        } else if (ctx->op->getType() == gazprea::GazpreaParser::ADD) {
+            operation = PLUS;
+        } else if (ctx->op->getType() == gazprea::GazpreaParser::SUB) {
+            operation = MINUS;
+        }
+    }
+
+    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant, operation);
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
@@ -519,4 +531,12 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
     }
 
     return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText());
+}
+
+antlrcpp::Any ASTGenerator::visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) {
+    std::string retType = "void";
+    if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
+    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
+    ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText());
+    return p;
 }

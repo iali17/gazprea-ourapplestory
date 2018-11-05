@@ -1,7 +1,9 @@
 grammar Gazprea;
 
 //file: (statement | procedure)* EOF;
-file: ( typeDefine | procedure )* EOF;
+file: ( termsAndConditions )* EOF ;
+
+termsAndConditions : typeDefine | procedure | protoFunc;
 
 // TODO: check for precendence
 // TODO TUPLE
@@ -59,15 +61,16 @@ statement
 assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
-    | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
+    | Identifier EQL op=(ADD | SUB | NOT)? Identifier
+    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallAss
     | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
 
 //TODO - non initialized declaration
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    |  CONST? (VAR | type) type* Identifier EQL Identifier
-    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
+    |  CONST? (VAR | type) type* Identifier EQL
+    op=(ADD | SUB | NOT)? Identifier'(' (expr (COMMA expr)*)? ')' SEMICOLON #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     |  CONST? (VAR | type) type* Identifier SEMICOLON                       #emptyDecl
     ;
@@ -149,6 +152,10 @@ tupleType
 
 tupleTypeIdentifier
     : type Identifier?
+    ;
+
+protoFunc
+    : PROCEDURE Identifier params returnStat? SEMICOLON
     ;
 
 

@@ -73,7 +73,7 @@ public:
     llvm::Value* visit(ContinueNode   *node) override;
     llvm::Value* visit(BreakNode      *node) override;
     llvm::Value* visit(ProcedureCallNode      *node) override;
-
+    llvm::Value* visit(ProtoProcedureNode      *node) override;
 
     std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
 

@@ -54,6 +54,7 @@ public:
     virtual llvm::Value* visit(ContinueNode *node)   = 0;
     virtual llvm::Value* visit(BreakNode *node)      = 0;
     virtual llvm::Value* visit(ProcedureCallNode *node)      = 0;
+    virtual llvm::Value* visit(ProtoProcedureNode *node)      = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H
