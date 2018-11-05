@@ -72,3 +72,11 @@ void Scope::addSymbol(std::string newSymbolName, int type, bool constant, llvm::
 void Scope::addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec) {
     symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new FunctionSymbol(name, newSymbolName, type, paramsVec)));
 }
+
+void
+Scope::addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
+                    std::vector<llvm::Type *> *members) {
+
+    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType(newTypeName, newType, stringRefMap, members);
+    typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, (GazpreaType *) gazpreaTupleType));
+}

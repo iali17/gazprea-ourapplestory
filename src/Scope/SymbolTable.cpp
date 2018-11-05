@@ -81,3 +81,8 @@ void
 SymbolTable::addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec) {
     scopeStack->top()->addFunctionSymbol(newSymbolName, type, paramsVec);
 }
+
+void SymbolTable::addTupleType(std::string newTypeName, llvm::Type *newType,
+                               std::unordered_map<std::string, int> *stringRefMap, std::vector<llvm::Type *> *members) {
+    scopeStack->top()->addTupleType(newTypeName, newType, stringRefMap, members);
+}

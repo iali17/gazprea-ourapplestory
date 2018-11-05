@@ -15,8 +15,6 @@ protected:
 public:
     GazpreaTupleType(const std::string &name, llvm::Type *typeDef, std::unordered_map<std::string, int> *stringRefMap,
                 std::vector<llvm::Type *> *members);
-
-public:
     int getOffsetFromString(std::string str);
 };
 #endif //GAZPREABASE_TUPLESYMBOL_H

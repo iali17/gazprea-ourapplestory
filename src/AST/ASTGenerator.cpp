@@ -14,6 +14,7 @@
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 #include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
+#include <AST/ASTNodes/TypeNodes/TupleType.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -358,9 +359,8 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
-//        auto tupleType = visit(ctx->type(0));         // get the tuple type
-        //        return (ASTNode *) new TupleDeclNode(stuff);
-        return nullptr;
+
+        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)));
 
     } else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -369,7 +369,6 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         for (i = 0; i < ctx->type().size(); i++) {
             typeVec->push_back(ctx->type().at(i)->getText());
         }
-
         return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType());
     }
 }
@@ -460,21 +459,34 @@ antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx
     for(i = 0; i < ctx->expr().size(); i++){
         conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
     }
-
     return (ASTNode *) new TupleNode(conds);
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
-    //
+    std::vector<ASTNode *> * typeIdNodes = {};
 
+    for (auto typeId : ctx->tupleTypeIdentifier()) {
+        typeIdNodes->push_back(visit(typeId));
+    }
 
-//        auto *typeVec = new std::vector<std::string>();
-//        auto *IDVec = new std::vector<std::string>();
-//
-//
-//        return (ASTNode *) new TupleDeclNode(expr, typeVec, IDVec,ID);
-   return nullptr;
+    return (ASTNode *) new TupleType(typeIdNodes);
 }
+
+// everything inside the tuple() is a empty decl
+antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) {
+    ASTNode *expr = (ASTNode *) new IDNode("null");
+    bool constant = false;
+
+    auto *typeVec = new std::vector<std::string>();
+    typeVec->push_back(ctx->type()->getText());
+
+    if (ctx->Identifier() == nullptr) {
+        return (ASTNode *) new DeclNode(expr, constant, nullptr, typeVec, expr->getType());
+    } else {
+        return (ASTNode *) new DeclNode(expr, constant, ctx->Identifier()->getText(), typeVec, expr->getType());
+    }
+}
+
 
 antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) {
     ASTNode *expr = (ASTNode *) new IDNode("null");
@@ -517,6 +529,7 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
     } else {
         right = (ASTNode *) new IDNode("std_output()");
     }
+
 
     return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText());
 }

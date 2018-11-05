@@ -1,0 +1,12 @@
+procedure main() returns integer {
+
+tuple(integer d, integer b) a = (1,2);
+
+
+
+
+
+
+
+return 0;
+}
