@@ -1,0 +1,16 @@
+procedure main() returns integer {
+    integer x = 0;
+    var out = std_output();
+
+    // Prints odd numbers up to 10
+    loop while x < 10 {
+        x = x + 1;
+
+        if (x % 2) == 0 continue;
+
+        x -> out;
+        '\n' -> out;
+    }
+
+    return 0;
+}
