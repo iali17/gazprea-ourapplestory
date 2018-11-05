@@ -57,7 +57,6 @@ public:
     virtual llvm::Value* visit(ContinueNode *node)   = 0;
     virtual llvm::Value* visit(BreakNode *node)      = 0;
     virtual llvm::Value* visit(ProcedureCallNode *node)      = 0;
-
     virtual llvm::Value* visit(ProtoProcedureNode *node)      = 0;
     virtual llvm::Value* visit(TupleDeclNode *node)  = 0;
     virtual llvm::Value* visit(TupleType *node)      = 0;

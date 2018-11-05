@@ -144,7 +144,6 @@ public:
         else if (dynamic_cast<ProtoProcedureNode *>(node)) {
             return visit((ProtoProcedureNode *) node);
         }
-
         else if (dynamic_cast<TupleType *>(node)) {
             return visit((TupleType *) node);
         }
@@ -194,7 +193,6 @@ public:
     llvm::Value* visit(ContinueNode *node) override { return nullptr;};
     llvm::Value* visit(BreakNode *node) override { return nullptr;};
     llvm::Value* visit(ProcedureCallNode *node) override { return nullptr;};
-
     llvm::Value* visit(ProtoProcedureNode *node) override { return nullptr;};
     llvm::Value *visit(TupleDeclNode *node) override {return nullptr;}
     llvm::Value *visit(TupleType *node) override { return nullptr; }
