@@ -72,7 +72,7 @@ declaration
     |  CONST? (VAR | type) type* Identifier EQL
     op=(ADD | SUB | NOT)? Identifier'(' (expr (COMMA expr)*)? ')' SEMICOLON #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
-    |  CONST? (VAR | type) type* Identifier SEMICOLON                       #emptyDecl
+    | CONST? (VAR | type) type* Identifier SEMICOLON                        #emptyDecl
     ;
 
 conditional

@@ -14,6 +14,9 @@
 #include <iostream>
 #include <fstream>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
+#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
+#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
+#include <AST/ASTNodes/TypeNodes/TupleType.h>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -74,6 +77,9 @@ public:
     llvm::Value* visit(BreakNode      *node) override;
     llvm::Value* visit(ProcedureCallNode      *node) override;
     llvm::Value* visit(ProtoProcedureNode      *node) override;
+    llvm::Value *visit(TupleNode *node) override;
+    llvm::Value *visit(TupleDeclNode *node) override;
+    llvm::Value *visit(TupleType *node) override;
 
     std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
 

@@ -11,7 +11,7 @@ public:
     std::vector<ASTNode *> *nodes;
     BasicBlockNode();
 
-    BasicBlockNode(std::vector<ASTNode *> *nodes);
+    explicit BasicBlockNode(std::vector<ASTNode *> *nodes);
 };
 
 #endif //GAZPREABASE_BASICBLOCKNODE_H

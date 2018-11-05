@@ -10,6 +10,7 @@
 #include <map>
 #include "UserType.h"
 #include "FunctionSymbol.h"
+#include "GazpreaTupleType.h"
 
 class Scope {
 public:
@@ -26,6 +27,8 @@ public:
     void addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string newTypeName, llvm::Type* newType);
+    void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
+                      std::vector<llvm::Type *> *members);
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
 protected:
     std::string name;

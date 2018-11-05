@@ -68,7 +68,9 @@ llvm::BasicBlock *CondBuilder::endLast(std::string label) {
     curBB->setName("Alt_" + lastBB->getName());
 
     //conclude last if block
-    ir->CreateBr(mergeBB);
+    //if(not(curBB->getTerminator()))
+    if(not(curFunction->getBasicBlockList().back().getTerminator()))
+        ir->CreateBr(mergeBB);
     return curBB;
 }
 

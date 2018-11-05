@@ -141,7 +141,10 @@ public:
         else if (dynamic_cast<ProtoProcedureNode *>(node)) {
             return visit((ProtoProcedureNode *) node);
         }
-        //fprintf(stderr, "Unrecognized class\n");
+        else if (dynamic_cast<TupleNode *>(node)) {
+            return visit((TupleNode *) node);
+        }
+
         return nullptr;
     };
 
@@ -187,6 +190,9 @@ public:
     llvm::Value* visit(BreakNode *node) override { return nullptr;};
     llvm::Value* visit(ProcedureCallNode *node) override { return nullptr;};
     llvm::Value* visit(ProtoProcedureNode *node) override { return nullptr;};
+    llvm::Value *visit(TupleNode *node) override { return nullptr;}
+    llvm::Value *visit(TupleDeclNode *node) override {return nullptr;}
+    llvm::Value *visit(TupleType *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H
