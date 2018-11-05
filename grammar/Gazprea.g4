@@ -65,10 +65,10 @@ assignment
 //TODO - non initialized declaration
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    |  CONST? (VAR | type) type* Identifier EQL Identifier
+    | CONST? (VAR | type) type* Identifier EQL Identifier
     '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallDecl
     | CONST? (VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
-    |  CONST? (VAR | type) type* Identifier SEMICOLON                       #emptyDecl
+    | CONST? (VAR | type) type* Identifier SEMICOLON                        #emptyDecl
     ;
 
 conditional

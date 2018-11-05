@@ -61,6 +61,8 @@ private:
     antlrcpp::Any visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) override;
     antlrcpp::Any visitContinueStat(gazprea::GazpreaParser::ContinueStatContext *ctx) override;
     antlrcpp::Any visitBreakStat(gazprea::GazpreaParser::BreakStatContext *ctx) override;
+    antlrcpp::Any visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) override;
+
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

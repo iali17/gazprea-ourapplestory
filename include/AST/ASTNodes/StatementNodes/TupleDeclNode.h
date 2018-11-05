@@ -10,20 +10,16 @@
 
 class TupleDeclNode : public UnaryNode {
 public:
-    TupleDeclNode(ASTNode *expr, std::vector<std::string> *typeID, std::vector<std::string> *identifierID,
-                  bool constant, const std::string &ID);
+    TupleDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *tupleTypes);
 
-
-    std::vector<std::string> * typeID;
-    std::vector<std::string> * identifierID;
-    bool isConstant() const;
     const std::string &getID() const;
+    bool isConstant() const;
+    ASTNode * getTupleTypes() const;
 
 protected:
     bool constant;
     std::string ID;
-
-
+    ASTNode * tupleTypes; // represent each empty decl inside the tuple()
 
 };
 

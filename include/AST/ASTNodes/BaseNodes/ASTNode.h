@@ -23,7 +23,8 @@
 class ASTNode  {
 public:
     virtual ~ASTNode() = default;
-    int getType() const;
+
+    virtual int getType() const;
 
     llvm::Type *getLlvmType() const;
 
