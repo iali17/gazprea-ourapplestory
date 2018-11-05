@@ -20,8 +20,12 @@ std::string NullNode::popType(int pos) {
 }
 
 void NullNode::assignType(std::string newType, int pos) {
+    int curTypePos = this->getTypePos(this->vector->at(pos));
+    int newTypePos = this->getTypePos(newType);
 
-    this->vector->at(pos) = newType;
+    std::string varType = typeTable[curTypePos][newTypePos];
+
+    this->vector->at(pos) = varType;
 }
 
 int NullNode::getTypePos(std::string type) {
