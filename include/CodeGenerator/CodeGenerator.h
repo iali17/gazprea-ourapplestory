@@ -76,6 +76,8 @@ public:
     llvm::Value* visit(ContinueNode   *node) override;
     llvm::Value* visit(BreakNode      *node) override;
     llvm::Value* visit(ProcedureCallNode      *node) override;
+
+    llvm::Value* visit(ProtoProcedureNode      *node) override;
     llvm::Value *visit(TupleDeclNode *node) override;
     llvm::Value *visit(TupleType *node) override;
 

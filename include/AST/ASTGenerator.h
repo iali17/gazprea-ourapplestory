@@ -65,6 +65,7 @@ private:
 
 
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
+    antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

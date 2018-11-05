@@ -93,6 +93,22 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec(), node->getExprNode());
 
     llvm::Value *val = ir->CreateCall(func, dumb);
+
+    if (node->getUnOp() == NEG) {
+        if (val->getType() == realTy){
+            val  =  ir->CreateFNeg(val, "fnegtmp");
+        } else {
+            val = ir->CreateNeg(val, "negtmp");
+        }
+    } else if (node->getUnOp() == MINUS) {
+        if(val->getType() == intTy){
+            val =  ir->CreateSub(it->getConsi32(0), val, "iaddtmp");
+        }
+        else if(val->getType() == realTy){
+            val =  ir->CreateFSub(it->getConsi32(0), val, "faddtmp");
+        }
+    }
+
     llvm::Value* ptr = nullptr;
 
     if (node->getTypeIds()->size() == 0){
@@ -119,5 +135,41 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(ParamNode *node) {
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(ProtoProcedureNode * node) {
+    std::vector<ASTNode *>  paramsList = *node->getParamNodes();
+    std::vector<llvm::Type *> params;
+
+    llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
+
+    for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
+        std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
+
+        params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+    }
+
+    symbolTable->addFunctionSymbol(node->getProcedureName(), node->getType(), node->getParamNodes());
+    llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
+
+    llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
+
+    if (F->getName() != node->getProcedureName()) {
+        F->eraseFromParent();
+        F = mod->getFunction(node->getProcedureName());
+
+        if (!F->empty()) {
+            //TODO: error message
+            std::cerr << "redefinition of function" << "\n";
+            exit(1);
+        }
+
+        if(F->arg_size() != paramsList.size()) {
+            //TODO: error message
+            std::cerr << "redefinition of function with different # args" << "\n";
+            exit(1);
+        }
+    }
     return nullptr;
 }
