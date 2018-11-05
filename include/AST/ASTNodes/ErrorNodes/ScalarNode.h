@@ -5,8 +5,8 @@
 #ifndef GAZPREABASE_SCALARNODE_H
 #define GAZPREABASE_SCALARNODE_H
 
+#include <string>
 #include "ErrorNode.h"
-#include "../../../../../../../../../usr/include/c++/5/string"
 
 // This class deals with errors involving scalar to scalar type conversions
 class ScalarNode : public ErrorNode {
