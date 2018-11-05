@@ -10,11 +10,13 @@
 #include <llvm/IR/IRBuilder.h>
 #include "InternalTools.h"
 #include "CondBuilder.h"
+#include "ErrorBuilder.h"
+#include "AST/ASTNodes/ErrorNodes/ScalarNode.h"
 #include "globals.h"
 
 class CastTable {
 public:
-    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod);
+    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb);
 
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr);
@@ -37,6 +39,7 @@ protected:
     llvm::IRBuilder<> * ir;
     InternalTools * it;
     llvm::Module * mod;
+    ErrorBuilder * eb;
 };
 
 #endif //GAZPREABASE_CASTTABLE_H

@@ -22,6 +22,7 @@
 #include "InternalTools/CondBuilder.h"
 #include "InternalTools/WhileBuilder.h"
 #include "InternalTools/CastTable.h"
+#include "InternalTools/ErrorBuilder.h"
 #include "ExternalTools/ExternalTools.h"
 #include "Scope/SymbolTable.h"
 
@@ -90,6 +91,7 @@ protected:
     llvm::Module      * mod;
     SymbolTable       * symbolTable;
     CastTable         * ct;
+    ErrorBuilder      * eb;
 
     std::stack<WhileBuilder *> *whileStack;
 
@@ -108,8 +110,9 @@ protected:
         et          = new ExternalTools(globalCtx, ir, mod);
         it          = new InternalTools(globalCtx, ir, mod);
         symbolTable = new SymbolTable();
-        ct          = new CastTable(globalCtx, ir, it, mod);
+        ct          = new CastTable(globalCtx, ir, it, mod, eb);
         whileStack  = new std::stack<WhileBuilder *>;
+        eb          = new ErrorBuilder();
     }
 
     /**

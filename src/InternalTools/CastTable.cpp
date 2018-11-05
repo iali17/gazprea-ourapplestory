@@ -14,7 +14,7 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod) : globalCtx(globalctx), ir(ir), it(it), mod(mod) {
+CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb) : globalCtx(globalctx), ir(ir), it(it), mod(mod), eb(eb) {
     // Do nothing
 }
 
@@ -44,7 +44,6 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     std::string rTypeString = typePTable[rType][rType];
 
     if(castType == lTypeString && castType == rTypeString) {
-        //std::cout << "No conversion necessary\n";
         return it->makePair(lValueLoad, rValueLoad);
     }
     // Only viable cast for scalars: int -> real
@@ -57,7 +56,10 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
         }
     }
     else {
-        std::cerr << "No implicit conversion possible\n";
+        // Todo: Get line number from AST and pass in to scalarNode
+        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, 5);
+        eb->printError(error);
+
         return it->makePair(lValueLoad, rValueLoad);
     }
 }
@@ -76,6 +78,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
     // Cast type
     std::string exprString = typeTable[exprPos][exprPos];
     std::string typeString = typeTable[exprPos][typePos];
+    std::string realString = typeTable[typePos][typePos];
 
     // Casting to same type
     if(typeString == exprString) {
@@ -146,10 +149,9 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
         }
     }
 
-    // TODO: Better error code
-    // Can't cast to type, return an error
     else {
-        std::cerr << "Implicit cast\n";
-        exit(1);
+        // Todo: Get line number from AST and pass in to scalarNode
+        ScalarNode *error = new ScalarNode(realString, exprString, 5);
+        eb->printError(error);
     }
 }
