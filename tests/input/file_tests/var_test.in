@@ -1,0 +1,17 @@
+procedure main() returns integer {
+	var out = std_output();
+	var x = 1;
+	var y = 1.0;
+
+	// Print x, should print as type integer
+	x -> out; '\n' -> out;
+
+	// Print y, should print as type real
+	y -> out; '\n' -> out;
+
+    // Type promotion
+	y = x + y;
+	y -> out; '\n' -> out;
+
+    return 0;
+}

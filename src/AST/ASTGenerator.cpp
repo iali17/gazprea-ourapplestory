@@ -8,6 +8,7 @@
 #include <AST/ASTNodes/StatementNodes/ReturnNode.h>
 #include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include <AST/ASTNodes/TerminalNodes/RealNode.h>
+#include <AST/ASTNodes/TerminalNodes/NullNode.h>
 #include <AST/ASTNodes/StatementNodes/DeclNode.h>
 #include <AST/ASTNodes/FuncProcNodes/CallNode.h>
 #include <AST/ASTNodes/StatementNodes/CastExprNode.h>
@@ -47,7 +48,7 @@ antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExpr
 }
 
 antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) {
-    return (ASTNode *) new IDNode("null");
+    return (ASTNode *) new NullNode();
 }
 
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
