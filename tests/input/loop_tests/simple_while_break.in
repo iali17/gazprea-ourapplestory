@@ -1,0 +1,14 @@
+procedure main() returns integer {
+	integer i = 0;
+	var out = std_output();
+
+	loop while not(i)
+		break;
+
+	loop while not(i){
+		break;
+		i = i + 1;
+	}
+	true -> out;
+	return 0;
+}
