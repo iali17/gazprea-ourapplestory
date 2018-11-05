@@ -52,5 +52,7 @@ procedure main() returns integer {
       j -> out;
       k -> out;
 
+      '\n' -> out;
+
       return 0;
 }

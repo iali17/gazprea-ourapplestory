@@ -4,12 +4,23 @@ procedure main() returns integer {
     boolean z = true;
     character c = 'a';
 
-    var out = out_stdout();
+    var out = std_output();
 
     x -> out;
+
+    '\n' -> out;
+
     y -> out;
+
+    '\n' -> out;
+
     z -> out;
+
+    '\n' -> out;
+
     c -> out;
+
+    '\n' -> out;
 
     return 0;
 }

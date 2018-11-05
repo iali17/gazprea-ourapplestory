@@ -8,17 +8,27 @@ procedure main() returns integer {
     // Checking precedence
     // and switching between values
 
+    '\n' -> out;
+
     x = as<integer>(as<integer>(x) + 1.9) - 1e5;
     x -> out;
+
+    '\n' -> out;
 
     x = 10+2/2-2*-4%2;
     x -> out;
 
+    '\n' -> out;
+
     x = as<real>(x) + as<real>('a') * 2;
     x -> out;
 
+    '\n' -> out;
+
     x = as<real>(':') * (as<real>(y) + as<real>(1));
     x -> out;
+
+    '\n' -> out;
 
     return 0;
 }

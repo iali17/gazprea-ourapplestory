@@ -1,19 +1,18 @@
 // Increments variable
-procedure increment(integer x) {
+procedure increment(var integer x) {
     x = x + 1;
     return;
 }
 
 // Decrements variable
-procedure decrement(integer x) {
+procedure decrement(var integer x) {
     x = x - 1;
     return;
 }
 
 // Returns factorial of integer
-procedure factorial(integer x) {
+procedure factorial(var integer x) {
     integer temp = 1;
-    integer i = x;
 
     loop while x > 0 {
         temp = temp * x;
@@ -27,18 +26,21 @@ procedure factorial(integer x) {
 }
 
 procedure main() returns integer {
-    const integer x = 5;
+    integer x = 5;
     var out = std_output();
 
     x -> out;
+    '\n' -> out;
 
     call factorial(x);
 
     x -> out;
+    '\n' -> out;
 
     call increment(x);
 
     x -> out;
+    '\n' -> out;
 
     return 0;
 }

@@ -7,6 +7,8 @@ procedure main() returns integer {
       y = y + 10;
       y -> out;
 
+      '\n' -> out;
+
       // Subtraction
       y = y - 2;
       y -> out;
@@ -14,6 +16,8 @@ procedure main() returns integer {
       // Division
       y = y / 3;
       y -> out;
+
+      '\n' -> out;
 
       // Multiplication
       y = y * 4;
@@ -23,6 +27,8 @@ procedure main() returns integer {
       y = y % 4;
       y -> out;
 
+      '\n' -> out;
+
       // Unary negative
       y = -25;
       y -> out;
@@ -30,6 +36,8 @@ procedure main() returns integer {
       // Unary positive
       y = +25;
       y ->out;
+
+      '\n' -> out;
 
       return 0;
 }
