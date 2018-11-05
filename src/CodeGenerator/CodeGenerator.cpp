@@ -181,6 +181,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
     Symbol *left, *right;
     left = symbolTable->resolveSymbol(node->getID());
+    assert(!left->isConstant());
     if(dynamic_cast<IDNode *>(node->getExpr())){
         IDNode * idNode = (IDNode *) node->getExpr();
         right = symbolTable->resolveSymbol(idNode->getID());
