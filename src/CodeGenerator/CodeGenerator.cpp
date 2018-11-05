@@ -153,6 +153,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value* ptr = nullptr;
 
+
     if      (node->getTypeIds()->size() == 0){
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
@@ -282,4 +283,34 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
     return nullptr;
 }
 
+llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
+    llvm::Value *val = visit(node->getExpr());
+    llvm::Type  *type;
 
+    if      (node->getTypeIds()->size() == 0){
+        type = val->getType();
+    }
+    else if (node->getTypeIds()->size() == 1){
+        type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+    }
+    else {
+        //todo - make the constant
+    }
+
+    //set constant
+    llvm::Constant *cons = llvm::cast<llvm::Constant>(val);//llvm::ConstantInt::get(intTy, 0, true);
+    auto *consLoc =
+            llvm::cast<llvm::GlobalVariable>(
+                    mod->getOrInsertGlobal(node->getID(), cons->getType())
+            );
+    consLoc->setInitializer(cons);
+
+    //send signal eleven if anyone tries to assign to it
+    symbolTable->addSymbol(node->getID(), UNDEF, true, nullptr);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
+    llvm::GlobalVariable *global = mod->getGlobalVariable(node->getGlobalName());
+    return global->getInitializer();
+}

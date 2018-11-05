@@ -117,14 +117,14 @@ void ExternalTools::registerPrintf() {
     // to use to ask for this value later to get it from the module.
     auto *intFormatStrLoc =
             llvm::cast<llvm::GlobalVariable>(
-                    mod->getOrInsertGlobal(INTFORMAT_STR, intFormatStr->getType())
+                    mod->getOrInsertGlobal(INT_FORMAT_STR, intFormatStr->getType())
             );
 
     intFormatStrLoc->setInitializer(intFormatStr);
 
     auto *charFormatStrLoc =
             llvm::cast<llvm::GlobalVariable>(
-                    mod->getOrInsertGlobal(CHARFORMAT_STR, charFormatStr->getType())
+                    mod->getOrInsertGlobal(CHAR_FORMAT_STR, charFormatStr->getType())
             );
 
     // Set the location to be initialised by the constant.
@@ -147,7 +147,7 @@ void ExternalTools::registerPrintf() {
 
     auto *floatFormatStrLoc =
             llvm::cast<llvm::GlobalVariable>(
-                    mod->getOrInsertGlobal(FLOATFORMAT_STR, floatFormatStr->getType())
+                    mod->getOrInsertGlobal(FLOAT_FORMAT_STR, floatFormatStr->getType())
             );
 
     // Set the location to be initialised by the constant.
@@ -171,7 +171,7 @@ void ExternalTools::registerPrintf() {
 
     auto *openSqrBLoc =
             llvm::cast<llvm::GlobalVariable>(
-                    mod->getOrInsertGlobal(OPENSQRB_STR, openSqrBStr->getType())
+                    mod->getOrInsertGlobal(OPEN_SQRB_STR, openSqrBStr->getType())
             );
 
     // Set the location to be initialised by the constant.
@@ -179,7 +179,7 @@ void ExternalTools::registerPrintf() {
 
     auto *closeSqrBLoc =
             llvm::cast<llvm::GlobalVariable>(
-                    mod->getOrInsertGlobal(CLOSESQRB_STR, closeSqrBStr->getType())
+                    mod->getOrInsertGlobal(CLOSE_SQRB_STR, closeSqrBStr->getType())
             );
 
     // Set the location to be initialised by the constant.
@@ -212,7 +212,7 @@ void ExternalTools::printInt(llvm::Value *val) {
     llvm::Function *printfFunc = mod->getFunction("printf");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INTFORMAT_STR));
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(INT_FORMAT_STR));
 
     // The type of your string will be [n x i8], it needs to be i8*, so we cast here. We
     // explicitly use the type of printf's first arg to guarantee we are always right.
@@ -232,7 +232,7 @@ void ExternalTools::printStr(llvm::Value *str) {
     llvm::Function *printfFunc = mod->getFunction("printf");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(CHARFORMAT_STR));
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(CHAR_FORMAT_STR));
 
     // Call printf. Printing multiple values is easy: just add to the {}.
     llvm::Value *formatStr =
@@ -251,7 +251,7 @@ void ExternalTools::printChar(llvm::Value *ch) {
     llvm::Function *printfFunc = mod->getFunction("printf");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(CHARFORMAT_STR));
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(CHAR_FORMAT_STR));
 
     // Call printf. Printing multiple values is easy: just add to the {}.
     llvm::Value *formatStr =
@@ -280,7 +280,7 @@ void ExternalTools::printReal(llvm::Value *val) {
     llvm::Function *printfFunc = mod->getFunction("printf");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(FLOATFORMAT_STR));
+    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(FLOAT_FORMAT_STR));
 
     // Call printf. Printing multiple values is easy: just add to the {}.
     llvm::Value *formatStr =
@@ -364,16 +364,16 @@ void ExternalTools::print(llvm::Value *val) {
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
     llvm::Type * llvmType = scanTo->getType();
     if     (llvmType == intTy->getPointerTo()){
-        return aliScanf(INTFORMAT_STR, scanTo);
+        return aliScanf(INT_FORMAT_STR, scanTo);
     }
     else if(llvmType == charTy->getPointerTo()){
-        return aliScanf(CHARFORMAT_STR, scanTo);
+        return aliScanf(CHAR_FORMAT_STR, scanTo);
     }
     else if(llvmType == boolTy->getPointerTo()){
-        return aliScanf(BOOLFORMAT_STR, scanTo);
+        return aliScanf(BOOL_FORMAT_STR, scanTo);
     }
     else if(llvmType == realTy->getPointerTo()){
-        return aliScanf(FLOATFORMAT_STR, scanTo);
+        return aliScanf(FLOAT_FORMAT_STR, scanTo);
     }
     return nullptr;
 }

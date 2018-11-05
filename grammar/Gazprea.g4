@@ -3,7 +3,12 @@ grammar Gazprea;
 //file: (statement | procedure)* EOF;
 file: ( termsAndConditions )* EOF ;
 
-termsAndConditions : typeDefine | procedure | protoFunc;
+termsAndConditions
+    : globalDecl
+    | typeDefine
+    | procedure
+    | protoFunc
+    ;
 
 // TODO: check for precendence
 // TODO TUPLE
@@ -112,6 +117,10 @@ typeDefine
 
 procedureCall
     : CALL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON
+    ;
+
+globalDecl
+    : CONST (type)* Identifier EQL expr SEMICOLON
     ;
 
 type

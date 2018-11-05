@@ -15,16 +15,16 @@
 #include "llvm/IR/Verifier.h"
 #include "InternalTools/InternalTools.h"
 
-#define INTFORMAT_STR   "intFormatStr"
-#define BOOLFORMAT_STR  "charFormatStr"
-#define CHARFORMAT_STR  "charFormatStr"
-#define FLOATFORMAT_STR "floatFormatStr"
-#define EOLN_STR        "eolnStr"
-#define SPACE_STR       "spaceStr"
-#define OPENSQRB_STR    "openSqrBStr"
-#define CLOSESQRB_STR   "closeSqrBStr"
-#define TRUE_STR        "T"
-#define FALSE_STR       "F"
+#define INT_FORMAT_STR   "intFormatStr"
+#define BOOL_FORMAT_STR  "charFormatStr"
+#define CHAR_FORMAT_STR  "charFormatStr"
+#define FLOAT_FORMAT_STR "floatFormatStr"
+#define EOLN_STR         "eolnStr"
+#define SPACE_STR        "spaceStr"
+#define OPEN_SQRB_STR    "openSqrBStr"
+#define CLOSE_SQRB_STR   "closeSqrBStr"
+#define TRUE_STR         "T"
+#define FALSE_STR        "F"
 
 class ExternalTools {
 public:

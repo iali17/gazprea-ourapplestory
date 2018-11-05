@@ -7,10 +7,13 @@
 
 #include "GazpreaBaseVisitor.h"
 #include "AST.h"
+#include <unordered_map>
+#include <unordered_set>
 class ASTGenerator : public gazprea::GazpreaBaseVisitor {
 public:
     ASTGenerator();
 private:
+    std::unordered_set<std::string> * globalVars;
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
     antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;
     antlrcpp::Any visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) override;
@@ -62,10 +65,9 @@ private:
     antlrcpp::Any visitContinueStat(gazprea::GazpreaParser::ContinueStatContext *ctx) override;
     antlrcpp::Any visitBreakStat(gazprea::GazpreaParser::BreakStatContext *ctx) override;
     antlrcpp::Any visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) override;
-
-
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
     antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
+    antlrcpp::Any visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

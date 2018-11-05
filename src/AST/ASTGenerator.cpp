@@ -161,7 +161,14 @@ antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext 
 }
 
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
-    return (ASTNode *) new IDNode(ctx->Identifier()->getText());
+    std::string id = ctx->Identifier()->getText();
+    auto globalVar = globalVars->find(id);
+
+    //check if global
+    if (not(globalVar == globalVars->end()))
+        return (ASTNode *) new GlobalRefNode(id);
+
+    return (ASTNode *) new IDNode(id);
 }
 
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
@@ -292,7 +299,9 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
     return p;
 }
 
-ASTGenerator::ASTGenerator() {}
+ASTGenerator::ASTGenerator() {
+    globalVars = new std::unordered_set<std::string>();
+}
 
 /**
  * TODO - this
@@ -553,4 +562,17 @@ antlrcpp::Any ASTGenerator::visitProtoFunc(gazprea::GazpreaParser::ProtoFuncCont
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText());
     return p;
+}
+
+antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) {
+    ASTNode *expr  = (ASTNode *) visit(ctx->expr());
+    std::string id = ctx->Identifier()->getText();
+    auto *typeVec  = new std::vector<std::string>();
+
+    unsigned int i;
+    for (i = 0; i < ctx->type().size(); i++) {
+        typeVec->push_back(ctx->type().at(i)->getText());
+    }
+    globalVars->insert(id);
+    return (ASTNode *) new GlobalDeclNode(expr, id, typeVec);
 }

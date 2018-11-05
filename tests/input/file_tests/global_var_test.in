@@ -1,0 +1,8 @@
+const integer i = -1;
+const integer j = -1;
+procedure main() returns integer {
+	var out = std_output();
+	i * j -> out;
+	return 0;
+}
+
