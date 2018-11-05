@@ -9,7 +9,7 @@ TupleType::TupleType(std::vector<ASTNode *> *decls) : decls(decls){
 
 }
 
-vector<ASTNode *> *TupleType::getDecls() const {
+std::vector<ASTNode *> *TupleType::getDecls() const {
     return decls;
 }
 

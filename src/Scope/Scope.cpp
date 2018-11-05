@@ -68,3 +68,7 @@ void Scope::addSymbol(std::string newSymbolName, int type, bool constant) {
 void Scope::addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr) {
     symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new Symbol(name, newSymbolName, type, ptr, constant )));
 }
+
+void Scope::addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec) {
+    symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new FunctionSymbol(name, newSymbolName, type, paramsVec)));
+}

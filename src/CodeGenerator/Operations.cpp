@@ -138,32 +138,8 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
 
     assert(left->getType() == right->getType());
 
-    if(left->getType() == intTy){
-        WhileBuilder *wb = new WhileBuilder(globalCtx, ir, mod);
-        llvm::Value *zero = it->getConsi32(0);
-        llvm::Value *i;
-
-        llvm::Value *iPtr = ir->CreateAlloca(intTy);
-        ir->CreateStore(right, iPtr);
-
-        llvm::Value *leftPtr = ir->CreateAlloca(intTy);
-        ir->CreateStore(left, leftPtr);
-
-        wb->beginWhile();
-
-        i = ir->CreateLoad(iPtr);
-
-        wb->insertControl(ir->CreateICmpNE(zero, i));
-
-        llvm::Value *leftLoad = ir->CreateLoad(leftPtr);
-
-
-        wb->endWhile();
-
-        return ir->CreateSRem(left, right, "iremtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFRem(left, right, "fremtmp");
+    if(((left->getType() == intTy)) || ((left->getType() == realTy))){
+        return et->aliPow(left, right);
     }
 
     std::cerr << "Unrecognized type during arithmetic operation\n";

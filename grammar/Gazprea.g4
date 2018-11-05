@@ -57,7 +57,8 @@ statement
 
 // TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
-    : Identifier EQL expr SEMICOLON                                         #normalAss
+    : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
+    | Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier EQL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON     #procedureCallAss
     | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
     ;
@@ -120,8 +121,11 @@ type
     // | STRING '[' Integer ']'
     ;
 
+param
+    : VAR? type Identifier;
+
 params
-    : '(' (type Identifier (COMMA type Identifier)* )? ')';
+    : '('  (param (COMMA  param)* )? ')';
 
 returnStat
     : RETURNS type

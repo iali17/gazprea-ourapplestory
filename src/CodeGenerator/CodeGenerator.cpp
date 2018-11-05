@@ -18,6 +18,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerFree();
     et->registerCalloc();
     et->registerScanf();
+    et->registerPow();
 
     symbolTable->pushNewScope("_globalScope_");
 
@@ -27,6 +28,9 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("integer"  , intTy);
     symbolTable->addBaseType("real"     , realTy);
     symbolTable->addBaseType("void"     , llvm::Type::getVoidTy(*globalCtx));
+
+    symbolTable->addSymbol("std_input()" ,  INSTREAM, false);
+    symbolTable->addSymbol("std_output()", OUTSTREAM, false);
 
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
@@ -52,71 +56,6 @@ llvm::Value *CodeGenerator::visit(ASTNode *node) {
 }
 
 CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
-}
-
-llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
-
-    std::vector<ASTNode *>  paramsList = *node->getParamNodes();
-    std::vector<llvm::Type *> params;
-
-    llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
-
-    for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
-        std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
-
-        params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
-    }
-
-    llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
-
-    llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
-
-    if (F->getName() != node->getProcedureName()) {
-        F->eraseFromParent();
-        F = mod->getFunction(node->getProcedureName());
-
-        if (!F->empty()) {
-            //TODO: error message
-            std::cerr << "redefinition of function" << "\n";
-            exit(1);
-        }
-
-        if(F->arg_size() != paramsList.size()) {
-            //TODO: error message
-            std::cerr << "redefinition of function with different # args" << "\n";
-            exit(1);
-        }
-    }
-
-    //new scope
-    symbolTable->pushNewScope();
-
-    //preserve old while stack
-    auto *oldWhileStack = whileStack;
-    whileStack = new std::stack<WhileBuilder *>;
-
-    size_t idx = 0;
-    for (auto AI = F->arg_begin(); idx != F->arg_size(); ++AI, ++idx){
-        auto *p = (ParamNode *) paramsList.at(idx);
-        symbolTable->addSymbol(p->getVarName(), p->getType(), false, AI);
-        AI->setName(p->getVarName());
-    }
-
-
-    // Create an entry block and set the inserter.
-
-    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
-    ir->SetInsertPoint(entry);
-
-    visit(node->getBlock());
-
-    symbolTable->popScope();
-    whileStack = oldWhileStack;
-    return nullptr;
-}
-
-llvm::Value *CodeGenerator::visit(ParamNode *node) {
-    return ASTBaseVisitor::visit(node);
 }
 
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
@@ -239,9 +178,24 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
-    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
-    llvm::Value *val = visit(node->getExpr());
+    Symbol *left, *right;
+    left = symbolTable->resolveSymbol(node->getID());
+    if(dynamic_cast<IDNode *>(node->getExpr())){
+        IDNode * idNode = (IDNode *) node->getExpr();
+        right = symbolTable->resolveSymbol(idNode->getID());
+        if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
+            left->getType() != right->getType()){
+            std::cerr << "Incompatable stream assignment\n";
+            return nullptr;
+        }
+        else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
+            left->getType() == right->getType()){
+            return nullptr;
+        }
+    }
 
+    llvm::Value *val = visit(node->getExpr());
+    llvm::Value *ptr = left->getPtr();
     if(val) {
         if(ptr->getType()->getPointerElementType() == realTy)
             val = ct->varCast(realTy, val);
@@ -280,7 +234,7 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
     }
     llvm::Value *expr = visit(node->getExpr());
     et->print(expr);
-    et->printStaticStr(EOLN_STR);
+    //et->printStaticStr(EOLN_STR);
     return nullptr;
 }
 
@@ -289,12 +243,6 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(CallNode *node) {
-    llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNodes());
-
-    return ir->CreateCall(func, dumb);
-}
 
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr = visit(node->getExpr());
@@ -322,66 +270,4 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
         std::cout << "Continue statement does not reside in while loop\n";
     }
     return nullptr;
-}
-
-llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
-    llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(node->getExprNode());
-
-    llvm::Value *val = ir->CreateCall(func, dumb);
-    llvm::Value* ptr = nullptr;
-
-    if      (node->getTypeIds()->size() == 0){
-        ptr = ir->CreateAlloca(val->getType());
-        ir->CreateStore(val, ptr);
-        symbolTable->addSymbol(node->getVarName(), node->getType(), true);
-    }
-    else if (node->getTypeIds()->size() == 1){
-        llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-        ptr = ir->CreateAlloca(type);
-        if(val == nullptr) {
-            if (!(it->setNull(type, ptr))){
-                std::cerr << "Unable to initialize to null\n";
-            }
-            symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant(), ptr);
-            return nullptr;
-        }
-        ir->CreateStore(val, ptr);
-        symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant());
-    }
-
-    symbolTable->resolveSymbol(node->getVarName())->setPtr(ptr);
-
-    return nullptr;
-}
-
-std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *exprNode) {
-    std::vector<llvm::Value *> dumb;
-
-    // TODO: All the other types :(
-    for (unsigned int i = 0; i < exprNode->size(); ++i) {
-        if ((exprNode->at(i)->getType()) == CHAR) {
-            llvm::Value* ptr = ir->CreateAlloca(charTy);
-            llvm::Value* val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else if ((exprNode->at(i)->getType()) == INTEGER) {
-            llvm::Value* ptr = ir->CreateAlloca(intTy);
-            llvm::Value* val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        }  else if ((exprNode->at(i)->getType()) == REAL) {
-            llvm::Value *ptr = ir->CreateAlloca(realTy);
-            llvm::Value *val = visit(exprNode->at(i));
-            ir->CreateStore(val, ptr);
-            dumb.push_back(ptr);
-        } else {
-            // We are passing in a variable
-            llvm::Value *dumb2 = symbolTable->resolveSymbol(((IDNode *) exprNode->at(i))->getID())->getPtr();
-            dumb.push_back(dumb2);
-        }
-    }
-
-    return dumb;
-
 }

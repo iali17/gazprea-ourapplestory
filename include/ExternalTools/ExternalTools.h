@@ -34,6 +34,10 @@ public:
     void registerCalloc();
     llvm::Value * aliCalloc(llvm::Value * arrSize, int elementSize = 4, bool castToIntP = true);
 
+    //pow
+    void registerPow();
+    llvm::Value * aliPow(llvm::Value *left, llvm::Value *right);
+
     //free
     void registerFree();
     void aliFree(llvm::Value * p);
