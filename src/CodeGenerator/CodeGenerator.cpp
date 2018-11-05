@@ -158,8 +158,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    }
-    else if (node->getTypeIds()->size() == 1){
+    } else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
         ptr = ir->CreateAlloca(type);
         if(val == nullptr) {
