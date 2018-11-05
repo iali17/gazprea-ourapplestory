@@ -1,0 +1,18 @@
+procedure main() returns integer {
+	integer i = 0;
+	var out = std_output();
+
+	loop {
+		if( i == 2)
+			break;
+		
+		i -> out;
+		i = i + 1;		
+	} while i < 3;
+
+	loop {
+			break;
+	} while i < 3;
+	true -> out;
+	return 0;
+}
