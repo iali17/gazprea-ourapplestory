@@ -332,7 +332,6 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
     return (ASTNode *) new ReturnNode(expr);
 }
 
-
 antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) {
     std::string strExpr = ctx->getText();
     if(strExpr == "true") {
@@ -345,7 +344,6 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
     }
     return nullptr;
 }
-
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
     int type;
@@ -462,6 +460,13 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
 }
 
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
+
+
+
+
+
+
+
     return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
 }
 
@@ -495,7 +500,6 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
 
 // everything inside the tuple() is a empty decl
 antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) {
-
     ASTNode *expr = (ASTNode *) new IDNode("null");
     bool constant = false;
 
