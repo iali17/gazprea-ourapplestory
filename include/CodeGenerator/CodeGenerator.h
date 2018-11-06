@@ -55,6 +55,7 @@ public:
     llvm::Value* visit(AssignNode         *node) override;
     llvm::Value* visit(CastExprNode       *node) override;
     llvm::Value* visit(IDNode             *node) override;
+    llvm::Value* visit(IdnNode            *node) override;
     llvm::Value* visit(InputNode          *node) override;
     llvm::Value* visit(OutputNode         *node) override;
     llvm::Value* visit(StreamDeclNode     *node) override;

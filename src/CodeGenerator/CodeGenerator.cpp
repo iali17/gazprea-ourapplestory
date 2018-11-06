@@ -89,21 +89,7 @@ llvm::Value *CodeGenerator::visit(BoolNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(NullNode *node) {
-    //std::string stringVal = node->popType(0);
-    //llvm::Type *type = symbolTable->resolveType(stringVal)->getTypeDef();
-    //it->setNull(type, nullptr);
-/*
-    if(type == boolTy)
-        return it->geti1(0);
-    else if(type == charTy)
-        return it->geti8(0);
-    else if(type == intTy)
-        return it->getConsi32(0);
-    else if(type == realTy)
-        return it->getReal(0.0);
-    else
-    */
-        return nullptr;
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(CondNode *node) {
@@ -234,6 +220,11 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     return ir->CreateLoad(ptr);
+}
+
+// Todo: Fix identity
+llvm::Value *CodeGenerator::visit(IdnNode *node) {
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(InputNode *node) {
