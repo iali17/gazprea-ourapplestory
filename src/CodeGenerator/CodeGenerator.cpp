@@ -160,7 +160,6 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-
         node->setLlvmType(type);
 
         ptr = ir->CreateAlloca(type);
@@ -278,7 +277,6 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
 
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
-//    symbolTable->pushNewScope();
 
 //    visit(node->getExpr());
     visit(node->getTupleTypes());
@@ -287,7 +285,6 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
 
 
 
-//    symbolTable->popScope();
 
     return nullptr;
 }
@@ -297,14 +294,12 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
     auto members = new std::vector<llvm::Type *>;
 
     for (auto element : * declNodes) {
+        visit(element);
         members->push_back(element->getLlvmType());
-
     }
 
-    llvm::StructType * newStruct = llvm::StructType::create(*members, "s");
-//    newStruct->setBody(*members);
-
-
+    auto * newStruct = llvm::StructType::create(*members, "ssss");
+    ir->CreateAlloca(newStruct);
 
     return nullptr;
 }

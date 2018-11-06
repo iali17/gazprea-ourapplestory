@@ -1,6 +1,8 @@
 ; ModuleID = 'gazprea'
 source_filename = "gazprea"
 
+%ssss = type { i32, i32 }
+
 @intFormatStr = global [3 x i8] c"%d\00"
 @charFormatStr = global [3 x i8] c"%c\00"
 @T = global [2 x i8] c"T\00"
@@ -24,6 +26,11 @@ declare double @pow(double, double)
 
 define i32 @main() {
 entry:
+  %0 = alloca i32
+  store i32 0, i32* %0
+  %1 = alloca i32
+  store i32 0, i32* %1
+  %2 = alloca %ssss
   ret i32 0
 }
 
