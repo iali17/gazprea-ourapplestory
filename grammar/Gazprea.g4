@@ -24,7 +24,7 @@ expr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
-    | Identifier '.' (Integer | Identifier)                         #tupleIndexExpr
+    | TupleIndex  (Integer | Identifier)                            #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -239,6 +239,10 @@ Integer: [0-9][0-9_]* ;
 Real
     : Integer? '.' [0-9_]+ Exponent?
     | Integer '.'? Exponent?
+    ;
+
+TupleIndex
+    : Identifier '.'
     ;
 
 Exponent: 'e' '_'* (ADD | SUB)? [0-9_]+;

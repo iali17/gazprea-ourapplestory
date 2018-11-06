@@ -464,15 +464,17 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
  * ignore the warning on dynamic cast
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    assert(ctx->Identifier().size() >= 1);
-    ASTNode *idNode = (ASTNode *) new IDNode(ctx->Identifier().at(0)->getText());
+    std::string idName = "";
+    std::string oldName = ctx->TupleIndex()->getText();
+    std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
+    ASTNode *idNode = (ASTNode *) new IDNode(idName);
     ASTNode *index;
     if(ctx->Integer()){
         index = (ASTNode *) visit(ctx->Integer());
     }
     else{
-        assert(ctx->Identifier().size() > 1);
-        index = (ASTNode *) new IDNode(ctx->Identifier().at(1)->getText());
+        assert(ctx->Identifier());
+        index = (ASTNode *) new IDNode(ctx->Identifier()->getText());
     }
     return (ASTNode *) new IndexTupleNode(dynamic_cast<IDNode*>(idNode), index);
 }

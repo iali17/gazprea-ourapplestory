@@ -19,6 +19,21 @@ InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rig
     return pair1;
 }
 
+/**
+ *	returns the qactual value
+ */
+llvm::Value *InternalTools::getValFromTuple(llvm::Value *tuplePtr, llvm::Value *idx){
+	llvm::Value *ptr = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), idx});
+	return ir->CreateLoad(ptr);
+}
+
+/**
+ *	returns a pointer to the the tuple element. YOu can store to here
+ */
+llvm::Value *InternalTools::getPtrFromTuple(llvm::Value *tuplePtr, llvm::Value *idx){
+	return ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), idx});
+}
+
 llvm::Value *InternalTools::getReal(float val) {
     return llvm::ConstantFP::get(realTy, val);
 }
