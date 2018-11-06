@@ -295,16 +295,12 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     return ptr;
 }
 
+
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
 
 //    visit(node->getExpr());
     visit(node->getTupleTypes());
-
-
-
-
-
 
     return nullptr;
 }
@@ -322,6 +318,11 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
     ir->CreateAlloca(newStruct);
 
     return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
+// todo assign for every variable and inside the tuple
+return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {

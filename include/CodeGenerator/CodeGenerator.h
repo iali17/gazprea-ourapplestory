@@ -83,6 +83,7 @@ public:
     llvm::Value *visit(GlobalDeclNode     *node) override;
     llvm::Value *visit(GlobalRefNode      *node) override;
     llvm::Value *visit(TupleNode          *node) override;
+    llvm::Value *visit(PythonTupleAssNode *node) override;
 
     std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
 
