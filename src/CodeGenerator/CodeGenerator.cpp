@@ -301,6 +301,8 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
         ir->CreateStore(values->at(i), ptr);
         ir->CreateStore(ptr, structElem);
     }
+
+    symbolTable->addTupleType(tuple, new std::unordered_map<std::string, int>, types);
     return tuplePtr ;
 }
 
@@ -334,7 +336,6 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     llvm::StructType * structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
-
     //once you have the LHS type
     llvm::Value *ptr = visit(dynamic_cast<TupleNode *>(node->getExpr()), structType);
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
@@ -344,13 +345,17 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
 llvm::Value *CodeGenerator::visit(TupleType *node) {
     auto * declNodes = node->getDecls();
     auto members = new std::vector<llvm::Type *>;
-
+    auto *memberNames = new std::unordered_map<std::string, int>;
+    int i = 0;
     for (auto element : * declNodes) {
-        visit(element);
         members->push_back(element->getLlvmType()->getPointerTo());
+        if(!(((DeclNode *) element)->getID().empty()))
+            memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
+        i++;
     }
 
     auto * newStruct = llvm::StructType::create(*members);
+    symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
     return ir->CreateAlloca(newStruct);
 }
 
@@ -389,4 +394,24 @@ llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
 llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     llvm::GlobalVariable *global = mod->getGlobalVariable(node->getGlobalName());
     return global->getInitializer();
+}
+
+
+llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
+    llvm::Value *idx, *val;
+    Symbol *symbol   = symbolTable->resolveSymbol(node->getIdNode()->getID());
+    llvm::Value *ptr = symbol->getPtr();
+
+    if(dynamic_cast<IDNode *>(node->getIndex())){
+        llvm::Type * type = ptr->getType();
+        GazpreaTupleType *gtt = symbolTable->resolveTupleType(type);
+        int i = gtt->getOffsetFromString(dynamic_cast<IDNode *>(node->getIndex())->getID());
+        idx = it->getConsi32(i);
+    }
+    else{
+        idx = visit(node->getIndex());
+    }
+
+    val = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), idx});
+    return ir->CreateLoad(val);
 }

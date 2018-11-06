@@ -12,8 +12,9 @@
 class SymbolTable {
 public:
     SymbolTable();
-    GazpreaType * resolveType(std::string userTypeName);
-    Symbol      * resolveSymbol(std::string symbolName);
+    GazpreaType      *resolveType(std::string userTypeName);
+    GazpreaTupleType *resolveTupleType(llvm::Type * tupleType);
+    Symbol           *resolveSymbol(std::string symbolName);
     void pushNewScope(std::string newScopeName);
     void pushNewScope();
     void addSymbol(std::string newSymbolName, int type);
@@ -21,6 +22,8 @@ public:
     void addSymbol(std::string newSymbolName, int type, bool isConstant, llvm::Value *ptr);
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
     void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
+                      std::vector<llvm::Type *> *members);
+    void addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string baseTypeName, llvm::Type *newType);

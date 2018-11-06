@@ -35,6 +35,7 @@
 #include "ASTNodes/TerminalNodes/OutputNode.h"
 #include "ASTNodes/TerminalNodes/StreamDecl.h"
 #include "ASTNodes/TerminalNodes/GlobalRefNode.h"
+#include "ASTNodes/TerminalNodes/IndexTupleNode.h"
 #include "AST/ASTNodes/ArithNodes/AddNode.h"
 #include "AST/ASTNodes/ArithNodes/DivNode.h"
 #include "AST/ASTNodes/ArithNodes/MulNode.h"

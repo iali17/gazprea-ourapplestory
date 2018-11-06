@@ -84,6 +84,7 @@ public:
     llvm::Value* visit(GlobalRefNode      *node) override;
     llvm::Value* visit(TupleNode          *node) override;
     llvm::Value* visit(PythonTupleAssNode *node) override;
+    llvm::Value* visit(IndexTupleNode     *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple);
 
     llvm::StructType *parseStructType(TupleType *node);

@@ -65,6 +65,7 @@ public:
     virtual llvm::Value* visit(GlobalDeclNode *node)     = 0;
     virtual llvm::Value* visit(GlobalRefNode *node)      = 0;
     virtual llvm::Value* visit(TupleNode *node)          = 0;
+    virtual llvm::Value* visit(IndexTupleNode *node)     = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

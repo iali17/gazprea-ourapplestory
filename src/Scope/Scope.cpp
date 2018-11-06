@@ -9,6 +9,7 @@
 Scope::Scope(const std::string &name) : name(name) {
     symbols        = new std::map<std::string, Symbol*>;
     typeSymbols    = new std::map<std::string, GazpreaType*>;
+    tupleTypes     = new std::map<llvm::Type*, GazpreaTupleType*>;
     enclosingScope = nullptr;
 }
 
@@ -27,6 +28,7 @@ Scope *Scope::getEnclosingScope() const {
 Scope::Scope(const std::string &name,  Scope *enclosingScope) : name(name), enclosingScope(enclosingScope) {
     symbols     = new std::map<std::string, Symbol*>;
     typeSymbols = new std::map<std::string, GazpreaType*>;
+    tupleTypes  = new std::map<llvm::Type*, GazpreaTupleType*>;
 }
 
 Symbol *Scope::resolveSymbol(std::string symbolName) {
@@ -73,10 +75,25 @@ void Scope::addFunctionSymbol(std::string newSymbolName, int type, std::vector<A
     symbols->insert (std::pair<std::string, Symbol*> (newSymbolName, new FunctionSymbol(name, newSymbolName, type, paramsVec)));
 }
 
-void
-Scope::addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
+//for adding user types
+void Scope::addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                     std::vector<llvm::Type *> *members) {
 
     GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType(newTypeName, newType, stringRefMap, members);
     typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, (GazpreaType *) gazpreaTupleType));
+}
+
+//for adding tuple types
+void Scope::addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+                         std::vector<llvm::Type *> *members) {
+    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType("autogen", newType, stringRefMap, members);
+    tupleTypes->insert(std::pair<llvm::Type *, GazpreaTupleType*> (newType, gazpreaTupleType));
+}
+
+GazpreaTupleType *Scope::resolveType(llvm::Type *type) {
+    auto iter = tupleTypes->find(type);
+    if(iter == tupleTypes->end())
+        return nullptr;
+    else
+        return iter->second;
 }

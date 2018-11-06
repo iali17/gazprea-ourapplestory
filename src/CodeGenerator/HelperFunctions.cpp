@@ -64,14 +64,20 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
 
 llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
     auto *declNodes  = node->getDecls();
-    auto members     = new std::vector<llvm::Type *>;
-
+    auto *members    = new std::vector<llvm::Type *>;
+    llvm::Type* type;
+    auto *memberNames = new std::unordered_map<std::string, int>;
+    int i = 0;
     for (auto element : * declNodes) {
-        visit(element);
-        members->push_back(element->getLlvmType()->getPointerTo());
+        type = symbolTable->resolveType(((DeclNode *) element)->getTypeIds()->at(0))->getTypeDef();
+        members->push_back(type->getPointerTo());
+        if(!(((DeclNode *) element)->getID().empty()))
+            memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
+        i++;
     }
 
+    llvm::StructType * newStruct = llvm::StructType::create(*members);
+    symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
+    //symbolTable->addTupleType("ugh", newStruct, memberNames, members);
     return llvm::StructType::create(*members);
 }
-
-

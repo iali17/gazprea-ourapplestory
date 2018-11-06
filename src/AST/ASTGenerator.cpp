@@ -460,15 +460,21 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
     return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes);
 }
 
+/*
+ * ignore the warning on dynamic cast
+ */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-
-
-
-
-
-
-
-    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
+    assert(ctx->Identifier().size() >= 1);
+    ASTNode *idNode = (ASTNode *) new IDNode(ctx->Identifier().at(0)->getText());
+    ASTNode *index;
+    if(ctx->Integer()){
+        index = (ASTNode *) visit(ctx->Integer());
+    }
+    else{
+        assert(ctx->Identifier().size() > 1);
+        index = (ASTNode *) new IDNode(ctx->Identifier().at(1)->getText());
+    }
+    return (ASTNode *) new IndexTupleNode(dynamic_cast<IDNode*>(idNode), index);
 }
 
 antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
@@ -486,7 +492,7 @@ antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTu
 
 // this just calls visitTuple
 antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleExpr(ctx);
+    return (ASTNode *) GazpreaBaseVisitor::visitTupleExpr(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
@@ -502,7 +508,7 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
     auto *typeIdNodes = new std::vector<ASTNode *>;
 
     for (auto typeId : ctx->tupleTypeIdentifier()) {
-        typeIdNodes->push_back(visit(typeId));
+        typeIdNodes->push_back((ASTNode *) visit(typeId));
     }
 
     return (ASTNode *) new TupleType(typeIdNodes);
