@@ -1,9 +1,6 @@
 procedure main() returns integer {
 
-tuple(integer, integer b) a = (1,2);
-
-
-
+tuple(integer, integer) a = (1,2);
 
 
 
