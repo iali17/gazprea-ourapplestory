@@ -149,16 +149,19 @@ llvm::Value *CodeGenerator::visit(InLoopNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(DeclNode *node) {
-    //TODO - account for null
     llvm::Value *val = visit(node->getExpr());
     llvm::Value* ptr = nullptr;
 
-
-    if      (node->getTypeIds()->empty()){
+    if      (node->getTypeIds()->empty() && (node->getType() == TUPLE)){
+        ptr = val;
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
+    }
+    else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    } else if (node->getTypeIds()->size() == 1){
+    }
+    else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
         node->setLlvmType(type);
 
@@ -183,6 +186,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     Symbol *left, *right;
     left = symbolTable->resolveSymbol(node->getID());
     assert(!left->isConstant());
+
     if(dynamic_cast<IDNode *>(node->getExpr())){
         IDNode * idNode = (IDNode *) node->getExpr();
         right = symbolTable->resolveSymbol(idNode->getID());
@@ -216,7 +220,8 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
         return nullptr;
     }
 
-    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
+    Symbol *symbol   = symbolTable->resolveSymbol(node->getID());
+    llvm::Value *ptr = symbol->getPtr();
     return ir->CreateLoad(ptr);
 }
 
@@ -237,7 +242,6 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
     }
     llvm::Value *expr = visit(node->getExpr());
     et->print(expr);
-    //et->printStaticStr(EOLN_STR);
     return nullptr;
 }
 
@@ -247,9 +251,9 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
-    llvm::Value *expr = visit(node->getExpr());
-
-    llvm::Type *type = symbolTable->resolveType(node->getTypeString())->getTypeDef();
+    llvm::Value *expr        = visit(node->getExpr());
+    GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
+    llvm::Type  *type        = gazpreaType->getTypeDef();
 
     return ct->varCast(type, expr);
 }
@@ -278,30 +282,62 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
     std::vector<llvm::Type  *> *types  = new std::vector<llvm::Type  *>();
 
+    //build vector for values and types
     for(unsigned long i = 0; i < node->getElements()->size(); i++){
         llvm::Value * element = visit(node->getElements()->at(i));
         values->push_back(element);
         types->push_back(element->getType()->getPointerTo());
     }
 
+    //build structtype and allocate
     llvm::StructType *tuple;
-    tuple = tuple->create(*types, "myType");
-    llvm::Value *ptr = ir->CreateAlloca(tuple);
+    tuple = tuple->create(*types);
+    llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
+
+    //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); i++){
-        llvm::Value * structElem = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(i)});
-        llvm::Value *ptr = ir->CreateLoad(structElem);
+        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
+        llvm::Value *ptr        = ir->CreateAlloca(values->at(i)->getType());
         ir->CreateStore(values->at(i), ptr);
+        ir->CreateStore(ptr, structElem);
     }
-    return ptr;
+    return tuplePtr ;
 }
 
+llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
+    auto *values = new std::vector<llvm::Value *>();
+    auto types   = tuple->elements();
+
+    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+        llvm::Value * element = visit(node->getElements()->at(i));
+        values->push_back(element);
+
+        //double check type
+        llvm::Type *elementType = element->getType()->getPointerTo();
+        llvm::Type *memberType  = types[i];
+        if(elementType != memberType){
+            std::cout << "Inconsistent type for struct member\n";
+        }
+    }
+
+    llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
+    //fill new structure
+    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
+        llvm::Value *ptr        = ir->CreateAlloca(values->at(i)->getType());
+        ir->CreateStore(values->at(i), ptr);
+        ir->CreateStore(ptr, structElem);
+    }
+    return tuplePtr ;
+}
 
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
+    llvm::StructType * structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
 
-//    visit(node->getExpr());
-    visit(node->getTupleTypes());
-
+    //once you have the LHS type
+    llvm::Value *ptr = visit(dynamic_cast<TupleNode *>(node->getExpr()), structType);
+    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
 }
 
@@ -311,13 +347,11 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
 
     for (auto element : * declNodes) {
         visit(element);
-        members->push_back(element->getLlvmType());
+        members->push_back(element->getLlvmType()->getPointerTo());
     }
 
-    auto * newStruct = llvm::StructType::create(*members, "ssss");
-    ir->CreateAlloca(newStruct);
-
-    return nullptr;
+    auto * newStruct = llvm::StructType::create(*members);
+    return ir->CreateAlloca(newStruct);
 }
 
 llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {

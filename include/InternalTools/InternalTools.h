@@ -37,7 +37,6 @@ public:
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
 
-
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;

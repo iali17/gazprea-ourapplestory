@@ -62,4 +62,16 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     return dumb;
 }
 
+llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
+    auto *declNodes  = node->getDecls();
+    auto members     = new std::vector<llvm::Type *>;
+
+    for (auto element : * declNodes) {
+        visit(element);
+        members->push_back(element->getLlvmType()->getPointerTo());
+    }
+
+    return llvm::StructType::create(*members);
+}
+
 

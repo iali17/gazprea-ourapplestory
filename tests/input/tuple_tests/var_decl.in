@@ -1,0 +1,4 @@
+procedure main() returns integer {
+	var tup = (1, 2.0, 'a', 4.2, true);
+	return 0;
+}
