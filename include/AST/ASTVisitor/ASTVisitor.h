@@ -11,6 +11,7 @@
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 #include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 #include <AST/ASTNodes/TypeNodes/TupleType.h>
+#include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
 #include "../AST.h"
 
 class ASTVisitor {
@@ -62,8 +63,11 @@ public:
     virtual llvm::Value* visit(ProtoProcedureNode *node) = 0;
     virtual llvm::Value* visit(TupleDeclNode *node)      = 0;
     virtual llvm::Value* visit(TupleType *node)          = 0;
+    virtual llvm::Value* visit(PythonTupleAssNode *node) = 0;
     virtual llvm::Value* visit(GlobalDeclNode *node)     = 0;
     virtual llvm::Value* visit(GlobalRefNode *node)      = 0;
+    virtual llvm::Value* visit(TupleNode *node)          = 0;
+    virtual llvm::Value* visit(IndexTupleNode *node)     = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

@@ -1,0 +1,10 @@
+procedure main() returns integer {
+	tuple(integer, real r, character, real) tup = (1, 2.0, 'a', 4.2);
+	var r = tup.r;
+        //var i = tup.1; //this line does not match
+	var out = std_output();
+	r -> out;
+	
+	return 0;
+}
+

@@ -27,6 +27,8 @@ public:
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
     void setUpTypes();
     //tools
+	llvm::Value *getValFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
+	llvm::Value *getPtrFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
     llvm::Value *geti1(int64_t val);
     llvm::Value *geti8(int64_t val);
     llvm::Value *getReal(float val);
@@ -38,7 +40,6 @@ public:
     llvm::Value *getIdn(llvm::Type *type);
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
-
 
 protected:
     llvm::LLVMContext * globalCtx;

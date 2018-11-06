@@ -17,6 +17,7 @@
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
 #include <AST/ASTNodes/TypeNodes/TupleType.h>
+#include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -335,7 +336,6 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
     return (ASTNode *) new ReturnNode(expr);
 }
 
-
 antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) {
     std::string strExpr = ctx->getText();
     if(strExpr == "true") {
@@ -348,7 +348,6 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
     }
     return nullptr;
 }
-
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
     int type;
@@ -464,33 +463,57 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
     return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes);
 }
 
+/*
+ * ignore the warning on dynamic cast
+ */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleIndexExpr(ctx);
+    std::string idName = "";
+    std::string oldName = ctx->TupleIndex()->getText();
+    std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
+    ASTNode *idNode = (ASTNode *) new IDNode(idName);
+    ASTNode *index;
+    if(ctx->Integer()){
+        index = (ASTNode *) visit(ctx->Integer());
+    }
+    else{
+        assert(ctx->Identifier());
+        index = (ASTNode *) new IDNode(ctx->Identifier()->getText());
+    }
+    return (ASTNode *) new IndexTupleNode(dynamic_cast<IDNode*>(idNode), index);
 }
 
 antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
-    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
+    ASTNode *expr = nullptr;
+    if(ctx->expr())
+        expr = (ASTNode *) visit(ctx->expr());
+
+    auto *IDs = new std::vector<std::string>;
+    for (auto element : ctx->Identifier()) {
+        IDs->push_back(element->getText());
+    }
+
+    return (ASTNode *) new PythonTupleAssNode(expr, *IDs);
 }
 
 // this just calls visitTuple
 antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) {
-    return GazpreaBaseVisitor::visitTupleExpr(ctx);
+    return (ASTNode *) GazpreaBaseVisitor::visitTupleExpr(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
-    auto *conds  = new std::vector<ASTNode *>;
+    auto *expr  = new std::vector<ASTNode *>;
     unsigned long int i;
     for(i = 0; i < ctx->expr().size(); i++){
-        conds->push_back((ASTNode *) visit(ctx->expr(i)));
+        expr->push_back((ASTNode *) visit(ctx->expr(i)));
     }
-    return (ASTNode *) new TupleNode(conds);
+    return (ASTNode *) new TupleNode(expr);
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {
     auto *typeIdNodes = new std::vector<ASTNode *>;
 
     for (auto typeId : ctx->tupleTypeIdentifier()) {
-        typeIdNodes->push_back(visit(typeId));
+        typeIdNodes->push_back((ASTNode *) visit(typeId));
     }
 
     return (ASTNode *) new TupleType(typeIdNodes);
@@ -498,7 +521,6 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
 
 // everything inside the tuple() is a empty decl
 antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) {
-
     ASTNode *expr = (ASTNode *) new IDNode("null");
     bool constant = false;
 

@@ -80,10 +80,16 @@ public:
     llvm::Value* visit(BreakNode          *node) override;
     llvm::Value* visit(ProcedureCallNode  *node) override;
     llvm::Value* visit(ProtoProcedureNode *node) override;
-    llvm::Value *visit(TupleDeclNode      *node) override;
-    llvm::Value *visit(TupleType          *node) override;
-    llvm::Value *visit(GlobalDeclNode     *node) override;
-    llvm::Value *visit(GlobalRefNode      *node) override;
+    llvm::Value* visit(TupleDeclNode      *node) override;
+    llvm::Value* visit(TupleType          *node) override;
+    llvm::Value* visit(GlobalDeclNode     *node) override;
+    llvm::Value* visit(GlobalRefNode      *node) override;
+    llvm::Value* visit(TupleNode          *node) override;
+    llvm::Value* visit(PythonTupleAssNode *node) override;
+    llvm::Value* visit(IndexTupleNode     *node) override;
+    llvm::Value* visit(TupleNode *node, llvm::StructType * tuple);
+
+    llvm::StructType *parseStructType(TupleType *node);
 
     std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
 

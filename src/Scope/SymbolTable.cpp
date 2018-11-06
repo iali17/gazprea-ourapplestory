@@ -86,3 +86,22 @@ void SymbolTable::addTupleType(std::string newTypeName, llvm::Type *newType,
                                std::unordered_map<std::string, int> *stringRefMap, std::vector<llvm::Type *> *members) {
     scopeStack->top()->addTupleType(newTypeName, newType, stringRefMap, members);
 }
+
+void SymbolTable::addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+                               std::vector<llvm::Type *> *members) {
+    scopeStack->top()->addTupleType(newType, stringRefMap, members);
+}
+
+GazpreaTupleType *SymbolTable::resolveTupleType(llvm::Type *tupleType) {
+    Scope  *scope = scopeStack->top();
+    GazpreaTupleType *type = nullptr;
+
+    while(scope != nullptr) {
+        type = scope->resolveType(tupleType);
+
+        if(type != nullptr)
+            break;
+        scope = scope->getEnclosingScope();
+    }
+    return type;
+}

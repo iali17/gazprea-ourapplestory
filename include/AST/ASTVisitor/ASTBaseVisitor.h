@@ -159,6 +159,15 @@ public:
         else if (dynamic_cast<GlobalRefNode *>(node)) {
             return visit((GlobalRefNode *) node);
         }
+        else if (dynamic_cast<TupleNode *>(node)) {
+            return visit((TupleNode *) node);
+        }
+        else if (dynamic_cast<PythonTupleAssNode *>(node)) {
+            return visit((PythonTupleAssNode *) node);
+        }
+        else if (dynamic_cast<IndexTupleNode *>(node)) {
+            return visit((IndexTupleNode *) node);
+        }
         return nullptr;
     };
 
@@ -208,8 +217,11 @@ public:
     llvm::Value* visit(ProtoProcedureNode *node) override { return nullptr;};
     llvm::Value *visit(TupleDeclNode *node) override {return nullptr;}
     llvm::Value *visit(TupleType *node) override { return nullptr; }
+    llvm::Value *visit(PythonTupleAssNode *node) override { return nullptr; }
     llvm::Value *visit(GlobalDeclNode *node) override { return nullptr; }
     llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node) override { return nullptr; }
+    llvm::Value *visit(IndexTupleNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H
