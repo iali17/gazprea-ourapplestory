@@ -16,6 +16,7 @@
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 #include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
 #include <AST/ASTNodes/TypeNodes/TupleType.h>
+#include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
 
 #include "../include/AST/ASTGenerator.h"
 
@@ -471,7 +472,16 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
 }
 
 antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
-    return GazpreaBaseVisitor::visitPythonTupleAss(ctx);
+    ASTNode *expr = nullptr;
+    if(ctx->expr())
+        expr = (ASTNode *) visit(ctx->expr());
+
+    auto *IDs = new std::vector<std::string>;
+    for (auto element : ctx->Identifier()) {
+        IDs->push_back(element->getText());
+    }
+
+    return (ASTNode *) new PythonTupleAssNode(expr, *IDs);
 }
 
 // this just calls visitTuple
