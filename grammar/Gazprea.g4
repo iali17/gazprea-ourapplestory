@@ -24,7 +24,7 @@ expr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
-    | Identifier '.' (Identifier | Integer)                         #tupleIndexExpr
+    | Identifier DOT (Identifier | Integer)                         #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -185,6 +185,7 @@ LESSTE: '<=' ;
 MORETE: '>=' ;
 SEMICOLON: ';' ;
 DOTDOT: '..';
+DOT: '.';
 COMMA: ',';
 AND: 'and';
 AS: 'as';
@@ -237,8 +238,8 @@ WS : [ \t\r\n]+ -> skip ;
 Integer: [0-9][0-9_]* ;
 
 Real
-    : Integer? '.' [0-9_]+ Exponent?
-    | Integer '.'? Exponent?
+    : Integer? DOT [0-9_]+ Exponent?
+    | Integer DOT? Exponent?
     ;
 
 Exponent: 'e' '_'* (ADD | SUB)? [0-9_]+;

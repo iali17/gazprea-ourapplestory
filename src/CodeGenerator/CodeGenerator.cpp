@@ -224,7 +224,10 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 
 // Todo: Fix identity
 llvm::Value *CodeGenerator::visit(IdnNode *node) {
-    return nullptr;
+    llvm::Value *newNode = it->getConsi32(1);
+    newNode->setName("IdnNode");
+
+    return newNode;
 }
 
 llvm::Value *CodeGenerator::visit(InputNode *node) {

@@ -38,6 +38,11 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     else if(!rValueLoad)
         rValueLoad = it->getNull(lValueLoad->getType());
 
+    if(lValueLoad->getName() == "IdnNode")
+        lValueLoad = it->getIdn(rValueLoad->getType());
+    else if(rValueLoad->getName() == "IdnNode")
+        rValueLoad = it->getIdn(lValueLoad->getType());
+
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();
