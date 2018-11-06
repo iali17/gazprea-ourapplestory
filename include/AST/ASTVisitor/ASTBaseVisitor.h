@@ -153,6 +153,9 @@ public:
         else if (dynamic_cast<GlobalRefNode *>(node)) {
             return visit((GlobalRefNode *) node);
         }
+        else if (dynamic_cast<TupleNode *>(node)) {
+            return visit((TupleNode *) node);
+        }
         return nullptr;
     };
 
@@ -202,6 +205,7 @@ public:
     llvm::Value *visit(TupleType *node) override { return nullptr; }
     llvm::Value *visit(GlobalDeclNode *node) override { return nullptr; }
     llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

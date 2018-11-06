@@ -475,12 +475,12 @@ antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
-    auto *conds  = new std::vector<ASTNode *>;
+    auto *expr  = new std::vector<ASTNode *>;
     unsigned long int i;
     for(i = 0; i < ctx->expr().size(); i++){
-        conds->push_back((ASTNode *) visit(ctx->expr(i)));
+        expr->push_back((ASTNode *) visit(ctx->expr(i)));
     }
-    return (ASTNode *) new TupleNode(conds);
+    return (ASTNode *) new TupleNode(expr);
 }
 
 antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) {

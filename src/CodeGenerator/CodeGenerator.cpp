@@ -273,6 +273,26 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
     return nullptr;
 }
 
+llvm::Value *CodeGenerator::visit(TupleNode *node) {
+    std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
+    std::vector<llvm::Type  *> *types  = new std::vector<llvm::Type  *>();
+
+    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+        llvm::Value * element = visit(node->getElements()->at(i));
+        values->push_back(element);
+        types->push_back(element->getType()->getPointerTo());
+    }
+
+    llvm::StructType *tuple;
+    tuple = tuple->create(*types, "myType");
+    llvm::Value *ptr = ir->CreateAlloca(tuple);
+    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+        llvm::Value * structElem = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(i)});
+        llvm::Value *ptr = ir->CreateLoad(structElem);
+        ir->CreateStore(values->at(i), ptr);
+    }
+    return ptr;
+}
 
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     visit(node->getExpr());
