@@ -45,6 +45,9 @@ public:
         else if (dynamic_cast<BoolNode *>(node)) {
             return visit((BoolNode *) node);
         }
+        else if (dynamic_cast<NullNode *>(node)) {
+            return visit((NullNode *) node);
+        }
         else if (dynamic_cast<CondNode *>(node)) {
             return visit((CondNode *) node);
         }
@@ -68,6 +71,9 @@ public:
         }
         else if (dynamic_cast<IDNode *>(node)) {
             return visit((IDNode *) node);
+        }
+        else if (dynamic_cast<IdnNode *>(node)) {
+            return visit((IdnNode *) node);
         }
         else if (dynamic_cast<InputNode *>(node)) {
             return visit((InputNode *) node);
@@ -166,6 +172,7 @@ public:
     llvm::Value* visit(RealNode *node) override { return nullptr;};
     llvm::Value* visit(CharNode *node) override { return nullptr;};
     llvm::Value* visit(BoolNode *node) override { return nullptr;};
+    llvm::Value* visit(NullNode *node) override { return nullptr;};
     llvm::Value* visit(CondNode *node) override { return nullptr;};
     llvm::Value* visit(LoopNode *node) override { return nullptr;};
     llvm::Value* visit(InLoopNode *node) override { return nullptr;};
@@ -174,6 +181,7 @@ public:
     llvm::Value* visit(AssignNode *node) override { return nullptr;};
     llvm::Value* visit(CastExprNode *node) override { return nullptr;};
     llvm::Value* visit(IDNode *node) override { return nullptr;};
+    llvm::Value* visit(IdnNode *node) override { return nullptr;};
     llvm::Value* visit(InputNode *node) override { return nullptr;};
     llvm::Value* visit(OutputNode *node) override { return nullptr;};
     llvm::Value* visit(StreamDeclNode *node) override { return nullptr;};

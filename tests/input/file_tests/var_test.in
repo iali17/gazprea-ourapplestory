@@ -2,6 +2,8 @@ procedure main() returns integer {
 	var out = std_output();
 	var x = 1;
 	var y = 1.0;
+	var z = null + 1 + null;
+	integer w = null;
 
 	// Print x, should print as type integer
 	x -> out; '\n' -> out;
@@ -9,9 +11,15 @@ procedure main() returns integer {
 	// Print y, should print as type real
 	y -> out; '\n' -> out;
 
+    // Print z, should print as type integer
+    z -> out; '\n' -> out;
+
     // Type promotion
 	y = x + y;
 	y -> out; '\n' -> out;
+
+    // Checking if null assignment works still
+    w -> out; '\n' -> out;
 
     return 0;
 }

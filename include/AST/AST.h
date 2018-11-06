@@ -30,6 +30,8 @@
 #include "ASTNodes/TerminalNodes/RealNode.h"
 #include "ASTNodes/TerminalNodes/CharNode.h"
 #include "ASTNodes/TerminalNodes/BoolNode.h"
+#include "ASTNodes/TerminalNodes/NullNode.h"
+#include "ASTNodes/TerminalNodes/IdnNode.h"
 #include "ASTNodes/TerminalNodes/IDNode.h"
 #include "ASTNodes/TerminalNodes/InputNode.h"
 #include "ASTNodes/TerminalNodes/OutputNode.h"

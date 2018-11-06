@@ -31,6 +31,13 @@ int CastTable::getType(llvm::Type *expr) {
 
 // This function is to check cast promotion without the use of the keyword: as
 InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
+    assert(!((lValueLoad == nullptr) && (rValueLoad == nullptr)));
+
+    if(!lValueLoad)
+        lValueLoad = it->getNull(rValueLoad->getType());
+    else if(!rValueLoad)
+        rValueLoad = it->getNull(lValueLoad->getType());
+
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
     llvm::Type *rTypeP = rValueLoad->getType();

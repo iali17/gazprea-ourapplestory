@@ -46,6 +46,7 @@ public:
     llvm::Value* visit(RealNode           *node) override;
     llvm::Value* visit(CharNode           *node) override;
     llvm::Value* visit(BoolNode           *node) override;
+    llvm::Value* visit(NullNode           *node) override;
     llvm::Value* visit(CondNode           *node) override;
     llvm::Value* visit(LoopNode           *node) override;
     llvm::Value* visit(DoLoopNode         *node) override;

@@ -69,8 +69,6 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
     return (ASTNode *) visit(ctx->expr());
 }
 
-
-
 antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -170,6 +168,10 @@ antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::Identifi
         return (ASTNode *) new GlobalRefNode(id);
 
     return (ASTNode *) new IDNode(id);
+}
+
+antlrcpp::Any ASTGenerator::visitIdentityExpr(gazprea::GazpreaParser::IdentityExprContext *ctx) {
+    return (ASTNode *) new IdnNode();
 }
 
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
@@ -552,7 +554,6 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
     } else {
         right = (ASTNode *) new IDNode("std_output()");
     }
-
 
     return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText());
 }

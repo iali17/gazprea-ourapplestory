@@ -104,3 +104,29 @@ void InternalTools::setUpTypes() {
     realTy = llvm::Type::getFloatTy(*globalCtx);
 }
 
+llvm::Value *InternalTools::getNull(llvm::Type *type) {
+    if(type == boolTy)
+        return geti1(0);
+    else if(type == charTy)
+        return geti8(0);
+    else if(type == intTy)
+        return getConsi32(0);
+    else if(type == realTy)
+        return getReal(0.0);
+    else
+        return nullptr;
+}
+
+llvm::Value *InternalTools::getIdn(llvm::Type *type) {
+    if(type == boolTy)
+        return geti1(1);
+    else if(type == charTy)
+        return geti8(1);
+    else if(type == intTy)
+        return getConsi32(1);
+    else if(type == realTy)
+        return getReal(1.0);
+    else
+        return nullptr;
+}
+

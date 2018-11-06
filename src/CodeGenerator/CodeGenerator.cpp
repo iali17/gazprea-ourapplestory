@@ -29,12 +29,12 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("real"     , realTy);
     symbolTable->addBaseType("void"     , llvm::Type::getVoidTy(*globalCtx));
 
-    symbolTable->addSymbol("std_input()" ,  INSTREAM, false);
+    symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
 
     unsigned long i = 0;
     for(i = 0; i < node->nodes->size(); i++){
-        ASTBaseVisitor::visit(node->nodes->at(i));
+        ASTBaseVisitor::visit(node->nodes->at(i)) ;
     }
 
     symbolTable->popScope();
@@ -86,6 +86,24 @@ llvm::Value *CodeGenerator::visit(CharNode *node) {
 llvm::Value *CodeGenerator::visit(BoolNode *node) {
     bool val = node->getVal();
     return it->geti1(val);
+}
+
+llvm::Value *CodeGenerator::visit(NullNode *node) {
+    //std::string stringVal = node->popType(0);
+    //llvm::Type *type = symbolTable->resolveType(stringVal)->getTypeDef();
+    //it->setNull(type, nullptr);
+/*
+    if(type == boolTy)
+        return it->geti1(0);
+    else if(type == charTy)
+        return it->geti8(0);
+    else if(type == intTy)
+        return it->getConsi32(0);
+    else if(type == realTy)
+        return it->getReal(0.0);
+    else
+    */
+        return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(CondNode *node) {
@@ -151,7 +169,7 @@ llvm::Value *CodeGenerator::visit(InLoopNode *node) {
 llvm::Value *CodeGenerator::visit(DeclNode *node) {
     //TODO - account for null
     llvm::Value *val = visit(node->getExpr());
-    llvm::Value* ptr = nullptr;
+    llvm::Value *ptr = nullptr;
 
 
     if      (node->getTypeIds()->size() == 0){

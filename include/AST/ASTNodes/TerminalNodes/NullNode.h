@@ -24,9 +24,9 @@ protected:
 
     std::string typeTable[5][5] = { {"bool", "null", "null", "null", "bool"},
                                     {"null", "char", "null", "null", "char"},
-                                    {"null", "null", "int", "real", "int"},
-                                    {"null", "null", "real", "real", "real"}
-                                    {"bool", "char", "int", "real", "null"}};
+                                    {"null", "null", "int",  "real", "int" },
+                                    {"null", "null", "real", "real", "real"},
+                                    {"bool", "char", "int",  "real", "null"}};
 };
 
 
