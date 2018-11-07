@@ -8,6 +8,11 @@
 
 class InLoopNode : public BaseLoopNode {
 public:
-    InLoopNode(ASTNode *body, ASTNode *control);
+    InLoopNode(ASTNode *body, ASTNode *control, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_INLOOPNODE_H

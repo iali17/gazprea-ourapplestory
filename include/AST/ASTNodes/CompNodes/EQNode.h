@@ -8,6 +8,11 @@
 
 class EQNode : public CompNode {
 public:
-    EQNode(ASTNode *left, ASTNode *right);
+    EQNode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_EQNODE_H

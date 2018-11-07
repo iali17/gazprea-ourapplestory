@@ -99,11 +99,11 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     for(i = 0; i < node->getConds()->size(); i++){
         if(i){
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginElseIf(ct->varCast(boolTy, cond));
+            condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0));
         }
         else {
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginIf(ct->varCast(boolTy, cond));
+            condBuilder->beginIf(ct->varCast(boolTy, cond, 0));
         }
         visit(node->getBlocks()->at(i));
         condBuilder->endIf();
@@ -123,7 +123,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     whileBuilder->beginWhile();
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
-        whileBuilder->insertControl(ct->varCast(boolTy, cond));
+        whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     }
     else
         whileBuilder->insertControl(it->geti1(1));
@@ -140,7 +140,7 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     whileBuilder->beginWhile();
     visit(node->getBlock());
     llvm::Value *cond = visit(node->getControl());
-    whileBuilder->insertControl(ct->varCast(boolTy, cond));
+    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     whileBuilder->endWhile();
     whileStack->pop();
     return nullptr;
@@ -209,7 +209,12 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *ptr = left->getPtr();
     if(val) {
         if(ptr->getType()->getPointerElementType() == realTy)
-            val = ct->varCast(realTy, val);
+            val = ct->varCast(realTy, val, node->getLine());
+
+        // Print errors if assignment type isn't the same
+        if(val->getType() != node->getLlvmType()) {
+            ct->typePromotion(ptr, val, node->getLine());
+        }
 
         ir->CreateStore(val, ptr);
     }
@@ -290,7 +295,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
     llvm::Type  *type        = gazpreaType->getTypeDef();
 
-    return ct->varCast(type, expr);
+    return ct->varCast(type, expr, node->getLine());
 }
 
 llvm::Value *CodeGenerator::visit(ContinueNode *node) {
