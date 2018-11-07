@@ -24,9 +24,9 @@ int ProcedureCallNode::getUnOp() const {
 
 ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
                                      std::vector<ASTNode *> *exprNode, std::vector<std::string> *typeIds, bool constant,
-                                     int unOp) : varName(varName), procedureName(procedureName), exprNode(exprNode),
-          typeIds(typeIds), constant(constant), unOp(unOp) {}
+                                     int unOp) : varName(varName), procedureName(procedureName), unOp(unOp),
+                                                 exprNode(exprNode),typeIds(typeIds), constant(constant) {}
 
 ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
                                      std::vector<ASTNode *> *exprNode, int unOp) : varName(varName), procedureName(procedureName),
-                                                                         exprNode(exprNode), unOp(unOp) {}
+                                                                                   unOp(unOp), exprNode(exprNode) {}

@@ -13,6 +13,6 @@ protected:
 public:
     ASTNode *getIndex() const;
     IDNode *getIdNode() const;
-    IndexTupleNode(IDNode *idNode, ASTNode *index) : idNode(idNode), index(index) {}
+    IndexTupleNode(IDNode *idNode, ASTNode *index) :index(index), idNode(idNode) {}
 };
 #endif //GAZPREABASE_INDEXTUPLENODE_H

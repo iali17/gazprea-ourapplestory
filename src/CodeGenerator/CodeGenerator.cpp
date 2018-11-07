@@ -445,7 +445,7 @@ llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
  * @return
  */
 llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
-    llvm::Value *idx, *val;
+    llvm::Value *idx;
     Symbol *symbol   = symbolTable->resolveSymbol(node->getIdNode()->getID());
     llvm::Value *ptr = symbol->getPtr();
 
