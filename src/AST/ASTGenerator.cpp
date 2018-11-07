@@ -477,7 +477,7 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
         assert(ctx->tupleMember()->Identifier());
         index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
     }
-    return (ASTNode *) new IndexTupleNode(dynamic_cast<IDNode*>(idNode), index);
+    return (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode));
 }
 
 antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) {
@@ -617,7 +617,7 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
         index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
     }
 
-    auto LHS = new IndexTupleNode(idNode,index);
+    auto LHS = new IndexTupleNode(index, idNode);
 
    return (ASTNode *) new TupleMemberAssNode(expr, LHS);
 }
