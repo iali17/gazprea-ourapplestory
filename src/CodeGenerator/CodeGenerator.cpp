@@ -303,7 +303,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
 
     //build structtype and allocate
     llvm::StructType *tuple;
-    tuple = tuple->create(*types);
+    tuple = tuple->create(*types, "tuple");
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
 
     //fill new structure
@@ -334,6 +334,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         }
     }
 
+    std::string s = tuple->getStructName();
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); i++){
@@ -349,6 +350,8 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     llvm::StructType * structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
     //once you have the LHS type
+    std::string s = structType->getStructName();
+    //structType->setName("tuple");
     llvm::Value *ptr = visit(dynamic_cast<TupleNode *>(node->getExpr()), structType);
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
@@ -408,15 +411,23 @@ llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     return global->getInitializer();
 }
 
-
+/**
+ * THIS RETURNS THE VALUE NOT THE POINTER
+ * @param node
+ * @return
+ */
 llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
     llvm::Value *idx, *val;
     Symbol *symbol   = symbolTable->resolveSymbol(node->getIdNode()->getID());
     llvm::Value *ptr = symbol->getPtr();
 
     if(dynamic_cast<IDNode *>(node->getIndex())){
-        llvm::Type * type = ptr->getType();
-        GazpreaTupleType *gtt = symbolTable->resolveTupleType(type);
+        llvm::Type * type = ptr->getType()->getPointerElementType();
+        assert(type->isStructTy());
+        llvm::StructType *structType = llvm::cast<llvm::StructType>(type);
+        std::string s = structType->getStructName();
+        llvm::Type *t = type->getPointerTo();
+        GazpreaTupleType *gtt = symbolTable->resolveTupleType(structType);
         int i = gtt->getOffsetFromString(dynamic_cast<IDNode *>(node->getIndex())->getID());
         idx = it->getConsi32(i);
     }
@@ -425,5 +436,6 @@ llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
     }
 
     val = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), idx});
+    val = ir->CreateLoad(val);
     return ir->CreateLoad(val);
 }

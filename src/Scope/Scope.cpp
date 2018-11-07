@@ -84,14 +84,15 @@ void Scope::addTupleType(std::string newTypeName, llvm::Type *newType, std::unor
 }
 
 //for adding tuple types
-void Scope::addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+void Scope::addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                          std::vector<llvm::Type *> *members) {
     GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType("autogen", newType, stringRefMap, members);
     tupleTypes->insert(std::pair<llvm::Type *, GazpreaTupleType*> (newType, gazpreaTupleType));
 }
 
 GazpreaTupleType *Scope::resolveType(llvm::Type *type) {
-    auto iter = tupleTypes->find(type);
+    llvm::Type * tmp = type;
+    auto iter = tupleTypes->find(tmp);
     if(iter == tupleTypes->end())
         return nullptr;
     else

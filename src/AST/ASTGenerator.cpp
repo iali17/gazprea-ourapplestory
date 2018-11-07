@@ -473,7 +473,7 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
     ASTNode *idNode = (ASTNode *) new IDNode(idName);
     ASTNode *index;
     if(ctx->Integer()){
-        index = (ASTNode *) visit(ctx->Integer());
+        index = (ASTNode *) new INTNode(std::stoi(ctx->Integer()->getText()));
     }
     else{
         assert(ctx->Identifier());
