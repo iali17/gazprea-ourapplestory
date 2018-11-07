@@ -7,12 +7,13 @@
 #include "AST/ASTNodes/TerminalNodes/IDNode.h"
 
 class IndexTupleNode : public ASTNode {
+public:
+    IndexTupleNode(ASTNode *index, IDNode *idNode);
+    ASTNode *getIndex() const;
+    IDNode *getIdNode() const;
+
 protected:
     ASTNode *index;
     IDNode  *idNode;
-public:
-    ASTNode *getIndex() const;
-    IDNode *getIdNode() const;
-    IndexTupleNode(IDNode *idNode, ASTNode *index) :index(index), idNode(idNode) {}
 };
 #endif //GAZPREABASE_INDEXTUPLENODE_H

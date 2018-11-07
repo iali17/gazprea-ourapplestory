@@ -1,11 +1,7 @@
 //
 // Created by kyle on 22/10/18.
 //
-
 #include <AST/ASTNodes/FuncProcNodes/ProcedureNode.h>
-
-#include "AST/ASTNodes/FuncProcNodes/ProcedureNode.h"
-
 
 const std::string &ProcedureNode::getRetType() const {
     return retType;

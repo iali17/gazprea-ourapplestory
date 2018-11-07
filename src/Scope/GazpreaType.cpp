@@ -1,7 +1,6 @@
 //
 // Created by kyle on 27/10/18.
 //
-
 #include "Scope/UserType.h"
 #include "Scope/GazpreaType.h"
 

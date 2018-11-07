@@ -4,12 +4,8 @@
 
 #ifndef GAZPREABASE_ASTBASEVISITOR_H
 #define GAZPREABASE_ASTBASEVISITOR_H
-
-#include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include "ASTVisitor.h"
 #include <iostream>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
-#include <llvm/IR/DerivedTypes.h>
 
 
 class ASTBaseVisitor : public ASTVisitor {

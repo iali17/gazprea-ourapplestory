@@ -4,13 +4,12 @@
 
 #ifndef GAZPREABASE_BOOLNODE_H
 #define GAZPREABASE_BOOLNODE_H
-
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
 class BoolNode : public ASTNode {
 public:
+    explicit BoolNode(bool val);
     bool getVal() const;
-    BoolNode(bool val);
 
 protected:
     bool val;

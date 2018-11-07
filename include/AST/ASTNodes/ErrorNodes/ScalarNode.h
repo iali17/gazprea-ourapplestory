@@ -11,7 +11,7 @@
 // This class deals with errors involving scalar to scalar type conversions
 class ScalarNode : public ErrorNode {
 public:
-    ScalarNode(std::string left, std::string right, int line);
+    ScalarNode(std::string &left, std::string &right, int line);
 
     std::string getNode() override;
 

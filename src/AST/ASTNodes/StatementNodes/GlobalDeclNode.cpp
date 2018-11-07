@@ -1,7 +1,6 @@
 //
 // Created by kyle on 04/11/18.
 //
-
 #include "AST/AST.h"
 
 GlobalDeclNode::GlobalDeclNode(ASTNode *expr, const std::string &ID, std::vector<std::string> *typeIds) : UnaryNode(

@@ -1,7 +1,6 @@
 //
 // Created by lepoidev on 11/4/18.
 //
-
 #include <Scope/GazpreaTupleType.h>
 
 GazpreaTupleType::GazpreaTupleType(const std::string &name, llvm::Type *typeDef,

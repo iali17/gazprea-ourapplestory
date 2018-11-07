@@ -1,7 +1,6 @@
 //
 // Created by kyle on 08/10/18.
 //
-
 #include <stack>
 #include <Scope/SymbolTable.h>
 #include <iostream>

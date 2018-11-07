@@ -5,6 +5,7 @@
 #ifndef GAZPREABASE_CODEGENERATOR_H
 #define GAZPREABASE_CODEGENERATOR_H
 
+#include <AST/AST.h>
 #include <AST/ASTVisitor/ASTBaseVisitor.h>
 
 #include <llvm/IR/Module.h>
@@ -13,10 +14,6 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
 #include <fstream>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
-#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
-#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
-#include <AST/ASTNodes/TypeNodes/TupleType.h>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -28,7 +25,7 @@
 
 class CodeGenerator : public ASTBaseVisitor {
 public:
-    CodeGenerator(char *outFile);
+    explicit CodeGenerator(char *outFile);
 
     void generate(ASTNode * node) {
         prepare();
@@ -91,9 +88,10 @@ public:
     llvm::Value* visit(TupleMemberAssNode *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
+    //Helper functions
     llvm::StructType *parseStructType(TupleType *node);
-
-    std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
+    std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
+    llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
 
 protected:
     llvm::LLVMContext * globalCtx;

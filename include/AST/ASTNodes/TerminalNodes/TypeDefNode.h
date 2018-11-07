@@ -11,7 +11,6 @@
 class TypeDefNode : public ASTNode {
 public:
     TypeDefNode(const std::string &id, const std::string &type);
-
     const std::string &getCustomType() const;
     const std::string &getId() const;
 

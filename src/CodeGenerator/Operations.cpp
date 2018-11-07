@@ -2,7 +2,8 @@
 // Created by kyle on 29/10/18.
 //
 
-#include "CodeGenerator/CodeGenerator.h"
+#include <CodeGenerator/CodeGenerator.h>
+
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;

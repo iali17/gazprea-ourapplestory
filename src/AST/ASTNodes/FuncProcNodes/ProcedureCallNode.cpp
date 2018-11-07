@@ -2,6 +2,7 @@
 // Created by iali on 11/2/18.
 //
 #include "AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h"
+
 const std::string &ProcedureCallNode::getVarName() const {
     return varName;
 }

@@ -1,12 +1,10 @@
 //
 // Created by kyle on 20/10/18.
 //
-
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include <ExternalTools/ExternalTools.h>
 #include <InternalTools/CondBuilder.h>
-
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;

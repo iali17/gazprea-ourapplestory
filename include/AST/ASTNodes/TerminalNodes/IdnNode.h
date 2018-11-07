@@ -14,7 +14,6 @@ public:
     void assignType(std::string newType, int pos);
     void pushType(std::string type);
     std::string popType(int pos);
-
     int getTypePos(std::string type);
 
 protected:

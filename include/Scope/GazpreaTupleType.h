@@ -9,13 +9,13 @@
 #include <unordered_map>
 
 class GazpreaTupleType : public GazpreaType {
+public:
+    GazpreaTupleType(const std::string &name, llvm::Type *typeDef, std::unordered_map<std::string, int> *stringRefMap,
+                     std::vector<llvm::Type *> *members);
+    int getOffsetFromString(std::string str);
+
 protected:
     std::unordered_map<std::string, int> *stringRefMap;
     std::vector<llvm::Type *>            *members;
-
-public:
-    GazpreaTupleType(const std::string &name, llvm::Type *typeDef, std::unordered_map<std::string, int> *stringRefMap,
-                std::vector<llvm::Type *> *members);
-    int getOffsetFromString(std::string str);
 };
 #endif //GAZPREABASE_TUPLESYMBOL_H

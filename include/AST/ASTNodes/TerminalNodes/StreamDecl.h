@@ -10,16 +10,12 @@
 class StreamDeclNode : public ASTNode {
 public:
     StreamDeclNode(const std::string &id, int streamType);
-
-protected:
-    std::string id;
-public:
     const std::string &getId() const;
-
     int getStreamType() const;
 
 protected:
-    int         streamType;
+    std::string id;
+    int streamType;
 };
 
 #endif //GAZPREABASE_STREAMDECL_H

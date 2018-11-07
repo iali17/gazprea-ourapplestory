@@ -4,7 +4,7 @@
 
 #ifndef GAZPREABASE_LOOPNODE_H
 #define GAZPREABASE_LOOPNODE_H
-#include "../../BaseNodes/BaseLoopNode.h"
+#include <AST/ASTNodes/BaseNodes/BaseLoopNode.h>
 
 class LoopNode : public BaseLoopNode {
 public:

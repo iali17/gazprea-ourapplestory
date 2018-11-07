@@ -5,11 +5,11 @@
 #ifndef GAZPREABASE_REALNODE_H
 #define GAZPREABASE_REALNODE_H
 
-#include "../BaseNodes/UnaryNode.h"
+#include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
 class RealNode : public ASTNode {
 public:
-    RealNode(float val);
+    explicit RealNode(float val);
     float getVal() const;
 
 protected:

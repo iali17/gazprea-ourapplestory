@@ -4,12 +4,11 @@
 
 #ifndef GAZPREABASE_UNARYNODES_H
 #define GAZPREABASE_UNARYNODES_H
-
 #include "ASTNode.h"
 
 class UnaryNode : public ASTNode {
 public:
-    UnaryNode(ASTNode *expr);
+    explicit UnaryNode(ASTNode *expr);
 
     ASTNode *getExpr() const;
 

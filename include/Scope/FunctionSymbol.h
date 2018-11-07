@@ -10,10 +10,9 @@
 class FunctionSymbol : public Symbol {
 public:
     std::vector<ASTNode *> *getParamsVec() const;
+    FunctionSymbol(const std::string &scopeName, const std::string &name, int type, std::vector<ASTNode *> *paramsVec);
 
 protected:
     std::vector<ASTNode *> *paramsVec;
-public:
-    FunctionSymbol(const std::string &scopeName, const std::string &name, int type, std::vector<ASTNode *> *paramsVec);
 };
 #endif //GAZPREABASE_FUNCTIONTYPE_H

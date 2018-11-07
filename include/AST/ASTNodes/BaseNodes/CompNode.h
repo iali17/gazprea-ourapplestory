@@ -5,6 +5,7 @@
 #ifndef GAZPREABASE_COMPNODE_H
 #define GAZPREABASE_COMPNODE_H
 #include "InfixNode.h"
+
 class CompNode : public InfixNode {
 public:
     CompNode(ASTNode *left, ASTNode *right);

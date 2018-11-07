@@ -4,7 +4,6 @@
 
 #ifndef GAZPREABASE_DECLNODE_H
 #define GAZPREABASE_DECLNODE_H
-
 #include <string>
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 

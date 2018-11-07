@@ -4,8 +4,6 @@
 
 #include <AST/ASTNodes/BaseNodes/BaseBlockParent.h>
 
-#include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
-
 BaseBlockParent::BaseBlockParent(BlockNode *blockNode) : blockNode(blockNode) {}
 
 BasicBlockNode *BaseBlockParent::getBlock() {

@@ -4,12 +4,11 @@
 
 #ifndef GAZPREABASE_CHARNODE_H
 #define GAZPREABASE_CHARNODE_H
-
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
 class CharNode : public ASTNode {
 public:
-    CharNode(char val);
+    explicit CharNode(char val);
     char getVal() const;
 
 protected:

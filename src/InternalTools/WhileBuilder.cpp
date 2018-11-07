@@ -4,8 +4,6 @@
 
 #include <InternalTools/WhileBuilder.h>
 
-#include "InternalTools/WhileBuilder.h"
-
 /**
  * standard constructor
  * @param globalCtx

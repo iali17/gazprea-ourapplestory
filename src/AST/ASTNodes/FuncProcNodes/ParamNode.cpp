@@ -1,7 +1,6 @@
 //
 // Created by kyle on 22/10/18.
 //
-
 #include "AST/ASTNodes/FuncProcNodes/ParamNode.h"
 
 const std::string &ParamNode::getDeclaredType() const {

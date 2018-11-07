@@ -1,10 +1,7 @@
 //
 // Created by ali5 on 10/26/18.
 //
-
 #include <InternalTools/CastTable.h>
-
-#include "InternalTools/CastTable.h"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;

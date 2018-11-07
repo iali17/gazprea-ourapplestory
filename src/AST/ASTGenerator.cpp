@@ -1,25 +1,7 @@
 //
 // Created by kyle on 20/10/18.
 //
-#include <algorithm>
 #include <AST/ASTGenerator.h>
-#include <AST/ASTNodes/BaseNodes/BasicBlockNode.h>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureNode.h>
-#include <AST/ASTNodes/StatementNodes/ReturnNode.h>
-#include <AST/ASTNodes/TerminalNodes/INTNode.h>
-#include <AST/ASTNodes/TerminalNodes/RealNode.h>
-#include <AST/ASTNodes/TerminalNodes/NullNode.h>
-#include <AST/ASTNodes/StatementNodes/DeclNode.h>
-#include <AST/ASTNodes/FuncProcNodes/CallNode.h>
-#include <AST/ASTNodes/StatementNodes/CastExprNode.h>
-#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
-#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
-#include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
-#include <AST/ASTNodes/TypeNodes/TupleType.h>
-#include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
-
-#include "../include/AST/ASTGenerator.h"
 
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
     auto *procedures = new std::vector<ASTNode *>;
@@ -481,10 +463,9 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
  * ignore the warning on dynamic cast
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    std::string idName = "";
-    std::string oldName = ctx->tupleMember()->TupleIndex()->getText();
-    std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
-    ASTNode *idNode = (ASTNode *) new IDNode(idName);
+    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
+    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+    auto idNode = (ASTNode *) new IDNode(idName);
     ASTNode *index;
     if(ctx->tupleMember()->Integer()){
         int val = std::stoi(ctx->tupleMember()->Integer()->getText());
@@ -619,12 +600,11 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
-    std::string idName = "";
-    std::string oldName = ctx->tupleMember()->TupleIndex()->getText();
-    std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
+    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
+    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
 
-    IDNode *idNode =  new IDNode(idName);
+    auto idNode =  new IDNode(idName);
     ASTNode *index;
     if(ctx->tupleMember()->Integer()){
         int val = std::stoi(ctx->tupleMember()->Integer()->getText());
@@ -637,7 +617,7 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
         index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
     }
 
-    IndexTupleNode *LHS = new IndexTupleNode(idNode,index);
+    auto LHS = new IndexTupleNode(idNode,index);
 
    return (ASTNode *) new TupleMemberAssNode(expr, LHS);
 }

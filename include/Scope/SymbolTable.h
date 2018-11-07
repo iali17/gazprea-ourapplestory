@@ -6,8 +6,8 @@
 
 #ifndef VCALCBASE_SYMBOLTABLE_H
 #define VCALCBASE_SYMBOLTABLE_H
-
 #include "AST/AST.h"
+
 // Pretty much taken from notes and redone for C++
 class SymbolTable {
 public:

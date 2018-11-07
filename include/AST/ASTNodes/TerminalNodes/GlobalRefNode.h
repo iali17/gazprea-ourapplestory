@@ -7,11 +7,12 @@
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
 class GlobalRefNode : public ASTNode {
+public:
+    explicit GlobalRefNode(const std::string &globalName);
+    const std::string &getGlobalName() const;
+
 protected:
     std::string globalName;
-public:
-    const std::string &getGlobalName() const;
-    GlobalRefNode(const std::string &globalName);
 };
 
 #endif //GAZPREABASE_GLOBALREFNODE_H

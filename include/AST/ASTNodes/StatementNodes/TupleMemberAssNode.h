@@ -4,7 +4,6 @@
 
 #ifndef GAZPREABASE_TUPLEMEMBERASSNODE_H
 #define GAZPREABASE_TUPLEMEMBERASSNODE_H
-
 #include <AST/ASTNodes/BaseNodes/UnaryNode.h>
 #include <AST/ASTNodes/TerminalNodes/IndexTupleNode.h>
 

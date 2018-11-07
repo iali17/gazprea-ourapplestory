@@ -33,7 +33,7 @@ public:
 
 protected:
     int type = UNDEF;
-    llvm::Type * llvmType;
+    llvm::Type * llvmType = nullptr;
     void setType(int newType);
 };
 

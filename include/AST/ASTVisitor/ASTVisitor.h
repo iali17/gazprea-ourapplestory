@@ -4,16 +4,9 @@
 
 #ifndef GAZPREABASE_ASTVISITOR_H
 #define GAZPREABASE_ASTVISITOR_H
-
 #include <llvm/IR/Value.h>
-#include <AST/ASTNodes/FuncProcNodes/CallNode.h>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
-#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
-#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
-#include <AST/ASTNodes/TypeNodes/TupleType.h>
-#include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
 #include <llvm/IR/DerivedTypes.h>
-#include "../AST.h"
+#include "AST/AST.h"
 
 class ASTVisitor {
 public:

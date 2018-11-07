@@ -4,7 +4,7 @@
 
 #ifndef GAZPREABASE_INLOOPNODE_H
 #define GAZPREABASE_INLOOPNODE_H
-#include "../../BaseNodes/BaseLoopNode.h"
+#include <AST/ASTNodes/BaseNodes/BaseLoopNode.h>
 
 class InLoopNode : public BaseLoopNode {
 public:
