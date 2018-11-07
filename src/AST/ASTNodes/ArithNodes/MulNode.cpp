@@ -4,4 +4,8 @@
 
 #include "AST/AST.h"
 
-MulNode::MulNode(ASTNode *left, ASTNode *right) : ArithNode(left, right) {}
+MulNode::MulNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right), line(line) {}
+
+int MulNode::getLine() {
+    return this->line;
+}

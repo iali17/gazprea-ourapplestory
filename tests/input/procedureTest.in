@@ -1,4 +1,4 @@
-
+// Forward declaration
 procedure increment(var integer x);
 procedure decrement(var integer x) returns integer;
 procedure factorial(var integer w);

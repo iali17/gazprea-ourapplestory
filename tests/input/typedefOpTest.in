@@ -1,0 +1,32 @@
+typedef integer intType;
+
+procedure main() returns integer {
+    var out = std_output();
+    intType x = 2;
+
+    // Print intType
+    x -> out; '\n' -> out;
+
+    // Addition
+    x + 1 -> out; '\n' -> out;
+
+    // Subtraction
+    x - 1 -> out; '\n' -> out;
+
+    // Multiplication
+    x * 3 -> out; '\n' -> out;
+
+    // Division
+    x / 0.1 -> out; '\n' -> out;
+
+    // Exponents
+    x ^ 2 -> out; '\n' -> out;
+
+    // Unary Minus
+    -x -> out; '\n' -> out;
+
+    // Unary Plus
+    +x -> out; '\n' -> out;
+
+    return 0;
+}

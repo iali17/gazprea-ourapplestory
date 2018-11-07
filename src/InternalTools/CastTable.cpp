@@ -30,7 +30,7 @@ int CastTable::getType(llvm::Type *expr) {
 }
 
 // This function is to check cast promotion without the use of the keyword: as
-InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad) {
+InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
     assert(!((lValueLoad == nullptr) && (rValueLoad == nullptr)));
 
     if(!lValueLoad)
@@ -70,7 +70,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     }
     else {
         // Todo: Get line number from AST and pass in to scalarNode
-        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, 5);
+        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
 
         return it->makePair(lValueLoad, rValueLoad);
@@ -78,7 +78,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
 }
 
 // This function is for casting with the use of the keyword: as
-llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
+llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
@@ -165,7 +165,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad) {
 
     else {
         // Todo: Get line number from AST and pass in to scalarNode
-        ScalarNode *error = new ScalarNode(realString, exprString, 5);
+        ScalarNode *error = new ScalarNode(realString, exprString, line);
         eb->printError(error);
     }
 }

@@ -8,6 +8,11 @@
 
 class OrNode : public BitArithNode {
 public:
-    OrNode(ASTNode *left, ASTNode *right);
+    OrNode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_ORNODE_H

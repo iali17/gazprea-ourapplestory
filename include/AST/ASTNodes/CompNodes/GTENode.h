@@ -8,6 +8,11 @@
 
 class GTENode : public CompNode {
 public:
-    GTENode(ASTNode *left, ASTNode *right);
+    GTENode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_GEQNODE_H

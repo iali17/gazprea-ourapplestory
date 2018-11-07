@@ -38,7 +38,7 @@ antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentEx
     ASTNode * left = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
 
-    return (ASTNode *) new ExpNode(left, right);
+    return (ASTNode *) new ExpNode(left, right, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
@@ -55,7 +55,7 @@ antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContex
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
 
-    return (ASTNode *) new CastExprNode(expr, ctx->type()->getText());
+    return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
@@ -74,16 +74,16 @@ antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContex
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     if(ctx->op->getType() == gazprea::GazpreaParser::LESST){
-        return (ASTNode *) new LTNode(left, right);
+        return (ASTNode *) new LTNode(left, right,(int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::LESSTE){
-        return (ASTNode *) new LTENode(left, right);
+        return (ASTNode *) new LTENode(left, right,(int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::MORET){
-        return (ASTNode *) new GTNode(left, right);
+        return (ASTNode *) new GTNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::MORETE){
-        return (ASTNode *) new GTENode(left, right);
+        return (ASTNode *) new GTENode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -92,10 +92,10 @@ antlrcpp::Any ASTGenerator::visitEqlExpr(gazprea::GazpreaParser::EqlExprContext 
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     if(ctx->op->getType() == gazprea::GazpreaParser::EEQL){
-        return (ASTNode *) new EQNode(left, right);
+        return (ASTNode *) new EQNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::NEQL){
-        return (ASTNode *) new NEQNode(left, right);
+        return (ASTNode *) new NEQNode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -104,10 +104,10 @@ antlrcpp::Any ASTGenerator::visitOrExpr(gazprea::GazpreaParser::OrExprContext *c
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     if(ctx->op->getType() == gazprea::GazpreaParser::OR){
-        return (ASTNode *) new OrNode(left, right);
+        return (ASTNode *) new OrNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::XOR){
-        return (ASTNode *) new XOrNode(left, right);
+        return (ASTNode *) new XOrNode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -124,7 +124,7 @@ antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprCont
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     if     (ctx->SUB()){
         ASTNode * zero = (ASTNode *) new INTNode(0);
-        return (ASTNode *) new SubNode(zero, expr);
+        return (ASTNode *) new SubNode(zero, expr, (int)ctx->getStart()->getLine());
     }
     else if(ctx->NOT()){
         return (ASTNode *) new NegateNode(expr);
@@ -137,10 +137,10 @@ antlrcpp::Any ASTGenerator::visitAddExpr(gazprea::GazpreaParser::AddExprContext 
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     if(ctx->op->getType() == gazprea::GazpreaParser::ADD) {
-        return (ASTNode *) new AddNode(left, right);
+        return (ASTNode *) new AddNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::SUB) {
-        return (ASTNode *) new SubNode(left, right);
+        return (ASTNode *) new SubNode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -149,13 +149,13 @@ antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext 
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     if(ctx->op->getType() == gazprea::GazpreaParser::MUL) {
-        return (ASTNode *) new MulNode(left, right);
+        return (ASTNode *) new MulNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::DIV) {
-        return (ASTNode *) new DivNode(left, right);
+        return (ASTNode *) new DivNode(left, right, (int)ctx->getStart()->getLine());
     }
     else if(ctx->op->getType() == gazprea::GazpreaParser::REM) {
-        return (ASTNode *) new RemNode(left, right);
+        return (ASTNode *) new RemNode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -178,7 +178,7 @@ antlrcpp::Any ASTGenerator::visitIdentityExpr(gazprea::GazpreaParser::IdentityEx
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
-    return (ASTNode *) new AndNode(left, right);
+    return (ASTNode *) new AndNode(left, right, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementContext *ctx) {
@@ -189,7 +189,7 @@ antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssCont
     ASTNode *expr = nullptr;
     if(ctx->expr())
         expr = (ASTNode *) visit(ctx->expr());
-    return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText());
+    return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
@@ -208,15 +208,15 @@ antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::Conditional
 }
 
 antlrcpp::Any ASTGenerator::visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()));
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitPredicatedLoop(gazprea::GazpreaParser::PredicatedLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()));
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()));
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {
@@ -591,7 +591,7 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
         right = (ASTNode *) new IDNode("std_output()");
     }
 
-    return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText());
+    return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) {

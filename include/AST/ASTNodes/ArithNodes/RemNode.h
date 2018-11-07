@@ -8,7 +8,12 @@
 
 class RemNode : public ArithNode {
 public:
-    RemNode(ASTNode *left, ASTNode *right);
+    RemNode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 
 #endif //GAZPREABASE_REMNODE_H
