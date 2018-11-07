@@ -7,10 +7,11 @@
 #include "AST/ASTNodes/BaseNodes/IONode.h"
 
 class InputNode : public IONode {
+public:
+    InputNode(const std::string &streamName, const std::string &storeID);
+    const std::string &getStoreID() const;
+
 protected:
     std::string storeID;
-public:
-    const std::string &getStoreID() const;
-    InputNode(const std::string &streamName, const std::string &storeID);
 };
 #endif //GAZPREABASE_INPUTNODE_H

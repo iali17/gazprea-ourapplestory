@@ -4,11 +4,8 @@
 
 #ifndef GAZPREABASE_ASTBASEVISITOR_H
 #define GAZPREABASE_ASTBASEVISITOR_H
-
-#include <AST/ASTNodes/TerminalNodes/INTNode.h>
 #include "ASTVisitor.h"
 #include <iostream>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
 
 
 class ASTBaseVisitor : public ASTVisitor {
@@ -45,6 +42,9 @@ public:
         else if (dynamic_cast<BoolNode *>(node)) {
             return visit((BoolNode *) node);
         }
+        else if (dynamic_cast<NullNode *>(node)) {
+            return visit((NullNode *) node);
+        }
         else if (dynamic_cast<CondNode *>(node)) {
             return visit((CondNode *) node);
         }
@@ -69,6 +69,9 @@ public:
         else if (dynamic_cast<IDNode *>(node)) {
             return visit((IDNode *) node);
         }
+        else if (dynamic_cast<IdnNode *>(node)) {
+            return visit((IdnNode *) node);
+        }
         else if (dynamic_cast<InputNode *>(node)) {
             return visit((InputNode *) node);
         }
@@ -77,6 +80,9 @@ public:
         }
         else if (dynamic_cast<StreamDeclNode *>(node)) {
             return visit((StreamDeclNode *) node);
+        }
+        else if (dynamic_cast<TypeDefNode *>(node)) {
+            return visit((TypeDefNode *) node);
         }
         else if (dynamic_cast<CallNode *>(node)) {
             return visit((CallNode *) node);
@@ -162,6 +168,9 @@ public:
         else if (dynamic_cast<IndexTupleNode *>(node)) {
             return visit((IndexTupleNode *) node);
         }
+        else if (dynamic_cast<TupleMemberAssNode *>(node)) {
+            return visit((TupleMemberAssNode *) node);
+        }
         return nullptr;
     };
 
@@ -175,6 +184,7 @@ public:
     llvm::Value* visit(RealNode *node) override { return nullptr;};
     llvm::Value* visit(CharNode *node) override { return nullptr;};
     llvm::Value* visit(BoolNode *node) override { return nullptr;};
+    llvm::Value* visit(NullNode *node) override { return nullptr;};
     llvm::Value* visit(CondNode *node) override { return nullptr;};
     llvm::Value* visit(LoopNode *node) override { return nullptr;};
     llvm::Value* visit(InLoopNode *node) override { return nullptr;};
@@ -183,9 +193,11 @@ public:
     llvm::Value* visit(AssignNode *node) override { return nullptr;};
     llvm::Value* visit(CastExprNode *node) override { return nullptr;};
     llvm::Value* visit(IDNode *node) override { return nullptr;};
+    llvm::Value* visit(IdnNode *node) override { return nullptr;};
     llvm::Value* visit(InputNode *node) override { return nullptr;};
     llvm::Value* visit(OutputNode *node) override { return nullptr;};
     llvm::Value* visit(StreamDeclNode *node) override { return nullptr;};
+    llvm::Value* visit(TypeDefNode *node) override {return nullptr;};
     llvm::Value* visit(CallNode *node) override { return nullptr;};
     llvm::Value* visit(AddNode *node) override { return nullptr;};
     llvm::Value* visit(SubNode *node) override { return nullptr;};
@@ -214,6 +226,8 @@ public:
     llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
     llvm::Value *visit(TupleNode *node) override { return nullptr; }
     llvm::Value *visit(IndexTupleNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
+    llvm::Value *visit(TupleMemberAssNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

@@ -9,6 +9,8 @@
 #include "AST.h"
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
+
 class ASTGenerator : public gazprea::GazpreaBaseVisitor {
 public:
     ASTGenerator();
@@ -33,6 +35,7 @@ private:
     antlrcpp::Any visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) override;
     antlrcpp::Any visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) override;
     antlrcpp::Any visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) override;
+    antlrcpp::Any visitIdentityExpr(gazprea::GazpreaParser::IdentityExprContext *ctx) override;
     antlrcpp::Any visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) override;
     antlrcpp::Any visitStatement(gazprea::GazpreaParser::StatementContext *ctx) override;
     antlrcpp::Any visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) override;
@@ -68,6 +71,7 @@ private:
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
     antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
     antlrcpp::Any visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) override;
+    antlrcpp::Any visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

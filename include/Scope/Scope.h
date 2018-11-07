@@ -31,7 +31,7 @@ public:
     void addBaseType(std::string newTypeName, llvm::Type* newType);
     void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
-    void addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+    void addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
 protected:

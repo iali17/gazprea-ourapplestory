@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     ASTNode *root = (ASTNode *) astGenerator.visit(tree);
 
     //generate code
-    CodeGenerator *codeGenerator = new CodeGenerator(argv[2]);
+    auto codeGenerator = new CodeGenerator(argv[2]);
     codeGenerator->generate(root);
 
     return 0;

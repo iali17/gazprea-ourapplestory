@@ -8,6 +8,11 @@
 
 class LTENode : public CompNode {
 public:
-    LTENode(ASTNode *left, ASTNode *right);
+    LTENode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_LTENODE_H

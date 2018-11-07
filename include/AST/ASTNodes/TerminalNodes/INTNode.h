@@ -9,7 +9,7 @@
 //TODO: should the value be protected and we just have a getVal?
 class INTNode : public ASTNode {
 public:
-    INTNode(int value);
+    explicit INTNode(int value);
     int value;
 };
 

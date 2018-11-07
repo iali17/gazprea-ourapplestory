@@ -36,6 +36,8 @@ public:
     llvm::Value *getConsi64(int64_t val);
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
                              llvm::Value *arrP, llvm::Value *replaceVal);
+    llvm::Value *getNull(llvm::Type *type);
+    llvm::Value *getIdn(llvm::Type *type);
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
 

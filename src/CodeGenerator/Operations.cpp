@@ -2,7 +2,8 @@
 // Created by kyle on 29/10/18.
 //
 
-#include "CodeGenerator/CodeGenerator.h"
+#include <CodeGenerator/CodeGenerator.h>
+
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
@@ -16,7 +17,7 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -39,7 +40,7 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -62,7 +63,7 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -85,7 +86,7 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -108,7 +109,7 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -126,13 +127,12 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     return nullptr;
 }
 
-// Todo: Somehow insert power function for llvm
 llvm::Value *CodeGenerator::visit(ExpNode *node) {
     llvm::Value * left = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -151,7 +151,7 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -174,7 +174,7 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -197,7 +197,7 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -220,7 +220,7 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -243,7 +243,7 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -266,7 +266,7 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -289,7 +289,7 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -303,7 +303,7 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
@@ -317,7 +317,7 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    retVal = ct->typePromotion(left, right);
+    retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 

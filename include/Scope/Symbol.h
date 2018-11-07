@@ -7,7 +7,7 @@
 
 #include <string>
 #include <llvm/IR/Value.h>
-#include "../AST/AST.h"
+#include "AST/AST.h"
 // Pretty much taken from the notes and refactored for C++
 class Symbol {
 public:

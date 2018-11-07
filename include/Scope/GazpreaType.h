@@ -11,6 +11,7 @@ public:
     GazpreaType(const std::string &name, llvm::Type *typeDef);
     const std::string &getName() const;
     llvm::Type *getTypeDef() const;
+
 protected:
     std::string name;
     llvm::Type* typeDef;

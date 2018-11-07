@@ -4,10 +4,9 @@
 
 #ifndef GAZPREABASE_PROTOPROCEDURENODE_H
 #define GAZPREABASE_PROTOPROCEDURENODE_H
-
 #include <llvm/IR/Type.h>
-#include "../../AST.h"
 #include <string>
+#include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
 class ProtoProcedureNode : public ASTNode {
 public:

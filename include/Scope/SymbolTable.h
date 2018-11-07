@@ -6,8 +6,8 @@
 
 #ifndef VCALCBASE_SYMBOLTABLE_H
 #define VCALCBASE_SYMBOLTABLE_H
-
 #include "AST/AST.h"
+
 // Pretty much taken from notes and redone for C++
 class SymbolTable {
 public:
@@ -23,7 +23,7 @@ public:
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
     void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
-    void addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+    void addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
     void addUserType(std::string newTypeName, llvm::Type* newType);
     void addBaseType(std::string baseTypeName, llvm::Type *newType);

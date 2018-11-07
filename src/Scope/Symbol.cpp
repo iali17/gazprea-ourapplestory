@@ -1,7 +1,6 @@
 //
 // Created by kyle on 08/10/18.
 //
-
 #include <string>
 #include <Scope/Symbol.h>
 

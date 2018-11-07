@@ -5,6 +5,7 @@
 #ifndef GAZPREABASE_CODEGENERATOR_H
 #define GAZPREABASE_CODEGENERATOR_H
 
+#include <AST/AST.h>
 #include <AST/ASTVisitor/ASTBaseVisitor.h>
 
 #include <llvm/IR/Module.h>
@@ -13,10 +14,6 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
 #include <fstream>
-#include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
-#include <AST/ASTNodes/TerminalNodes/TupleNode.h>
-#include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
-#include <AST/ASTNodes/TypeNodes/TupleType.h>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -28,7 +25,7 @@
 
 class CodeGenerator : public ASTBaseVisitor {
 public:
-    CodeGenerator(char *outFile);
+    explicit CodeGenerator(char *outFile);
 
     void generate(ASTNode * node) {
         prepare();
@@ -46,6 +43,7 @@ public:
     llvm::Value* visit(RealNode           *node) override;
     llvm::Value* visit(CharNode           *node) override;
     llvm::Value* visit(BoolNode           *node) override;
+    llvm::Value* visit(NullNode           *node) override;
     llvm::Value* visit(CondNode           *node) override;
     llvm::Value* visit(LoopNode           *node) override;
     llvm::Value* visit(DoLoopNode         *node) override;
@@ -54,9 +52,11 @@ public:
     llvm::Value* visit(AssignNode         *node) override;
     llvm::Value* visit(CastExprNode       *node) override;
     llvm::Value* visit(IDNode             *node) override;
+    llvm::Value* visit(IdnNode            *node) override;
     llvm::Value* visit(InputNode          *node) override;
     llvm::Value* visit(OutputNode         *node) override;
     llvm::Value* visit(StreamDeclNode     *node) override;
+    llvm::Value* visit(TypeDefNode        *node) override;
     llvm::Value* visit(CallNode           *node) override;
     llvm::Value* visit(AddNode            *node) override;
     llvm::Value* visit(SubNode            *node) override;
@@ -85,11 +85,13 @@ public:
     llvm::Value* visit(TupleNode          *node) override;
     llvm::Value* visit(PythonTupleAssNode *node) override;
     llvm::Value* visit(IndexTupleNode     *node) override;
-    llvm::Value* visit(TupleNode *node, llvm::StructType * tuple);
+    llvm::Value* visit(TupleMemberAssNode *node) override;
+    llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
+    //Helper functions
     llvm::StructType *parseStructType(TupleType *node);
-
-    std::vector<llvm::Value * > getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
+    std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
+    llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
 
 protected:
     llvm::LLVMContext * globalCtx;

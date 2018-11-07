@@ -4,4 +4,4 @@
 
 #include "AST/AST.h"
 
-BreakNode::BreakNode() {}
+BreakNode::BreakNode() = default;

@@ -4,7 +4,6 @@
 
 #ifndef GAZPREABASE_PARAMNODE_H
 #define GAZPREABASE_PARAMNODE_H
-
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
 class ParamNode : public ASTNode {

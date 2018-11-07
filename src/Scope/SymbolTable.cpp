@@ -1,7 +1,6 @@
 //
 // Created by kyle on 08/10/18.
 //
-
 #include <stack>
 #include <Scope/SymbolTable.h>
 #include <iostream>
@@ -87,7 +86,7 @@ void SymbolTable::addTupleType(std::string newTypeName, llvm::Type *newType,
     scopeStack->top()->addTupleType(newTypeName, newType, stringRefMap, members);
 }
 
-void SymbolTable::addTupleType(llvm::StructType *newType, std::unordered_map<std::string, int> *stringRefMap,
+void SymbolTable::addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                                std::vector<llvm::Type *> *members) {
     scopeStack->top()->addTupleType(newType, stringRefMap, members);
 }

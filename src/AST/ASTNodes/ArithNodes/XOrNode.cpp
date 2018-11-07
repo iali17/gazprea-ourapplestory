@@ -4,4 +4,8 @@
 
 #include "AST/AST.h"
 
-XOrNode::XOrNode(ASTNode *left, ASTNode *right) : BitArithNode(left, right) {}
+XOrNode::XOrNode(ASTNode *left, ASTNode *right, int line) : BitArithNode(left, right), line(line) {}
+
+int XOrNode::getLine() {
+    return this->line;
+}

@@ -8,6 +8,11 @@
 
 class XOrNode : public BitArithNode {
 public:
-    XOrNode(ASTNode *left, ASTNode *right);
+    XOrNode(ASTNode *left, ASTNode *right, int line);
+
+    int getLine();
+
+protected:
+    int line;
 };
 #endif //GAZPREABASE_XORNODE_H

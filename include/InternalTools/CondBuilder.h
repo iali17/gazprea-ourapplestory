@@ -6,6 +6,7 @@
 #define GAZPREABASE_CONDBUILDER_H
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
+
 #define CREATED      0
 #define STARTED      1
 #define MUSTFINALIZE 2

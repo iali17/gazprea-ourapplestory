@@ -4,10 +4,17 @@
 
 #ifndef GAZPREABASE_DOLOOPNODE_H
 #define GAZPREABASE_DOLOOPNODE_H
-#include "../../BaseNodes/BaseLoopNode.h"
+
+#include <AST/ASTNodes/BaseNodes/ASTNode.h>
+#include <AST/ASTNodes/BaseNodes/BaseLoopNode.h>
 
 class DoLoopNode : public BaseLoopNode {
 public:
-    DoLoopNode(ASTNode *body, ASTNode *control);
+    DoLoopNode(ASTNode *body, ASTNode *control, int line);
+
+    int getLine();
+
+private:
+    int line;
 };
 #endif //GAZPREABASE_DOLOOPNODE_H

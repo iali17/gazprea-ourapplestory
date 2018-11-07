@@ -4,8 +4,6 @@
 
 #ifndef GAZPREABASE_PYTHONTUPLEASSNODE_H
 #define GAZPREABASE_PYTHONTUPLEASSNODE_H
-
-
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 #include <AST/ASTNodes/BaseNodes/UnaryNode.h>
 

@@ -9,6 +9,7 @@
 // TODO - figure out best way to represent node types
 #include <llvm/IR/Type.h>
 
+#define IDENTITY -3
 #define NULLTY   -2
 #define UNDEF    -1
 #define INSTREAM  0
@@ -32,7 +33,7 @@ public:
 
 protected:
     int type = UNDEF;
-    llvm::Type * llvmType;
+    llvm::Type * llvmType = nullptr;
     void setType(int newType);
 };
 

@@ -5,8 +5,6 @@
 #include <InternalTools/CondBuilder.h>
 #include <iostream>
 
-#include "InternalTools/CondBuilder.h"
-
 llvm::Value *CondBuilder::beginIf(llvm::Value *cond, std::string label) {
     assert(status == CREATED);
 

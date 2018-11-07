@@ -1,7 +1,6 @@
 //
 // Created by kyle on 26/10/18.
 //
-
 #include "AST/ASTNodes/StatementNodes/CondNode.h"
 
 CondNode::CondNode(std::vector<ASTNode *> *conds, std::vector<ASTNode *> *blocks) : conds(conds), blocks(blocks) {

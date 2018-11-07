@@ -4,18 +4,15 @@
 
 #ifndef GAZPREABASE_IDNODE_H
 #define GAZPREABASE_IDNODE_H
-
 #include <string>
-#include "../BaseNodes/ASTNode.h"
+#include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
 class IDNode : public ASTNode {
 public:
-    const std::string &getID() const;
     IDNode();
-
-    IDNode(const std::string &ID);
-
+    explicit IDNode(const std::string &ID);
     IDNode(int type, const std::string &ID);
+    const std::string &getID() const;
 
 protected:
     std::string ID;

@@ -6,6 +6,7 @@
 #define GAZPREABASE_BASICBLOCKNODE_H
 #include "ASTNode.h"
 #include <vector>
+
 class BasicBlockNode : public ASTNode {
 public:
     std::vector<ASTNode *> *nodes;
