@@ -24,7 +24,7 @@ expr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
-    | TupleIndex  (Integer | Identifier)                            #tupleIndexExpr
+    | tupleMember                                                   #tupleIndexExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -68,7 +68,8 @@ assignment
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier EQL op=(ADD | SUB | NOT)? Identifier
     '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallAss
-    | Identifier (COMMA Identifier)+ EQL expr                               #pythonTupleAss
+    | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
+    | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
     ;
 
 //TODO - non initialized declaration
@@ -95,6 +96,10 @@ loop
 block
     : '{' decBlock? bodyBlock? '}'
     |  single_statement
+    ;
+
+tupleMember
+    : TupleIndex  (Integer | Identifier)
     ;
 
 decBlock

@@ -226,6 +226,8 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 
     Symbol *symbol   = symbolTable->resolveSymbol(node->getID());
     llvm::Value *ptr = symbol->getPtr();
+    if (ptr->getType()->isStructTy())
+        return ptr;
     return ir->CreateLoad(ptr);
 }
 
@@ -456,7 +458,33 @@ llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
         idx = visit(node->getIndex());
     }
 
-    val = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), idx});
-    val = ir->CreateLoad(val);
-    return ir->CreateLoad(val);
+    return it->getValFromTuple(ptr, idx);
+}
+
+//refactor to make it so you make a helper function that gets the index
+llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
+    llvm::Value *idx;
+    std::string symbolName = node->getLHS()->getIdNode()->getID();
+    Symbol *symbol   = symbolTable->resolveSymbol(symbolName);
+    llvm::Value *ptr = symbol->getPtr();
+    llvm::Value *val = visit(node->getExpr());
+    node->getLHS()->getIndex();
+
+    if(dynamic_cast<IDNode *>(node->getLHS()->getIndex())){
+        llvm::Type * type = ptr->getType()->getPointerElementType();
+        assert(type->isStructTy());
+        llvm::StructType *structType = llvm::cast<llvm::StructType>(type);
+        std::string s = structType->getStructName();
+        llvm::Type *t = type->getPointerTo();
+        GazpreaTupleType *gtt = symbolTable->resolveTupleType(structType);
+        int i = gtt->getOffsetFromString(dynamic_cast<IDNode *>(node->getLHS()->getIndex())->getID());
+        idx = it->getConsi32(i);
+    }
+    else {
+        idx = visit(node->getLHS()->getIndex());
+    }
+
+    ir->CreateStore(val, it->getPtrFromTuple(ptr,idx));
+
+    return nullptr;
 }

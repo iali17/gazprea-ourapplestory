@@ -69,6 +69,7 @@ private:
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
     antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
     antlrcpp::Any visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) override;
+    antlrcpp::Any visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

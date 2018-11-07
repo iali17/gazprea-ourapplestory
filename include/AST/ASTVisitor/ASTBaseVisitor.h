@@ -9,6 +9,7 @@
 #include "ASTVisitor.h"
 #include <iostream>
 #include <AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h>
+#include <llvm/IR/DerivedTypes.h>
 
 
 class ASTBaseVisitor : public ASTVisitor {
@@ -171,6 +172,9 @@ public:
         else if (dynamic_cast<IndexTupleNode *>(node)) {
             return visit((IndexTupleNode *) node);
         }
+        else if (dynamic_cast<TupleMemberAssNode *>(node)) {
+            return visit((TupleMemberAssNode *) node);
+        }
         return nullptr;
     };
 
@@ -226,6 +230,8 @@ public:
     llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
     llvm::Value *visit(TupleNode *node) override { return nullptr; }
     llvm::Value *visit(IndexTupleNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
+    llvm::Value *visit(TupleMemberAssNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

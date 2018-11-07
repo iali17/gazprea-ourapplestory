@@ -81,3 +81,4 @@ llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
     //symbolTable->addTupleType("ugh", newStruct, memberNames, members);
     return newStruct;
 }
+

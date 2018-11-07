@@ -482,16 +482,19 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
     std::string idName = "";
-    std::string oldName = ctx->TupleIndex()->getText();
+    std::string oldName = ctx->tupleMember()->TupleIndex()->getText();
     std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
     ASTNode *idNode = (ASTNode *) new IDNode(idName);
     ASTNode *index;
-    if(ctx->Integer()){
-        index = (ASTNode *) new INTNode(std::stoi(ctx->Integer()->getText()));
+    if(ctx->tupleMember()->Integer()){
+        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
+        assert(val > 0);
+        --val;
+        index = (ASTNode *) new INTNode(val);
     }
     else{
-        assert(ctx->Identifier());
-        index = (ASTNode *) new IDNode(ctx->Identifier()->getText());
+        assert(ctx->tupleMember()->Identifier());
+        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
     }
     return (ASTNode *) new IndexTupleNode(dynamic_cast<IDNode*>(idNode), index);
 }
@@ -613,4 +616,28 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
     }
     globalVars->insert(id);
     return (ASTNode *) new GlobalDeclNode(expr, id, typeVec);
+}
+
+antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
+    std::string idName = "";
+    std::string oldName = ctx->tupleMember()->TupleIndex()->getText();
+    std::copy_if (oldName.begin(), oldName.end(), std::back_inserter(idName), [](char i){return i != '.';} ); // this is the only way to remove a '.' in all of C++
+    ASTNode *expr  = (ASTNode *) visit(ctx->expr());
+
+    IDNode *idNode =  new IDNode(idName);
+    ASTNode *index;
+    if(ctx->tupleMember()->Integer()){
+        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
+        assert(val > 0);
+        --val;
+        index = (ASTNode *) new INTNode(val);
+    }
+    else{
+        assert(ctx->tupleMember()->Identifier());
+        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
+    }
+
+    IndexTupleNode *LHS = new IndexTupleNode(idNode,index);
+
+   return (ASTNode *) new TupleMemberAssNode(expr, LHS);
 }

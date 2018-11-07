@@ -39,6 +39,7 @@
 #include "ASTNodes/TerminalNodes/StreamDecl.h"
 #include "ASTNodes/TerminalNodes/GlobalRefNode.h"
 #include "ASTNodes/TerminalNodes/IndexTupleNode.h"
+#include "ASTNodes/TerminalNodes/TupleNode.h"
 #include "AST/ASTNodes/ArithNodes/AddNode.h"
 #include "AST/ASTNodes/ArithNodes/DivNode.h"
 #include "AST/ASTNodes/ArithNodes/MulNode.h"
@@ -59,5 +60,6 @@
 #include "AST/ASTNodes/ArithNodes/OrNode.h"
 #include "AST/ASTNodes/ArithNodes/XOrNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h"
+#include "AST/ASTNodes/StatementNodes/TupleMemberAssNode.h"
 
 #endif //GAZPREABASE_AST_H
