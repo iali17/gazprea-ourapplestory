@@ -1,29 +1,7 @@
-// Increments variable
-procedure increment(var integer x) {
-    x = x + 1;
-    return;
-}
 
-// Decrements variable
-procedure decrement(var integer x) {
-    x = x - 1;
-    return;
-}
-
-// Returns factorial of integer
-procedure factorial(var integer x) {
-    integer temp = 1;
-
-    loop while x > 0 {
-        temp = temp * x;
-        call decrement(x);
-    }
-
-    // Set return variable
-    x = temp;
-
-    return;
-}
+procedure increment(var integer x);
+procedure decrement(var integer x) returns integer;
+procedure factorial(var integer w);
 
 procedure main() returns integer {
     integer x = 5;
@@ -43,4 +21,30 @@ procedure main() returns integer {
     '\n' -> out;
 
     return 0;
+}
+
+// Increments variable
+procedure increment(var integer x) {
+    x = x + 1;
+}
+
+// Decrements variable
+procedure decrement(var integer x) returns integer {
+    x = x - 1;
+    return x;
+}
+
+// Returns factorial of integer
+procedure factorial(var integer x) {
+    integer temp = 1;
+
+    loop while x > 0 {
+        temp = temp * x;
+        call decrement(x);
+    }
+
+    // Set return variable
+    x = temp;
+
+    return;
 }
