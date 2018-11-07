@@ -463,7 +463,18 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
         exprNodes->push_back(node);
     }
 
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes);
+    int operation = PLUS;
+    if (ctx->op) {
+        if (ctx->op->getType() == gazprea::GazpreaParser::NOT) {
+            operation = NEG;
+        } else if (ctx->op->getType() == gazprea::GazpreaParser::ADD) {
+            operation = PLUS;
+        } else if (ctx->op->getType() == gazprea::GazpreaParser::SUB) {
+            operation = MINUS;
+        }
+    }
+
+    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, operation);
 }
 
 /*

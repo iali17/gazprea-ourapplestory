@@ -101,10 +101,8 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
             val = ir->CreateNeg(val, "negtmp");
         }
     } else if (node->getUnOp() == MINUS) {
-        std::cout <<"kjshdas\n";
         if(val->getType() == intTy){
             val =  ir->CreateSub(it->getConsi32(0), val, "iaddtmp");
-            std::cout << val;
         }
         else if(val->getType() == realTy){
             val =  ir->CreateFSub(it->getConsi32(0), val, "faddtmp");
