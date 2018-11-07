@@ -10,3 +10,7 @@ GazpreaTupleType::GazpreaTupleType(const std::string &name, llvm::Type *typeDef,
 int GazpreaTupleType::getOffsetFromString(std::string str) {
     return stringRefMap->at(str);
 }
+
+std::vector<llvm::Type *> *GazpreaTupleType::getMembers() const {
+    return members;
+}

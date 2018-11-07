@@ -21,6 +21,10 @@
 #define CHAR      6
 #define TUPLE     7
 
+#define NEQ 0
+#define EQ  1
+
+
 class ASTNode  {
 public:
     virtual ~ASTNode() = default;

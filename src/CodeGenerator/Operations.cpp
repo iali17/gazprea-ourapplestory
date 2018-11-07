@@ -22,17 +22,8 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateAdd(left, right, "iaddtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFAdd(left, right, "faddtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    assert((left->getType() == intTy) || (left->getType() == realTy));
+    return it->getAdd(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(SubNode *node) {
@@ -45,17 +36,8 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateSub(left, right, "iaddtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFSub(left, right, "faddtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    assert((left->getType() == intTy) || (left->getType() == realTy));
+    return it->getSub(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(MulNode *node) {
@@ -68,17 +50,8 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateMul(left, right, "imultmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFMul(left, right, "fmultmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    assert((left->getType() == intTy) || (left->getType() == realTy));
+    return it->getMul(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(DivNode *node) {
@@ -91,17 +64,8 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateSDiv(left, right, "idivtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFDiv(left, right, "fdivtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    assert((left->getType() == intTy) || (left->getType() == realTy));
+    return it->getDiv(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(RemNode *node) {
@@ -114,19 +78,11 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateSRem(left, right, "iremtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFRem(left, right, "fremtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    assert((left->getType() == intTy) || (left->getType() == realTy));
+    return it->getRem(left, right);
 }
 
+//TODO - split
 llvm::Value *CodeGenerator::visit(ExpNode *node) {
     llvm::Value * left = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
@@ -137,6 +93,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
+    assert((left->getType() == intTy) || (left->getType() == realTy));
 
     if(((left->getType() == intTy)) || ((left->getType() == realTy))){
         return et->aliPow(left, right);
@@ -149,47 +106,36 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
 llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
 
+    if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
+        return performTupleOp(left, right, EQ);
+    }
+
+    InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
     assert(left->getType() == right->getType());
 
-    if(left->getType() == intTy){
-        return ir->CreateICmpEQ(left, right, "ieqtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpUEQ(left, right, "feqtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getEQ(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
 
+    if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
+        return performTupleOp(left, right, NEQ);
+    }
+
+    InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateICmpNE(left, right, "ineqtmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpUNE(left, right, "fneqtmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getNEQ(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(GTNode *node) {
@@ -202,17 +148,7 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateICmpSGT(left, right, "igttmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpUGT(left, right, "fgttmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getGT(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(LTNode *node) {
@@ -225,17 +161,7 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateICmpSLT(left, right, "ilttmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpULT(left, right, "flttmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getLT(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(GTENode *node) {
@@ -248,17 +174,7 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateICmpSGE(left, right, "igtetmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpOGE(left, right, "fgtetmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getGTE(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(LTENode *node) {
@@ -271,17 +187,7 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    if(left->getType() == intTy){
-        return ir->CreateICmpSLE(left, right, "iltetmp");
-    }
-    else if(left->getType() == realTy){
-        return ir->CreateFCmpOLE(left, right, "fltetmp");
-    }
-
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    return it->getLTE(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(AndNode *node) {
@@ -294,8 +200,7 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    return ir->CreateAnd(left, right, "andtmp");
+    return it->getAnd(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(OrNode *node) {
@@ -308,8 +213,7 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    return ir->CreateOr(left, right, "andtmp");
+    return it->getOr(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(XOrNode *node) {
@@ -322,16 +226,60 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
     right = retVal.right;
 
     assert(left->getType() == right->getType());
-
-    return ir->CreateXor(left, right, "andtmp");
+    return it->getXOr(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(NegateNode *node) {
     llvm::Value * expr  = visit(node->getExpr());
 
-    if (expr->getType() == realTy){
-        return ir->CreateFNeg(expr, "fnegtmp");
-    }
+    return it->getNegation(expr);
+}
 
-    return ir->CreateNeg(expr, "negtmp");
+/**
+ * for EQ or NEQ vector operations
+ * @param left
+ * @param right
+ * @param OPTYPE
+ * @return
+ */
+llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * right, int OPTYPE){
+	llvm::Type *tmpType;
+	llvm::StructType *leftType, *rightType;
+	GazpreaTupleType *leftTupleType, *rightTupleType;
+	llvm::Value *structPtr, *ret, *leftMember, *rightMember, *tmp;
+	unsigned long numLeftMembers, numRightMembers;
+	
+	//get typ info for left operand
+	tmpType = left->getType()->getPointerElementType();
+	assert(tmpType->isStructTy());
+	leftType = llvm::cast<llvm::StructType>(tmpType);
+	leftTupleType = symbolTable->resolveTupleType(leftType);
+	numLeftMembers = leftTupleType->getMembers()->size();
+
+	//get type info for right operand
+	tmpType = right->getType()->getPointerElementType();
+	assert(tmpType->isStructTy());
+	rightType = llvm::cast<llvm::StructType>(tmpType);
+	rightTupleType = symbolTable->resolveTupleType(rightType);
+	numRightMembers = rightTupleType->getMembers()->size();
+
+	assert(numLeftMembers == numRightMembers);
+
+	//default return true
+	ret = it->geti1(1);
+
+	std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>;
+	for(unsigned int i = 0; i < numLeftMembers; i++){
+	    //get cur member
+	    leftMember  = it->getValFromTuple(left,  it->getConsi32(i));
+        rightMember = it->getValFromTuple(right, it->getConsi32(i));
+        if (OPTYPE == EQ){
+            tmp = it->getEQ(leftMember, rightMember);
+        } else if (OPTYPE == NEQ){
+            tmp = it->getNEQ(leftMember, rightMember);
+        }
+        //update return value
+        ret = ir->CreateAnd(ret, tmp);
+	}
+    return ret;
 }

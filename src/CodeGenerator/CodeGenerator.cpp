@@ -231,7 +231,7 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 
     Symbol *symbol   = symbolTable->resolveSymbol(node->getID());
     llvm::Value *ptr = symbol->getPtr();
-    if (ptr->getType()->isStructTy())
+    if (ptr->getType()->getPointerElementType()->isStructTy())
         return ptr;
     return ir->CreateLoad(ptr);
 }
@@ -352,17 +352,20 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 
     for(unsigned long i = 0; i < node->getElements()->size(); i++){
         llvm::Value * element = visit(node->getElements()->at(i));
-        values->push_back(element);
 
         //double check type
         llvm::Type *elementType = element->getType()->getPointerTo();
         llvm::Type *memberType  = types[i];
-        if(elementType != memberType){
+        if((elementType != memberType) && ((element->getType() == intTy) && (memberType == realTy))){
+            //TODO - verify that this works
+            element = ct->varCast(memberType, element, -1);
+            std::cout << "Inconsistent type for struct member\n";
+        } else if(elementType != memberType) {
             std::cout << "Inconsistent type for struct member\n";
         }
+        values->push_back(element);
     }
 
-    std::string s = tuple->getStructName();
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); i++){
