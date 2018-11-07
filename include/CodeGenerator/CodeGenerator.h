@@ -59,6 +59,7 @@ public:
     llvm::Value* visit(InputNode          *node) override;
     llvm::Value* visit(OutputNode         *node) override;
     llvm::Value* visit(StreamDeclNode     *node) override;
+    llvm::Value* visit(TypeDefNode        *node) override;
     llvm::Value* visit(CallNode           *node) override;
     llvm::Value* visit(AddNode            *node) override;
     llvm::Value* visit(SubNode            *node) override;

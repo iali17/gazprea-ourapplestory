@@ -46,6 +46,7 @@ public:
     virtual llvm::Value* visit(RemNode *node)            = 0;
     virtual llvm::Value* visit(ExpNode *node)            = 0;
     virtual llvm::Value* visit(StreamDeclNode *node)     = 0;
+    virtual llvm::Value* visit(TypeDefNode *node)        = 0;
     virtual llvm::Value* visit(CallNode *node)           = 0;
     virtual llvm::Value* visit(EQNode *node)             = 0;
     virtual llvm::Value* visit(NEQNode *node)            = 0;

@@ -84,6 +84,9 @@ public:
         else if (dynamic_cast<StreamDeclNode *>(node)) {
             return visit((StreamDeclNode *) node);
         }
+        else if (dynamic_cast<TypeDefNode *>(node)) {
+            return visit((TypeDefNode *) node);
+        }
         else if (dynamic_cast<CallNode *>(node)) {
             return visit((CallNode *) node);
         }
@@ -194,6 +197,7 @@ public:
     llvm::Value* visit(InputNode *node) override { return nullptr;};
     llvm::Value* visit(OutputNode *node) override { return nullptr;};
     llvm::Value* visit(StreamDeclNode *node) override { return nullptr;};
+    llvm::Value* visit(TypeDefNode *node) override {return nullptr;};
     llvm::Value* visit(CallNode *node) override { return nullptr;};
     llvm::Value* visit(AddNode *node) override { return nullptr;};
     llvm::Value* visit(SubNode *node) override { return nullptr;};

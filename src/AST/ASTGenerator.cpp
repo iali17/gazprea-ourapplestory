@@ -278,7 +278,10 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
 }
 
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
-    return GazpreaBaseVisitor::visitTypeDefine(ctx);
+    std::string type = ctx->type()->getText();
+    std::string id = ctx->Identifier()->getText();
+
+    return (ASTNode *) new TypeDefNode(id, type);
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {

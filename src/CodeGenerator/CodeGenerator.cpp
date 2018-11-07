@@ -262,6 +262,27 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     return nullptr;
 }
 
+llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
+    llvm::Type *type;
+
+    if(node->getCustomType() == "integer")
+        type = intTy;
+    else if(node->getCustomType() == "real")
+        type = realTy;
+    else if(node->getCustomType() == "character")
+        type = charTy;
+    else if(node->getCustomType() == "boolean")
+        type = boolTy;
+    else {
+        // gotta do for tuple type
+        return nullptr;
+    }
+
+    symbolTable->addUserType(node->getId(), type);
+
+    return nullptr;
+}
+
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr        = visit(node->getExpr());
     GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
