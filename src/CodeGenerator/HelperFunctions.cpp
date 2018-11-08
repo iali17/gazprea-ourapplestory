@@ -78,7 +78,6 @@ llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
 
     llvm::StructType * newStruct = llvm::StructType::create(*members, "tuple");
     symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
-    //symbolTable->addTupleType("ugh", newStruct, memberNames, members);
     return newStruct;
 }
 
@@ -88,8 +87,6 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
         llvm::Type * type = tuplePtr->getType()->getPointerElementType();
         assert(type->isStructTy());
         auto *structType = llvm::cast<llvm::StructType>(type);
-        std::string s = structType->getStructName();
-        //llvm::Type *t = type->getPointerTo();
         GazpreaTupleType *gtt = symbolTable->resolveTupleType(structType);
         int i = gtt->getOffsetFromString(dynamic_cast<IDNode *>(index)->getID());
         idx = it->getConsi32(i);

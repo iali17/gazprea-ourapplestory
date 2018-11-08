@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -29,6 +30,7 @@ public:
     //tools
 	llvm::Value *getValFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
 	llvm::Value *getPtrFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
+	llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
     llvm::Value *geti1(int64_t val);
     llvm::Value *geti8(int64_t val);
     llvm::Value *getReal(float val);
@@ -38,6 +40,22 @@ public:
                              llvm::Value *arrP, llvm::Value *replaceVal);
     llvm::Value *getNull(llvm::Type *type);
     llvm::Value *getIdn(llvm::Type *type);
+    llvm::Value *getAdd(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getSub(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getMul(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getDiv(llvm::Value *left, llvm::Value * right);
+	llvm::Value *getRem(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getEQ (llvm::Value *left, llvm::Value * right);
+    llvm::Value *getNEQ(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getGT (llvm::Value *left, llvm::Value * right);
+    llvm::Value *getLT (llvm::Value *left, llvm::Value * right);
+    llvm::Value *getLTE(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getGTE(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getAnd(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getOr (llvm::Value *left, llvm::Value * right);
+    llvm::Value *getXOr(llvm::Value *left, llvm::Value * right);
+    llvm::Value *getNegation(llvm::Value *expr);
+
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
 
