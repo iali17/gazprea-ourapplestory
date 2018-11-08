@@ -37,6 +37,11 @@ antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContex
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
 
+    if(ctx->type()->tupleType()) {
+        ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
+        return (ASTNode *) new CastExprNode(expr, tuple, (int)ctx->getStart()->getLine());
+    }
+
     return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
 }
 
@@ -262,6 +267,11 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
     std::string id = ctx->Identifier()->getText();
+
+    if(ctx->type()->tupleType()) {
+        ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
+        return (ASTNode *) new TypeDefNode(id, tuple);
+    }
 
     return (ASTNode *) new TypeDefNode(id, type);
 }
@@ -534,7 +544,7 @@ antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::Tup
 
 
 antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) {
-    ASTNode *expr = (ASTNode *) new IDNode("null");
+    ASTNode *expr = (ASTNode *) new NullNode();
 
     bool constant = (nullptr != ctx->CONST());
     std::string id = ctx->Identifier()->getText();
@@ -543,11 +553,10 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
-//        auto tupleType = visit(ctx->type(0));         // get the tuple type
-        //        return (ASTNode *) new TupleDeclNode(stuff);
-        return nullptr;
+        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)));
 
-    } else { // else it's a normal decl
+    }
+    else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
 
         unsigned int i;

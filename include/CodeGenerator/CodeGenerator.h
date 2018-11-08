@@ -14,6 +14,7 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -89,9 +90,11 @@ public:
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
-    llvm::StructType *parseStructType(TupleType *node);
+    llvm::StructType* parseStructType(TupleType *node);
+	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
+    llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
 
 protected:
     llvm::LLVMContext * globalCtx;

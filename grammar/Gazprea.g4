@@ -261,5 +261,5 @@ Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
 String: '\'' .*? '\'' ;  //TODO: for part 2
 
 // skip comments
-BlockComment: '/*' .*? '*/' -> skip ;
+BlockComment: '/*' (BlockComment | LineComment | .)*? '*/' -> skip ;
 LineComment: '//' .*? '\n'-> skip ;

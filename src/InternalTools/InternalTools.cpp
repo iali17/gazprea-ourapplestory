@@ -147,3 +147,184 @@ llvm::Value *InternalTools::getIdn(llvm::Type *type) {
     else
         return nullptr;
 }
+
+llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
+    //fill new structure
+    auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
+    auto types   = structType->elements();
+    for(unsigned long i = 0; i < values->size(); i++){
+        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
+        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
+        ir->CreateStore(values->at(i), ptr);
+        ir->CreateStore(ptr, structElem);
+    }
+    return tuplePtr ;
+}
+
+llvm::Value *InternalTools::getAdd(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateAdd(left, right, "iaddtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFAdd(left, right, "faddtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getSub(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateSub(left, right, "iaddtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFSub(left, right, "faddtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getMul(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateMul(left, right, "imultmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFMul(left, right, "fmultmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getDiv(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateSDiv(left, right, "idivtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFDiv(left, right, "fdivtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getRem(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateSRem(left, right, "iremtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFRem(left, right, "fremtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
+    if (left->getType() == boolTy){
+        return ir->CreateAnd(left, right, "fuck");
+    }
+    else if(left->getType() == intTy){
+        return ir->CreateICmpEQ(left, right, "ieqtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUEQ(left, right, "feqtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == boolTy){
+        return getNegation(ir->CreateAnd(left, right, "igttmp"));
+    }
+    if(left->getType() == intTy){
+        return ir->CreateICmpNE(left, right, "ineqtmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUNE(left, right, "fneqtmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getGT(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateICmpSGT(left, right, "igttmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpUGT(left, right, "fgttmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getLT(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateICmpSLT(left, right, "ilttmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpULT(left, right, "flttmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getLTE(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateICmpSLE(left, right, "iltetmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpOLE(left, right, "fltetmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getGTE(llvm::Value *left, llvm::Value *right) {
+    if(left->getType() == intTy){
+        return ir->CreateICmpSGE(left, right, "igtetmp");
+    }
+    else if(left->getType() == realTy){
+        return ir->CreateFCmpOGE(left, right, "fgtetmp");
+    }
+
+    std::cerr << "Unrecognized type during arithmetic operation\n";
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::getAnd(llvm::Value *left, llvm::Value *right) {
+    return ir->CreateAnd(left, right, "andtmp");
+}
+
+llvm::Value *InternalTools::getOr(llvm::Value *left, llvm::Value *right) {
+    return ir->CreateOr(left, right, "andtmp");
+}
+
+llvm::Value *InternalTools::getXOr(llvm::Value *left, llvm::Value *right) {
+    return ir->CreateXor(left, right, "andtmp");
+}
+
+llvm::Value *InternalTools::getNegation(llvm::Value *expr) {
+    if (expr->getType() == realTy){
+        return ir->CreateFNeg(expr, "fnegtmp");
+    }
+
+    return ir->CreateNeg(expr, "negtmp");
+}
