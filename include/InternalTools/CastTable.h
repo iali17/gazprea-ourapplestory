@@ -19,7 +19,8 @@ public:
     CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb);
 
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line, int option);
+    llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
+    llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line);
 
     int getType(llvm::Type *expr);
 
@@ -33,6 +34,11 @@ private:
                                      {"null", "char", "null", "null"},
                                      {"null", "null", "int", "real"},
                                      {"null", "null", "real", "real"}};
+
+    std::string typeAssTable[4][4] = { {"bool", "null", "null", "null"},
+                                       {"null", "char", "null", "null"},
+                                       {"null", "null", "int", "null"},
+                                       {"null", "null", "real", "real"}};
 
 protected:
     llvm::LLVMContext * globalCtx;
