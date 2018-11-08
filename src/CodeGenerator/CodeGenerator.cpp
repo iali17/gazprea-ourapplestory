@@ -160,6 +160,11 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
+    else if (node->getTypeIds()->empty() && it->isStructType(val)) {
+        ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
+        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+    }
     else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
@@ -179,9 +184,13 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             return nullptr;
         }
 
-        val = ct->typeAssCast(type, val, -1);
+        if (type->isStructTy()) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        } else {
+            val = ct->typeAssCast(type, val, -1);
+            ir->CreateStore(val, ptr);
+        }
 
-        ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
 
@@ -212,9 +221,14 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
     if(val) {
-        val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
+        if (it->isStructType(left->getPtr())) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+            left->setPtr(ptr);
+        } else {
+            val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
+            ir->CreateStore(val, ptr);
+        }
 
-        ir->CreateStore(val, ptr);
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
             std::cerr << "Unable to initialize to null\n";
@@ -415,6 +429,11 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     }
     else if (not(tupleNode) && dynamic_cast<IdnNode *>(node->getExpr())) {
         ptr = initTuple(IDENTITY, structType);
+    }
+    else if (not(tupleNode) && dynamic_cast<IDNode *>(node->getExpr())){
+        llvm::Value * tuplePtr = visit(node->getExpr());
+        ptr = ir->CreateAlloca(structType);
+        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(tuplePtr));
     }
     else {
         ptr = visit(tupleNode, structType);

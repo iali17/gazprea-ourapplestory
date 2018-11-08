@@ -12,7 +12,6 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
-// MAKE THIS LESS GARBAGE but it works soo do it later
 std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
     std::vector<llvm::Value *> paramVector;
     std::vector<std::string> aliasVector;

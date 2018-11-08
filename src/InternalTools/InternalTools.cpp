@@ -152,13 +152,34 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
     //fill new structure
     auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
     auto types   = structType->elements();
+    llvm::Value *element;
+    llvm::Type * nType, * oType;
     for(unsigned long i = 0; i < values->size(); i++){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
         llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
-        ir->CreateStore(values->at(i), ptr);
+
+        nType = types[i]->getPointerElementType();
+        oType = values->at(i)->getType();
+        element = values->at(i);
+        if((nType != oType) && (nType == realTy)&& (oType == intTy))
+            element = ir->CreateSIToFP(element, realTy);
+
+        ir->CreateStore(element, ptr);
         ir->CreateStore(ptr, structElem);
     }
     return tuplePtr ;
+}
+
+std::vector<llvm::Value *> *InternalTools::getValueVectorFromStruct(llvm::Value *structPtr) {
+    auto *structType = llvm::cast<llvm::StructType>(structPtr->getType()->getPointerElementType());
+    auto types   = structType->elements();
+    std::vector<llvm::Value *> * values = new std::vector<llvm::Value *>;
+
+    for(unsigned long i = 0; i < types.size(); i++){
+        llvm::Value *structElem = getValFromTuple(structPtr, getConsi32(i));
+        values->push_back(structElem);
+    }
+    return values;
 }
 
 llvm::Value *InternalTools::getAdd(llvm::Value *left, llvm::Value *right) {

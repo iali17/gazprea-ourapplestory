@@ -76,8 +76,7 @@ void SymbolTable::addSymbol(std::string newSymbolName, int type, bool isConstant
     scopeStack->top()->addSymbol(newSymbolName, type, isConstant, ptr);
 }
 
-void
-SymbolTable::addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec) {
+void SymbolTable::addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec) {
     scopeStack->top()->addFunctionSymbol(newSymbolName, type, paramsVec);
 }
 
