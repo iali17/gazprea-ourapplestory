@@ -3,8 +3,8 @@
 //
 #include "AST/AST.h"
 
-GlobalDeclNode::GlobalDeclNode(ASTNode *expr, const std::string &ID, std::vector<std::string> *typeIds) : UnaryNode(
-        expr), ID(ID), typeIds(typeIds) {}
+GlobalDeclNode::GlobalDeclNode(ASTNode *expr, const std::string &ID, std::vector<std::string> *typeIds, int line)
+: UnaryNode(expr, line), ID(ID), typeIds(typeIds) {}
 
 const std::string &GlobalDeclNode::getID() const {
     return ID;

@@ -3,4 +3,4 @@
 //
 #include "AST/AST.h"
 
-NegateNode::NegateNode(ASTNode *expr) : UnaryNode(expr) {}
+NegateNode::NegateNode(ASTNode *expr, int line) : UnaryNode(expr, line) {}

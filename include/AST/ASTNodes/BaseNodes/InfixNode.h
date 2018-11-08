@@ -8,7 +8,7 @@
 
 class InfixNode : public ASTNode{
 public:
-    InfixNode(ASTNode *left, ASTNode *right);
+    InfixNode(ASTNode *left, ASTNode *right, int line);
     ASTNode *getLeft() const;
     ASTNode *getRight() const;
 

@@ -4,7 +4,7 @@
 
 #include "AST/AST.h"
 
-TupleInputNode::TupleInputNode(const std::string &streamName, ASTNode *indexNode) : IONode(streamName) {
+TupleInputNode::TupleInputNode(const std::string &streamName, ASTNode *indexNode, int line) : IONode(streamName, line) {
     indexTupleNode = dynamic_cast<IndexTupleNode *>(indexNode);
 }
 

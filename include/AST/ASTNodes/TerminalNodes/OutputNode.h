@@ -8,7 +8,7 @@
 
 class OutputNode : public IONode {
 public:
-    OutputNode(const std::string &streamName, ASTNode *expr);
+    OutputNode(const std::string &streamName, ASTNode *expr, int line);
     ASTNode *getExpr() const;
 
 protected:

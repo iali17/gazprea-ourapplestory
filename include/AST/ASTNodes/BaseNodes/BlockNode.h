@@ -10,7 +10,7 @@
 
 class BlockNode : public ASTNode {
 public:
-    BlockNode(ASTNode *declBlock, ASTNode *stateBlock);
+    BlockNode(ASTNode *declBlock, ASTNode *stateBlock, int line);
     ASTNode *getDeclBlock() const;
     ASTNode *getStateBlock() const;
     BasicBlockNode *getFullBlock();

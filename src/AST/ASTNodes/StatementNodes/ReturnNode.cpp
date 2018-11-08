@@ -3,4 +3,4 @@
 //
 #include "AST/ASTNodes/StatementNodes/ReturnNode.h"
 
-ReturnNode::ReturnNode(ASTNode *expr) : UnaryNode(expr) {}
+ReturnNode::ReturnNode(ASTNode *expr, int line) : UnaryNode(expr, line) {}

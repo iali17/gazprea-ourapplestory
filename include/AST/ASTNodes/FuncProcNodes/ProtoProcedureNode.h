@@ -12,7 +12,7 @@ class ProtoProcedureNode : public ASTNode {
 public:
 
     ProtoProcedureNode(std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                       const std::string &procedureName);
+                       const std::string &procedureName, int line);
 
     std::vector<ASTNode *> *getParamNodes() const;
 

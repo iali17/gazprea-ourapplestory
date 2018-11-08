@@ -3,6 +3,6 @@
 //
 #include "AST/ASTNodes/FileNode.h"
 
-FileNode::FileNode() {}
+FileNode::FileNode(int line) : BasicBlockNode(line) {}
 
-FileNode::FileNode(std::vector<ASTNode *> *nodes) : BasicBlockNode(nodes) {}
+FileNode::FileNode(std::vector<ASTNode *> *nodes, int line) : BasicBlockNode(nodes, line) {}

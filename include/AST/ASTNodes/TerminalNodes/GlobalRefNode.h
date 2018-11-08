@@ -8,7 +8,7 @@
 
 class GlobalRefNode : public ASTNode {
 public:
-    explicit GlobalRefNode(const std::string &globalName);
+    explicit GlobalRefNode(const std::string &globalName, int line);
     const std::string &getGlobalName() const;
 
 protected:

@@ -4,8 +4,4 @@
 
 #include "AST/AST.h"
 
-RemNode::RemNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right), line(line) {}
-
-int RemNode::getLine() {
-    return this->line;
-}
+RemNode::RemNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right, line) {}

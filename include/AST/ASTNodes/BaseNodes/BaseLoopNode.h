@@ -13,11 +13,11 @@
  */
 class BaseLoopNode : public BaseBlockParent {
 public:
-    explicit BaseLoopNode(ASTNode *control);
+    explicit BaseLoopNode(ASTNode *control, int line);
 
     ASTNode *getControl() const;
 
-    BaseLoopNode(BlockNode *blockNode, ASTNode *control);
+    BaseLoopNode(BlockNode *blockNode, ASTNode *control, int line);
 
 protected:
     ASTNode * control;

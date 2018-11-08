@@ -13,12 +13,10 @@ public:
 
     ASTNode *getTuple();
     const std::string &getTypeString() const;
-    int getLine();
 
 protected:
     std::string type;
     ASTNode *tuple = nullptr;
-    int line;
 };
 
 #endif //GAZPREABASE_CASTEXPRNODE_H

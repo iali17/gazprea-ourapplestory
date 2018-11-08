@@ -4,12 +4,12 @@
 
 #include <AST/ASTNodes/BaseNodes/BaseBlockParent.h>
 
-BaseBlockParent::BaseBlockParent(BlockNode *blockNode) : blockNode(blockNode) {}
+BaseBlockParent::BaseBlockParent(BlockNode *blockNode, int line) : ASTNode(line), blockNode(blockNode) {}
 
 BasicBlockNode *BaseBlockParent::getBlock() {
     return blockNode->getFullBlock();
 }
 
-BaseBlockParent::BaseBlockParent() {
+BaseBlockParent::BaseBlockParent(int line) : ASTNode(line) {
     blockNode = nullptr;
 }

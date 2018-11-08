@@ -3,13 +3,9 @@
 //
 #include <AST/ASTNodes/StatementNodes/PythonTupleAssNode.h>
 
-PythonTupleAssNode::PythonTupleAssNode(ASTNode *expr, const std::vector<std::string> &IDs, int line) : UnaryNode(expr),
-                                                                                             IDs(IDs), line(line) {}
+PythonTupleAssNode::PythonTupleAssNode(ASTNode *expr, const std::vector<std::string> &IDs, int line) : UnaryNode(expr, line),
+                                                                                             IDs(IDs) {}
 
 const std::vector<std::string> &PythonTupleAssNode::getIDs() const {
     return IDs;
-}
-
-int PythonTupleAssNode::getLine() {
-    return this->line;
 }

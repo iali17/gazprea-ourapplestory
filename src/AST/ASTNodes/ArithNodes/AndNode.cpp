@@ -4,8 +4,4 @@
 
 #include "AST/AST.h"
 
-AndNode::AndNode(ASTNode *left, ASTNode *right, int line) : BitArithNode(left, right), line(line) {}
-
-int AndNode::getLine() {
-    return this->line;
-}
+AndNode::AndNode(ASTNode *left, ASTNode *right, int line) : BitArithNode(left, right, line) {}

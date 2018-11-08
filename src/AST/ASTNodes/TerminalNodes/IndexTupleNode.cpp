@@ -12,4 +12,4 @@ IDNode *IndexTupleNode::getIdNode() const {
     return idNode;
 }
 
-IndexTupleNode::IndexTupleNode(ASTNode *index, IDNode *idNode) : index(index), idNode(idNode) {}
+IndexTupleNode::IndexTupleNode(ASTNode *index, IDNode *idNode, int line) : ASTNode(line), index(index), idNode(idNode) {}

@@ -9,10 +9,5 @@
 class MulNode : public ArithNode {
 public:
     MulNode(ASTNode *left, ASTNode *right, int line);
-
-    int getLine();
-
-protected:
-    int line;
 };
 #endif //GAZPREABASE_INTMULNODE_H

@@ -3,8 +3,4 @@
 //
 #include "AST/AST.h"
 
-LTENode::LTENode(ASTNode *left, ASTNode *right, int line) : CompNode(left, right), line(line) {}
-
-int LTENode::getLine() {
-    return this->line;
-}
+LTENode::LTENode(ASTNode *left, ASTNode *right, int line) : CompNode(left, right, line) {}

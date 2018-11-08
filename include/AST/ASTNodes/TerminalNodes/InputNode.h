@@ -8,7 +8,7 @@
 
 class InputNode : public IONode {
 public:
-    InputNode(const std::string &streamName, const std::string &storeID);
+    InputNode(const std::string &streamName, const std::string &storeID, int line);
     const std::string &getStoreID() const;
 
 protected:

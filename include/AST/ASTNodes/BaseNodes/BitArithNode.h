@@ -8,6 +8,6 @@
 
 class BitArithNode : public InfixNode {
 public:
-    BitArithNode(ASTNode *left, ASTNode *right);
+    BitArithNode(ASTNode *left, ASTNode *, int line);
 };
 #endif //GAZPREABASE_BITARITHNODE_H

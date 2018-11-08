@@ -4,7 +4,7 @@
 #include <AST/ASTNodes/TypeNodes/TupleType.h>
 
 
-TupleType::TupleType(std::vector<ASTNode *> *decls) : decls(decls){
+TupleType::TupleType(std::vector<ASTNode *> *decls, int line) : ASTNode(line), decls(decls){
 
 }
 

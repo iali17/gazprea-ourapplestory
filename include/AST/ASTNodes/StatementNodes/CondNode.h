@@ -9,7 +9,7 @@
 
 class CondNode : public ASTNode {
 public:
-    CondNode(std::vector<ASTNode *> *conds, std::vector<ASTNode *> *blocks);
+    CondNode(std::vector<ASTNode *> *conds, std::vector<ASTNode *> *blocks, int line);
     std::vector<ASTNode *> *getConds() const;
     std::vector<ASTNode *> *getBlocks() const;
     bool isHasElse() const;
