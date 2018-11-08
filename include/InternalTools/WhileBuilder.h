@@ -11,6 +11,7 @@
 #define STARTED      1
 #define MUSTFINALIZE 2
 #define FINALIZED    3
+#define SKIP         5
 
 /**
  * HOW TO USE:
@@ -20,6 +21,7 @@
  * wb->beginWhile();
  *      < YOUR LLVM CODE HERE >
  *      MAKE SURE YOU LOAD THE VALUES YOU NEED TO LOAD BEFORE THE LOOP CONTROL
+ * wb->beginInsertControl();
  * wb->insertControl(LLVM_CONDITION);
  *      < YOUR LLVM CODE HERE >
  *      MAKE SURE YOU STORE THE VALUES YOU NEED TO
@@ -30,11 +32,11 @@ class WhileBuilder {
 public:
     WhileBuilder(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
     llvm::Value *beginWhile(std::string label = "BeginWhile");
+    llvm::Value *beginInsertControl(std::string bodyLabel = "LoopBody");
     llvm::Value *insertControl(llvm::Value *cond, std::string bodyLabel = "LoopBody");
     llvm::Value *endWhile(std::string label = "EndWhile");
 
     llvm::BasicBlock *getStartWhileBB() const;
-
     llvm::BasicBlock *getMergeBB() const;
 
 protected:

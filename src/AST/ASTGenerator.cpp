@@ -203,7 +203,7 @@ antlrcpp::Any ASTGenerator::visitPredicatedLoop(gazprea::GazpreaParser::Predicat
 }
 
 antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
+    return (ASTNode *) new DoLoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {
@@ -386,7 +386,6 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
-
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
 
     } else { // else it's a normal decl
@@ -461,7 +460,7 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
         }
     }
 
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant, operation, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant, (int)ctx->getStart()->getLine(), operation);
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
@@ -486,7 +485,7 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
         }
     }
 
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, operation, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, (int)ctx->getStart()->getLine(), operation);
 }
 
 /*

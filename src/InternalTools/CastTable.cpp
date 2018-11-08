@@ -75,7 +75,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
 }
 
 // This function is for casting with the use of the keyword: as
-llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line, int option) {
+llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
@@ -86,25 +86,10 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     int exprPos = getType(exprType);
     int typePos = getType(type);
 
-    std::string exprString;
-    std::string typeString;
-    std::string realString;
-
     // Option for explicit casting
-    if(option == 0) {
-        // Cast type
-        exprString = typeTable[exprPos][exprPos];
-        typeString = typeTable[exprPos][typePos];
-        realString = typeTable[typePos][typePos];
-    }
-
-    // Option for checking assignment
-    else if(option == 1) {
-        // Cast type
-        exprString = typePTable[exprPos][exprPos];
-        typeString = typePTable[exprPos][typePos];
-        realString = typePTable[typePos][typePos];
-    }
+    std::string exprString = typeTable[exprPos][exprPos];
+    std::string typeString = typeTable[exprPos][typePos];
+    std::string realString = typeTable[typePos][typePos];
 
     // Casting to same type
     if(typeString == exprString) {
@@ -178,6 +163,35 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     else {
         // Todo: Get line number from AST and pass in to scalarNode
         ScalarNode *error = new ScalarNode(realString, exprString, line);
+        eb->printError(error);
+    }
+}
+
+llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line) {
+    if(expr->getName() == "IdnNode")
+        expr = it->getIdn(type);
+
+    llvm::Type *rTypeP = expr->getType();
+
+    // Position in typeTable
+    int lType = getType(type);
+    int rType = getType(rTypeP);
+
+    // Cast type
+    std::string castType = typeAssTable[lType][rType];
+    std::string lTypeString = typeAssTable[lType][lType];
+    std::string rTypeString = typeAssTable[rType][rType];
+
+    if(castType == lTypeString && castType == rTypeString) {
+        return expr;
+    }
+    // Only viable cast for scalars: int -> real
+    else if(castType == "real") {
+        return ir->CreateSIToFP(expr, realTy, "upCastIntToReal");
+    }
+    else {
+        // Todo: Get line number from AST and pass in to scalarNode
+        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
 }

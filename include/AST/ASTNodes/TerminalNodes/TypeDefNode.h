@@ -6,6 +6,7 @@
 #define GAZPREABASE_TYPEDEFNODE_H
 
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
+#include <string>
 
 class TypeDefNode : public ASTNode {
 public:

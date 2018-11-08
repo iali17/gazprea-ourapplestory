@@ -99,11 +99,11 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     for(i = 0; i < node->getConds()->size(); i++){
         if(i){
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0, 0));
+            condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0));
         }
         else {
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginIf(ct->varCast(boolTy, cond, 0, 0));
+            condBuilder->beginIf(ct->varCast(boolTy, cond, 0));
         }
         visit(node->getBlocks()->at(i));
         condBuilder->endIf();
@@ -123,7 +123,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     whileBuilder->beginWhile();
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
-        whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine(), 0));
+        whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     }
     else
         whileBuilder->insertControl(it->geti1(1));
@@ -134,13 +134,19 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     return nullptr;
 }
 
+/**
+ * TODO
+ * @param node
+ * @return
+ */
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileStack->push(whileBuilder);
     whileBuilder->beginWhile();
     visit(node->getBlock());
+    whileBuilder->beginInsertControl();
     llvm::Value *cond = visit(node->getControl());
-    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine(), 0));
+    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     whileBuilder->endWhile();
     whileStack->pop();
     return nullptr;
@@ -160,6 +166,11 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
+    else if (node->getTypeIds()->empty() && it->isStructType(val)) {
+        ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
+        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+    }
     else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
@@ -167,6 +178,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     }
     else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+
         node->setLlvmType(type);
 
         ptr = ir->CreateAlloca(type);
@@ -177,7 +189,14 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
             return nullptr;
         }
-        ir->CreateStore(val, ptr);
+
+        if (type->isStructTy()) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        } else {
+            val = ct->typeAssCast(type, val, -1);
+            ir->CreateStore(val, ptr);
+        }
+
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
 
@@ -208,12 +227,14 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
     if(val) {
-        //if(ptr->getType()->getPointerElementType() == realTy)
-            //val = ct->varCast(realTy, val, node->getLine(), 1);
+        if (it->isStructType(left->getPtr())) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+            left->setPtr(ptr);
+        } else {
+            val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
+            ir->CreateStore(val, ptr);
+        }
 
-        val = ct->varCast(ptr->getType()->getPointerElementType(), val, node->getLine(), 1);
-
-        ir->CreateStore(val, ptr);
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
             std::cerr << "Unable to initialize to null\n";
@@ -300,8 +321,10 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     std::string temp = node->getTypeString();
 
     if(node->getTuple()) {
+        std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
         llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
         llvm::Value *exprP = visit(node->getExpr());
+        llvm::Value *ptr = ir->CreateAlloca(types);
 
         //assert(types->getStructNumElements() == exprVector->size());
 
@@ -309,15 +332,18 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
-            ct->varCast(type, expr, node->getLine(), 0);
+            expr = ct->varCast(type->getPointerElementType(), expr, node->getLine());
+            values->push_back(expr);
         }
+
+        return it->initTuple(ptr, values);
     }
     else {
         expr = visit(node->getExpr());
         GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
         type = gazpreaType->getTypeDef();
 
-        return ct->varCast(type, expr, node->getLine(), 0);
+        return ct->varCast(type, expr, node->getLine());
     }
 }
 
@@ -381,22 +407,8 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         else
             element = visit(node->getElements()->at(i));
 
-        //double check type
-        //llvm::Type *elementType = element->getType()->getPointerTo();
         llvm::Type *memberType  = types[i]->getPointerElementType();
-
-        /*
-        if((elementType != memberType) && ((element->getType() == intTy) && (memberType == realTy))){
-            //TODO - verify that this works
-            element = ct->varCast(memberType, element, -1, 1);
-            std::cout << "Inconsistent type for struct member\n";
-        } else if(elementType != memberType) {
-            std::cout << "Inconsistent type for struct member\n";
-        }
-
-         */
-
-        element = ct->varCast(memberType, element, -1, 1);
+        element = ct->typeAssCast(memberType, element, -1);
         values->push_back(element);
     }
 
@@ -428,6 +440,11 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     }
     else if (not(tupleNode) && dynamic_cast<IdnNode *>(node->getExpr())) {
         ptr = initTuple(IDENTITY, structType);
+    }
+    else if (not(tupleNode) && (dynamic_cast<IDNode *>(node->getExpr()) || dynamic_cast<CastExprNode *>(node->getExpr()))){
+        llvm::Value * tuplePtr = visit(node->getExpr());
+        ptr = ir->CreateAlloca(structType);
+        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(tuplePtr));
     }
     else {
         ptr = visit(tupleNode, structType);
@@ -485,7 +502,7 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
         assert(!var->isConstant());
 
         expr = it->getValFromTuple(exprP, it->getConsi32(i));
-        expr = ct->varCast(var->getPtr()->getType()->getPointerElementType(), expr, node->getLine(), 1);
+        expr = ct->typeAssCast(var->getPtr()->getType()->getPointerElementType(), expr, node->getLine());
 
         ir->CreateStore(expr, var->getPtr());
     }

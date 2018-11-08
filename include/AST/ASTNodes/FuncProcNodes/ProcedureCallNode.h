@@ -4,6 +4,7 @@
 #ifndef GAZPREABASE_PROCEDURECALLNODE_H
 #define GAZPREABASE_PROCEDURECALLNODE_H
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
+#include <string>
 
 #define MINUS 1
 #define PLUS 2
