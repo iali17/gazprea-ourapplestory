@@ -8,6 +8,6 @@
 
 class BreakNode : public ASTNode {
 public:
-    BreakNode();
+    explicit BreakNode(int line);
 };
 #endif //GAZPREABASE_BREAKNODE_H

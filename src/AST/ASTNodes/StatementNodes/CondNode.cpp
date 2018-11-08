@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/StatementNodes/CondNode.h"
 
-CondNode::CondNode(std::vector<ASTNode *> *conds, std::vector<ASTNode *> *blocks) : conds(conds), blocks(blocks) {
+CondNode::CondNode(std::vector<ASTNode *> *conds, std::vector<ASTNode *> *blocks, int line) : ASTNode(line), conds(conds), blocks(blocks) {
     hasElse = blocks->size() > conds->size();
 }
 

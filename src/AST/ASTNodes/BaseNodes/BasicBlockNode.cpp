@@ -4,6 +4,6 @@
 
 #include "AST/ASTNodes/BaseNodes/BasicBlockNode.h"
 
-BasicBlockNode::BasicBlockNode(std::vector<ASTNode *> *nodes) : nodes(nodes) {}
+BasicBlockNode::BasicBlockNode(std::vector<ASTNode *> *nodes, int line) : ASTNode(line), nodes(nodes) {}
 
-BasicBlockNode::BasicBlockNode() {}
+BasicBlockNode::BasicBlockNode(int line) : ASTNode(line) {}

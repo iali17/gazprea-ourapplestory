@@ -3,7 +3,7 @@
 //
 #include <AST/ASTNodes/BaseNodes/InfixNode.h>
 
-InfixNode::InfixNode(ASTNode *left, ASTNode *right, int line) : left(left), right(right), ASTNode(line){}
+InfixNode::InfixNode(ASTNode *left, ASTNode *right, int line) : ASTNode(line), left(left), right(right) {}
 
 ASTNode *InfixNode::getLeft() const {
     return left;

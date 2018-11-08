@@ -10,8 +10,8 @@ class BaseBlockParent : public ASTNode {
 protected:
     BlockNode * blockNode;
 public:
-    BaseBlockParent();
-    BaseBlockParent(BlockNode *blockNode);
+    explicit BaseBlockParent(int line);
+    BaseBlockParent(BlockNode *blockNode, int line);
     BasicBlockNode * getBlock();
 };
 #endif //GAZPREABASE_BASEBLOCKPARENT_H

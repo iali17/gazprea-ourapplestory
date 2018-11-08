@@ -8,6 +8,6 @@
 
 class ContinueNode : public ASTNode {
 public:
-    ContinueNode();
+    explicit ContinueNode(int line);
 };
 #endif //GAZPREABASE_CONTINUENODE_H

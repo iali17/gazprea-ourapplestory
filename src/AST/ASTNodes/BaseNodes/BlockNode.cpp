@@ -4,7 +4,7 @@
 
 #include <AST/ASTNodes/BaseNodes/BlockNode.h>
 
-BlockNode::BlockNode(ASTNode *declBlock, ASTNode *stateBlock) : declBlock(declBlock),
+BlockNode::BlockNode(ASTNode *declBlock, ASTNode *stateBlock, int line) : ASTNode(line), declBlock(declBlock),
                                                                               stateBlock(stateBlock) {}
 
 ASTNode *BlockNode::getDeclBlock() const {
@@ -22,5 +22,4 @@ BasicBlockNode *BlockNode::getFullBlock() {
     full->insert(full->end(), bb1->nodes->begin(), bb1->nodes->end());
     full->insert(full->end(), bb2->nodes->begin(), bb2->nodes->end());
     return new BasicBlockNode(full);
-    return nullptr;
 }
