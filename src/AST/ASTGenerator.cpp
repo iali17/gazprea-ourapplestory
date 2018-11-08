@@ -500,7 +500,7 @@ antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTu
         IDs->push_back(element->getText());
     }
 
-    return (ASTNode *) new PythonTupleAssNode(expr, *IDs);
+    return (ASTNode *) new PythonTupleAssNode(expr, *IDs, (int)ctx->getStart()->getLine());
 }
 
 // this just calls visitTuple

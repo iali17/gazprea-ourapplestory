@@ -461,8 +461,48 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
 }
 
 llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
-// todo assign for every variable and inside the tuple
-return nullptr;
+    Symbol *var;
+    llvm::Value *expr;
+    std::vector<std::string> variables = node->getIDs();
+    llvm::Value *exprP = visit(node->getExpr());
+
+    for(int i = 0; i < variables.size(); i++) {
+        var = symbolTable->resolveSymbol(variables.at(i));
+
+        assert(!var->isConstant());
+
+        expr = it->getValFromTuple(exprP, it->getConsi32(i));
+
+        if(var->getPtr()->getType()->getPointerElementType() == realTy)
+            expr = ct->varCast(realTy, expr, node->getLine());
+
+        //TODO: FINISH this
+
+    }
+    /*
+    Symbol *left, *right;
+    left = symbolTable->resolveSymbol(node->getID());
+    assert(!left->isConstant());
+
+    llvm::Value *val = visit(node->getExpr());
+    llvm::Value *ptr = left->getPtr();
+    if(val) {
+        if(ptr->getType()->getPointerElementType() == realTy)
+            val = ct->varCast(realTy, val, node->getLine());
+
+        ir->CreateStore(val, ptr);
+    }
+    else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
+        std::cerr << "Unable to initialize to null\n";
+    }
+    return nullptr;
+
+
+  */
+
+
+    // todo assign for every variable and inside the tuple
+    return nullptr;
 }
 
 llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
