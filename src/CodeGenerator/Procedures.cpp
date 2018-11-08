@@ -15,9 +15,9 @@ extern llvm::Type *boolTy;
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec(), node->getExprNodes());
+    std::vector<llvm::Value *> paramVector = getParamVec(functionSymbol->getParamsVec(), node->getExprNodes());
 
-    return ir->CreateCall(func, dumb);
+    return ir->CreateCall(func, paramVector);
 }
 
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
@@ -29,6 +29,8 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
         std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
+
+
 
         params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
     }

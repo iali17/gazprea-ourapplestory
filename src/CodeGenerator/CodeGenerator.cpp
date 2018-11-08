@@ -212,9 +212,9 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             val = ct->varCast(realTy, val, node->getLine());
 
         // Print errors if assignment type isn't the same
-        if(val->getType() != node->getLlvmType()) {
-            ct->typePromotion(ptr, val, node->getLine());
-        }
+//        if(val->getType() != node->getLlvmType()) {
+//            ct->typePromotion(ptr, val, node->getLine());
+//        }
 
         ir->CreateStore(val, ptr);
     }

@@ -139,7 +139,7 @@ type
     ;
 
 param
-    : VAR? type Identifier;
+    : (CONST | VAR)? type Identifier;
 
 params
     : '('  (param (COMMA  param)* )? ')';

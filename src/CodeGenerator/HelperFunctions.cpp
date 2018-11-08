@@ -12,8 +12,10 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
+// MAKE THIS LESS GARBAGE but it works soo do it later
 std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
     std::vector<llvm::Value *> paramVector;
+    std::vector<std::string> aliasVector;
 
     // TODO: All the other types :(
     for (unsigned int i = 0; i < arguNode->size(); ++i) {
@@ -35,26 +37,51 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
         } else {
             // We are passing in a variable
             llvm::Value *p;
-            auto *pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
+            auto pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
             bool constant = pNode->isIsVar();
-            Symbol * idNode = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
+            Symbol * idNode;
+            llvm::Value *idx = nullptr;
 
-            if (!constant) {
-                if (!idNode->isConstant()){
-                    p = idNode->getPtr();
-                } else {
-                    llvm::Value *ptr = ir->CreateAlloca(idNode->getPtr()->getType()->getPointerElementType());
-                    llvm::Value *val = ir->CreateLoad(idNode->getPtr());
-                    ir->CreateStore(val, ptr);
-                    p = ptr;
-                }
+            if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))){
+                auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+                idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
+                idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
             } else {
-                llvm::Value *ptr = ir->CreateAlloca(idNode->getPtr()->getType()->getPointerElementType());
-                llvm::Value *val = ir->CreateLoad(idNode->getPtr());
-                ir->CreateStore(val, ptr);
-                p = ptr;
+                idNode = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
             }
 
+            if (!constant) {
+                assert(!idNode->isConstant());
+                if (idx) {
+                    p = it->getPtrFromTuple(idNode->getPtr(),idx);
+                } else {
+                    p = idNode->getPtr();
+                }
+
+                if (std::find(aliasVector.begin(), aliasVector.end(), "c"+idNode->getName()) != aliasVector.end()
+                    || std::find(aliasVector.begin(), aliasVector.end(), idNode->getName()) != aliasVector.end()){
+                    std::cerr << "Aliasing error\n Aborting...\n";
+                    exit(1);
+                }
+                aliasVector.push_back(idNode->getName());
+            } else {
+                llvm::Value *val;
+                llvm::Value *ptr;
+                if (idx) {
+                    val = it->getValFromTuple(idNode->getPtr(),idx);
+                    ptr = ir->CreateAlloca(val->getType());
+                } else {
+                    ptr = ir->CreateAlloca(idNode->getPtr()->getType()->getPointerElementType());
+                    val = ir->CreateLoad(idNode->getPtr());
+                }
+                ir->CreateStore(val, ptr);
+                p = ptr;
+                if (std::find(aliasVector.begin(), aliasVector.end(), idNode->getName()) != aliasVector.end()){
+                    std::cerr << "Aliasing error\n Aborting...\n";
+                    exit(1);
+                }
+                aliasVector.push_back("c" + idNode->getName());
+            }
             paramVector.push_back(p);
         }
     }
