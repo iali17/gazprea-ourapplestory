@@ -350,8 +350,13 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
 
-    for(unsigned long i = 0; i < node->getElements()->size(); i++){
-        llvm::Value * element = visit(node->getElements()->at(i));
+    for(unsigned long i = 0; i < types.size(); i++){
+        llvm::Value * element;
+        if (not(node)){
+            element = it->getNull(types[i]);
+        }
+        else
+            element = visit(node->getElements()->at(i));
 
         //double check type
         llvm::Type *elementType = element->getType()->getPointerTo();
@@ -380,12 +385,46 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     llvm::StructType * structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
-    //once you have the LHS type
-    std::string s = structType->getStructName();
-    //structType->setName("tuple");
-    llvm::Value *ptr = visit(dynamic_cast<TupleNode *>(node->getExpr()), structType);
+    TupleNode *tupleNode = nullptr;
+    llvm::Value *ptr;
+
+    //get the struct type from the definition
+    structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
+
+    tupleNode = dynamic_cast<TupleNode *>(node->getExpr());
+
+    //cover null declaration cases
+    if(not(tupleNode) && dynamic_cast<NullNode *>(node->getExpr())){
+        ptr = initTuple(NULLTY, structType);
+    }
+    else if (not(tupleNode) && dynamic_cast<IdnNode *>(node->getExpr())) {
+        ptr = initTuple(IDENTITY, structType);
+    }
+    else {
+        ptr = visit(tupleNode, structType);
+    }
+
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
+}
+
+llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
+    auto *values = new std::vector<llvm::Value *>();
+    auto types   = tuple->elements();
+    llvm::Value * element;
+
+    for(unsigned long i = 0; i < types.size(); i++){
+        if (INIT == NULLTY){
+            element = it->getNull(types[i]->getPointerElementType());
+        }
+        else if (INIT == IDENTITY){
+            element = it->getIdn(types[i]->getPointerElementType());
+        }
+        values->push_back(element);
+    }
+
+    llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
+    return it->initTuple(tuplePtr, values);
 }
 
 llvm::Value *CodeGenerator::visit(TupleType *node) {

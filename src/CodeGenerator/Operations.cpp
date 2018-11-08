@@ -275,11 +275,12 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
         rightMember = it->getValFromTuple(right, it->getConsi32(i));
         if (OPTYPE == EQ){
             tmp = it->getEQ(leftMember, rightMember);
+            ret = ir->CreateAnd(ret, tmp);
         } else if (OPTYPE == NEQ){
             tmp = it->getNEQ(leftMember, rightMember);
+            ret = ir->CreateOr(ret, tmp);
         }
         //update return value
-        ret = ir->CreateAnd(ret, tmp);
 	}
     return ret;
 }
