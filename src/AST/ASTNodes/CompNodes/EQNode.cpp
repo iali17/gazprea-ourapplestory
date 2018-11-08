@@ -3,8 +3,4 @@
 //
 #include "AST/AST.h"
 
-EQNode::EQNode(ASTNode *left, ASTNode *right, int line) : CompNode(left, right), line(line) {}
-
-int EQNode::getLine() {
-    return this->line;
-}
+EQNode::EQNode(ASTNode *left, ASTNode *right, int line) : CompNode(left, right, line) {}

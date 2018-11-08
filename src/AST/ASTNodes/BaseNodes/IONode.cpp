@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/BaseNodes/IONode.h"
 
-IONode::IONode(const std::string &streamName) : streamName(streamName) {}
+IONode::IONode(const std::string &streamName, int line) : ASTNode(line), streamName(streamName) {}
 
 const std::string &IONode::getStreamName() const {
     return streamName;

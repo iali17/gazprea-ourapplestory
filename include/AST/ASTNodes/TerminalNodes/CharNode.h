@@ -8,7 +8,7 @@
 
 class CharNode : public ASTNode {
 public:
-    explicit CharNode(char val);
+    explicit CharNode(char val, int line);
     char getVal() const;
 
 protected:

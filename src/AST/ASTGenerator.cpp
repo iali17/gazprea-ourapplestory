@@ -27,7 +27,7 @@ antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExpr
     std::string rawStr = ctx->getText();
     rawStr.erase(std::remove(rawStr.begin(), rawStr.end(), '_'), rawStr.end());     // remove the underscores
     int val = std::stoi(rawStr);
-    return (ASTNode *) new INTNode(val);
+    return (ASTNode *) new INTNode(val, (int) ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) {
@@ -51,7 +51,7 @@ antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContex
 
     std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} ); // remove _
     float val = std::stof(str2Val);
-    return (ASTNode *) new RealNode(val);}
+    return (ASTNode *) new RealNode(val, (int)ctx->getStart()->getLine());}
 
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
     return (ASTNode *) visit(ctx->expr());
@@ -110,7 +110,7 @@ antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprCont
 antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     if     (ctx->SUB()){
-        ASTNode * zero = (ASTNode *) new INTNode(0);
+        auto * zero = (ASTNode *) new INTNode(0, (int) ctx->getStart()->getLine());
         return (ASTNode *) new SubNode(zero, expr, (int)ctx->getStart()->getLine());
     }
     else if(ctx->NOT()){
@@ -257,7 +257,7 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
 
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
-    return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr);
+    return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
@@ -271,7 +271,7 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
             int val = std::stoi(ctx->tupleMember()->Integer()->getText());
             assert(val > 0);
             --val;
-            index = (ASTNode *) new INTNode(val);
+            index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
         }
         else{
             assert(ctx->tupleMember()->Identifier());
@@ -279,9 +279,9 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
         }
 
         auto LHS = new IndexTupleNode(index, idNode);
-        return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS);
+        return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
     }
-    return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText());
+    return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
@@ -297,7 +297,7 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
-    std::vector<ASTNode*> *exprNodes = new std::vector<ASTNode*>;
+    auto *exprNodes = new std::vector<ASTNode*>;
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
@@ -337,7 +337,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
                 ctx->param().at(i)->Identifier()->getText(), constant));
     }
 
-    return (std::vector<ASTNode *> *) paramVec;
+    return paramVec;
 }
 
 antlrcpp::Any ASTGenerator::visitReturnStat(gazprea::GazpreaParser::ReturnStatContext *ctx) {
@@ -355,11 +355,11 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
     std::string strExpr = ctx->getText();
     if(strExpr == "true") {
         bool val = true;
-        return (ASTNode *) new BoolNode(val);
+        return (ASTNode *) new BoolNode(val, (int)ctx->getStart()->getLine());
     }
     else if(strExpr == "false") {
         bool val = false;
-        return (ASTNode *) new BoolNode(val);
+        return (ASTNode *) new BoolNode(val, (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }
@@ -427,7 +427,7 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
         }
     }
 
-    return (ASTNode *) new CharNode(val);
+    return (ASTNode *) new CharNode(val, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) {
@@ -437,7 +437,7 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
     std::string procedureName = ctx->Identifier(1)->getText();
     bool constant = (nullptr != ctx->CONST());
 
-    std::vector<ASTNode*> *exprNodes = new std::vector<ASTNode*>;
+    auto *exprNodes = new std::vector<ASTNode*>;
 
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
@@ -501,7 +501,7 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
         int val = std::stoi(ctx->tupleMember()->Integer()->getText());
         assert(val > 0);
         --val;
-        index = (ASTNode *) new INTNode(val);
+        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
     }
     else{
         assert(ctx->tupleMember()->Identifier());
@@ -639,7 +639,7 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
         int val = std::stoi(ctx->tupleMember()->Integer()->getText());
         assert(val > 0);
         --val;
-        index = (ASTNode *) new INTNode(val);
+        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
     }
     else{
         assert(ctx->tupleMember()->Identifier());
