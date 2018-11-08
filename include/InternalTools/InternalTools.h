@@ -59,6 +59,7 @@ public:
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
+    std::vector<llvm::Value *> * getValueVectorFromStruct(llvm::Value * structPtr);
 
 protected:
     llvm::LLVMContext * globalCtx;

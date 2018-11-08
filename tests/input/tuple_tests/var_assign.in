@@ -1,0 +1,12 @@
+procedure main() returns integer {
+	tuple(integer, integer, integer) tup = identity; 
+	//tuple(integer, integer, integer);
+	var out = std_output();
+	var tip = tup;
+	tup.1 = 2;
+	tup.1 -> out;
+	'\n'  -> out;
+	tip.1 -> out;
+	'\n'  -> out;
+	return 0;
+}

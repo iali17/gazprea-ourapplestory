@@ -160,6 +160,11 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
+    else if (node->getTypeIds()->empty() && it->isStructType(val)) {
+        ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
+        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+    }
     else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
