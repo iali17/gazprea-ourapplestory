@@ -14,6 +14,7 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"

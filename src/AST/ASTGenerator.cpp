@@ -37,6 +37,11 @@ antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContex
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
 
+    if(ctx->type()->tupleType()) {
+        ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
+        return (ASTNode *) new CastExprNode(expr, tuple, (int)ctx->getStart()->getLine());
+    }
+
     return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
 }
 
@@ -262,6 +267,11 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
     std::string id = ctx->Identifier()->getText();
+
+    if(ctx->type()->tupleType()) {
+        ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
+        return (ASTNode *) new TypeDefNode(id, tuple);
+    }
 
     return (ASTNode *) new TypeDefNode(id, type);
 }

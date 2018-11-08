@@ -9,11 +9,15 @@
 class CastExprNode : public UnaryNode {
 public:
     CastExprNode(ASTNode *expr, const std::string &type, int line);
+    CastExprNode(ASTNode *expr, ASTNode *tuple, int line);
+
+    ASTNode *getTuple();
     const std::string &getTypeString() const;
     int getLine();
 
 protected:
     std::string type;
+    ASTNode *tuple = nullptr;
     int line;
 };
 
