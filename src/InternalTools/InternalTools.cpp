@@ -328,3 +328,10 @@ llvm::Value *InternalTools::getNegation(llvm::Value *expr) {
 
     return ir->CreateNeg(expr, "negtmp");
 }
+
+bool InternalTools::isStructType(llvm::Value *ptr) {
+    if(ptr->getType()->isPointerTy()){
+        return ptr->getType()->getPointerElementType()->isStructTy();
+    }
+    return false;
+}

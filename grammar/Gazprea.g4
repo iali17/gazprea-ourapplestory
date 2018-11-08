@@ -112,7 +112,8 @@ bodyBlock
 
 stream
     : expr '->' Identifier SEMICOLON                                #outStream
-    | Identifier '<-' Identifier SEMICOLON                          #inStream
+    | Identifier  '<-' Identifier SEMICOLON                         #inStream
+    | tupleMember '<-' Identifier SEMICOLON                         #inStream
     ;
 
 // TODO: probably could be better

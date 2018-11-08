@@ -1,0 +1,9 @@
+//do not make an out file
+procedure main() returns integer {
+	var tup = (1, 2.0, 'a', 4.2, true);
+	var inp = std_input();
+	var out = std_output();
+	tup.3 <- inp;
+	tup.3 -> out;
+	return 0;
+}

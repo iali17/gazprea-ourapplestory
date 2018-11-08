@@ -87,6 +87,7 @@ public:
     llvm::Value* visit(PythonTupleAssNode *node) override;
     llvm::Value* visit(IndexTupleNode     *node) override;
     llvm::Value* visit(TupleMemberAssNode *node) override;
+    llvm::Value* visit(TupleInputNode     *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions

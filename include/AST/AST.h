@@ -74,6 +74,7 @@
 #include "AST/ASTNodes/TerminalNodes/RealNode.h"
 #include "AST/ASTNodes/TerminalNodes/StreamDecl.h"
 #include "AST/ASTNodes/TerminalNodes/TupleNode.h"
+#include "AST/ASTNodes/TerminalNodes/TupleInputNode.h"
 #include "AST/ASTNodes/TerminalNodes/TypeDefNode.h"
 
 #include "AST/ASTNodes/TypeNodes/TupleType.h"

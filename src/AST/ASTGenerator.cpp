@@ -261,6 +261,26 @@ antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamCont
 }
 
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
+    if(ctx->tupleMember()){
+        std::string idName = ctx->tupleMember()->TupleIndex()->getText();
+        idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+
+        auto idNode =  new IDNode(idName);
+        ASTNode *index;
+        if(ctx->tupleMember()->Integer()){
+            int val = std::stoi(ctx->tupleMember()->Integer()->getText());
+            assert(val > 0);
+            --val;
+            index = (ASTNode *) new INTNode(val);
+        }
+        else{
+            assert(ctx->tupleMember()->Identifier());
+            index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText());
+        }
+
+        auto LHS = new IndexTupleNode(index, idNode);
+        return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS);
+    }
     return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText());
 }
 

@@ -1,0 +1,7 @@
+procedure main() returns integer {
+	var tup = (1, 2.0, 'a', 4.2, true);
+	var out = std_output();
+	tup.3 = 'f';
+	tup.3 -> out;
+	return 0;
+}

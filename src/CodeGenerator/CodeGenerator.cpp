@@ -242,11 +242,16 @@ llvm::Value *CodeGenerator::visit(IdnNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(InputNode *node) {
+    Symbol *symbol;
+    llvm::Value *ptr;
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
         std::cerr << "Not proper stream\nAborting...\n";
         exit(1);
     }
-    llvm::Value *ptr = symbolTable->resolveSymbol(node->getStoreID())->getPtr();
+
+    symbol = symbolTable->resolveSymbol(node->getStoreID());
+    ptr    = symbol->getPtr();
+
     et->aliScanf(ptr);
     return nullptr;
 }
@@ -541,5 +546,27 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     llvm::Value *val       = visit(node->getExpr());
 
     ir->CreateStore(val, it->getPtrFromTuple(ptr,idx));
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
+    Symbol *symbol;
+    llvm::Value *ptr, *idx;
+    if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
+        std::cerr << "Not proper stream\nAborting...\n";
+        exit(1);
+    }
+
+    //resolve symbol
+    IndexTupleNode *tupleInputNode = node->getIndexTupleNode();
+    std::string tupleID            = tupleInputNode->getIdNode()->getID();
+    symbol                         = symbolTable->resolveSymbol(tupleID);
+
+    //get index then get pointer to element
+    ptr = symbol->getPtr();
+    idx = getIndexForTuple(tupleInputNode->getIndex(), ptr);
+    ptr = it->getPtrFromTuple(ptr, idx);
+
+    et->aliScanf(ptr);
     return nullptr;
 }
