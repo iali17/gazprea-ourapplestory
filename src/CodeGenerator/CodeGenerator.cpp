@@ -182,7 +182,13 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
             return nullptr;
         }
-        ir->CreateStore(val, ptr);
+
+        if (type->isStructTy()) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+        } else {
+            ir->CreateStore(val, ptr);
+        }
+
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     }
 
@@ -216,9 +222,14 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         //if(ptr->getType()->getPointerElementType() == realTy)
             //val = ct->varCast(realTy, val, node->getLine(), 1);
 
-        val = ct->varCast(ptr->getType()->getPointerElementType(), val, node->getLine(), 1);
+        if (it->isStructType(left->getPtr())) {
+            ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
+            left->setPtr(ptr);
+        } else {
+            val = ct->varCast(ptr->getType()->getPointerElementType(), val, node->getLine(), 1);
+            ir->CreateStore(val, ptr);
+        }
 
-        ir->CreateStore(val, ptr);
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
             std::cerr << "Unable to initialize to null\n";
