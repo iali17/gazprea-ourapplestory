@@ -9,7 +9,7 @@
 
 class TupleNode  : public ASTNode{
 public:
-    explicit TupleNode(std::vector<ASTNode *> *insideElement);
+    explicit TupleNode(std::vector<ASTNode *> *insideElement, int line);
     std::vector<ASTNode*>* getElements();
 
 protected:

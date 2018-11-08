@@ -8,7 +8,7 @@
 
 class GlobalDeclNode : public UnaryNode  {
 public:
-    GlobalDeclNode(ASTNode *expr, const std::string &ID, std::vector<std::string> *typeIds);
+    GlobalDeclNode(ASTNode *expr, const std::string &ID, std::vector<std::string> *typeIds, int line);
     const std::string &getID() const;
     std::vector<std::string> *getTypeIds() const;
 

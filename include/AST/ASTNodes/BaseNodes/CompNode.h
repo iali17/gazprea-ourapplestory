@@ -8,6 +8,6 @@
 
 class CompNode : public InfixNode {
 public:
-    CompNode(ASTNode *left, ASTNode *right);
+    CompNode(ASTNode *left, ASTNode *right, int line);
 };
 #endif //GAZPREABASE_COMPNODE_H

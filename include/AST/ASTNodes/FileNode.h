@@ -8,8 +8,8 @@
 
 class FileNode : public BasicBlockNode {
 public:
-    FileNode(std::vector<ASTNode *> *nodes);
+    FileNode(std::vector<ASTNode *> *, int line);
 
-    FileNode();
+    explicit FileNode(int line);
 };
 #endif //GAZPREABASE_FILENODE_H

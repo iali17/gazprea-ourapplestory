@@ -8,6 +8,6 @@ ASTNode *BaseLoopNode::getControl() const {
     return control;
 }
 
-BaseLoopNode::BaseLoopNode(ASTNode *control) : control(control) {}
+BaseLoopNode::BaseLoopNode(ASTNode *control, int line) : BaseBlockParent(line), control(control) {}
 
-BaseLoopNode::BaseLoopNode(BlockNode *blockNode, ASTNode *control) : BaseBlockParent(blockNode), control(control) {}
+BaseLoopNode::BaseLoopNode(BlockNode *blockNode, ASTNode *control, int line) : BaseBlockParent(blockNode, line), control(control) {}

@@ -9,7 +9,7 @@
 
 class IONode : public ASTNode {
 public:
-    explicit IONode(const std::string &streamName);
+    explicit IONode(const std::string &streamName, int line);
     const std::string &getStreamName() const;
 
 protected:

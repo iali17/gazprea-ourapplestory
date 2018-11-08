@@ -4,4 +4,4 @@
 
 #include "AST/ASTNodes/BaseNodes/CompNode.h"
 
-CompNode::CompNode(ASTNode *left, ASTNode *right) : InfixNode(left, right) {}
+CompNode::CompNode(ASTNode *left, ASTNode *right, int line) : InfixNode(left, right, line) {}

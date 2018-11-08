@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/TerminalNodes/IdnNode.h"
 
-IdnNode::IdnNode() {
+IdnNode::IdnNode(int line) : ASTNode(line) {
     setType(IDENTITY);
 
     this->vector = new std::vector<std::string>;

@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/TerminalNodes/StreamDecl.h"
 
-StreamDeclNode::StreamDeclNode(const std::string &id, int streamType) : id(id), streamType(streamType) {
+StreamDeclNode::StreamDeclNode(const std::string &id, int streamType, int line) : ASTNode(line), id(id), streamType(streamType) {
     type = streamType;
 }
 

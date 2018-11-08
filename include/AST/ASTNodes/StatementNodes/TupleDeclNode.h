@@ -8,7 +8,7 @@
 
 class TupleDeclNode : public UnaryNode {
 public:
-    TupleDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *tupleTypes);
+    TupleDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *tupleTypes, int line);
     const std::string &getID() const;
     bool isConstant() const;
     ASTNode * getTupleTypes() const;

@@ -13,11 +13,9 @@ public:
     AssignNode(ASTNode *expr, const std::string &ID, int line);
     const std::string &getID() const;
 
-    int getLine();
 
 protected:
     std::string ID;
-    int line;
 };
 
 #endif //GAZPREABASE_ASSIGNNODE_H

@@ -10,7 +10,7 @@
 
 class NullNode : public ASTNode {
 public:
-    NullNode();
+    explicit NullNode(int line);
     void assignType(std::string newType, int pos);
     void pushType(std::string type);
     std::string popType(int pos);

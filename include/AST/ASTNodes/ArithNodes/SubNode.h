@@ -9,11 +9,6 @@
 class SubNode : public ArithNode {
 public:
     SubNode(ASTNode *left, ASTNode *right, int line);
-
-    int getLine();
-
-protected:
-    int line;
 };
 
 #endif //GAZPREABASE_INTSUBNODE_H

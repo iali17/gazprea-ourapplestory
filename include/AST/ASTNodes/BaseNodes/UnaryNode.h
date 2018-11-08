@@ -8,7 +8,7 @@
 
 class UnaryNode : public ASTNode {
 public:
-    explicit UnaryNode(ASTNode *expr);
+    explicit UnaryNode(ASTNode *expr, int line);
 
     ASTNode *getExpr() const;
 

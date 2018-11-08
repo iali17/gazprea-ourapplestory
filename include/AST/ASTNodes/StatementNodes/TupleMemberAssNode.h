@@ -9,7 +9,7 @@
 
 class TupleMemberAssNode : public UnaryNode {
 public:
-    TupleMemberAssNode(ASTNode * expr, IndexTupleNode * LHS);
+    TupleMemberAssNode(ASTNode * expr, IndexTupleNode * LHS, int line);
     IndexTupleNode *getLHS() const;
 
 protected:

@@ -248,7 +248,7 @@ llvm::Value *InternalTools::getRem(llvm::Value *left, llvm::Value *right) {
 
 llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
     if (left->getType() == boolTy){
-        return ir->CreateAnd(left, right, "fuck");
+        return ir->CreateICmpEQ(left, right, "fuck");
     }
     else if(left->getType() == intTy){
         return ir->CreateICmpEQ(left, right, "ieqtmp");
@@ -264,7 +264,7 @@ llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
 
 llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
     if(left->getType() == boolTy){
-        return getNegation(ir->CreateAnd(left, right, "igttmp"));
+        return ir->CreateICmpNE(left, right, "ineqtmp");
     }
     if(left->getType() == intTy){
         return ir->CreateICmpNE(left, right, "ineqtmp");
@@ -343,6 +343,11 @@ llvm::Value *InternalTools::getXOr(llvm::Value *left, llvm::Value *right) {
 }
 
 llvm::Value *InternalTools::getNegation(llvm::Value *expr) {
+    assert(expr->getType() == boolTy);
+    return ir->CreateNot(expr, "negtmp");
+}
+
+llvm::Value *InternalTools::getUnarySub(llvm::Value *expr) {
     if (expr->getType() == realTy){
         return ir->CreateFNeg(expr, "fnegtmp");
     }

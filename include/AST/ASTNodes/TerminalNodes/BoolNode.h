@@ -8,7 +8,7 @@
 
 class BoolNode : public ASTNode {
 public:
-    explicit BoolNode(bool val);
+    explicit BoolNode(bool val, int line);
     bool getVal() const;
 
 protected:

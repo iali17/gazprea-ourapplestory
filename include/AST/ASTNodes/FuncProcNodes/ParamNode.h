@@ -8,7 +8,7 @@
 
 class ParamNode : public ASTNode {
 public:
-    ParamNode(const std::string &declaredType, const std::string &varName, bool isVar);
+    ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line);
 
     const std::string &getDeclaredType() const;
 

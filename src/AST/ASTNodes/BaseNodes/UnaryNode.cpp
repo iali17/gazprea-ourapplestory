@@ -3,7 +3,7 @@
 //
 #include <AST/ASTNodes/BaseNodes/UnaryNode.h>
 
-UnaryNode::UnaryNode(ASTNode *expr) : expr(expr) {}
+UnaryNode::UnaryNode(ASTNode *expr, int line) : ASTNode(line), expr(expr) {}
 
 ASTNode *UnaryNode::getExpr() const {
     return expr;

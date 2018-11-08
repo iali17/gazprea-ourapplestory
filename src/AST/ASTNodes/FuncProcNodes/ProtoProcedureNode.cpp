@@ -5,8 +5,9 @@
 #include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
 
 ProtoProcedureNode::ProtoProcedureNode(std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                                       const std::string &procedureName) : paramNodes(paramNodes), retType(retType),
-                                                                           procedureName(procedureName) {}
+                                       const std::string &procedureName, int line)
+                                       : ASTNode(line), paramNodes(paramNodes), retType(retType),
+                                       procedureName(procedureName) {}
 
 std::vector<ASTNode *> *ProtoProcedureNode::getParamNodes() const {
     return paramNodes;

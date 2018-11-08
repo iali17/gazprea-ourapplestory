@@ -10,9 +10,10 @@
 class BasicBlockNode : public ASTNode {
 public:
     std::vector<ASTNode *> *nodes;
-    BasicBlockNode();
 
-    explicit BasicBlockNode(std::vector<ASTNode *> *nodes);
+    explicit BasicBlockNode(int line);
+
+    explicit BasicBlockNode(std::vector<ASTNode *> *nodes, int line);
 };
 
 #endif //GAZPREABASE_BASICBLOCKNODE_H

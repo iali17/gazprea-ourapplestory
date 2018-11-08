@@ -9,7 +9,7 @@
 
 class RealNode : public ASTNode {
 public:
-    explicit RealNode(float val);
+    explicit RealNode(float val, int line);
     float getVal() const;
 
 protected:
