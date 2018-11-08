@@ -207,6 +207,9 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     if(dynamic_cast<IDNode *>(node->getExpr())){
         auto idNode = (IDNode *) node->getExpr();
         right = symbolTable->resolveSymbol(idNode->getID());
+
+        assert(right->getName() == "std_output()" || right->getName() == "std_input()");
+
         if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() != right->getType()){
             std::cerr << "Incompatable stream assignment\n";
