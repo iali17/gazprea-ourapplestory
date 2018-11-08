@@ -1,6 +1,6 @@
 CMPUT 415 Student Submission License (Version 1.0)
 
-Copyright 2018 `student name`
+Copyright 2018 `Andy Li (ali5@ualberta.ca), Imran Ali (iali1@ualberta.ca), James Sun (csun@ualberta.ca), Kyle LePoidevin-Gonzales (lepoidev@ualberta.ca)`
 
 Unauthorized redistribution is forbidden in all circumstances. Use of this
 software without explicit authorization from the author **or** CMPUT 415
