@@ -1,16 +1,48 @@
-test1:
+cast_op_tests:
+	Theses tests check if implicit and explicit casting works.
 
-test2:
+cond_tests:
+	Theses tests check if conditionals work which include:
+	       -Breaks
+	       -Continues
+	       -else
+	       -else if
+	       -if
+	       -nested conditionals
 
-test3:
+fail:
+	Literally means these tests are meant to fail
 
-test4:
+file_tests:
+	Theses tests check if global variables work (and immutable) and if type inferencing works
 
-test5:
+int_op_tests:
+	Theses tests check if integer operations works
 
+loop_tests:
+	Theses tests check if different types of loops work which includes:
+	       -do while loops
+	       -while loops
+	Including break, and continue and excluding them
 
-todos:
+other_tests:
+	Theses tests check other functions which include:
+	       -print
+	       -typedef
+	       -grammaar
+	       -procedures
+	       -real operations
+	       -typedef operations
 
+tuple_tets:
+	Theses test check if tuple functionalities work which includes:
+	       -tuple assignment
+	       -tuple declarations
+	       -python style tuple assignments
+	       -tuple type casting
+	       -typedef tuples
+	       -var tuples
+	 Including null, and identity types
 
 should work for realz:
     int .

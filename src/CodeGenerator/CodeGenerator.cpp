@@ -321,8 +321,10 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     std::string temp = node->getTypeString();
 
     if(node->getTuple()) {
+        std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
         llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
         llvm::Value *exprP = visit(node->getExpr());
+        llvm::Value *ptr = ir->CreateAlloca(types);
 
         //assert(types->getStructNumElements() == exprVector->size());
 
@@ -330,8 +332,11 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
-            ct->varCast(type, expr, node->getLine());
+            expr = ct->varCast(type->getPointerElementType(), expr, node->getLine());
+            values->push_back(expr);
         }
+
+        return it->initTuple(ptr, values);
     }
     else {
         expr = visit(node->getExpr());
@@ -436,7 +441,7 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     else if (not(tupleNode) && dynamic_cast<IdnNode *>(node->getExpr())) {
         ptr = initTuple(IDENTITY, structType);
     }
-    else if (not(tupleNode) && dynamic_cast<IDNode *>(node->getExpr())){
+    else if (not(tupleNode) && (dynamic_cast<IDNode *>(node->getExpr()) || dynamic_cast<CastExprNode *>(node->getExpr()))){
         llvm::Value * tuplePtr = visit(node->getExpr());
         ptr = ir->CreateAlloca(structType);
         ptr = it->initTuple(ptr, it->getValueVectorFromStruct(tuplePtr));

@@ -1,0 +1,51 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(integer, integer) tup = (1,58);
+
+    // Implicit upCast from integer to real
+    tuple(real, integer) tup2 = tup;
+
+    // Explicit cast from integer to boolean, and integer to character
+    tuple(boolean, character) tup3 = as<tuple(boolean, character)>(tup);
+
+    // Var explicit cast, real to integer, character to integer
+    var tup4 = as<tuple(integer, integer)>((tup2.1, tup3.2));
+
+    // Explicit cast, character to boolean, character to real
+    tuple(boolean, real) tup5 = as<tuple(boolean, real)>((tup3.2, tup3.2));
+
+    // Explicit cast, boolean to character, boolean to integer
+    tuple(character, integer) tup6 = as<tuple(character, integer)>((tup5.1, tup5.1));
+
+    // Explicit cast, boolean to real, boolean to boolean
+    tuple(real, boolean) tup7 = as<tuple(real, boolean)>((tup5.1, tup5.1));
+
+    // Explicit cast, integer to integer, real to real
+    tuple(integer, real) tup8 = as<tuple(integer, real)>((tup6.2, tup7.1));
+
+    // Explicit cast, character to character, integer to integer
+    tuple(character, integer) tup9 = as<tuple(character, integer)>((tup6.1, tup8.1));
+
+    // Print results
+    tup.1 -> out; '\t' -> out; tup.2 -> out; '\n' -> out;
+
+    tup2.1 -> out; '\t' -> out; tup2.2 -> out; '\n' -> out;
+
+    tup3.1 -> out; '\t' -> out; tup3.2 -> out; '\n' -> out;
+
+    tup4.1 -> out; '\t' -> out; tup4.2 -> out; '\n' -> out;
+
+    tup5.1 -> out; '\t' -> out; tup5.2 -> out; '\n' -> out;
+
+    tup6.1 -> out; '\t' -> out; tup6.2 -> out; '\n' -> out;
+
+    tup7.1 -> out; '\t' -> out; tup7.2 -> out; '\n' -> out;
+
+    tup8.1 -> out; '\t' -> out; tup8.2 -> out; '\n' -> out;
+
+    tup9.1 -> out; '\t' -> out; tup9.2 -> out; '\n' -> out;
+
+
+    return 0;
+}
