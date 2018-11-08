@@ -1,0 +1,9 @@
+procedure main() returns integer {
+    var out = std_output();
+    boolean t = true;
+    boolean f = false;
+
+    not (t) -> out; '\n' -> out;
+    not f -> out; 
+    return 0;
+}

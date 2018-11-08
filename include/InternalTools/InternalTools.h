@@ -55,6 +55,7 @@ public:
     llvm::Value *getOr (llvm::Value *left, llvm::Value * right);
     llvm::Value *getXOr(llvm::Value *left, llvm::Value * right);
     llvm::Value *getNegation(llvm::Value *expr);
+    llvm::Value *getUnarySub(llvm::Value *expr);
 
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
