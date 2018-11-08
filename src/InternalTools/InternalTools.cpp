@@ -154,7 +154,7 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
     auto types   = structType->elements();
     for(unsigned long i = 0; i < values->size(); i++){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
-        llvm::Value *ptr        = ir->CreateAlloca(types[i]);
+        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
         ir->CreateStore(values->at(i), ptr);
         ir->CreateStore(ptr, structElem);
     }

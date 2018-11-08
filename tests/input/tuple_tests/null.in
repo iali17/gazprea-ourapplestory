@@ -1,0 +1,7 @@
+procedure main() returns integer {
+	tuple(integer, real r, boolean, real) tup = null; 
+	var out = std_output();
+	tup.r -> out;
+	return 0;
+}
+
