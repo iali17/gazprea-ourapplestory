@@ -161,7 +161,7 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
         nType = types[i]->getPointerElementType();
         oType = values->at(i)->getType();
         element = values->at(i);
-        if((nType != oType) && (nType == realTy)&& (nType == intTy))
+        if((nType != oType) && (nType == realTy)&& (oType == intTy))
             element = ir->CreateSIToFP(element, realTy);
 
         ir->CreateStore(element, ptr);
