@@ -386,7 +386,6 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
-
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)));
 
     } else { // else it's a normal decl
