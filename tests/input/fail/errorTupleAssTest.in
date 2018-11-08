@@ -1,0 +1,14 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(integer, integer) tup = (1,1);
+    integer x;
+    character y;
+
+    x, y = tup;
+
+    x -> out;   '\n' -> out;
+    y -> out;   '\n' -> out;
+
+    return 0;
+}

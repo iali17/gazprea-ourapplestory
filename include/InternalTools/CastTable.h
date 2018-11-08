@@ -19,7 +19,7 @@ public:
     CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb);
 
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
+    llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line, int option);
 
     int getType(llvm::Type *expr);
 

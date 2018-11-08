@@ -15,3 +15,18 @@ Outcome: This test case checks type promotion (implicit casting) between two var
          In this test case, the user is trying to add a char and an integer, which is invalid so it returns the error
          above.
 
+Test Case: errorTupleAssTest.in
+Outcome: This test case checks python style tuple assignment between different types using a tuple.
+
+	 - Type error: Cannot convert between char and int on line 8
+
+	 In this test case, the user is trying to assign to a character an integer, which is invalid so it returns
+	 the error above.
+
+Test Case: constTest.in
+Outcome: This test case checks if a user is trying to assign to a const type
+
+	 -Assertion `!var->isConstant()' failed.
+
+	 In this test case, the user is trying to assign to a const type, which is invalid so it returns
+	 the error above.

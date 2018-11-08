@@ -99,11 +99,11 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     for(i = 0; i < node->getConds()->size(); i++){
         if(i){
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0));
+            condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0, 0));
         }
         else {
             llvm::Value *cond = visit(node->getConds()->at(i));
-            condBuilder->beginIf(ct->varCast(boolTy, cond, 0));
+            condBuilder->beginIf(ct->varCast(boolTy, cond, 0, 0));
         }
         visit(node->getBlocks()->at(i));
         condBuilder->endIf();
@@ -123,7 +123,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     whileBuilder->beginWhile();
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
-        whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
+        whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine(), 0));
     }
     else
         whileBuilder->insertControl(it->geti1(1));
@@ -140,7 +140,7 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     whileBuilder->beginWhile();
     visit(node->getBlock());
     llvm::Value *cond = visit(node->getControl());
-    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
+    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine(), 0));
     whileBuilder->endWhile();
     whileStack->pop();
     return nullptr;
@@ -208,8 +208,10 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
     if(val) {
-        if(ptr->getType()->getPointerElementType() == realTy)
-            val = ct->varCast(realTy, val, node->getLine());
+        //if(ptr->getType()->getPointerElementType() == realTy)
+            //val = ct->varCast(realTy, val, node->getLine(), 1);
+
+        val = ct->varCast(ptr->getType()->getPointerElementType(), val, node->getLine(), 1);
 
         ir->CreateStore(val, ptr);
     }
@@ -302,7 +304,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
-            ct->varCast(type, expr, node->getLine());
+            ct->varCast(type, expr, node->getLine(), 0);
         }
     }
     else {
@@ -310,7 +312,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
         GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
         type = gazpreaType->getTypeDef();
 
-        return ct->varCast(type, expr, node->getLine());
+        return ct->varCast(type, expr, node->getLine(), 0);
     }
 }
 
@@ -379,7 +381,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         llvm::Type *memberType  = types[i];
         if((elementType != memberType) && ((element->getType() == intTy) && (memberType == realTy))){
             //TODO - verify that this works
-            element = ct->varCast(memberType, element, -1);
+            element = ct->varCast(memberType, element, -1, 0);
             std::cout << "Inconsistent type for struct member\n";
         } else if(elementType != memberType) {
             std::cout << "Inconsistent type for struct member\n";
@@ -472,36 +474,11 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
         assert(!var->isConstant());
 
         expr = it->getValFromTuple(exprP, it->getConsi32(i));
+        expr = ct->varCast(var->getPtr()->getType()->getPointerElementType(), expr, node->getLine(), 1);
 
-        if(var->getPtr()->getType()->getPointerElementType() == realTy)
-            expr = ct->varCast(realTy, expr, node->getLine());
-
-        //TODO: FINISH this
-
+        ir->CreateStore(expr, var->getPtr());
     }
-    /*
-    Symbol *left, *right;
-    left = symbolTable->resolveSymbol(node->getID());
-    assert(!left->isConstant());
 
-    llvm::Value *val = visit(node->getExpr());
-    llvm::Value *ptr = left->getPtr();
-    if(val) {
-        if(ptr->getType()->getPointerElementType() == realTy)
-            val = ct->varCast(realTy, val, node->getLine());
-
-        ir->CreateStore(val, ptr);
-    }
-    else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
-        std::cerr << "Unable to initialize to null\n";
-    }
-    return nullptr;
-
-
-  */
-
-
-    // todo assign for every variable and inside the tuple
     return nullptr;
 }
 

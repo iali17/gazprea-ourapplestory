@@ -75,7 +75,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
 }
 
 // This function is for casting with the use of the keyword: as
-llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line) {
+llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line, int option) {
     uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
@@ -86,10 +86,25 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     int exprPos = getType(exprType);
     int typePos = getType(type);
 
-    // Cast type
-    std::string exprString = typeTable[exprPos][exprPos];
-    std::string typeString = typeTable[exprPos][typePos];
-    std::string realString = typeTable[typePos][typePos];
+    std::string exprString;
+    std::string typeString;
+    std::string realString;
+
+    // Option for explicit casting
+    if(option == 0) {
+        // Cast type
+        exprString = typeTable[exprPos][exprPos];
+        typeString = typeTable[exprPos][typePos];
+        realString = typeTable[typePos][typePos];
+    }
+
+    // Option for checking assignment
+    else if(option == 1) {
+        // Cast type
+        exprString = typePTable[exprPos][exprPos];
+        typeString = typePTable[exprPos][typePos];
+        realString = typePTable[typePos][typePos];
+    }
 
     // Casting to same type
     if(typeString == exprString) {
