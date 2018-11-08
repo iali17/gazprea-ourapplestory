@@ -91,9 +91,6 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     std::string typeString = typeTable[exprPos][typePos];
     std::string realString = typeTable[typePos][typePos];
 
-    std::cout << exprString;
-    std::cout << typeString;
-
     // Casting to same type
     if(typeString == exprString) {
         return exprLoad;
