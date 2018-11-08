@@ -134,11 +134,17 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     return nullptr;
 }
 
+/**
+ * TODO
+ * @param node
+ * @return
+ */
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileStack->push(whileBuilder);
     whileBuilder->beginWhile();
     visit(node->getBlock());
+    whileBuilder->beginInsertControl();
     llvm::Value *cond = visit(node->getControl());
     whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     whileBuilder->endWhile();

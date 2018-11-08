@@ -44,8 +44,16 @@ llvm::Value *WhileBuilder::beginWhile(std::string label) {
  * @return
  */
 llvm::Value *WhileBuilder::insertControl(llvm::Value *cond, std::string bodyLabel) {
-    assert(status == STARTED);
+    assert(status == STARTED || status == SKIP);
+    if(status == SKIP) {
+        status = MUSTFINALIZE;
+        return nullptr;
+    }
+
     status = MUSTFINALIZE;
+
+    //auto c = curFunction->getBasicBlockList().back().getName();
+    //auto p = curFunction->getBasicBlockList().back().getTerminator();
 
     postControlBlock = llvm::BasicBlock::Create(*globalCtx, bodyLabel);
 
@@ -53,6 +61,16 @@ llvm::Value *WhileBuilder::insertControl(llvm::Value *cond, std::string bodyLabe
 
     curFunction->getBasicBlockList().push_back(postControlBlock);
     ir->SetInsertPoint(postControlBlock);
+    return nullptr;
+}
+
+llvm::Value *WhileBuilder::beginInsertControl(std::string bodyLabel) {
+    if(curFunction->getBasicBlockList().back().getTerminator()){
+        postControlBlock = llvm::BasicBlock::Create(*globalCtx, bodyLabel);
+        curFunction->getBasicBlockList().push_back(postControlBlock);
+        ir->SetInsertPoint(postControlBlock);
+        status = SKIP;
+    }
     return nullptr;
 }
 
@@ -90,3 +108,4 @@ llvm::BasicBlock *WhileBuilder::getStartWhileBB() const {
 llvm::BasicBlock *WhileBuilder::getMergeBB() const {
     return mergeBB;
 }
+
