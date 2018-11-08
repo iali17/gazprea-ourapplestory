@@ -10,7 +10,7 @@
 
 class IdnNode : public ASTNode {
 public:
-    IdnNode();
+    explicit IdnNode(int line);
     void assignType(std::string newType, int pos);
     void pushType(std::string type);
     std::string popType(int pos);
@@ -24,7 +24,6 @@ protected:
                                     {"idn", "idn", "int",  "real", "int" },
                                     {"idn", "idn", "real", "real", "real"},
                                     {"bool", "char", "int",  "real", "idn"}};
-    
 };
 
 #endif //GAZPREABASE_IDNNODE_H

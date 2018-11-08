@@ -6,13 +6,11 @@
 #define GAZPREABASE_TYPEDEFNODE_H
 
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
-#include "AST/AST.h"
-#include <string>
 
 class TypeDefNode : public ASTNode {
 public:
-    TypeDefNode(const std::string &id, const std::string &type);
-    TypeDefNode(const std::string &id, ASTNode *tupleType);
+    TypeDefNode(const std::string &id, const std::string &type, int line);
+    TypeDefNode(const std::string &id, ASTNode *tupleType, int line);
 
     const std::string &getCustomType() const;
     const std::string &getId() const;

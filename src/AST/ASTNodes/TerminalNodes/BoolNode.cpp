@@ -7,4 +7,4 @@ bool BoolNode::getVal() const {
     return val;
 }
 
-BoolNode::BoolNode(bool val, int line) : val(val), ASTNode(line) {setType(BOOLEAN);}
+BoolNode::BoolNode(bool val, int line) : ASTNode(line), val(val) {setType(BOOLEAN);}

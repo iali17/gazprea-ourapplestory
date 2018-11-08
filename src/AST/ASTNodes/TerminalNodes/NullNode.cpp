@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/TerminalNodes/NullNode.h"
 
-NullNode::NullNode() {
+NullNode::NullNode(int line) :ASTNode(line) {
     setType(NULLTY);
 
     this->vector = new std::vector<std::string>;

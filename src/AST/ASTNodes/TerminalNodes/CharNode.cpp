@@ -3,7 +3,7 @@
 //
 #include <AST/ASTNodes/TerminalNodes/CharNode.h>
 
-CharNode::CharNode(char val, int line) : val(val), ASTNode(line) {
+CharNode::CharNode(char val, int line) : ASTNode(line), val(val) {
 setType(CHAR);}
 
 char CharNode::getVal() const {

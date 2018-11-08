@@ -21,5 +21,5 @@ BasicBlockNode *BlockNode::getFullBlock() {
     auto full = new std::vector<ASTNode *>;
     full->insert(full->end(), bb1->nodes->begin(), bb1->nodes->end());
     full->insert(full->end(), bb2->nodes->begin(), bb2->nodes->end());
-    return new BasicBlockNode(full);
+    return new BasicBlockNode(full, this->getLine());
 }

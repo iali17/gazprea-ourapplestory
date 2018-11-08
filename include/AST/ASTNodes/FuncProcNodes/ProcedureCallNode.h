@@ -4,7 +4,6 @@
 #ifndef GAZPREABASE_PROCEDURECALLNODE_H
 #define GAZPREABASE_PROCEDURECALLNODE_H
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
-#include <string>
 
 #define MINUS 1
 #define PLUS 2
@@ -13,10 +12,10 @@
 class ProcedureCallNode : public ASTNode {
 public:
     ProcedureCallNode(const std::string &varName, const std::string &procedureName, std::vector<ASTNode *> *exprNode,
-                      std::vector<std::string> *typeIds, bool constant, int unOP = PLUS);
+                      std::vector<std::string> *typeIds, bool constant, int line, int unOP = PLUS);
 
     ProcedureCallNode(const std::string &varName, const std::string &procedureName, std::vector<ASTNode *> *exprNode,
-                      int unOP = PLUS);
+            int line, int unOP = PLUS);
 
     const std::string &getVarName() const;
     std::vector<ASTNode *> *getExprNode() const;

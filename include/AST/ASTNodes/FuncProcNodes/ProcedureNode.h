@@ -12,7 +12,7 @@
 class ProcedureNode : public BaseBlockParent {
 public:
     ProcedureNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                  const std::string &procedureName);
+                  const std::string &procedureName, int line);
 
     const std::string &getRetType() const;
     const std::string &getProcedureName() const;

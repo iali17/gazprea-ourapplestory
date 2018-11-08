@@ -15,5 +15,5 @@ bool ParamNode::isIsVar() const {
     return isVar;
 }
 
-ParamNode::ParamNode(const std::string &declaredType, const std::string &varName, bool isVar) : declaredType(
+ParamNode::ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line) : ASTNode(line), declaredType(
         declaredType), varName(varName), isVar(isVar) {}

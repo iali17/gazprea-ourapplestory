@@ -8,7 +8,7 @@
 
 class IndexTupleNode : public ASTNode {
 public:
-    IndexTupleNode(ASTNode *index, IDNode *idNode);
+    IndexTupleNode(ASTNode *index, IDNode *idNode, int line);
     ASTNode *getIndex() const;
     IDNode *getIdNode() const;
 
