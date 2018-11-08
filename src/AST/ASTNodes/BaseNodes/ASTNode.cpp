@@ -4,6 +4,8 @@
 
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
+ASTNode::ASTNode(int line) : line(line) {}
+
 int ASTNode::getType() const {
     return type;
 }
@@ -19,3 +21,13 @@ llvm::Type *ASTNode::getLlvmType() const {
 void ASTNode::setLlvmType(llvm::Type *llvmType) {
     ASTNode::llvmType = llvmType;
 }
+
+int ASTNode::getLine() const {
+    return line;
+}
+
+void ASTNode::setLine(int linee) {
+    line = linee;
+}
+
+

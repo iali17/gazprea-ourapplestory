@@ -4,8 +4,4 @@
 
 #include "AST/AST.h"
 
-ExpNode::ExpNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right), line(line) {}
-
-int ExpNode::getLine() {
-    return this->line;
-}
+ExpNode::ExpNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right, line) {}

@@ -10,10 +10,5 @@
 class AddNode : public ArithNode {
 public:
     AddNode(ASTNode *left, ASTNode *right, int line);
-
-    int getLine();
-
-protected:
-    int line;
 };
 #endif //GAZPREABASE_INTADDNODE_H

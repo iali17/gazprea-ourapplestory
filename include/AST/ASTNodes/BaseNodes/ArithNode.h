@@ -8,7 +8,7 @@
 
 class ArithNode : public InfixNode {
 public:
-    ArithNode(ASTNode *left, ASTNode *right);
+    ArithNode(ASTNode *left, ASTNode *right, int line);
 };
 
 #endif //GAZPREABASE_ARITHNODE_H
