@@ -377,15 +377,21 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
             element = visit(node->getElements()->at(i));
 
         //double check type
-        llvm::Type *elementType = element->getType()->getPointerTo();
-        llvm::Type *memberType  = types[i];
+        //llvm::Type *elementType = element->getType()->getPointerTo();
+        llvm::Type *memberType  = types[i]->getPointerElementType();
+
+        /*
         if((elementType != memberType) && ((element->getType() == intTy) && (memberType == realTy))){
             //TODO - verify that this works
-            element = ct->varCast(memberType, element, -1, 0);
+            element = ct->varCast(memberType, element, -1, 1);
             std::cout << "Inconsistent type for struct member\n";
         } else if(elementType != memberType) {
             std::cout << "Inconsistent type for struct member\n";
         }
+
+         */
+
+        element = ct->varCast(memberType, element, -1, 1);
         values->push_back(element);
     }
 

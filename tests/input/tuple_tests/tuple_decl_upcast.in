@@ -1,0 +1,10 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(real, real) x = (1,2);
+
+    x.1 -> out; '\n' -> out;
+    x.2 -> out; '\n' -> out;
+
+    return 0;
+}
