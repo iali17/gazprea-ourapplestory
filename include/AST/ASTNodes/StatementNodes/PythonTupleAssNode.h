@@ -9,11 +9,14 @@
 
 class PythonTupleAssNode : public UnaryNode {
 public:
-    PythonTupleAssNode(ASTNode *expr, const std::vector<std::string> &IDs);
+    PythonTupleAssNode(ASTNode *expr, const std::vector<std::string> &IDs, int line);
     const std::vector<std::string> &getIDs() const;
+
+    int getLine();
 
 protected:
     std::vector<std::string> IDs;
+    int line;
 
 
 };
