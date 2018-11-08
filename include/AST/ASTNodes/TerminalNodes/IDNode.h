@@ -9,9 +9,9 @@
 
 class IDNode : public ASTNode {
 public:
-    IDNode();
-    explicit IDNode(const std::string &ID);
-    IDNode(int type, const std::string &ID);
+    explicit IDNode(int line);
+    explicit IDNode(const std::string &ID, int line);
+    IDNode(int type, const std::string &ID, int line);
     const std::string &getID() const;
 
 protected:

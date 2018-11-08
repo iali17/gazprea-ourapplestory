@@ -8,6 +8,6 @@
 
 class NegateNode : public UnaryNode {
 public:
-    explicit NegateNode(ASTNode *expr);
+    explicit NegateNode(ASTNode *expr, int line);
 };
 #endif //GAZPREABASE_NEGATENODE_H

@@ -16,6 +16,6 @@ std::vector<ASTNode *> *ProcedureNode::getParamNodes() const {
 }
 
 ProcedureNode::ProcedureNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                             const std::string &procedureName) : BaseBlockParent(blockNode), paramNodes(paramNodes),
+                             const std::string &procedureName, int line) : BaseBlockParent(blockNode, line), paramNodes(paramNodes),
                                                                  retType(retType), procedureName(procedureName) {}
 

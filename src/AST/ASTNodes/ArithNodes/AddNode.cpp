@@ -4,8 +4,5 @@
 
 #include "AST/AST.h"
 
-AddNode::AddNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right), line(line) {}
-
-int AddNode::getLine() {
-    return this->line;
+AddNode::AddNode(ASTNode *left, ASTNode *right, int line) : ArithNode(left, right, line) {
 }

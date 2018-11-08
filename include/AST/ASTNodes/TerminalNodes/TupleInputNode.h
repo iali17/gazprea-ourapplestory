@@ -9,7 +9,7 @@
 
 class TupleInputNode : public IONode {
 public:
-    TupleInputNode(const std::string &streamName, ASTNode *indexNode);
+    TupleInputNode(const std::string &streamName, ASTNode *indexNode, int line);
     IndexTupleNode *getIndexTupleNode() const;
 
 protected:

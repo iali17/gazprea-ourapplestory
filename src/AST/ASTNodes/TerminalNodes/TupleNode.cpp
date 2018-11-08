@@ -3,7 +3,7 @@
 //
 #include <AST/ASTNodes/TerminalNodes/TupleNode.h>
 
-TupleNode::TupleNode(std::vector<ASTNode *> *insideElement) : insideElement(insideElement) {
+TupleNode::TupleNode(std::vector<ASTNode *> *insideElement, int line) : ASTNode(line), insideElement(insideElement) {
     type = TUPLE;
 }
 

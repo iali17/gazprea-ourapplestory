@@ -3,7 +3,7 @@
 //
 #include "AST/ASTNodes/TerminalNodes/OutputNode.h"
 
-OutputNode::OutputNode(const std::string &streamName, ASTNode *expr) : IONode(streamName), expr(expr) {}
+OutputNode::OutputNode(const std::string &streamName, ASTNode *expr, int line) : IONode(streamName, line), expr(expr) {}
 
 ASTNode *OutputNode::getExpr() const {
     return expr;

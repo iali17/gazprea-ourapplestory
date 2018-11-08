@@ -9,7 +9,7 @@
 
 class StreamDeclNode : public ASTNode {
 public:
-    StreamDeclNode(const std::string &id, int streamType);
+    StreamDeclNode(const std::string &id, int streamType, int line);
     const std::string &getId() const;
     int getStreamType() const;
 

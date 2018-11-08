@@ -8,7 +8,7 @@
 
 class ReturnNode : public UnaryNode {
 public:
-    explicit ReturnNode(ASTNode *expr);
+    explicit ReturnNode(ASTNode *expr, int line);
 
 };
 #endif //GAZPREABASE_RETURNNODE_H

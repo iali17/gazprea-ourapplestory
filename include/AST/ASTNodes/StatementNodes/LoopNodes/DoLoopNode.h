@@ -11,10 +11,5 @@
 class DoLoopNode : public BaseLoopNode {
 public:
     DoLoopNode(ASTNode *body, ASTNode *control, int line);
-
-    int getLine();
-
-private:
-    int line;
 };
 #endif //GAZPREABASE_DOLOOPNODE_H

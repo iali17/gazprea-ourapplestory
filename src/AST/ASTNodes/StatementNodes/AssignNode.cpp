@@ -4,12 +4,8 @@
 #include <AST/ASTNodes/StatementNodes/AssignNode.h>
 #include <string>
 
-AssignNode::AssignNode(ASTNode *expr, const std::string &ID, int line) : UnaryNode(expr), ID(ID), line(line) {}
+AssignNode::AssignNode(ASTNode *expr, const std::string &ID, int line) : UnaryNode(expr, line), ID(ID) {}
 
 const std::string &AssignNode::getID() const {
     return ID;
-}
-
-int AssignNode::getLine() {
-    return this->line;
 }

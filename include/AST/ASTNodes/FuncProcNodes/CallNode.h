@@ -9,7 +9,7 @@
 
 class CallNode : public ASTNode {
 public:
-    CallNode(std::vector<ASTNode *> *exprNodes, const std::string &procedureName);
+    CallNode(std::vector<ASTNode *> *exprNodes, const std::string &procedureName, int line);
     std::vector<ASTNode *> *getExprNodes() const;
     const std::string &getProcedureName() const;
 

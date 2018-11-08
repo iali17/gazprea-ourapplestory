@@ -8,7 +8,7 @@ class vector;
 
 class TupleType : public ASTNode {
 public:
-    explicit TupleType(std::vector<ASTNode *> * decls);
+    explicit TupleType(std::vector<ASTNode *> * decls, int line);
     std::vector<ASTNode *> *getDecls() const;
 
 protected:

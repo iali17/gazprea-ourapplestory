@@ -1,7 +1,7 @@
 #include <AST/ASTNodes/StatementNodes/TupleDeclNode.h>
 
-TupleDeclNode::TupleDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *tupleTypes) : UnaryNode(
-        expr), constant(constant), ID(ID), tupleTypes(tupleTypes) {}
+TupleDeclNode::TupleDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *tupleTypes, int line)
+: UnaryNode(expr, line), constant(constant), ID(ID), tupleTypes(tupleTypes) {}
 
 
 bool TupleDeclNode::isConstant() const {

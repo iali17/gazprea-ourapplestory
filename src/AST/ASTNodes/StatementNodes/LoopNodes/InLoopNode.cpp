@@ -3,8 +3,4 @@
 //
 #include "AST/ASTNodes/StatementNodes/LoopNodes/InLoopNode.h"
 
-InLoopNode::InLoopNode(ASTNode *body, ASTNode *control, int line) : BaseLoopNode((BlockNode *) body, control), line(line) {}
-
-int InLoopNode::getLine() {
-    return this->line;
-}
+InLoopNode::InLoopNode(ASTNode *body, ASTNode *control, int line) : BaseLoopNode((BlockNode *) body, control, line) {}

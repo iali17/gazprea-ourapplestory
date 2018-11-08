@@ -29,16 +29,24 @@ class ASTNode  {
 public:
     virtual ~ASTNode() = default;
 
+    explicit ASTNode(int);
+
     virtual int getType() const;
 
     llvm::Type *getLlvmType() const;
 
     void setLlvmType(llvm::Type *llvmType);
 
+    int getLine() const;
+
+    void setLine(int);
+
+
 protected:
     int type = UNDEF;
     llvm::Type * llvmType = nullptr;
     void setType(int newType);
+    int line;
 };
 
 

@@ -10,10 +10,5 @@ class LoopNode : public BaseLoopNode {
 public:
     LoopNode(ASTNode *body, int line);
     LoopNode(ASTNode *body, ASTNode *control, int line);
-
-    int getLine();
-
-protected:
-    int line;
 };
 #endif //GAZPREABASE_LOOPNODE_H
