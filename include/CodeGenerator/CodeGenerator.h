@@ -96,7 +96,8 @@ public:
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
-    llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector, llvm::Value *idxVal = nullptr);
+    llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
+            llvm::Value *idxVal = nullptr, int idxTrueVal = -1);
 
 protected:
     llvm::LLVMContext * globalCtx;

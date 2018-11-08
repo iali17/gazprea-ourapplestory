@@ -36,9 +36,10 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             ir->CreateStore(val, ptr);
         } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
             auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+            auto idxNode = dynamic_cast<INTNode *>(tupNode->getIndex());
             idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
             idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
-            ptr = getPtrToVar(idNode, constant, aliasVector, idx);
+            ptr = getPtrToVar(idNode, constant, aliasVector, idx, idxNode->value);
 
         } else {
             idNode = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
@@ -50,7 +51,8 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     return paramVector;
 }
 
-llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector, llvm::Value *idxVal) {
+llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
+        llvm::Value *idxVal, int idxTrueVal) {
     llvm::Value *ptr, *val;
     std::string name;
 
@@ -58,12 +60,14 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
         assert(!idNode->isConstant());
         if (idxVal){
             ptr = it->getPtrFromTuple(idNode->getPtr(),idxVal);
+            name = idNode->getName() + std::to_string(idxTrueVal);
         } else {
             ptr = idNode->getPtr();
+            name = idNode->getName();
         }
 
-        if (std::find(aliasVector.begin(), aliasVector.end(), "c"+idNode->getName()) != aliasVector.end()
-            || std::find(aliasVector.begin(), aliasVector.end(), idNode->getName()) != aliasVector.end()){
+        if (std::find(aliasVector.begin(), aliasVector.end(), "c"+name) != aliasVector.end()
+            || std::find(aliasVector.begin(), aliasVector.end(), name) != aliasVector.end()){
             std::cerr << "Aliasing error\nAborting...\n";
             exit(1);
         }
@@ -73,13 +77,15 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
         if (idxVal) {
             val = it->getValFromTuple(idNode->getPtr(),idxVal);
             ptr = ir->CreateAlloca(val->getType());
+            name = idNode->getName() + std::to_string(idxTrueVal);
         } else {
             ptr = ir->CreateAlloca(idNode->getPtr()->getType()->getPointerElementType());
             val = ir->CreateLoad(idNode->getPtr());
+            name = idNode->getName();
         }
         ir->CreateStore(val, ptr);
 
-        if (std::find(aliasVector.begin(), aliasVector.end(), idNode->getName()) != aliasVector.end()){
+        if (std::find(aliasVector.begin(), aliasVector.end(), name) != aliasVector.end()){
             std::cerr << "Aliasing error\nAborting...\n";
             exit(1);
         }
