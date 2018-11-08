@@ -211,11 +211,6 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         if(ptr->getType()->getPointerElementType() == realTy)
             val = ct->varCast(realTy, val, node->getLine());
 
-        // Print errors if assignment type isn't the same
-        if(val->getType() != node->getLlvmType()) {
-            ct->typePromotion(ptr, val, node->getLine());
-        }
-
         ir->CreateStore(val, ptr);
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
@@ -272,7 +267,9 @@ llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
 llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
 
-    if(node->getCustomType() == "integer")
+    if(node->getTuple())
+        type = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
+    else if(node->getCustomType() == "integer")
         type = intTy;
     else if(node->getCustomType() == "real")
         type = realTy;
@@ -281,8 +278,8 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     else if(node->getCustomType() == "boolean")
         type = boolTy;
     else {
-        // gotta do for tuple type
-        return nullptr;
+        // gotta do for matrix type
+        exit(1);
     }
 
     symbolTable->addUserType(node->getId(), type);
@@ -291,11 +288,30 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
-    llvm::Value *expr        = visit(node->getExpr());
-    GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
-    llvm::Type  *type        = gazpreaType->getTypeDef();
+    llvm::Type *type;
+    llvm::Value *expr;
+    std::string temp = node->getTypeString();
 
-    return ct->varCast(type, expr, node->getLine());
+    if(node->getTuple()) {
+        llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
+        llvm::Value *exprP = visit(node->getExpr());
+
+        //assert(types->getStructNumElements() == exprVector->size());
+
+        for(int i = 0; i < types->elements().size(); i++) {
+            expr = it->getValFromTuple(exprP, it->getConsi32(i));
+            type = types->elements()[i];
+
+            ct->varCast(type, expr, node->getLine());
+        }
+    }
+    else {
+        expr = visit(node->getExpr());
+        GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
+        type = gazpreaType->getTypeDef();
+
+        return ct->varCast(type, expr, node->getLine());
+    }
 }
 
 llvm::Value *CodeGenerator::visit(ContinueNode *node) {
