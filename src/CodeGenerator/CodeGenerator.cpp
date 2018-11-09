@@ -96,7 +96,12 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
     }
     else {
         llvm::Value *ret = visit(node->getExpr());
-        ir->CreateRet(ret);
+        if(it->isStructType(ret)){
+            llvm::Value * realRet = ir->CreateAlloca(ir->getCurrentFunctionReturnType()->getPointerElementType());
+            realRet = it->initTuple(realRet, it->getValueVectorFromStruct(ret));
+            ir->CreateRet(realRet);
+        } else
+            ir->CreateRet(ret);
     }
     return nullptr;
 }
