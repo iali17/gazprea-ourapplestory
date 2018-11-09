@@ -7,6 +7,7 @@ termsAndConditions
     : globalDecl
     | typeDefine
     | procedure
+    | function
     | protoFunc
     ;
 
@@ -155,6 +156,15 @@ returnCall
 
 procedure
     : PROCEDURE Identifier params returnStat? block
+    ;
+
+function
+    : FUNCTION Identifier params RETURNS functionReturns
+    ;
+
+functionReturns
+    : '{' decBlock? bodyBlock? '}'
+    | type EQL expr SEMICOLON
     ;
 
 tuple
