@@ -1,7 +1,11 @@
 
 procedure main() returns integer {
     var out = std_output();
-    integer i = 1.0;
+
+    null     -> out;
+    identity -> out;
 
     return 0;
 }
+
+
