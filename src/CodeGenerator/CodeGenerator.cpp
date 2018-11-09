@@ -178,7 +178,6 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     }
     else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-
         node->setLlvmType(type);
 
         ptr = ir->CreateAlloca(type);
@@ -335,7 +334,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
         llvm::Value *exprP = visit(node->getExpr());
         llvm::Value *ptr = ir->CreateAlloca(types);
 
-        //assert(types->getStructNumElements() == exprVector->size());
+//        assert(types->getStructNumElements() == exprVector->size());
 
         for(int i = 0; i < types->elements().size(); i++) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
@@ -380,15 +379,15 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     auto *types  = new std::vector<llvm::Type  *>();
 
     //build vector for values and types
-    for(unsigned long i = 0; i < node->getElements()->size(); i++){
-        llvm::Value * element = visit(node->getElements()->at(i));
+    for (auto &i : *node->getElements()) {
+        llvm::Value * element = visit(i);
         values->push_back(element);
         types->push_back(element->getType()->getPointerTo());
     }
 
     //build structtype and allocate
     llvm::StructType *tuple;
-    tuple = tuple->create(*types, "tuple");
+    tuple = llvm::StructType::create(*types, "tuple");
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
 
     //fill new structure
@@ -467,12 +466,12 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto types   = tuple->elements();
     llvm::Value *element = nullptr;
 
-    for(unsigned long i = 0; i < types.size(); i++){
+    for (auto type : types) {
         if (INIT == NULLTY){
-            element = it->getNull(types[i]->getPointerElementType());
+            element = it->getNull(type->getPointerElementType());
         }
         else if (INIT == IDENTITY){
-            element = it->getIdn(types[i]->getPointerElementType());
+            element = it->getIdn(type->getPointerElementType());
         }
         values->push_back(element);
     }
