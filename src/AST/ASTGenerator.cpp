@@ -3,6 +3,13 @@
 //
 #include <AST/ASTGenerator.h>
 
+/**
+ * visits the file
+ *  - typedefs, globals, forward decl, procedures and functions
+ *
+ * @param ctx
+ * @return  - root of tree
+ */
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
     auto *procedures = new std::vector<ASTNode *>;
     unsigned long i;
@@ -16,6 +23,12 @@ antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) 
     return (ASTNode *) new FileNode(procedures, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Exponent Expr
+ *   - left ^ right
+ * @param ctx
+ * @return - ExpNode
+ */
 antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) {
     ASTNode * left = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -23,6 +36,12 @@ antlrcpp::Any ASTGenerator::visitExponentExpr(gazprea::GazpreaParser::ExponentEx
     return (ASTNode *) new ExpNode(left, right, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Integer Expr
+ *  - literal integer expression
+ * @param ctx
+ * @return - INTNode
+ */
 antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) {
     std::string rawStr = ctx->getText();
     rawStr.erase(std::remove(rawStr.begin(), rawStr.end(), '_'), rawStr.end());     // remove the underscores
@@ -30,10 +49,21 @@ antlrcpp::Any ASTGenerator::visitIntegerExpr(gazprea::GazpreaParser::IntegerExpr
     return (ASTNode *) new INTNode(val, (int) ctx->getStart()->getLine());
 }
 
+/**
+ * Null Identifier
+ * @param ctx
+ * @return - NullNode
+ */
 antlrcpp::Any ASTGenerator::visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) {
     return (ASTNode *) new NullNode((int)ctx->getStart()->getLine());
 }
 
+/**
+ * Explicit Cast
+ *  - for casts requested by user
+ * @param ctx
+ * @return - CastExprNode
+ */
 antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
 
@@ -45,14 +75,26 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
     return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Real Literal
+ *  Eg: 2.0
+ * @param ctx
+ * @return - RealNode
+ */
 antlrcpp::Any ASTGenerator::visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) {
     std::string strVal = ctx->getText();
     std::string str2Val;
 
     std::copy_if (strVal.begin(), strVal.end(), std::back_inserter(str2Val), [](char i){return i != '_';} ); // remove _
     float val = std::stof(str2Val);
-    return (ASTNode *) new RealNode(val, (int)ctx->getStart()->getLine());}
+    return (ASTNode *) new RealNode(val, (int)ctx->getStart()->getLine());
+}
 
+/**
+ * Expr in Brackets
+ * @param ctx
+ * @return - Node of expression in bracket
+ */
 antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) {
     return (ASTNode *) visit(ctx->expr());
 }
@@ -75,6 +117,11 @@ antlrcpp::Any ASTGenerator::visitLessExpr(gazprea::GazpreaParser::LessExprContex
     return nullptr;
 }
 
+/**
+ * Equivalence Expression
+ * @param ctx
+ * @return - NEQNode or EQNode
+ */
 antlrcpp::Any ASTGenerator::visitEqlExpr(gazprea::GazpreaParser::EqlExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -87,6 +134,11 @@ antlrcpp::Any ASTGenerator::visitEqlExpr(gazprea::GazpreaParser::EqlExprContext 
     return nullptr;
 }
 
+/**
+ * Dijunction Expr
+ * @param ctx
+ * @return - OrNode or XOrNode
+ */
 antlrcpp::Any ASTGenerator::visitOrExpr(gazprea::GazpreaParser::OrExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -107,6 +159,12 @@ antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprCont
     return GazpreaBaseVisitor::visitIndexExpr(ctx);
 }
 
+/**
+ * Unary Expr
+ *
+ * @param ctx
+ * @return - NegateNode or generated subtraction;
+ */
 antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     if     (ctx->SUB()){
@@ -120,6 +178,11 @@ antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprCont
     return GazpreaBaseVisitor::visitUnaryExpr(ctx);
 }
 
+/**
+ * Addition / Subtraction
+ * @param ctx
+ * @return - AddNode or SubNode
+ */
 antlrcpp::Any ASTGenerator::visitAddExpr(gazprea::GazpreaParser::AddExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -132,6 +195,11 @@ antlrcpp::Any ASTGenerator::visitAddExpr(gazprea::GazpreaParser::AddExprContext 
     return nullptr;
 }
 
+/**
+ * Multiplication / Division / Remainder
+ * @param ctx
+ * @return - MulNode / DivNode / RemNode based on expression
+ */
 antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
@@ -147,6 +215,13 @@ antlrcpp::Any ASTGenerator::visitMulExpr(gazprea::GazpreaParser::MulExprContext 
     return nullptr;
 }
 
+/**
+ * Identifier
+ *  - literal string for variable definition
+ *  - createsa global node if the identifier is global
+ * @param ctx
+ * @return -
+ */
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
     std::string id = ctx->Identifier()->getText();
     auto globalVar = globalVars->find(id);
@@ -158,20 +233,42 @@ antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::Identifi
     return (ASTNode *) new IDNode(id, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Identity
+ *  - reserved for the identity object
+ * @param ctx
+ * @return - IdnNode
+ */
 antlrcpp::Any ASTGenerator::visitIdentityExpr(gazprea::GazpreaParser::IdentityExprContext *ctx) {
     return (ASTNode *) new IdnNode((int)ctx->getStart()->getLine());
 }
 
+/**
+ * And
+ * @param ctx
+ * @return - AndNode between operands
+ */
 antlrcpp::Any ASTGenerator::visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) {
     ASTNode * left  = (ASTNode *) visit(ctx->left);
     ASTNode * right = (ASTNode *) visit(ctx->right);
     return (ASTNode *) new AndNode(left, right, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * visits the statement
+ * @param ctx
+ * @return - ASTNode from the visit
+ */
 antlrcpp::Any ASTGenerator::visitStatement(gazprea::GazpreaParser::StatementContext *ctx) {
     return GazpreaBaseVisitor::visitStatement(ctx);
 }
 
+/**
+ * Normal assignment
+ *  - assigns left to right
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) {
     ASTNode *expr = nullptr;
     if(ctx->expr())
@@ -179,6 +276,12 @@ antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssCont
     return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * If statements
+ *  - must need all of the conditions and all of the blocks
+ * @param ctx
+ * @return - CondNode
+ */
 antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::ConditionalContext *ctx) {
     auto *conds  = new std::vector<ASTNode *>;
     auto *blocks = new std::vector<ASTNode *>;
@@ -194,22 +297,54 @@ antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::Conditional
     return (ASTNode *) new CondNode(conds, blocks, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Loop with no control
+ *
+ * @param ctx
+ * @return - LoopNode with true condition
+ */
 antlrcpp::Any ASTGenerator::visitInfiniteLoop(gazprea::GazpreaParser::InfiniteLoopContext *ctx) {
-    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (int)ctx->getStart()->getLine());
+    ASTNode * t = (ASTNode *) new BoolNode(true, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), t, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Loop with control
+ *
+ * @param ctx
+ * @return - LoopNode with visited condition
+ */
 antlrcpp::Any ASTGenerator::visitPredicatedLoop(gazprea::GazpreaParser::PredicatedLoopContext *ctx) {
     return (ASTNode *) new LoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Loop with control at the end
+ * @param ctx
+ * @return - LoopNode with visited condition, body at the top
+ */
 antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *ctx) {
     return (ASTNode *) new DoLoopNode((ASTNode *) visit(ctx->block()), (ASTNode *) visit(ctx->expr()), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * this is for next project
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {
     return GazpreaBaseVisitor::visitIteratorLoop(ctx);
 }
 
+/**
+ * Block
+ *  - builds block
+ *  - visits the declarations and body block
+ *  - builds the remaining full block
+ *
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx) {
     ASTNode *declBlock;
     ASTNode *bodyBlock;
@@ -228,6 +363,11 @@ antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx
     return (ASTNode *) new BlockNode(declBlock, bodyBlock, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Visit of a declaration block
+ * @param ctx
+ * @return - BasicBlock for the declarations
+ */
 antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
@@ -237,6 +377,12 @@ antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContex
     return (ASTNode *) new BasicBlockNode(statements, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Visit of a body block
+ *  - must not have declarations
+ * @param ctx
+ * @return - BasicBlock for the statements
+ */
 antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
@@ -255,11 +401,21 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
     return (ASTNode *) new BasicBlockNode(statements, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Print to out
+ * @param ctx
+ * @return - OutPutNode
+ */
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Read from in
+ * @param ctx
+ * @return - InputNode
+ */
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
     if(ctx->tupleMember()){
         std::string idName = ctx->tupleMember()->TupleIndex()->getText();
@@ -284,6 +440,12 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
     return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * TypeDefine
+ *
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
     std::string id = ctx->Identifier()->getText();
@@ -298,6 +460,8 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
     assert(not(inFunction));
+    auto ret = procedureNames->find(ctx->Identifier()->getText());
+    assert(ret != procedureNames->end());
     auto *exprNodes = new std::vector<ASTNode*>;
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
@@ -311,6 +475,9 @@ antlrcpp::Any ASTGenerator::visitType(gazprea::GazpreaParser::TypeContext *ctx) 
 }
 
 antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureContext *ctx) {
+    auto ret = procedureNames->find(ctx->Identifier()->getText());
+    if(ret == procedureNames->end())
+        procedureNames->insert(ctx->Identifier()->getText());
     std::string retType = "void";
     TupleType * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){
@@ -324,7 +491,9 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
 }
 
 ASTGenerator::ASTGenerator() {
-    globalVars = new std::unordered_set<std::string>();
+    globalVars     = new std::unordered_set<std::string>();
+    functionNames  = new std::unordered_set<std::string>();
+    procedureNames = new std::unordered_set<std::string>();
 }
 
 /**
@@ -399,7 +568,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
     // if decl is a tuple decl then
-    if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+    if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
 
     } else { // else it's a normal decl
@@ -589,9 +758,8 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
     // if decl is a tuple decl then
-    if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+    if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
-
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -672,6 +840,9 @@ antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContex
     if(ctx->type()->tupleType()){
         tupleType = (TupleType *) (ASTNode *) visit(ctx->type()->tupleType());
     }
+    auto ret = functionNames->find(ctx->Identifier()->getText());
+    if(ret == functionNames->end())
+        functionNames->insert(ctx->Identifier()->getText());
     std::string retType = ctx->type()->getText();
     BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->functionReturns());
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
@@ -701,14 +872,17 @@ antlrcpp::Any ASTGenerator::visitFunctionReturns(gazprea::GazpreaParser::Functio
     }
     else {
         if(ctx->block()->single_statement() && !ctx->block()->single_statement()->returnCall()){
-            std::cerr << "Missing return call\n";
+            std::cerr << "Missing return call on line " << ctx->getStart()->getLine() << "\n";
         }
         blockNode = (ASTNode *) visit(ctx->block());
     }
-    return (ASTNode *) blockNode;
+    return blockNode;
 }
 
 antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) {
+    auto ret = procedureNames->find(ctx->Identifier()->getText());
+    if(ret == procedureNames->end())
+        procedureNames->insert(ctx->Identifier()->getText());
     std::string retType = "void";
     TupleType * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){
@@ -722,6 +896,9 @@ antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoCont
 }
 
 antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) {
+    auto ret = functionNames->find(ctx->Identifier()->getText());
+    if(ret == functionNames->end())
+        functionNames->insert(ctx->Identifier()->getText());
     std::string retType = ctx->returnStat()->type()->getText();
     TupleType * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){

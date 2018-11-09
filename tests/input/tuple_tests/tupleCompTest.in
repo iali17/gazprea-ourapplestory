@@ -1,0 +1,24 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(integer, integer) tup1 = (1,2);
+    tuple(real, real) tup3       = tup1;
+
+    // True
+    tup1 == (1,2) -> out; '\n' -> out;
+    tup1 == tup3 -> out; '\n' -> out;
+
+    // False
+    tup1 == (2,2) -> out; '\n' -> out;
+    tup3 == (2.0,2.0) -> out; '\n' -> out;
+
+    // True
+    tup1 != (2,2) -> out; '\n' -> out;
+    tup3 != (2.0,2.0) -> out; '\n' -> out;
+
+    // False
+    tup1 != (1,2) -> out; '\n' -> out;
+    tup1 != tup3 -> out; '\n' -> out;
+
+    return 0;
+}

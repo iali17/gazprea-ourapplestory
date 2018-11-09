@@ -73,14 +73,12 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
         F = mod->getFunction(node->getProcedureName());
 
         if (!F->empty()) {
-            //TODO: error message
-            std::cerr << "redefinition of function" << "\n";
+            std::cerr << "redefinition of function at line " << node->getLine() << ". Aborting...\n";
             exit(1);
         }
 
         if(F->arg_size() != paramsList.size()) {
-            //TODO: error message
-            std::cerr << "redefinition of function with different # args" << "\n";
+            std::cerr << "redefinition of function with different # args at line "<< node->getLine() << ". Aborting...\n";
             exit(1);
         }
     }
@@ -116,8 +114,8 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
         } else if (F->getBasicBlockList().back().empty()) {
             F->getBasicBlockList().back().eraseFromParent();
         } else {
-            std::cerr << "Missing return statement in function defined at line: " << node->getLine() << '\n';
-            exit(139);
+            std::cerr << "Missing return statement in function defined at line " << node->getLine() << ". Aborting...\n";
+            exit(1);
         }
     }
 
@@ -179,14 +177,12 @@ llvm::Value *CodeGenerator::visit(FunctionNode *node) {
         F = mod->getFunction(node->getFunctionName());
 
         if (!F->empty()) {
-            //TODO: error message
-            std::cerr << "redefinition of function" << "\n";
+            std::cerr << "redefinition of function at line " << node->getLine() << ". Aborting...\n";
             exit(1);
         }
 
         if(F->arg_size() != paramsList.size()) {
-            //TODO: error message
-            std::cerr << "redefinition of function with different # args" << "\n";
+            std::cerr << "redefinition of function with different # args at line " << node->getLine() << ". Aborting...\n";
             exit(1);
         }
     }
@@ -277,7 +273,8 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
             ptr = ir->CreateAlloca(type);
             if (val == nullptr) {
                 if (!(it->setNull(type, ptr))) {
-                    std::cerr << "Unable to initialize to null\n";
+                      std::cerr << "Unable to initialize to null at line " << node->getLine() << ". Aborting...\n";
+                      exit(1);
                 }
                 symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant(), ptr);
                 return nullptr;
@@ -349,14 +346,12 @@ llvm::Value *CodeGenerator::visit(ProtoProcedureNode * node) {
         F = mod->getFunction(node->getProcedureName());
 
         if (!F->empty()) {
-            //TODO: error message
-            std::cerr << "redefinition of function" << "\n";
+            std::cerr << "redefinition of function at line " << node->getLine() << ". Aborting...\n";
             exit(1);
         }
 
         if(F->arg_size() != paramsList.size()) {
-            //TODO: error message
-            std::cerr << "redefinition of function with different # args" << "\n";
+            std::cerr << "redefinition of function with different # args at line " << node->getLine() << ". Aborting...\n";
             exit(1);
         }
     }

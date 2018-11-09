@@ -12,7 +12,6 @@ termsAndConditions
     ;
 
 // TODO: check for precendence
-// TODO TUPLE
 expr
     : '(' expr ')'                                                  #brackExpr
     | Integer                                                       #integerExpr
@@ -26,6 +25,7 @@ expr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | tupleMember                                                   #tupleIndexExpr
+    | functionCall                                                      #functionExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -57,13 +57,11 @@ single_statement
     | returnCall
     ;
 
-// todo may need to label continue and break
 statement
     : single_statement
     | block
     ;
 
-// TODO : remember to do a check in tuple ass where expr must be a tuple
 assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
@@ -73,7 +71,6 @@ assignment
     | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
     ;
 
-//TODO - non initialized declaration
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
     | (CONST | VAR | type) type* Identifier EQL
@@ -117,10 +114,14 @@ stream
     | tupleMember '<-' Identifier SEMICOLON                         #inStream
     ;
 
-// TODO: probably could be better
 typeDefine
     : TYPEDEF type Identifier SEMICOLON
     ;
+
+functionCall
+    : Identifier '(' (expr (COMMA expr)*)? ')'
+    ;
+
 
 procedureCall
     : CALL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON
@@ -274,4 +275,4 @@ String: '\'' .*? '\'' ;  //TODO: for part 2
 
 // skip comments
 BlockComment: '/*' (BlockComment | LineComment | .)*? '*/' -> skip ;
-LineComment: '//' .*? '\n'-> skip ;
+LineComment: '//' .*? ('\n' | EOF)-> skip ;

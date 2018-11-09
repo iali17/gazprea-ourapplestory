@@ -67,8 +67,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
         }
     }
     else {
-        // Todo: Get line number from AST and pass in to scalarNode
-        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, line);
+        auto *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
 
         return it->makePair(lValueLoad, rValueLoad);
@@ -77,7 +76,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
 
 // This function is for casting with the use of the keyword: as
 llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int line) {
-    uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
+    auto trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
     llvm::Value *zero = llvm::ConstantInt::get(i32Ty, trueValue);
 
     // GazpreaType of expr
@@ -115,7 +114,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
             return ir->CreateTrunc(temp, charTy, "intToChar");
         }
         else if(exprString == "int") {
-            CondBuilder *cb = new CondBuilder(globalCtx, ir, mod);
+            auto *cb = new CondBuilder(globalCtx, ir, mod);
 
             llvm::Value *exprStore = ir->CreateAlloca(intTy);
             ir->CreateStore(exprLoad, exprStore);
@@ -162,7 +161,6 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     }
 
     else {
-        // Todo: Get line number from AST and pass in to scalarNode
         auto *error = new ScalarNode(realString, exprString, line);
         eb->printError(error);
     }
@@ -192,7 +190,6 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
         return ir->CreateSIToFP(expr, realTy, "upCastIntToReal");
     }
     else {
-        // Todo: Get line number from AST and pass in to scalarNode
         auto *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }

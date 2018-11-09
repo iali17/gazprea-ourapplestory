@@ -103,7 +103,7 @@ void ExternalTools::registerPrintf() {
     // Create the constant data array of characters.
     llvm::Constant *intFormatStr   = llvm::ConstantDataArray::getString(*globalCtx, "%d");
     llvm::Constant *charFormatStr  = llvm::ConstantDataArray::getString(*globalCtx, "%c");
-    llvm::Constant *floatFormatStr = llvm::ConstantDataArray::getString(*globalCtx, "%f");
+    llvm::Constant *floatFormatStr = llvm::ConstantDataArray::getString(*globalCtx, "%g");
     llvm::Constant *spaceStr       = llvm::ConstantDataArray::getString(*globalCtx, " ");
     llvm::Constant *eolnStr        = llvm::ConstantDataArray::getString(*globalCtx, "\n");
     llvm::Constant *openSqrBStr    = llvm::ConstantDataArray::getString(*globalCtx, "[");
