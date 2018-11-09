@@ -459,9 +459,15 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
-    assert(not(inFunction));
-    auto ret = procedureNames->find(ctx->Identifier()->getText());
-    assert(ret != procedureNames->end());
+    if(inFunction) {
+        auto ret = functionNames->find(ctx->Identifier()->getText());
+        assert(ret != functionNames->end());
+
+    } else {
+        auto ret = procedureNames->find(ctx->Identifier()->getText());
+        assert(ret != procedureNames->end());
+    }
+
     auto *exprNodes = new std::vector<ASTNode*>;
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
@@ -615,6 +621,12 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
     std::string procedureName = ctx->Identifier(1)->getText();
     bool constant = (nullptr != ctx->CONST());
 
+    // Checks if in a function
+    if(inFunction) {
+        auto ret = functionNames->find(ctx->Identifier(1)->getText());
+        assert(ret != functionNames->end());
+    }
+
     auto *exprNodes = new std::vector<ASTNode*>;
 
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
@@ -645,6 +657,12 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
 antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
     std::string id = ctx->Identifier(0)->getText();
     std::string procedureName = ctx->Identifier(1)->getText();
+
+    // Checks if in a function
+    if(inFunction) {
+        auto ret = functionNames->find(ctx->Identifier(1)->getText());
+        assert(ret != functionNames->end());
+    }
 
     auto *exprNodes = new std::vector<ASTNode*>;
 

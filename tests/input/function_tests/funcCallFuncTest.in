@@ -1,0 +1,23 @@
+function increment(integer x) returns integer;
+function squared(integer x) returns integer;
+
+procedure main() returns integer {
+    var out = std_output();
+    var stdin = std_input();
+
+    x = squared(2);
+
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function increment(integer x) returns integer {
+    return x + 1;
+}
+
+function squared(integer x) returns integer {
+    integer y = increment(x);
+
+    return y * y;
+}
