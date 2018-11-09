@@ -1,0 +1,18 @@
+function slam(integer x) returns integer;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    integer x = -slam(2);
+    x -> out; '\n' -> out;
+
+    x = -slam(-2);
+    x -> out; '\n' -> out;
+
+    x = +slam(2);
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function slam(integer x) returns integer = x^3;

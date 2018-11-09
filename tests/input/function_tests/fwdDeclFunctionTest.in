@@ -1,0 +1,24 @@
+function real_roots(real a, real b, real c) returns boolean;
+
+procedure main() returns integer {
+    var out = std_output();
+    integer a = 5;
+    integer b = 6;
+    integer c = 1;
+
+    // Implicit upcast from integer to real arguments
+    boolean x = real_roots(5, 6, 1);
+
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function real_roots(real a, real b, real c) returns boolean {
+    real x1 = (b^2) - (4 * a * c);
+
+    if(x1 < 0)
+        return false;
+    else
+        return true;
+}

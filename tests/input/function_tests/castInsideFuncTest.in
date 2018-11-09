@@ -1,0 +1,22 @@
+function g(character x) returns boolean;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    boolean x = g(':');
+    x -> out; '\n' -> out;
+
+    x = g('0');
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function g(character x) returns boolean {
+    integer x = as<integer>(x);
+
+    if(x >= 58)
+        returns true;
+    else
+        returns false;
+}

@@ -1,0 +1,26 @@
+const integer y = 10;
+
+function f(integer x) returns integer;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    integer x = f(2);
+    x -> out; '\n' -> out;
+
+    x = f(-2);
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function f(integer x) returns integer {
+    integer z = x * y;
+
+    if z > 0
+        return z;
+    else {
+        z = -z;
+        return z;
+    }
+}

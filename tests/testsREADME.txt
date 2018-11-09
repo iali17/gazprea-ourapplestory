@@ -20,6 +20,9 @@ fail:
 file_tests:
 	Theses tests check if global variables work (and immutable) and if type inferencing works
 
+function_tests:
+    Theses tests check if functions perform the way they are supposed to work
+
 int_op_tests:
 	Theses tests check if integer operations works
 

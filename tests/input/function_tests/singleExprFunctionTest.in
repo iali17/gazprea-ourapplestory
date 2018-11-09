@@ -1,0 +1,11 @@
+function squared(integer x) returns x * x;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    integer x = squared(2);
+
+    x -> out; '\n' -> out;
+
+    return 0;
+}
