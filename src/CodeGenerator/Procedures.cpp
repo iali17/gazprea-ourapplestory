@@ -25,7 +25,14 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     std::vector<ASTNode *>  paramsList = *node->getParamNodes();
     std::vector<llvm::Type *> params;
 
-    llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
+    llvm::Type *retType;
+    if (node->getRetType().substr(0,6) == "tuple("){
+        retType = parseStructType(node->getTupleType());
+        GazpreaTupleType * garb = symbolTable->resolveTupleType(retType);
+        symbolTable->addTupleType(node->getRetType(), retType, garb->getStringRefMap(), garb->getMembers());
+    } else {
+        retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
+    }
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
         auto * pNode = (ParamNode *) it.operator*();
@@ -42,7 +49,12 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     }
 
     symbolTable->addFunctionSymbol(node->getProcedureName(), node->getType(), node->getParamNodes());
-    llvm::FunctionType *funcTy = llvm::FunctionType::get(retType, params, false);
+    llvm::FunctionType *funcTy;
+    if(node->getTupleType()){
+        funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
+    }else {
+        funcTy = llvm::FunctionType::get(retType, params, false);
+    }
 
     llvm::Function *F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, node->getProcedureName(), mod);
 
@@ -187,6 +199,7 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
 
     llvm::Value *val = ir->CreateCall(func, dumb);
 
+
     if (node->getUnOp() == NEG) {
         if (val->getType() == realTy){
             val  =  ir->CreateFNeg(val, "fnegtmp");
@@ -205,21 +218,34 @@ llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     llvm::Value* ptr = nullptr;
 
     if (node->getTypeIds()->size() == 0){
-        ptr = ir->CreateAlloca(val->getType());
-        ir->CreateStore(val, ptr);
-        symbolTable->addSymbol(node->getVarName(), node->getType(), true);
-    } else if (node->getTypeIds()->size() == 1){
-        llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-        ptr = ir->CreateAlloca(type);
-        if(val == nullptr) {
-            if (!(it->setNull(type, ptr))){
-                std::cerr << "Unable to initialize to null\n";
-            }
-            symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant(), ptr);
-            return nullptr;
+        if(it->isStructType(val)){
+            ptr = val;
+            symbolTable->addSymbol(node->getVarName(), node->getType(), true);
+
+        } else {
+            ptr = ir->CreateAlloca(val->getType());
+            ir->CreateStore(val, ptr);
+            symbolTable->addSymbol(node->getVarName(), node->getType(), true);
         }
-        ir->CreateStore(val, ptr);
-        symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant());
+
+    } else if (node->getTypeIds()->size() == 1){
+        if(it->isStructType(val)){
+            ptr = val;
+            symbolTable->addSymbol(node->getVarName(), node->getType(), true);
+
+        }else {
+            llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
+            ptr = ir->CreateAlloca(type);
+            if (val == nullptr) {
+                if (!(it->setNull(type, ptr))) {
+                    std::cerr << "Unable to initialize to null\n";
+                }
+                symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant(), ptr);
+                return nullptr;
+            }
+            ir->CreateStore(val, ptr);
+            symbolTable->addSymbol(node->getVarName(), node->getType(), node->isConstant());
+        }
     }
 
     symbolTable->resolveSymbol(node->getVarName())->setPtr(ptr);
