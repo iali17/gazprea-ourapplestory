@@ -95,7 +95,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
     assert(left->getType() == right->getType());
     assert((left->getType() == intTy) || (left->getType() == realTy));
 
-    if(((left->getType() == intTy)) || ((left->getType() == realTy))){
+    if((left->getType() == intTy) || (left->getType() == realTy)){
         return et->aliPow(left, right);
     }
 
@@ -268,7 +268,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 	//default return true
 	ret = it->geti1(1);
 
-	std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>;
+    auto *values = new std::vector<llvm::Value *>;
 	for(unsigned int i = 0; i < numLeftMembers; i++){
 	    //get cur member
 	    leftMember  = it->getValFromTuple(left,  it->getConsi32(i));

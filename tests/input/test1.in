@@ -1,9 +1,8 @@
 procedure main() returns integer{
 var out = std_output();
 
-var i = 1. % 0.;
-
-i ->out;
+tuple(integer, integer) t = (1, 1.
+t ->out;
 
 return 0;
 }

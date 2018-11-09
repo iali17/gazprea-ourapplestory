@@ -293,7 +293,6 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
         llvm::Value *expr = visit(node->getExpr());
         et->print(expr);
     }
-
     return nullptr;
 }
 
@@ -317,7 +316,7 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = boolTy;
     else {
         // gotta do for matrix type
-        std::cout << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
+        std::cerr << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
         exit(1);
     }
 
@@ -361,7 +360,7 @@ llvm::Value *CodeGenerator::visit(ContinueNode *node) {
         ir->CreateBr(whileStack->top()->getStartWhileBB());
     }
     else {
-        std::cout << "Continue on line " << node->getLine() << " does not reside in while loop\n";
+        std::cerr << "Continue on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }
@@ -371,7 +370,7 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
         ir->CreateBr(whileStack->top()->getMergeBB());
     }
     else {
-        std::cout << "Break on line " << node->getLine() << " does not reside in while loop\n";
+        std::cerr << "Break on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }

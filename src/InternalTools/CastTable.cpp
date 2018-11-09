@@ -162,7 +162,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
 
     else {
         // Todo: Get line number from AST and pass in to scalarNode
-        ScalarNode *error = new ScalarNode(realString, exprString, line);
+        auto *error = new ScalarNode(realString, exprString, line);
         eb->printError(error);
     }
 }
@@ -191,7 +191,7 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
     }
     else {
         // Todo: Get line number from AST and pass in to scalarNode
-        ScalarNode *error = new ScalarNode(lTypeString, rTypeString, line);
+        auto *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
 }
