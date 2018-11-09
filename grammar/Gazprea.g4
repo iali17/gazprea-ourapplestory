@@ -274,4 +274,4 @@ String: '\'' .*? '\'' ;  //TODO: for part 2
 
 // skip comments
 BlockComment: '/*' (BlockComment | LineComment | .)*? '*/' -> skip ;
-LineComment: '//' .*? '\n'-> skip ;
+LineComment: '//' .*? ('\n' | EOF)-> skip ;
