@@ -219,7 +219,7 @@ llvm::Value *InternalTools::getMul(llvm::Value *left, llvm::Value *right) {
 
 llvm::Value *InternalTools::getDiv(llvm::Value *left, llvm::Value *right) {
     if (right == this->getConsi32(0) || right == this->getReal(0)) {
-        std::cout <<"Division by zero, Aborting.....\n";
+        std::cerr <<"Division by zero, Aborting.....\n";
         exit(1);
     }
 
@@ -236,7 +236,7 @@ llvm::Value *InternalTools::getDiv(llvm::Value *left, llvm::Value *right) {
 
 llvm::Value *InternalTools::getRem(llvm::Value *left, llvm::Value *right) {
     if (right == this->getConsi32(0) || right == this->getReal(0)) {
-        std::cout <<"Modulo by zero, Aborting.....\n";
+        std::cerr <<"Modulo by zero, Aborting.....\n";
         exit(1);
     }
 

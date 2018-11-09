@@ -178,7 +178,6 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     }
     else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-
         node->setLlvmType(type);
 
         ptr = ir->CreateAlloca(type);
@@ -297,7 +296,6 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
         llvm::Value *expr = visit(node->getExpr());
         et->print(expr);
     }
-
     return nullptr;
 }
 
@@ -321,7 +319,7 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = boolTy;
     else {
         // gotta do for matrix type
-        std::cout << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
+        std::cerr << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
         exit(1);
     }
 
@@ -339,20 +337,21 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
         if(!node->getTuple()) {
             std::string left = node->getTypeString();
             std::string right = "tuple(*)";
-            ScalarNode *error = new ScalarNode(left, right, node->getLine());
+            auto *error = new ScalarNode(left, right, node->getLine());
             eb->printError(error);
         }
 
-        std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
+        auto *values = new std::vector<llvm::Value *>();
         llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
         llvm::Value *exprP = visit(node->getExpr());
         llvm::Value *ptr = ir->CreateAlloca(types);
+
 
         // Checks if casting another type to a tuple
         if(!it->isStructType(exprP)) {
             std::string left = "tuple(*)";
             std::string right = it->getType(exprP->getType(), exprP);
-            ScalarNode *error = new ScalarNode(left, right, node->getLine());
+            auto *error = new ScalarNode(left, right, node->getLine());
             eb->printError(error);
         }
 
@@ -362,7 +361,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             exit(1);
         }
 
-        for(int i = 0; i < types->elements().size(); i++) {
+        for(unsigned int i = 0; i < types->elements().size(); i++) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
@@ -385,7 +384,7 @@ llvm::Value *CodeGenerator::visit(ContinueNode *node) {
         ir->CreateBr(whileStack->top()->getStartWhileBB());
     }
     else {
-        std::cout << "Continue on line " << node->getLine() << " does not reside in while loop\n";
+        std::cerr << "Continue on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }
@@ -395,7 +394,7 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
         ir->CreateBr(whileStack->top()->getMergeBB());
     }
     else {
-        std::cout << "Break on line " << node->getLine() << " does not reside in while loop\n";
+        std::cerr << "Break on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }
@@ -405,15 +404,15 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     auto *types  = new std::vector<llvm::Type  *>();
 
     //build vector for values and types
-    for(unsigned long i = 0; i < node->getElements()->size(); i++){
-        llvm::Value * element = visit(node->getElements()->at(i));
+    for (auto &i : *node->getElements()) {
+        llvm::Value * element = visit(i);
         values->push_back(element);
         types->push_back(element->getType()->getPointerTo());
     }
 
     //build structtype and allocate
     llvm::StructType *tuple;
-    tuple = tuple->create(*types, "tuple");
+    tuple = llvm::StructType::create(*types, "tuple");
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
 
     //fill new structure
@@ -492,12 +491,12 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto types   = tuple->elements();
     llvm::Value *element = nullptr;
 
-    for(unsigned long i = 0; i < types.size(); i++){
+    for (auto type : types) {
         if (INIT == NULLTY){
-            element = it->getNull(types[i]->getPointerElementType());
+            element = it->getNull(type->getPointerElementType());
         }
         else if (INIT == IDENTITY){
-            element = it->getIdn(types[i]->getPointerElementType());
+            element = it->getIdn(type->getPointerElementType());
         }
         values->push_back(element);
     }
@@ -529,7 +528,7 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
     std::vector<std::string> variables = node->getIDs();
     llvm::Value *exprP = visit(node->getExpr());
 
-    for(int i = 0; i < variables.size(); i++) {
+    for(unsigned int i = 0; i < variables.size(); i++) {
         var = symbolTable->resolveSymbol(variables.at(i));
 
         assert(!var->isConstant());
@@ -545,17 +544,6 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
 
 llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
-    llvm::Type  *type;
-
-    if      (node->getTypeIds()->empty()){
-        type = val->getType();
-    }
-    else if (node->getTypeIds()->size() == 1){
-        type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-    }
-    else {
-        //todo - make the constant
-    }
 
     //set constant
     auto *cons = llvm::cast<llvm::Constant>(val);//llvm::ConstantInt::get(intTy, 0, true);
