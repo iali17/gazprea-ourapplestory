@@ -61,6 +61,7 @@ public:
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
     std::vector<llvm::Value *> * getValueVectorFromStruct(llvm::Value * structPtr);
+    std::string getType(llvm::Type * type, llvm::Value *expr);
 
 protected:
     llvm::LLVMContext * globalCtx;
