@@ -267,7 +267,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = ir->CreateAlloca(type);
         if(val == nullptr) {
             if (!(it->setNull(type, ptr))){
-                std::cerr << "Unable to initialize to null\n";
+                std::cerr << "Unable to initialize to null at line " << node->getLine() << ". Aborting...\n";
             }
             symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
             return nullptr;
@@ -330,7 +330,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 
     }
     else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
-            std::cerr << "Unable to initialize to null\n";
+            std::cerr << "Unable to initialize to null at line" << node->getLine() <<". Aborting...\n";
     }
     return nullptr;
 }
@@ -379,7 +379,7 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr;
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
-        std::cerr << "Not proper stream on line" << node->getLine() << "\nAborting...\n";
+        std::cerr << "Not proper stream on line" << node->getLine() << ". Aborting...\n";
         exit(1);
     }
 
@@ -398,7 +398,7 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
  */
 llvm::Value *CodeGenerator::visit(OutputNode *node) {
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
-        std::cerr << "Not proper stream on line " << node->getLine() << "\nAborting...\n";
+        std::cerr << "Not proper stream on line " << node->getLine() << ". Aborting...\n";
         exit(1);
     }
 
@@ -447,7 +447,7 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = boolTy;
     else {
         // gotta do for matrix type
-        std::cerr << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
+        std::cerr << "Not proper defined type on line " << node->getLine() <<". Aborting...\n";
         exit(1);
     }
 
@@ -470,7 +470,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
         if(!node->getTuple()) {
             std::string left = node->getTypeString();
             std::string right = "tuple(*)";
-            auto *error = new ScalarNode(left, right, node->getLine());
+            auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
             eb->printError(error);
         }
 
@@ -484,13 +484,13 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
         if(!it->isStructType(exprP)) {
             std::string left = "tuple(*)";
             std::string right = it->getType(exprP->getType(), exprP);
-            auto *error = new ScalarNode(left, right, node->getLine());
+            auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
             eb->printError(error);
         }
 
         // Checks if tuples are different size
         if(types->getStructNumElements() != exprP->getType()->getPointerElementType()->getStructNumElements()){
-            std::cerr << "Mismatching tuple lengths\n";
+            std::cerr << "Mismatching tuple lengths on line " << node->getLine() <<". Aborting...\n";
             exit(1);
         }
 
@@ -613,7 +613,6 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     return tuplePtr ;
 }
 
-// todo check if left hand side tuple type fits the right hand side tuple expr
 /**
  * Deals with tuple declarations, and pushes
  * it into the symbolTable.
@@ -801,7 +800,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr, *idx;
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
-        std::cerr << "Not proper stream on line " << node->getLine() <<"\nAborting...\n";
+        std::cerr << "Not proper stream on line " << node->getLine() <<". Aborting...\n";
         exit(1);
     }
 

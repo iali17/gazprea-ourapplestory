@@ -1,7 +1,0 @@
-procedure main() returns integer{
-var out = std_output();
-
-int i = 'a';
-
-return 0;
-}

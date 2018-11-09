@@ -22,6 +22,4 @@ declare i32 @scanf(i8*, ...)
 
 declare double @pow(double, double)
 
-declare i32 @main()
-
 attributes #0 = { nounwind }

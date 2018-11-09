@@ -99,7 +99,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
         return et->aliPow(left, right);
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
+    std::cerr << "Unrecognized type during arithmetic operation on line " << node->getLine() << ". Aborting...\n";
     return nullptr;
 }
 

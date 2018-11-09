@@ -395,7 +395,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
     // if decl is a tuple decl then
-    if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+    if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
 
     } else { // else it's a normal decl
@@ -581,9 +581,8 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
     // if decl is a tuple decl then
-    if ((ctx->type().size() == 1) && (ty.substr(0, 5) == "tuple")) {
+    if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
-
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -689,11 +688,11 @@ antlrcpp::Any ASTGenerator::visitFunctionReturns(gazprea::GazpreaParser::Functio
     }
     else {
         if(ctx->block()->single_statement() && !ctx->block()->single_statement()->returnCall()){
-            std::cerr << "Missing return call\n";
+            std::cerr << "Missing return call on line " << ctx->getStart()->getLine() << "\n";
         }
         blockNode = (ASTNode *) visit(ctx->block());
     }
-    return (ASTNode *) blockNode;
+    return blockNode;
 }
 
 antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) {
