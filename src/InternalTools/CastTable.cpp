@@ -24,6 +24,7 @@ int CastTable::getType(llvm::Type *expr) {
         return 0;
     else if(expr == charTy || i8Ty)
         return 1;
+    return -1;
 }
 
 // This function is to check cast promotion without the use of the keyword: as
@@ -165,6 +166,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
         ScalarNode *error = new ScalarNode(realString, exprString, line);
         eb->printError(error);
     }
+    return nullptr;
 }
 
 llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line) {
@@ -194,4 +196,5 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
         ScalarNode *error = new ScalarNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
+    return nullptr;
 }

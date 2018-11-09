@@ -48,8 +48,7 @@ llvm::Value *CondBuilder::beginElse(std::string label) {
 }
 
 llvm::Value *CondBuilder::finalize(std::string label) {
-    llvm::BasicBlock *curBB = endLast();
-
+    endLast();
     curFunction->getBasicBlockList().push_back(mergeBB);
     ir->SetInsertPoint(mergeBB);
     status = FINALIZED;
