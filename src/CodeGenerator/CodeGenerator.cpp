@@ -361,7 +361,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             exit(1);
         }
 
-        for(int i = 0; i < types->elements().size(); i++) {
+        for(unsigned int i = 0; i < types->elements().size(); i++) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
@@ -528,7 +528,7 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
     std::vector<std::string> variables = node->getIDs();
     llvm::Value *exprP = visit(node->getExpr());
 
-    for(int i = 0; i < variables.size(); i++) {
+    for(unsigned int i = 0; i < variables.size(); i++) {
         var = symbolTable->resolveSymbol(variables.at(i));
 
         assert(!var->isConstant());
@@ -544,17 +544,6 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
 
 llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
-    llvm::Type  *type;
-
-    if      (node->getTypeIds()->empty()){
-        type = val->getType();
-    }
-    else if (node->getTypeIds()->size() == 1){
-        type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-    }
-    else {
-        //todo - make the constant
-    }
 
     //set constant
     auto *cons = llvm::cast<llvm::Constant>(val);//llvm::ConstantInt::get(intTy, 0, true);

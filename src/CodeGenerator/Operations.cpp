@@ -246,7 +246,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 	llvm::Type *tmpType;
 	llvm::StructType *leftType, *rightType;
 	GazpreaTupleType *leftTupleType, *rightTupleType;
-	llvm::Value *structPtr, *ret, *leftMember, *rightMember, *tmp;
+	llvm::Value *ret, *leftMember, *rightMember, *tmp;
 	unsigned long numLeftMembers, numRightMembers;
 	
 	//get typ info for left operand
@@ -268,7 +268,6 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 	//default return true
 	ret = it->geti1(1);
 
-    auto *values = new std::vector<llvm::Value *>;
 	for(unsigned int i = 0; i < numLeftMembers; i++){
 	    //get cur member
 	    leftMember  = it->getValFromTuple(left,  it->getConsi32(i));
