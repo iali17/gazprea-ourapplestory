@@ -26,6 +26,8 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
 
     for (unsigned int i = 0; i < arguNode->size(); ++i) {
         pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
+        llvm::Type * arguType;
+        llvm::Type * paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
         val = visit(arguNode->at(i));
         constant = pNode->isIsVar();
 
@@ -52,6 +54,14 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             std::cerr << "Unknown type of var passed in\nAborting..\n";
             exit(1);
         }
+
+        arguType = ptr->getType()->getPointerElementType();
+        if((paramType != arguType) && (paramType == realTy)&& (arguType == intTy)) {
+            llvm::Value *element = ir->CreateLoad(ptr);
+            element = ir->CreateSIToFP(element, realTy);
+            ir->CreateStore(element, ptr);
+        }
+
         paramVector.push_back(ptr);
     }
 
