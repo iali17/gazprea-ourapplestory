@@ -24,9 +24,9 @@ procedure main() returns integer {
 }
 
 // Increments variable
-procedure increment(var integer x) {
+procedure increment(var integer x)
     x = x + 1;
-}
+
 
 // Decrements variable
 procedure decrement(var integer x) returns integer {

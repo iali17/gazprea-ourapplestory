@@ -193,7 +193,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         if (type->isStructTy()) {
             ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
         } else {
-            val = ct->typeAssCast(type, val, -1);
+            val = ct->typeAssCast(type, val, node->getLine());
             ir->CreateStore(val, ptr);
         }
 
@@ -269,7 +269,7 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr;
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
-        std::cerr << "Not proper stream\nAborting...\n";
+        std::cerr << "Not proper stream on line" << node->getLine() << "\nAborting...\n";
         exit(1);
     }
 
@@ -282,7 +282,7 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
 
 llvm::Value *CodeGenerator::visit(OutputNode *node) {
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
-        std::cerr << "Not proper stream\nAborting...\n";
+        std::cerr << "Not proper stream on line " << node->getLine() << "\nAborting...\n";
         exit(1);
     }
 
@@ -320,11 +320,11 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = boolTy;
     else {
         // gotta do for matrix type
+        std::cout << "Not proper defined type on line " << node->getLine() <<"\nAborting...\n";
         exit(1);
     }
 
     symbolTable->addUserType(node->getId(), type);
-
     return nullptr;
 }
 
@@ -334,7 +334,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     std::string temp = node->getTypeString();
 
     if(node->getTuple()) {
-        std::vector<llvm::Value *> *values = new std::vector<llvm::Value *>();
+        auto *values = new std::vector<llvm::Value *>();
         llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
         llvm::Value *exprP = visit(node->getExpr());
         llvm::Value *ptr = ir->CreateAlloca(types);
@@ -348,7 +348,6 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             expr = ct->varCast(type->getPointerElementType(), expr, node->getLine());
             values->push_back(expr);
         }
-
         return it->initTuple(ptr, values);
     }
     else {
@@ -365,7 +364,7 @@ llvm::Value *CodeGenerator::visit(ContinueNode *node) {
         ir->CreateBr(whileStack->top()->getStartWhileBB());
     }
     else {
-        std::cout << "Continue statement does not reside in while loop\n";
+        std::cout << "Continue on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }
@@ -375,7 +374,7 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
         ir->CreateBr(whileStack->top()->getMergeBB());
     }
     else {
-        std::cout << "Continue statement does not reside in while loop\n";
+        std::cout << "Break on line " << node->getLine() << " does not reside in while loop\n";
     }
     return nullptr;
 }
@@ -421,7 +420,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
             element = visit(node->getElements()->at(i));
 
         llvm::Type *memberType  = types[i]->getPointerElementType();
-        element = ct->typeAssCast(memberType, element, -1);
+        element = ct->typeAssCast(memberType, element, node->getLine());
         values->push_back(element);
     }
 
@@ -438,7 +437,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 
 // todo check if left hand side tuple type fits the right hand side tuple expr
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
-    llvm::StructType * structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
+    llvm::StructType * structType;
     TupleNode *tupleNode = nullptr;
     llvm::Value *ptr;
 
@@ -470,7 +469,7 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
 llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
-    llvm::Value * element;
+    llvm::Value *element = nullptr;
 
     for(unsigned long i = 0; i < types.size(); i++){
         if (INIT == NULLTY){
@@ -583,7 +582,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr, *idx;
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
-        std::cerr << "Not proper stream\nAborting...\n";
+        std::cerr << "Not proper stream on line " << node->getLine() <<"\nAborting...\n";
         exit(1);
     }
 
