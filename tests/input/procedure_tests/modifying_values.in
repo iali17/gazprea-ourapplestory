@@ -1,0 +1,33 @@
+procedure increment(var integer x) { 
+  x = x + 1; 
+}
+
+procedure dontIncrement(integer x) {
+    x = x + 1;
+}
+
+procedure returnIncremented(var integer x) returns integer {
+    x = 3;
+    return x+1;
+}
+
+procedure main() returns integer { 
+    integer x = 0;
+    integer y = 2;
+    integer z = -1;
+    integer a = -99;
+    character nl = '\n';
+    var out = std_output();
+    
+    call increment(x);
+    call dontIncrement(y);
+
+    a = returnIncremented(z);
+
+    x->out; nl->out;
+    y->out; nl->out;
+    z->out; nl->out;
+    a->out; nl->out;
+
+    return 0; 
+}

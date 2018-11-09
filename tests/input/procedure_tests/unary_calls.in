@@ -1,0 +1,40 @@
+procedure increment(var integer x) { 
+  x = x + 1; 
+}
+
+procedure dontIncrement(integer x) {
+    x = x + 1;
+}
+
+procedure returnIncremented(integer x) returns integer {
+    return 123;
+}
+
+procedure returnBool(var integer x) returns boolean {
+    x = 3;
+    return x==1;
+}
+
+procedure main() returns integer { 
+    integer x = 0;
+    integer y = 2;
+    integer z = -1;
+    integer a = -99;
+    boolean b;
+    character nl = '\n';
+    var out = std_output();
+    
+    call increment(x);
+    call dontIncrement(y);
+
+    a = -returnIncremented(z);
+    a->out; nl->out;
+    b = not returnBool(z);
+    b->out; nl->out;
+
+    x->out; nl->out;
+    y->out; nl->out;
+    z->out; nl->out;
+
+    return 0; 
+}
