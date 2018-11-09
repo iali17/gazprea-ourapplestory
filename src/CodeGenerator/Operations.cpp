@@ -108,7 +108,7 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * right = visit(node->getRight());
 
     if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
-        return performTupleOp(left, right, EQ);
+        return performTupleOp(left, right, EQ, node->getLine());
     }
 
     InternalTools::pair retVal;
@@ -126,7 +126,7 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * right = visit(node->getRight());
 
     if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
-        return performTupleOp(left, right, NEQ);
+        return performTupleOp(left, right, NEQ, node->getLine());
     }
 
     InternalTools::pair retVal;
@@ -242,7 +242,7 @@ llvm::Value *CodeGenerator::visit(NegateNode *node) {
  * @param OPTYPE
  * @return
  */
-llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * right, int OPTYPE){
+llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * right, int OPTYPE, int line){
 	llvm::Type *tmpType;
 	llvm::StructType *leftType, *rightType;
 	GazpreaTupleType *leftTupleType, *rightTupleType;
@@ -266,12 +266,21 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 	assert(numLeftMembers == numRightMembers);
 
 	//default return true
-	ret = it->geti1(1);
+	if(OPTYPE == EQ)
+	    ret = it->geti1(1);
+	else
+	    ret = it->geti1(0);
 
 	for(unsigned int i = 0; i < numLeftMembers; i++){
+        InternalTools::pair retVal;
 	    //get cur member
 	    leftMember  = it->getValFromTuple(left,  it->getConsi32(i));
         rightMember = it->getValFromTuple(right, it->getConsi32(i));
+
+        retVal = ct->typePromotion(leftMember, rightMember, line);
+        leftMember = retVal.left;
+        rightMember = retVal.right;
+
         if (OPTYPE == EQ){
             tmp = it->getEQ(leftMember, rightMember);
             ret = ir->CreateAnd(ret, tmp);

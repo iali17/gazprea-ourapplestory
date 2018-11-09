@@ -93,7 +93,7 @@ public:
 
     //Helper functions
     llvm::StructType* parseStructType(TupleType *node);
-	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE);
+	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
