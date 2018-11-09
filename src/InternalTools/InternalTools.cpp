@@ -173,7 +173,7 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
 std::vector<llvm::Value *> *InternalTools::getValueVectorFromStruct(llvm::Value *structPtr) {
     auto *structType = llvm::cast<llvm::StructType>(structPtr->getType()->getPointerElementType());
     auto types   = structType->elements();
-    std::vector<llvm::Value *> * values = new std::vector<llvm::Value *>;
+    auto * values = new std::vector<llvm::Value *>;
 
     for(unsigned long i = 0; i < types.size(); i++){
         llvm::Value *structElem = getValFromTuple(structPtr, getConsi32(i));
@@ -190,7 +190,7 @@ llvm::Value *InternalTools::getAdd(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFAdd(left, right, "faddtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
+    std::cerr << "Ambiguous types during arithmetic operation\n";
     return nullptr;
 }
 
@@ -202,9 +202,8 @@ llvm::Value *InternalTools::getSub(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFSub(left, right, "faddtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getMul(llvm::Value *left, llvm::Value *right) {
@@ -215,12 +214,15 @@ llvm::Value *InternalTools::getMul(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFMul(left, right, "fmultmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
-}
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);}
 
 llvm::Value *InternalTools::getDiv(llvm::Value *left, llvm::Value *right) {
+    if (right == this->getConsi32(0) || right == this->getReal(0)) {
+        std::cout <<"Division by zero, Aborting.....\n";
+        exit(1);
+    }
+
     if(left->getType() == intTy){
         return ir->CreateSDiv(left, right, "idivtmp");
     }
@@ -228,12 +230,16 @@ llvm::Value *InternalTools::getDiv(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFDiv(left, right, "fdivtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getRem(llvm::Value *left, llvm::Value *right) {
+    if (right == this->getConsi32(0) || right == this->getReal(0)) {
+        std::cout <<"Modulo by zero, Aborting.....\n";
+        exit(1);
+    }
+
     if(left->getType() == intTy){
         return ir->CreateSRem(left, right, "iremtmp");
     }
@@ -241,9 +247,8 @@ llvm::Value *InternalTools::getRem(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFRem(left, right, "fremtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
@@ -257,9 +262,8 @@ llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpUEQ(left, right, "feqtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
@@ -273,9 +277,8 @@ llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpUNE(left, right, "fneqtmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getGT(llvm::Value *left, llvm::Value *right) {
@@ -286,9 +289,8 @@ llvm::Value *InternalTools::getGT(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpUGT(left, right, "fgttmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getLT(llvm::Value *left, llvm::Value *right) {
@@ -299,9 +301,8 @@ llvm::Value *InternalTools::getLT(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpULT(left, right, "flttmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getLTE(llvm::Value *left, llvm::Value *right) {
@@ -312,9 +313,8 @@ llvm::Value *InternalTools::getLTE(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpOLE(left, right, "fltetmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getGTE(llvm::Value *left, llvm::Value *right) {
@@ -325,9 +325,8 @@ llvm::Value *InternalTools::getGTE(llvm::Value *left, llvm::Value *right) {
         return ir->CreateFCmpOGE(left, right, "fgtetmp");
     }
 
-    std::cerr << "Unrecognized type during arithmetic operation\n";
-
-    return nullptr;
+    std::cerr << "Ambiguous types during arithmetic operation\n";
+    exit(1);
 }
 
 llvm::Value *InternalTools::getAnd(llvm::Value *left, llvm::Value *right) {

@@ -82,8 +82,15 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     symbolTable->popScope();
     whileStack = oldWhileStack;
 
-    if(!F->getEntryBlock().getTerminator()){
-        ir->CreateRetVoid();
+    if(!F->getBasicBlockList().back().getTerminator()){
+        if(F->getReturnType() == llvm::Type::getVoidTy(*globalCtx)){
+            ir->CreateRetVoid();
+        } else if (F->getBasicBlockList().back().empty()) {
+            F->getBasicBlockList().back().eraseFromParent();
+        } else {
+            std::cerr << "Missing return statement in function defined at line: " << node->getLine() << '\n';
+            exit(139);
+        }
     }
 
     return nullptr;
