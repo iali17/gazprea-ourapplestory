@@ -285,8 +285,18 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
         std::cerr << "Not proper stream\nAborting...\n";
         exit(1);
     }
-    llvm::Value *expr = visit(node->getExpr());
-    et->print(expr);
+
+    if(dynamic_cast<IdnNode *>(node->getExpr())){
+        et->print(it->geti8(1));
+    }
+    else if (dynamic_cast<NullNode *>(node->getExpr())){
+        et->print(it->geti8(0));
+    }
+    else {
+        llvm::Value *expr = visit(node->getExpr());
+        et->print(expr);
+    }
+
     return nullptr;
 }
 

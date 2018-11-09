@@ -2,10 +2,10 @@ procedure main() returns integer {
 	integer i = 0;
 	var out = std_output();
 
-	loop while not(i)
+	loop while not(true)
 		break;
 
-	loop while not(i){
+	loop while not(true){
 		break;
 		i = i + 1;
 	}

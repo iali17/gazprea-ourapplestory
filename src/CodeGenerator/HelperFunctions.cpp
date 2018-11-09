@@ -16,33 +16,41 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     std::vector<llvm::Value *> paramVector;
     std::vector<std::string> aliasVector;
 
-    int arguNodeType;
     llvm::Value* ptr;
     llvm::Value* val;
     ParamNode *pNode;
     Symbol * idNode;
     bool constant;
     llvm::Value *idx;
+    std::string uniqueIden;
 
     for (unsigned int i = 0; i < arguNode->size(); ++i) {
         pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
-        arguNodeType = arguNode->at(i)->getType();
+        val = visit(arguNode->at(i));
         constant = pNode->isIsVar();
 
-        if((arguNodeType == CHAR) || (arguNodeType == INTEGER) || (arguNodeType == REAL)) {
-            ptr = ir->CreateAlloca(arguNode->at(i)->getLlvmType());
-            val = visit(arguNode->at(i));
-            ir->CreateStore(val, ptr);
-        } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
+        if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
             auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
-            auto idxNode = dynamic_cast<INTNode *>(tupNode->getIndex());
+
+            if(dynamic_cast<INTNode *>(tupNode->getIndex())) {
+                uniqueIden = std::to_string(((INTNode *) tupNode->getIndex())->value);
+            } else {
+                uniqueIden = ((IDNode *) tupNode->getIndex())->getID();
+            }
+
             idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
             idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
-            ptr = getPtrToVar(idNode, constant, aliasVector, idx, idxNode->value);
+            ptr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
 
-        } else {
+        } else if (dynamic_cast<IDNode *> (arguNode->at(i))){
             idNode = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
             ptr = getPtrToVar(idNode, constant, aliasVector);
+        } else if ((val->getType() == charTy) || (val->getType() == intTy) || (val->getType() == realTy)){
+            ptr = ir->CreateAlloca(val->getType());
+            ir->CreateStore(val, ptr);
+        } else {
+            std::cerr << "Unknown type of var passed in\nAborting..\n";
+            exit(1);
         }
         paramVector.push_back(ptr);
     }
@@ -51,7 +59,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
 }
 
 llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
-        llvm::Value *idxVal, int idxTrueVal) {
+        llvm::Value *idxVal, std::string idxTrueVal) {
     llvm::Value *ptr, *val;
     std::string name;
 
@@ -59,7 +67,7 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
         assert(!idNode->isConstant());
         if (idxVal){
             ptr = it->getPtrFromTuple(idNode->getPtr(),idxVal);
-            name = idNode->getName() + std::to_string(idxTrueVal);
+            name = idNode->getName() + idxTrueVal;
         } else {
             ptr = idNode->getPtr();
             name = idNode->getName();
@@ -76,7 +84,7 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
         if (idxVal) {
             val = it->getValFromTuple(idNode->getPtr(),idxVal);
             ptr = ir->CreateAlloca(val->getType());
-            name = idNode->getName() + std::to_string(idxTrueVal);
+            name = idNode->getName() + idxTrueVal;
         } else {
             ptr = ir->CreateAlloca(idNode->getPtr()->getType()->getPointerElementType());
             val = ir->CreateLoad(idNode->getPtr());
