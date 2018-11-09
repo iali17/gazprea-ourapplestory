@@ -1,0 +1,18 @@
+procedure main() returns integer {
+    var out = std_output();
+    integer x = 1;
+
+    loop {
+
+        if x == 1000
+            break;
+
+        x = x + 1;
+
+        if x % 10 == 0 {
+            x -> out; '\n' -> out;
+         }
+    }
+
+    return 0;
+}
