@@ -1,0 +1,11 @@
+procedure main() returns integer {
+    var out = std_output();
+    boolean t = true;
+    boolean f = false;
+
+    t or t -> out; '\n' -> out;
+    t or f -> out; '\n' -> out;
+    f or t -> out; '\n' -> out;
+    f or f -> out; 
+    return 0;
+}
