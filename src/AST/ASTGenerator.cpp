@@ -334,8 +334,16 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
     unsigned long i;
     for (i = 0; i < ctx->param().size(); i++){
         bool constant = nullptr == ctx->param().at(i)->VAR();
-        paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
-                ctx->param().at(i)->Identifier()->getText(), constant, (int)ctx->getStart()->getLine()));
+        if (ctx->param().at(i)->type()->tupleType()) {
+            TupleType *tt = (TupleType *) ((ASTNode *) visit(ctx->param().at(i)->type()->tupleType()));
+            paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
+                                              ctx->param().at(i)->Identifier()->getText(), constant,
+                                              (int)ctx->getStart()->getLine(), tt));
+        } else{
+            paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
+                                              ctx->param().at(i)->Identifier()->getText(), constant, (int)ctx->getStart()->getLine()));
+        }
+
     }
 
     return paramVec;

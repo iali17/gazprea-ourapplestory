@@ -15,5 +15,9 @@ bool ParamNode::isIsVar() const {
     return isVar;
 }
 
-ParamNode::ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line) : ASTNode(line), declaredType(
-        declaredType), varName(varName), isVar(isVar) {}
+ParamNode::ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line, TupleType *tupleType)
+: ASTNode(line), declaredType(declaredType), varName(varName), isVar(isVar), tupleType(tupleType) {}
+
+TupleType *ParamNode::getTupleType() const {
+    return tupleType;
+}

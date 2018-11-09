@@ -23,13 +23,54 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     bool constant;
     llvm::Value *idx;
     std::string uniqueIden;
+    llvm::Value *newParamPtr;
 
     for (unsigned int i = 0; i < arguNode->size(); ++i) {
         pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
         llvm::Type * arguType;
-        llvm::Type * paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
-        val = visit(arguNode->at(i));
+        llvm::Type * paramType;
+        llvm::Value * argPtr;
+        bool c = true;
+        //val = visit(arguNode->at(i));
         constant = pNode->isIsVar();
+
+        if (pNode->getTupleType()) {
+            //paramType = parseStructType(pNode->getTupleType());
+            paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
+            auto argNode = dynamic_cast<TupleNode *>(arguNode->at(i));
+
+            if (argNode) {
+                argPtr = visit(argNode);
+                assert(paramType->getStructNumElements() == (unsigned int)argNode->getElements()->size());
+            } else {
+                auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
+                Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
+                assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
+                       == paramType->getStructNumElements());
+                argPtr = symbol->getPtr();
+                c = symbol->isConstant();
+            }
+
+
+            if(argNode || constant) {
+                assert(constant);
+                newParamPtr = ir->CreateAlloca(paramType);
+                newParamPtr = it->initTuple(newParamPtr, it->getValueVectorFromStruct(argPtr));
+                paramVector.push_back(newParamPtr);
+                continue;
+            } else if(!constant) {
+                assert(!c);
+                newParamPtr = ir->CreateAlloca(paramType);
+                newParamPtr = it->initTupleFromPtrs(newParamPtr, it->getPtrVectorFromStruct(argPtr));
+                paramVector.push_back(newParamPtr);
+                continue;
+            }
+
+
+        } else {
+            paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
+        }
+        val = visit(arguNode->at(i));
 
         if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
             auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
