@@ -1,0 +1,15 @@
+function g(real r) returns real;
+
+procedure main() returns integer {
+    var out = std_output();
+    integer sad = 34;
+    var x = g(sad);
+
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function g(real r) returns real {
+    return r;
+}
