@@ -1,0 +1,43 @@
+procedure increment(const real x, const real y);
+procedure dontIncrement(const integer x, const integer y);
+procedure kindaIncrement(var real x, integer y, const integer w);
+
+procedure main() returns integer { 
+    tuple(integer x, integer y) p = (0,2);
+    tuple(real x, real y) t = (-1.0,3.0);
+    var s = t;
+    character nl = '\n';
+    var out = std_output();
+    
+    call increment(s.x,s.x);
+    call increment(s.y,s.y);
+    call increment(s.x,s.y);
+    call dontIncrement(p.1,p.1);
+    call dontIncrement(p.2,p.2);
+    call dontIncrement(p.x,p.y);
+    call kindaIncrement(s.1, p.x, p.1);
+    call kindaIncrement(s.2, p.2, p.y);
+    call kindaIncrement(s.x, p.x, p.y);
+
+    p.1->out; nl->out;
+    p.y->out; nl->out;
+    t.1->out; nl->out;
+    t.2->out; nl->out;
+    s.1->out; nl->out;
+    s.2->out; nl->out;
+
+    return 0; 
+}
+
+procedure increment(const real x, const real y) {
+    x = y;
+}
+
+procedure dontIncrement(const integer x, const integer y) {
+    y = x;
+}
+
+procedure kindaIncrement(var real x, integer y, const integer w) {
+    x = 3.4;
+    y = w;
+}

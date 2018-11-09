@@ -212,10 +212,14 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     if(dynamic_cast<IDNode *>(node->getExpr())){
         auto idNode = (IDNode *) node->getExpr();
         right = symbolTable->resolveSymbol(idNode->getID());
+        std::string outString = "std_output()";
+        std::string inString = "std_input()";
+
         if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() != right->getType()){
-            std::cerr << "Incompatable stream assignment\n";
-            return nullptr;
+
+            ScalarNode *error = new ScalarNode(outString, inString, node->getLine());
+            eb ->printError(error);
         }
         else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() == right->getType()){
@@ -328,13 +332,34 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Value *expr;
     std::string temp = node->getTypeString();
 
-    if(node->getTuple()) {
+    if(node->getTuple() || it->isStructType(visit(node->getExpr()))) {
+        // Checks if casting a tuple to another type
+        if(!node->getTuple()) {
+            std::string left = node->getTypeString();
+            std::string right = "tuple(*)";
+            auto *error = new ScalarNode(left, right, node->getLine());
+            eb->printError(error);
+        }
+
         auto *values = new std::vector<llvm::Value *>();
         llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
         llvm::Value *exprP = visit(node->getExpr());
         llvm::Value *ptr = ir->CreateAlloca(types);
 
-//        assert(types->getStructNumElements() == exprVector->size());
+
+        // Checks if casting another type to a tuple
+        if(!it->isStructType(exprP)) {
+            std::string left = "tuple(*)";
+            std::string right = it->getType(exprP->getType(), exprP);
+            auto *error = new ScalarNode(left, right, node->getLine());
+            eb->printError(error);
+        }
+
+        // Checks if tuples are different size
+        if(types->getStructNumElements() != exprP->getType()->getPointerElementType()->getStructNumElements()){
+            std::cerr << "Mismatching tuple lengths\n";
+            exit(1);
+        }
 
         for(int i = 0; i < types->elements().size(); i++) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));

@@ -1,3 +1,7 @@
+bool_tests:
+    these tests tests bool
+        - truth table tests
+
 cast_op_tests:
 	Theses tests check if implicit and explicit casting works.
 
@@ -29,12 +33,17 @@ other_tests:
 	Theses tests check other functions which include:
 	       -print
 	       -typedef
-	       -grammaar
+	       -grammar
 	       -procedures
 	       -real operations
 	       -typedef operations
 
-tuple_tets:
+procedure_tests:
+    These tests tests procedures
+        - struct
+        - slam
+
+tuple_tests:
 	Theses test check if tuple functionalities work which includes:
 	       -tuple assignment
 	       -tuple declarations

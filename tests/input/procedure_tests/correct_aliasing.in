@@ -1,0 +1,42 @@
+procedure increment(const real x, const real y);
+procedure dontIncrement(const integer x, const integer y);
+procedure kindaIncrement(var real x, integer y, const integer w);
+
+procedure main() returns integer { 
+    integer x = 0;
+    integer y = 2;
+    real z = -1.00;
+    real v = 3.00;
+    character nl = '\n';
+    var out = std_output();
+    
+    call increment(z,z);
+    call increment(v,v);
+    call increment(z,v);
+    call dontIncrement(y,y);
+    call dontIncrement(x,x);
+    call dontIncrement(x,y);
+    call kindaIncrement(z, x, x);
+    call kindaIncrement(z, x, y);
+    call kindaIncrement(z, y, y);
+
+    x->out; nl->out;
+    y->out; nl->out;
+    z->out; nl->out;
+    v->out; nl->out;
+
+    return 0; 
+}
+
+procedure increment(const real x, const real y) {
+    x = y;
+}
+
+procedure dontIncrement(const integer x, const integer y) {
+    y = x;
+}
+
+procedure kindaIncrement(var real x, integer y, const integer w) {
+    x = 3.4;
+    y = w;
+}
