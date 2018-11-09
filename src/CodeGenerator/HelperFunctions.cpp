@@ -168,6 +168,7 @@ llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
         i++;
     }
 
+
     llvm::StructType * newStruct = llvm::StructType::create(*members, "tuple");
     symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
     return newStruct;
