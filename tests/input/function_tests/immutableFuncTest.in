@@ -1,0 +1,22 @@
+function f(integer x) returns integer;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    integer x = 1;
+    integer y;
+
+    x -> out; '\n' -> out;
+
+    y = f(x);
+
+    y -> out; '\n' -> out;
+    x -> out; '\n' -> out;
+
+    return 0;
+}
+
+function f(integer x) returns integer {
+    x = 2;
+    return x;
+}

@@ -12,6 +12,13 @@ extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 
+/**
+ * Pushes global scope and inserts base types into symbolTable.
+ * Also initializes external functions.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(FileNode *node) {
     // register external functions
     et->registerPrintf();
@@ -41,6 +48,13 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     return nullptr;
 }
 
+/**
+ * Pushes a new scope when entering a basic block,
+ * and pops scope when leaving block.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
     symbolTable->pushNewScope();
     unsigned long i = 0;
@@ -51,13 +65,31 @@ llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
     return nullptr;
 }
 
+/**
+ * Goes to super class
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(ASTNode *node) {
     return ASTBaseVisitor::visit(node);
 }
 
+/**
+ * Initializes output file where llvm code is written to
+ *
+ * @param outFile
+ */
 CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
 }
 
+//Todo:
+/**
+ *
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
     if (node->getExpr() == nullptr){
         ir->CreateRetVoid();
@@ -69,29 +101,67 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
     return nullptr;
 }
 
+/**
+ * Returns a llvm::Value *ptr to an integer type
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(INTNode *node) {
     return it->getConsi32(node->value);
 }
 
+/**
+ * Returns a llvm::Value *ptr to a real type
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(RealNode *node) {
     float val = node->getVal();
     return it->getReal(val);
 }
 
+/**
+ * Returns a llvm::Value *ptr to a char type
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(CharNode *node) {
     char val = node->getVal();
     return it->geti8(val);
 }
 
+/**
+ * Returns a llvm::Value *ptr to a bool type
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(BoolNode *node) {
     bool val = node->getVal();
     return it->geti1(val);
 }
 
+/**
+ * Doesn't do much
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(NullNode *node) {
     return nullptr;
 }
 
+/**
+ * Creates if, else, and else if statments,
+ * also casts expressons to boolean type to be used
+ * inside the conditions.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(CondNode *node) {
     auto condBuilder = new CondBuilder(globalCtx, ir, mod);
 
@@ -117,6 +187,12 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     return nullptr;
 }
 
+/**
+ * Creates simple while loops
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(LoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileStack->push(whileBuilder);
@@ -135,9 +211,10 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
 }
 
 /**
- * TODO
+ * Creates do while loop statements
+ *
  * @param node
- * @return
+ * @return nullptr
  */
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
@@ -158,6 +235,13 @@ llvm::Value *CodeGenerator::visit(InLoopNode *node) {
     return nullptr;
 }
 
+/**
+ * Creates declarations statements and adds the
+ * new variables into the symbolTable
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
@@ -204,6 +288,12 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     return nullptr;
 }
 
+/**
+ * Deals with assignments
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(AssignNode *node) {
     Symbol *left, *right;
     left = symbolTable->resolveSymbol(node->getID());
@@ -245,6 +335,13 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     return nullptr;
 }
 
+/**
+ * Returns a ptr to the value of the id.
+ *
+ * @param node
+ * @return llvm::Value *ptr to type if exists,
+ *         otherwise return nullptr if value is null
+ */
 llvm::Value *CodeGenerator::visit(IDNode *node) {
     if(node->getID() == "null"){
         return nullptr;
@@ -258,6 +355,13 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 }
 
 // Todo: Fix identity
+/**
+ * Returns a llvm::Value *ptr to an integer type with the name "IdnNode"
+ * this deals with identitys.
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(IdnNode *node) {
     llvm::Value *newNode = it->getConsi32(1);
     newNode->setName("IdnNode");
@@ -265,6 +369,12 @@ llvm::Value *CodeGenerator::visit(IdnNode *node) {
     return newNode;
 }
 
+/**
+ * Reads from stdin into variable
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(InputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr;
@@ -280,6 +390,12 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
     return nullptr;
 }
 
+/**
+ * Writes values to output stream
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(OutputNode *node) {
     if(symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
         std::cerr << "Not proper stream on line " << node->getLine() << "\nAborting...\n";
@@ -299,11 +415,23 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
     return nullptr;
 }
 
+/**
+ *
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
     symbolTable->addSymbol(node->getId(), node->getType(), false);
     return nullptr;
 }
 
+/**
+ * Deals with pushing a new user defined type to the scope.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
 
@@ -326,7 +454,12 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     symbolTable->addUserType(node->getId(), type);
     return nullptr;
 }
-
+/**
+ * Deals with implicit and explicit casting.
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     llvm::Type *type;
     llvm::Value *expr;
@@ -379,6 +512,12 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
     }
 }
 
+/**
+ * Deals with continue statements
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(ContinueNode *node) {
     if(whileStack->top()){
         ir->CreateBr(whileStack->top()->getStartWhileBB());
@@ -389,6 +528,12 @@ llvm::Value *CodeGenerator::visit(ContinueNode *node) {
     return nullptr;
 }
 
+/**
+ * Deals with break statements
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(BreakNode *node) {
     if(whileStack->top()){
         ir->CreateBr(whileStack->top()->getMergeBB());
@@ -399,6 +544,12 @@ llvm::Value *CodeGenerator::visit(BreakNode *node) {
     return nullptr;
 }
 
+/**
+ * Creates the tuple when using var
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(TupleNode *node) {
     auto *values = new std::vector<llvm::Value *>();
     auto *types  = new std::vector<llvm::Type  *>();
@@ -427,6 +578,13 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     return tuplePtr ;
 }
 
+/**
+ * Creates tuple from the defined tuple type
+ *
+ * @param node
+ * @param tuple
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
@@ -456,6 +614,13 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 }
 
 // todo check if left hand side tuple type fits the right hand side tuple expr
+/**
+ * Deals with tuple declarations, and pushes
+ * it into the symbolTable.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     llvm::StructType * structType;
     TupleNode *tupleNode = nullptr;
@@ -486,6 +651,13 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     return nullptr;
 }
 
+/**
+ * Gets the value at the posititon of the tuple
+ *
+ * @param INIT
+ * @param tuple
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
@@ -505,6 +677,12 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     return it->initTuple(tuplePtr, values);
 }
 
+/**
+ * Creates struct definition and allocates space
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(TupleType *node) {
     auto * declNodes = node->getDecls();
     auto members = new std::vector<llvm::Type *>;
@@ -522,6 +700,12 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
     return ir->CreateAlloca(newStruct);
 }
 
+/**
+ * Handles python style assignment of tuple members to variables.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
     Symbol *var;
     llvm::Value *expr;
@@ -542,6 +726,12 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
     return nullptr;
 }
 
+/**
+ * Deals with global constants
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
 
@@ -558,6 +748,12 @@ llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     return nullptr;
 }
 
+/**
+ * Returns the value of the global variable
+ *
+ * @param node
+ * @return llvm::value *
+ */
 llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     llvm::GlobalVariable *global = mod->getGlobalVariable(node->getGlobalName());
     return global->getInitializer();
@@ -565,8 +761,9 @@ llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
 
 /**
  * THIS RETURNS THE VALUE NOT THE POINTER
+ *
  * @param node
- * @return
+ * @return llvm::Value *ptr
  */
 llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
     Symbol *symbol   = symbolTable->resolveSymbol(node->getIdNode()->getID());
@@ -576,6 +773,13 @@ llvm::Value *CodeGenerator::visit(IndexTupleNode *node) {
     return it->getValFromTuple(ptr, idx);
 }
 
+/**
+ * Deals with assignments to the members
+ * of a tuple.
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     std::string symbolName = node->getLHS()->getIdNode()->getID();
     Symbol *symbol         = symbolTable->resolveSymbol(symbolName);
@@ -587,6 +791,12 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     return nullptr;
 }
 
+/**
+ * Assigns tuple member value from the input stream
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr, *idx;
