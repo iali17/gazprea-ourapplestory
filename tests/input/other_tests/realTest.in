@@ -12,14 +12,14 @@ real g = .2e3       ;
 
 real h = 1_2_._3_e_-_4_ ;
 
-a -> out;
-b -> out;
-c -> out;
-d -> out;
-e -> out;
-f -> out;
-g -> out;
-h -> out;
+a -> out; '\n'->out;
+b -> out;'\n'->out;
+c -> out;'\n'->out;
+d -> out;'\n'->out;
+e -> out;'\n'->out;
+f -> out;'\n'->out;
+g -> out;'\n'->out;
+h -> out;'\n'->out;
 
 return 0;
 }
