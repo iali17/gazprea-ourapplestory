@@ -25,7 +25,7 @@ expr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | tupleMember                                                   #tupleIndexExpr
-    | functionCall                                                  #functionExpr
+ //   | functionCall                                                  #functionExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
