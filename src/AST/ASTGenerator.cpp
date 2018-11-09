@@ -339,7 +339,8 @@ antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLo
 /**
  * Block
  *  - builds block
- *  -
+ *  - visits the declarations and body block
+ *  - builds the remaining full block
  *
  * @param ctx
  * @return
@@ -362,6 +363,11 @@ antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx
     return (ASTNode *) new BlockNode(declBlock, bodyBlock, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Visit of a declaration block
+ * @param ctx
+ * @return - BasicBlock for the declarations
+ */
 antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
@@ -371,6 +377,12 @@ antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContex
     return (ASTNode *) new BasicBlockNode(statements, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Visit of a body block
+ *  - must not have declarations
+ * @param ctx
+ * @return - BasicBlock for the statements
+ */
 antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
     unsigned int i;
@@ -389,11 +401,21 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
     return (ASTNode *) new BasicBlockNode(statements, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Print to out
+ * @param ctx
+ * @return - OutPutNode
+ */
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * Read from in
+ * @param ctx
+ * @return - InputNode
+ */
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
     if(ctx->tupleMember()){
         std::string idName = ctx->tupleMember()->TupleIndex()->getText();
@@ -418,6 +440,12 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
     return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
 }
 
+/**
+ * TypeDefine
+ *
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
     std::string id = ctx->Identifier()->getText();
