@@ -297,6 +297,7 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
 }
 
 antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::ProcedureCallContext *ctx) {
+    assert(not(inFunction));
     auto *exprNodes = new std::vector<ASTNode*>;
     for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
@@ -365,6 +366,7 @@ antlrcpp::Any ASTGenerator::visitBoolExpr(gazprea::GazpreaParser::BoolExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclContext *ctx) {
+    assert(not(inFunction));
     int type;
     if(ctx->STD_INPUT())
         type = INSTREAM;
@@ -605,14 +607,6 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
 
     return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
 }
-/*
-antlrcpp::Any ASTGenerator::visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) {
-    std::string retType = "void";
-    if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
-    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
-    ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
-    return p;
-}*/
 
 antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) {
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
@@ -650,12 +644,26 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
    return (ASTNode *) new TupleMemberAssNode(expr, LHS, (int)ctx->getStart()->getLine());
 }
 
+/**
+ * same as procedure but with required type
+ *
+ * @param ctx
+ * @return
+ */
 antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContext *ctx) {
-    return GazpreaBaseVisitor::visitFunction(ctx);
+    inFunction = true;
+
+    std::string retType = ctx->type()->getText();
+    BlockNode *block  = (BlockNode *) (ASTNode *) visit(ctx->functionReturns());
+    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
+    ASTNode * f = (ASTNode *) new FunctionNode(block, params, retType, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
+
+    inFunction = false;
+    return f;
 }
 
 /**
- * i will return a block always. if there is a '=' i will replace with an insert statement
+ * i will return a block always. if there is a '=' i will replace with an return statement in a block
  * @param ctx
  * @return
  */

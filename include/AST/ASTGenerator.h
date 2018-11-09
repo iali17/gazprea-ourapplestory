@@ -70,7 +70,6 @@ private:
     antlrcpp::Any visitBreakStat(gazprea::GazpreaParser::BreakStatContext *ctx) override;
     antlrcpp::Any visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) override;
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
-    //antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
     antlrcpp::Any visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) override;
     antlrcpp::Any visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) override;
     antlrcpp::Any visitFunction(gazprea::GazpreaParser::FunctionContext *ctx) override;

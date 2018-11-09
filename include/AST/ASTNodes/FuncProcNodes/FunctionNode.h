@@ -9,8 +9,8 @@
 
 class FunctionNode : public BaseBlockParent {
 public:
-    FunctionNode(int line, std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                 const std::string &functionName);
+    FunctionNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
+    const std::string &functionName, int line);
 
     std::vector<ASTNode *> *getParamNodes() const;
     const std::string &getRetType() const;

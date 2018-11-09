@@ -608,7 +608,3 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     et->aliScanf(ptr);
     return nullptr;
 }
-
-llvm::Value *CodeGenerator::visit(FunctionNode *node) {
-    return ASTBaseVisitor::visit(node);
-}

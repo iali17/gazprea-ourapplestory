@@ -16,7 +16,7 @@ function g(character x) returns boolean {
     integer x = as<integer>(x);
 
     if(x >= 58)
-        returns true;
+        return true;
     else
-        returns false;
+        return false;
 }

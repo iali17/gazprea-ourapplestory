@@ -1,4 +1,4 @@
-function squared(integer x) returns x * x;
+function squared(integer x) returns integer =  x * x;
 
 procedure main() returns integer {
     var out = std_output();
