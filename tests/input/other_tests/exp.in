@@ -1,0 +1,28 @@
+procedure exp(integer l, integer r) returns integer{
+    if(r == 0)
+        return 1;
+    else if(r == 1)
+        return l;
+    else if(r == 2)
+        return l*l;
+    else if(r % 2 == 1) {
+        integer x = exp(l, (r - 1)/2);
+        x = exp(x, 2);
+        return x * l;
+    } else {
+        integer x = exp(l, r/2);
+        x = exp(x, 2);
+        return x;
+    }   
+}
+
+procedure main () returns integer {
+    var out = std_output();
+    integer i = 2;
+    integer j = 30;
+
+    i = exp(i, j);
+    i = (i-1) * 2;
+    i+1 -> out; '\n' -> out;
+    return 0;
+}
