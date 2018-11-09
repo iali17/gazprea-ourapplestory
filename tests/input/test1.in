@@ -1,7 +1,12 @@
 
-procedure main() returns integer {
-    var out = std_output();
-    integer i = 1.0;
+procedure main() returns integer{
+
+integer i = 33;
+var out = std_output();
+
+ if (i == 33 and 1 > 0) 33 -> out;
+
+
 
     return 0;
 }
