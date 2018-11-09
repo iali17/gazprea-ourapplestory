@@ -360,3 +360,18 @@ bool InternalTools::isStructType(llvm::Value *ptr) {
     }
     return false;
 }
+
+std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
+    if(type == intTy)
+        return "integer";
+    else if(type == realTy)
+        return "real";
+    else if(type == boolTy)
+        return "boolean";
+    else if(type == charTy)
+        return "character";
+    else if(isStructType(expr))
+        return "tuple(*)";
+    else
+        return nullptr;
+}
