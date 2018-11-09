@@ -23,13 +23,17 @@ int ProcedureCallNode::getUnOp() const {
     return unOp;
 }
 
-ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
-                                     std::vector<ASTNode *> *exprNode, std::vector<std::string> *typeIds, bool constant,
-                                     int line, int unOp)
-                                     : ASTNode(line), varName(varName), procedureName(procedureName), unOp(unOp),
-                                     exprNode(exprNode), typeIds(typeIds), constant(constant) {}
+TupleType *ProcedureCallNode::getTupleType() const {
+    return tupleType;
+}
 
 ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
-                                     std::vector<ASTNode *> *exprNode, int line, int unOp)
+                                     std::vector<ASTNode *> *exprNode, std::vector<std::string> *typeIds, bool constant,
+                                     int line, int unOp, TupleType *tupleType)
+                                     : ASTNode(line), varName(varName), procedureName(procedureName), unOp(unOp),
+                                     exprNode(exprNode), typeIds(typeIds), constant(constant), tupleType(tupleType) {}
+
+ProcedureCallNode::ProcedureCallNode(const std::string &varName, const std::string &procedureName,
+                                     std::vector<ASTNode *> *exprNode, int line, int unOp, TupleType *tupleType)
                                      : ASTNode(line), varName(varName), procedureName(procedureName),
-                                     unOp(unOp), exprNode(exprNode) {}
+                                     unOp(unOp), exprNode(exprNode), tupleType(tupleType) {}
