@@ -58,8 +58,10 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
         arguType = ptr->getType()->getPointerElementType();
         if((paramType != arguType) && (paramType == realTy)&& (arguType == intTy)) {
             llvm::Value *element = ir->CreateLoad(ptr);
+            llvm::Value *newP = ir->CreateAlloca(realTy);
             element = ir->CreateSIToFP(element, realTy);
-            ir->CreateStore(element, ptr);
+            ir->CreateStore(element, newP);
+            ptr = newP;
         }
 
         paramVector.push_back(ptr);
