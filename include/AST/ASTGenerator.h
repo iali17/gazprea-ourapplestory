@@ -16,6 +16,8 @@ public:
     ASTGenerator();
 private:
     std::unordered_set<std::string> * globalVars;
+    std::unordered_set<std::string> * functionNames;
+    std::unordered_set<std::string> * procedureNames;
     bool inFunction = false;
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
     antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;
