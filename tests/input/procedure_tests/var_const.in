@@ -1,0 +1,26 @@
+procedure f(const tuple(real,real) x) returns real;
+
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(real,real) tup = (4.0,5.0);
+
+    integer x = 1;
+    real y = f(tup);
+
+    y -> out; '\n' -> out;
+    tup.1->out; '\n' -> out;
+
+    return 0;
+}
+
+procedure f(const tuple(real,real) x) returns real {
+    x.1 = 2.0;
+    return x.1;
+}
+
+
+// const -> const :)
+// var -> var  :)
+// var -> const :)  
+// const -> var :)

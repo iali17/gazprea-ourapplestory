@@ -14,3 +14,7 @@ int GazpreaTupleType::getOffsetFromString(std::string str) {
 std::vector<llvm::Type *> *GazpreaTupleType::getMembers() const {
     return members;
 }
+
+std::unordered_map<std::string, int> *GazpreaTupleType::getStringRefMap() const {
+    return stringRefMap;
+}

@@ -28,11 +28,17 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
-        std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
+        auto * pNode = (ParamNode *) it.operator*();
+        std::string typeName = (pNode)->getDeclaredType();
+        if(pNode->getTupleType()){
+            llvm::StructType * structType = parseStructType(pNode->getTupleType());
+            GazpreaTupleType * garb = symbolTable->resolveTupleType(structType);
+            symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
+            params.push_back(structType->getPointerTo());
+        } else {
+            params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        }
 
-
-
-        params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
     }
 
     symbolTable->addFunctionSymbol(node->getProcedureName(), node->getType(), node->getParamNodes());
@@ -103,8 +109,17 @@ llvm::Value *CodeGenerator::visit(FunctionNode *node) {
     llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
-        std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
-        params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        auto * pNode = (ParamNode *) it.operator*();
+        std::string typeName = (pNode)->getDeclaredType();
+        assert(pNode->isIsVar());
+        if(pNode->getTupleType()){
+            llvm::StructType * structType = parseStructType(pNode->getTupleType());
+            GazpreaTupleType * garb = symbolTable->resolveTupleType(structType);
+            symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
+            params.push_back(structType->getPointerTo());
+        } else {
+            params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        }
     }
 
     symbolTable->addFunctionSymbol(node->getFunctionName(), node->getType(), node->getParamNodes());
@@ -223,9 +238,16 @@ llvm::Value *CodeGenerator::visit(ProtoProcedureNode * node) {
     llvm::Type *retType = symbolTable->resolveType(node->getRetType())->getTypeDef();
 
     for (auto it = paramsList.begin(); it!= paramsList.end(); ++it) {
-        std::string typeName =  ((ParamNode *) it.operator*())->getDeclaredType();
-
-        params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        auto * pNode = (ParamNode *) it.operator*();
+        std::string typeName = (pNode)->getDeclaredType();
+        if(pNode->getTupleType()){
+            llvm::StructType * structType = parseStructType(pNode->getTupleType());
+            GazpreaTupleType * garb = symbolTable->resolveTupleType(structType);
+            symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
+            params.push_back(structType->getPointerTo());
+        } else {
+            params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        }
     }
 
     symbolTable->addFunctionSymbol(node->getProcedureName(), node->getType(), node->getParamNodes());
