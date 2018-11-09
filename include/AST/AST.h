@@ -41,6 +41,7 @@
 #include "AST/ASTNodes/ErrorNodes/ScalarNode.h"
 
 #include "AST/ASTNodes/FuncProcNodes/CallNode.h"
+#include "AST/ASTNodes/FuncProcNodes/FunctionNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ParamNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProcedureNode.h"

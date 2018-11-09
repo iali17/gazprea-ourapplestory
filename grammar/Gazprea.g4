@@ -159,12 +159,12 @@ procedure
     ;
 
 function
-    : FUNCTION Identifier params RETURNS functionReturns
+    : FUNCTION Identifier params RETURNS type functionReturns
     ;
 
 functionReturns
-    : '{' decBlock? bodyBlock? '}'
-    | type EQL expr SEMICOLON
+    : block
+    | EQL expr SEMICOLON
     ;
 
 tuple
@@ -180,7 +180,8 @@ tupleTypeIdentifier
     ;
 
 protoFunc
-    : PROCEDURE Identifier params returnStat? SEMICOLON
+    :  PROCEDURE Identifier params returnStat? SEMICOLON #procProto
+    |  FUNCTION  Identifier params returnStat  SEMICOLON #funcProto
     ;
 
 

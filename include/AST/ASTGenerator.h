@@ -16,6 +16,7 @@ public:
     ASTGenerator();
 private:
     std::unordered_set<std::string> * globalVars;
+    bool inFunction = false;
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
     antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;
     antlrcpp::Any visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) override;
@@ -69,9 +70,13 @@ private:
     antlrcpp::Any visitBreakStat(gazprea::GazpreaParser::BreakStatContext *ctx) override;
     antlrcpp::Any visitTupleTypeIdentifier(gazprea::GazpreaParser::TupleTypeIdentifierContext *ctx) override;
     antlrcpp::Any visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) override;
-    antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
+    //antlrcpp::Any visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) override;
     antlrcpp::Any visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) override;
     antlrcpp::Any visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) override;
+    antlrcpp::Any visitFunction(gazprea::GazpreaParser::FunctionContext *ctx) override;
+    antlrcpp::Any visitFunctionReturns(gazprea::GazpreaParser::FunctionReturnsContext *ctx) override;
+    antlrcpp::Any visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) override;
+    antlrcpp::Any visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

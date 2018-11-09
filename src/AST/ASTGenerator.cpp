@@ -605,14 +605,14 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
 
     return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
 }
-
+/*
 antlrcpp::Any ASTGenerator::visitProtoFunc(gazprea::GazpreaParser::ProtoFuncContext *ctx) {
     std::string retType = "void";
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
     return p;
-}
+}*/
 
 antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) {
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
@@ -648,4 +648,49 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
     auto LHS = new IndexTupleNode(index, idNode, (int)ctx->getStart()->getLine());
 
    return (ASTNode *) new TupleMemberAssNode(expr, LHS, (int)ctx->getStart()->getLine());
+}
+
+antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContext *ctx) {
+    return GazpreaBaseVisitor::visitFunction(ctx);
+}
+
+/**
+ * i will return a block always. if there is a '=' i will replace with an insert statement
+ * @param ctx
+ * @return
+ */
+antlrcpp::Any ASTGenerator::visitFunctionReturns(gazprea::GazpreaParser::FunctionReturnsContext *ctx) {
+    ASTNode *blockNode;
+    if(ctx->expr()){
+        ASTNode * expr    = (ASTNode *) visit(ctx->expr());
+        ASTNode * retNode = new ReturnNode(expr,  (int)ctx->getStart()->getLine());
+        auto *declBlock = new std::vector<ASTNode *>();
+        auto *statBlock = new std::vector<ASTNode *>();
+        auto *declBlockNode = new BasicBlockNode(declBlock, (int)ctx->getStart()->getLine());
+        auto *statBlockNode = new BasicBlockNode(statBlock, (int)ctx->getStart()->getLine());
+        statBlock->push_back(retNode);
+        blockNode = (ASTNode *) new BlockNode(declBlockNode, statBlockNode, (int)ctx->getStart()->getLine());
+    }
+    else {
+        if(ctx->block()->single_statement() && !ctx->block()->single_statement()->returnCall()){
+            std::cerr << "Missing return call\n";
+        }
+        blockNode = (ASTNode *) visit(ctx->block());
+    }
+    return (ASTNode *) blockNode;
+}
+
+antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) {
+    std::string retType = "void";
+    if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
+    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
+    ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
+    return p;
+}
+
+antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) {
+    std::string retType = ctx->returnStat()->type()->getText();
+    std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
+    ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
+    return p;
 }

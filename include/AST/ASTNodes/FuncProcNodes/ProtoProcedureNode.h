@@ -15,9 +15,7 @@ public:
                        const std::string &procedureName, int line);
 
     std::vector<ASTNode *> *getParamNodes() const;
-
     const std::string &getRetType() const;
-
     const std::string &getProcedureName() const;
 
 protected:

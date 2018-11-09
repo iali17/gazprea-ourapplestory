@@ -31,4 +31,4 @@ src/gazc
 tests/garbo.txt
 tests/gazc.ll
 tests/lli-temp.out
-
+tests/KyleConfig.json
