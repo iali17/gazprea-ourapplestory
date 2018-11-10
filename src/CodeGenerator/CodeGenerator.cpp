@@ -248,7 +248,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
 
-    if        (node->getTypeIds()->empty() && (node->getType() == TUPLE)){
+    if        (node->getTypeIds()->empty() && (node->getType() == TUPLE)) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->empty() && it->isStructType(val)) {
@@ -259,13 +259,13 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    } else if (node->getTypeIds()->size() == 1){
+    } else if (node->getTypeIds()->size() == 1) {
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
         node->setLlvmType(type);
 
         ptr = ir->CreateAlloca(type);
         if(val == nullptr) {
-            if (!(it->setNull(type, ptr))){
+            if (!(it->setNull(type, ptr))) {
                 std::cerr << "Unable to initialize to null at line " << node->getLine() << ". Aborting...\n";
             }
             symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
@@ -298,26 +298,26 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     left = symbolTable->resolveSymbol(node->getID());
     assert(!left->isConstant());
 
-    if(dynamic_cast<IDNode *>(node->getExpr())){
+    if (dynamic_cast<IDNode *>(node->getExpr())) {
         auto idNode = (IDNode *) node->getExpr();
         right = symbolTable->resolveSymbol(idNode->getID());
         std::string outString = "std_output()";
         std::string inString = "std_input()";
 
         if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
-            left->getType() != right->getType()){
+            left->getType() != right->getType()) {
 
             auto *error = new ScalarNode(outString, inString, node->getLine());
             eb ->printError(error);
         } else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
-            left->getType() == right->getType()){
+            left->getType() == right->getType()) {
             return nullptr;
         }
     }
 
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
-    if(val) {
+    if (val) {
         if (it->isStructType(left->getPtr())) {
             ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
             left->setPtr(ptr);
@@ -375,7 +375,7 @@ llvm::Value *CodeGenerator::visit(IdnNode *node) {
 llvm::Value *CodeGenerator::visit(InputNode *node) {
     Symbol *symbol;
     llvm::Value *ptr;
-    if(symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM){
+    if (symbolTable->resolveSymbol(node->getStreamName())->getType() != INSTREAM) {
         std::cerr << "Not proper stream on line" << node->getLine() << ". Aborting...\n";
         exit(1);
     }
@@ -394,18 +394,16 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
  * @return nullptr
  */
 llvm::Value *CodeGenerator::visit(OutputNode *node) {
-    if(symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
+    if (symbolTable->resolveSymbol(node->getStreamName())->getType() != OUTSTREAM){
         std::cerr << "Not proper stream on line " << node->getLine() << ". Aborting...\n";
         exit(1);
     }
 
-    if(dynamic_cast<IdnNode *>(node->getExpr())){
+    if (dynamic_cast<IdnNode *>(node->getExpr())) {
         et->print(it->geti8(1));
-    }
-    else if (dynamic_cast<NullNode *>(node->getExpr())){
+    } else if (dynamic_cast<NullNode *>(node->getExpr())) {
         et->print(it->geti8(0));
-    }
-    else {
+    } else {
         llvm::Value *expr = visit(node->getExpr());
         et->print(expr);
     }
@@ -499,6 +497,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             values->push_back(expr);
         }
         return it->initTuple(ptr, values);
+
     } else {
         expr = visit(node->getExpr());
         GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());

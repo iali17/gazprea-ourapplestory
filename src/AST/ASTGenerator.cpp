@@ -234,10 +234,16 @@ antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx
     ASTNode *declBlock;
     ASTNode *bodyBlock;
 
-    if(ctx->decBlock())  declBlock = (ASTNode *) visit(ctx->decBlock());
-    else declBlock = new BasicBlockNode(new std::vector<ASTNode *>, (int)ctx->getStart()->getLine());
-    if(ctx->bodyBlock()) bodyBlock = (ASTNode *) visit(ctx->bodyBlock());
-    else bodyBlock = new BasicBlockNode(new std::vector<ASTNode *>, (int)ctx->getStart()->getLine());
+    if(ctx->decBlock())
+        declBlock = (ASTNode *)visit(ctx->decBlock());
+    else
+        declBlock = new BasicBlockNode(new std::vector<ASTNode *>, (int)ctx->getStart()->getLine());
+
+    if(ctx->bodyBlock())
+        bodyBlock = (ASTNode *) visit(ctx->bodyBlock());
+    else
+        bodyBlock = new BasicBlockNode(new std::vector<ASTNode *>, (int)ctx->getStart()->getLine());
+
     if(ctx->single_statement()){
         ASTNode * stmt = (ASTNode *) visit(ctx->single_statement());
         auto *single = new std::vector<ASTNode *>;
