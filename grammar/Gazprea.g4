@@ -28,13 +28,13 @@ expr
     | functionCall                                                  #functionExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
-    | <assoc=right> left=expr EXP right=expr                        #exponentExpr
-    | left=expr op=(MUL | DIV | REM) right=expr                     #mulExpr
-    | left=expr op=(ADD | SUB) right=expr                           #addExpr
-    | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #lessExpr
-    | left=expr op=(EEQL | NEQL) right=expr                         #eqlExpr
-    | left=expr AND right=expr                                      #andExpr
-    | left=expr op=(OR | XOR) right=expr                            #orExpr
+    | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
+    | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
+    | left=expr op=(ADD | SUB) right=expr                           #arithExpr
+    | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #compExpr
+    | left=expr op=(EEQL | NEQL) right=expr                         #compExpr
+    | left=expr op=AND right=expr                                   #compExpr
+    | left=expr op=(OR | XOR) right=expr                            #compExpr
     ;
 
 continueStat

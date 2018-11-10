@@ -20,26 +20,26 @@ private:
     std::unordered_set<std::string> * procedureNames;
     bool inFunction = false;
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
-    antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;
+    //antlrcpp::Any visitExponentExpr(gazprea::GazpreaParser::ExponentExprContext *ctx) override;
     antlrcpp::Any visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) override;
     antlrcpp::Any visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) override;
     antlrcpp::Any visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) override;
     antlrcpp::Any visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) override;
     antlrcpp::Any visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) override;
     antlrcpp::Any visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) override;
-    antlrcpp::Any visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) override;
-    antlrcpp::Any visitEqlExpr(gazprea::GazpreaParser::EqlExprContext *ctx) override;
-    antlrcpp::Any visitOrExpr(gazprea::GazpreaParser::OrExprContext *ctx) override;
+    //antlrcpp::Any visitLessExpr(gazprea::GazpreaParser::LessExprContext *ctx) override;
+    //antlrcpp::Any visitEqlExpr(gazprea::GazpreaParser::EqlExprContext *ctx) override;
+    //antlrcpp::Any visitOrExpr(gazprea::GazpreaParser::OrExprContext *ctx) override;
     antlrcpp::Any visitDomainExpr(gazprea::GazpreaParser::DomainExprContext *ctx) override;
     antlrcpp::Any visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) override;
     antlrcpp::Any visitUnaryExpr(gazprea::GazpreaParser::UnaryExprContext *ctx) override;
-    antlrcpp::Any visitAddExpr(gazprea::GazpreaParser::AddExprContext *ctx) override;
-    antlrcpp::Any visitMulExpr(gazprea::GazpreaParser::MulExprContext *ctx) override;
+    //antlrcpp::Any visitAddExpr(gazprea::GazpreaParser::AddExprContext *ctx) override;
+    //antlrcpp::Any visitMulExpr(gazprea::GazpreaParser::MulExprContext *ctx) override;
     antlrcpp::Any visitBoolExpr(gazprea::GazpreaParser::BoolExprContext *ctx) override;
     antlrcpp::Any visitTupleExpr(gazprea::GazpreaParser::TupleExprContext *ctx) override;
     antlrcpp::Any visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) override;
     antlrcpp::Any visitIdentityExpr(gazprea::GazpreaParser::IdentityExprContext *ctx) override;
-    antlrcpp::Any visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) override;
+    //antlrcpp::Any visitAndExpr(gazprea::GazpreaParser::AndExprContext *ctx) override;
     antlrcpp::Any visitStatement(gazprea::GazpreaParser::StatementContext *ctx) override;
     antlrcpp::Any visitNormalAss(gazprea::GazpreaParser::NormalAssContext *ctx) override;
     antlrcpp::Any visitPythonTupleAss(gazprea::GazpreaParser::PythonTupleAssContext *ctx) override;
@@ -79,6 +79,8 @@ private:
     antlrcpp::Any visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) override;
     antlrcpp::Any visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) override;
     antlrcpp::Any visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) override;
+    antlrcpp::Any visitArithExpr(gazprea::GazpreaParser::ArithExprContext *ctx) override;
+    antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
