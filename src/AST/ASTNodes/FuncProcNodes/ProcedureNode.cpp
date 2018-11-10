@@ -16,6 +16,10 @@ std::vector<ASTNode *> *ProcedureNode::getParamNodes() const {
 }
 
 ProcedureNode::ProcedureNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                             const std::string &procedureName, int line) : BaseBlockParent(blockNode, line), paramNodes(paramNodes),
-                                                                 retType(retType), procedureName(procedureName) {}
+                             const std::string &procedureName, int line, TupleType*tupleType) : BaseBlockParent(blockNode, line), paramNodes(paramNodes),
+                                                                 retType(retType), procedureName(procedureName), tupleType(tupleType){}
+
+TupleType *ProcedureNode::getTupleType() const {
+    return tupleType;
+}
 
