@@ -500,83 +500,6 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
     return (ASTNode *) new CharNode(val, (int)ctx->getStart()->getLine());
 }
 
-antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::ProcedureCallDeclContext *ctx) {
-    std::string id = ctx->Identifier(0)->getText();
-    std::string ty;
-    if (!ctx->type().empty())  ty = ctx->type(0)->getText();
-    std::string procedureName = ctx->Identifier(1)->getText();
-    bool constant = (nullptr != ctx->CONST());
-
-    // Checks if in a function
-    if(inFunction) {
-        auto ret = functionNames->find(ctx->Identifier(1)->getText());
-        assert(ret != functionNames->end());
-    }
-
-    TupleType *tupleType = nullptr;
-
-    auto *exprNodes = new std::vector<ASTNode*>;
-
-    if (!ctx->type().empty() && ctx->type(0)->tupleType()) {
-        tupleType = (TupleType *) (ASTNode *) visit(ctx->type(0)->tupleType());
-    }
-
-    for(unsigned long i = 0; i < ctx->expr().size(); ++i) {
-        ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
-        exprNodes->push_back(node);
-    }
-
-    auto *typeVec = new std::vector<std::string>();
-    for (unsigned long i = 0; i < ctx->type().size(); ++i) {
-        typeVec->push_back(ctx->type().at(i)->getText());
-    }
-
-    int operation = PLUS;
-    if (ctx->op) {
-        if (ctx->op->getType() == gazprea::GazpreaParser::NOT) {
-            operation = NEG;
-        } else if (ctx->op->getType() == gazprea::GazpreaParser::ADD) {
-            operation = PLUS;
-        } else if (ctx->op->getType() == gazprea::GazpreaParser::SUB) {
-            operation = MINUS;
-        }
-    }
-
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, typeVec, constant, (int)ctx->getStart()->getLine(), operation, tupleType);
-}
-
-antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::ProcedureCallAssContext *ctx) {
-    std::string id = ctx->Identifier(0)->getText();
-    std::string procedureName = ctx->Identifier(1)->getText();
-
-    // Checks if in a function
-    if(inFunction) {
-        auto ret = functionNames->find(ctx->Identifier(1)->getText());
-        assert(ret != functionNames->end());
-    }
-
-    auto *exprNodes = new std::vector<ASTNode*>;
-
-
-    for(unsigned long i = 0; i < ctx->expr().size(); ++ i) {
-        ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
-        exprNodes->push_back(node);
-    }
-
-    int operation = PLUS;
-    if (ctx->op) {
-        if (ctx->op->getType() == gazprea::GazpreaParser::NOT) {
-            operation = NEG;
-        } else if (ctx->op->getType() == gazprea::GazpreaParser::ADD) {
-            operation = PLUS;
-        } else if (ctx->op->getType() == gazprea::GazpreaParser::SUB) {
-            operation = MINUS;
-        }
-    }
-
-    return (ASTNode *) new ProcedureCallNode(id,procedureName, exprNodes, (int)ctx->getStart()->getLine(), operation);
-}
-
 /*
  * ignore the warning on dynamic cast
  */
@@ -822,7 +745,7 @@ antlrcpp::Any ASTGenerator::visitFunctionCall(gazprea::GazpreaParser::FunctionCa
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
     }
-    return (ASTNode *) new FunctionCallNode((int)ctx->getStart()->getLine(), functionName, exprNodes);
+    return (ASTNode *) new CallNode(exprNodes, functionName, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitArithExpr(gazprea::GazpreaParser::ArithExprContext *ctx) {

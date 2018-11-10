@@ -141,9 +141,6 @@ public:
         else if (dynamic_cast<BreakNode *>(node)) {
             return visit((BreakNode *) node);
         }
-        else if (dynamic_cast<ProcedureCallNode *>(node)) {
-            return visit((ProcedureCallNode *) node);
-        }
         else if (dynamic_cast<TupleDeclNode *>(node)) {
             return visit((TupleDeclNode *) node);
         }
@@ -176,9 +173,6 @@ public:
         }
         else if (dynamic_cast<FunctionNode *>(node)) {
             return visit((FunctionNode *) node);
-        }
-        else if (dynamic_cast<FunctionCallNode *>(node)) {
-            return visit((FunctionCallNode *) node);
         }
         return nullptr;
     };
@@ -226,20 +220,18 @@ public:
     llvm::Value* visit(LTENode *node) override { return nullptr;};
     llvm::Value* visit(ContinueNode *node) override { return nullptr;};
     llvm::Value* visit(BreakNode *node) override { return nullptr;};
-    llvm::Value* visit(ProcedureCallNode *node) override { return nullptr;};
     llvm::Value* visit(ProtoProcedureNode *node) override { return nullptr;};
-    llvm::Value* visit(TupleDeclNode *node) override {return nullptr;}
-    llvm::Value* visit(TupleType *node) override { return nullptr; }
-    llvm::Value* visit(PythonTupleAssNode *node) override { return nullptr; }
-    llvm::Value* visit(GlobalDeclNode *node) override { return nullptr; }
-    llvm::Value* visit(GlobalRefNode *node) override { return nullptr; }
-    llvm::Value* visit(TupleNode *node) override { return nullptr; }
-    llvm::Value* visit(IndexTupleNode *node) override { return nullptr; }
-    llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
-    llvm::Value* visit(TupleMemberAssNode *node) override { return nullptr; }
-    llvm::Value* visit(TupleInputNode *node) override { return nullptr; }
-    llvm::Value* visit(FunctionNode *node) override { return nullptr; }
-    llvm::Value* visit(FunctionCallNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleDeclNode *node) override {return nullptr;}
+    llvm::Value *visit(TupleType *node) override { return nullptr; }
+    llvm::Value *visit(PythonTupleAssNode *node) override { return nullptr; }
+    llvm::Value *visit(GlobalDeclNode *node) override { return nullptr; }
+    llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node) override { return nullptr; }
+    llvm::Value *visit(IndexTupleNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
+    llvm::Value *visit(TupleMemberAssNode *node) override { return nullptr; }
+    llvm::Value *visit(TupleInputNode *node) override { return nullptr; }
+    llvm::Value *visit(FunctionNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H
