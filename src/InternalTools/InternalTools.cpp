@@ -154,7 +154,7 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
     auto types   = structType->elements();
     llvm::Value *element;
     llvm::Type * nType, * oType;
-    for(unsigned long i = 0; i < values->size(); i++){
+    for(unsigned long i = 0; i < values->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
         llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
 
@@ -171,7 +171,7 @@ llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
 }
 
 llvm::Value *InternalTools::initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs) {
-    for(unsigned long i = 0; i < ptrs->size(); i++){
+    for(unsigned long i = 0; i < ptrs->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
         llvm::Value *ptr        = ptrs->at(i);
         assert(ptr->getType() == structElem->getType()->getPointerElementType());
@@ -185,7 +185,7 @@ std::vector<llvm::Value *> *InternalTools::getValueVectorFromStruct(llvm::Value 
     auto types   = structType->elements();
     auto * values = new std::vector<llvm::Value *>;
 
-    for(unsigned long i = 0; i < types.size(); i++){
+    for(unsigned long i = 0; i < types.size(); ++i){
         llvm::Value *structElem = getValFromTuple(structPtr, getConsi32(i));
         values->push_back(structElem);
     }
@@ -197,7 +197,7 @@ std::vector<llvm::Value *> *InternalTools::getPtrVectorFromStruct(llvm::Value *s
     auto types   = structType->elements();
     auto * values = new std::vector<llvm::Value *>;
 
-    for(unsigned long i = 0; i < types.size(); i++){
+    for(unsigned long i = 0; i < types.size(); ++i){
         llvm::Value *structElem = getPtrFromTuple(structPtr, getConsi32(i));
         values->push_back(structElem);
     }

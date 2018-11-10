@@ -25,7 +25,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     std::string uniqueIden;
     llvm::Value *newParamPtr;
 
-    for (unsigned int i = 0; i < arguNode->size(); ++i) {
+    for (unsigned long i = 0; i < arguNode->size(); ++i) {
         pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
         llvm::Type * arguType;
         llvm::Type * paramType;
@@ -165,7 +165,7 @@ llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
         members->push_back(type->getPointerTo());
         if(!(((DeclNode *) element)->getID().empty()))
             memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
-        i++;
+        ++i;
     }
 
 

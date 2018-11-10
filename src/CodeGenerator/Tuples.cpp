@@ -113,7 +113,7 @@ llvm::Value *CodeGenerator::visit(TupleType *node) {
         members->push_back(element->getLlvmType()->getPointerTo());
         if(!(((DeclNode *) element)->getID().empty()))
             memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
-        i++;
+        ++i;
     }
 
     auto * newStruct = llvm::StructType::create(*members);
@@ -133,7 +133,7 @@ llvm::Value *CodeGenerator::visit(PythonTupleAssNode *node) {
     std::vector<std::string> variables = node->getIDs();
     llvm::Value *exprP = visit(node->getExpr());
 
-    for(unsigned int i = 0; i < variables.size(); i++) {
+    for(unsigned long i = 0; i < variables.size(); ++i) {
         var = symbolTable->resolveSymbol(variables.at(i));
 
         assert(!var->isConstant());
@@ -170,7 +170,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
 
     //fill new structure
-    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+    for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
         llvm::Value *ptr        = ir->CreateAlloca(values->at(i)->getType());
         ir->CreateStore(values->at(i), ptr);
@@ -192,7 +192,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
 
-    for(unsigned long i = 0; i < types.size(); i++){
+    for(unsigned long i = 0; i < types.size(); ++i){
         llvm::Value * element;
         if (not(node)){
             element = it->getNull(types[i]);
@@ -207,7 +207,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
     //fill new structure
-    for(unsigned long i = 0; i < node->getElements()->size(); i++){
+    for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
         llvm::Value *ptr        = ir->CreateAlloca(values->at(i)->getType());
         ir->CreateStore(values->at(i), ptr);

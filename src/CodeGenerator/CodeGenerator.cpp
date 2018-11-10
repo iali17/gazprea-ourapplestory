@@ -39,8 +39,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
 
-    unsigned long i = 0;
-    for(i = 0; i < node->nodes->size(); i++){
+    for (unsigned long i = 0; i < node->nodes->size(); ++i){
         ASTBaseVisitor::visit(node->nodes->at(i)) ;
     }
 
@@ -57,8 +56,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
  */
 llvm::Value *CodeGenerator::visit(BasicBlockNode *node) {
     symbolTable->pushNewScope();
-    unsigned long i = 0;
-    for(i = 0; i < node->nodes->size(); i++){
+    for (unsigned long i = 0; i < node->nodes->size(); ++i) {
         ASTBaseVisitor::visit(node->nodes->at(i));
     }
     symbolTable->popScope();
@@ -93,15 +91,16 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
     if (node->getExpr() == nullptr){
         ir->CreateRetVoid();
-    }
-    else {
+    } else {
         llvm::Value *ret = visit(node->getExpr());
         if(it->isStructType(ret)){
             llvm::Value * realRet = ir->CreateAlloca(ir->getCurrentFunctionReturnType()->getPointerElementType());
             realRet = it->initTuple(realRet, it->getValueVectorFromStruct(ret));
             ir->CreateRet(realRet);
-        } else
+        } else {
             ir->CreateRet(ret);
+        }
+
     }
     return nullptr;
 }
@@ -171,12 +170,11 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
     auto condBuilder = new CondBuilder(globalCtx, ir, mod);
 
     unsigned long i = 0;
-    for(i = 0; i < node->getConds()->size(); i++){
+    for(i = 0; i < node->getConds()->size(); ++i){
         if(i){
             llvm::Value *cond = visit(node->getConds()->at(i));
             condBuilder->beginElseIf(ct->varCast(boolTy, cond, 0));
-        }
-        else {
+        } else {
             llvm::Value *cond = visit(node->getConds()->at(i));
             condBuilder->beginIf(ct->varCast(boolTy, cond, 0));
         }
@@ -205,8 +203,7 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
         whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
-    }
-    else
+    } else
         whileBuilder->insertControl(it->geti1(1));
 
     visit(node->getBlock());
@@ -251,21 +248,18 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
 
-    if      (node->getTypeIds()->empty() && (node->getType() == TUPLE)){
+    if        (node->getTypeIds()->empty() && (node->getType() == TUPLE)){
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    }
-    else if (node->getTypeIds()->empty() && it->isStructType(val)) {
+    } else if (node->getTypeIds()->empty() && it->isStructType(val)) {
         ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
         ptr = it->initTuple(ptr, it->getValueVectorFromStruct(val));
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
-    }
-    else if (node->getTypeIds()->empty()) {
+    } else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    }
-    else if (node->getTypeIds()->size() == 1){
+    } else if (node->getTypeIds()->size() == 1){
         llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
         node->setLlvmType(type);
 
@@ -313,10 +307,9 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() != right->getType()){
 
-            ScalarNode *error = new ScalarNode(outString, inString, node->getLine());
+            auto *error = new ScalarNode(outString, inString, node->getLine());
             eb ->printError(error);
-        }
-        else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
+        } else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() == right->getType()){
             return nullptr;
         }
@@ -333,8 +326,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             ir->CreateStore(val, ptr);
         }
 
-    }
-    else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
+    } else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
             std::cerr << "Unable to initialize to null at line" << node->getLine() <<". Aborting...\n";
     }
     return nullptr;
@@ -499,7 +491,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             exit(1);
         }
 
-        for(unsigned int i = 0; i < types->elements().size(); i++) {
+        for(unsigned long i = 0; i < types->elements().size(); ++i) {
             expr = it->getValFromTuple(exprP, it->getConsi32(i));
             type = types->elements()[i];
 
@@ -507,8 +499,7 @@ llvm::Value *CodeGenerator::visit(CastExprNode *node) {
             values->push_back(expr);
         }
         return it->initTuple(ptr, values);
-    }
-    else {
+    } else {
         expr = visit(node->getExpr());
         GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
         type = gazpreaType->getTypeDef();

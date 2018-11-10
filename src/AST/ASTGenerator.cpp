@@ -12,8 +12,7 @@
  */
 antlrcpp::Any ASTGenerator::visitFile(gazprea::GazpreaParser::FileContext *ctx) {
     auto *procedures = new std::vector<ASTNode *>;
-    unsigned long i;
-    for (i = 0; i < ctx->termsAndConditions().size(); i++){
+    for (unsigned long i = 0; i < ctx->termsAndConditions().size(); ++i){
         ASTNode * p = (ASTNode *) visit(ctx->termsAndConditions().at(i));
         if (nullptr == p){
             printf("yes\n");
@@ -286,11 +285,10 @@ antlrcpp::Any ASTGenerator::visitConditional(gazprea::GazpreaParser::Conditional
     auto *conds  = new std::vector<ASTNode *>;
     auto *blocks = new std::vector<ASTNode *>;
 
-    unsigned long int i;
-    for(i = 0; i < ctx->expr().size(); i++){
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i){
         conds->push_back((ASTNode *) visit(ctx->expr().at(i)));
     }
-    for(i = 0; i < ctx->block().size(); i++){
+    for(unsigned long i = 0; i < ctx->block().size(); ++i){
         blocks->push_back((ASTNode *) visit(ctx->block().at(i)));
     }
 
@@ -370,8 +368,7 @@ antlrcpp::Any ASTGenerator::visitBlock(gazprea::GazpreaParser::BlockContext *ctx
  */
 antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
-    unsigned int i;
-    for(i=0;i<ctx->declaration().size();i++){
+    for(unsigned long i = 0;i < ctx->declaration().size();++i){
         statements->push_back( (ASTNode *) visit(ctx->declaration()[i]));
     }
     return (ASTNode *) new BasicBlockNode(statements, (int)ctx->getStart()->getLine());
@@ -385,8 +382,7 @@ antlrcpp::Any ASTGenerator::visitDecBlock(gazprea::GazpreaParser::DecBlockContex
  */
 antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockContext *ctx) {
     auto *statements = new std::vector<ASTNode *>;
-    unsigned int i;
-    for(i=0;i<ctx->statement().size(); ++i){
+    for(unsigned long i=0;i < ctx->statement().size(); ++i){
         ASTNode * node = (ASTNode *) visit(ctx->statement()[i]);
         if (dynamic_cast<DeclNode *>(node)) {
             std::cerr << "Declaration does not precede procedure body: " << ctx->statement()[i]->getText() << "\n";
@@ -469,7 +465,7 @@ antlrcpp::Any ASTGenerator::visitProcedureCall(gazprea::GazpreaParser::Procedure
     }
 
     auto *exprNodes = new std::vector<ASTNode*>;
-    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
     }
@@ -511,8 +507,7 @@ ASTGenerator::ASTGenerator() {
 antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *ctx) {
     //returns a vector or parameter nodes
     auto *paramVec = new std::vector<ASTNode *>;
-    unsigned long i;
-    for (i = 0; i < ctx->param().size(); i++){
+    for (unsigned long i = 0; i < ctx->param().size(); ++i){
         bool constant = nullptr == ctx->param().at(i)->VAR();
         if (ctx->param().at(i)->type()->tupleType()) {
             TupleType *tt = (TupleType *) ((ASTNode *) visit(ctx->param().at(i)->type()->tupleType()));
@@ -581,8 +576,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     } else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
 
-        unsigned int i;
-        for (i = 0; i < ctx->type().size(); i++) {
+        for (unsigned long i = 0; i < ctx->type().size(); ++i) {
             typeVec->push_back(ctx->type().at(i)->getText());
         }
         return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType(), (int)ctx->getStart()->getLine());
@@ -640,14 +634,13 @@ antlrcpp::Any ASTGenerator::visitProcedureCallDecl(gazprea::GazpreaParser::Proce
         tupleType = (TupleType *) (ASTNode *) visit(ctx->type(0)->tupleType());
     }
 
-    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
     }
 
     auto *typeVec = new std::vector<std::string>();
-    unsigned int i;
-    for (i = 0; i < ctx->type().size(); i++) {
+    for (unsigned long i = 0; i < ctx->type().size(); ++i) {
         typeVec->push_back(ctx->type().at(i)->getText());
     }
 
@@ -678,7 +671,7 @@ antlrcpp::Any ASTGenerator::visitProcedureCallAss(gazprea::GazpreaParser::Proced
     auto *exprNodes = new std::vector<ASTNode*>;
 
 
-    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+    for(unsigned long i = 0; i < ctx->expr().size(); ++ i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
     }
@@ -738,8 +731,7 @@ antlrcpp::Any ASTGenerator::visitTupleExpr(gazprea::GazpreaParser::TupleExprCont
 
 antlrcpp::Any ASTGenerator::visitTuple(gazprea::GazpreaParser::TupleContext *ctx) {
     auto *expr  = new std::vector<ASTNode *>;
-    unsigned long int i;
-    for(i = 0; i < ctx->expr().size(); i++){
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i){
         expr->push_back((ASTNode *) visit(ctx->expr(i)));
     }
     return (ASTNode *) new TupleNode(expr, (int)ctx->getStart()->getLine());
@@ -785,9 +777,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
-
-        unsigned int i;
-        for (i = 0; i < ctx->type().size(); i++) {
+        for (unsigned long i = 0; i < ctx->type().size(); ++i) {
             typeVec->push_back(ctx->type().at(i)->getText());
         }
 
@@ -819,8 +809,7 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
     std::string id = ctx->Identifier()->getText();
     auto *typeVec  = new std::vector<std::string>();
 
-    unsigned int i;
-    for (i = 0; i < ctx->type().size(); i++) {
+    for (unsigned long i = 0; i < ctx->type().size(); ++i) {
         typeVec->push_back(ctx->type().at(i)->getText());
     }
     globalVars->insert(id);
@@ -942,7 +931,7 @@ antlrcpp::Any ASTGenerator::visitFunctionCall(gazprea::GazpreaParser::FunctionCa
     }
 
     auto *exprNodes = new std::vector<ASTNode*>;
-    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i) {
         ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
         exprNodes->push_back(node);
     }

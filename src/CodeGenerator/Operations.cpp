@@ -271,7 +271,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 	else
 	    ret = it->geti1(0);
 
-	for(unsigned int i = 0; i < numLeftMembers; i++){
+	for(unsigned long i = 0; i < numLeftMembers; ++i){
         InternalTools::pair retVal;
 	    //get cur member
 	    leftMember  = it->getValFromTuple(left,  it->getConsi32(i));
