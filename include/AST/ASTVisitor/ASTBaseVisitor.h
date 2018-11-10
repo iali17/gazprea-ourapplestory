@@ -11,176 +11,175 @@
 class ASTBaseVisitor : public ASTVisitor {
 public:
     llvm::Value* visit(ASTNode   *node) override {
-
+        llvm::Value *ret = nullptr;
         if      (dynamic_cast<FileNode *>(node)) {
-            return visit((FileNode *) node);
+            ret =  visit((FileNode *) node);
         }
         else if (dynamic_cast<BlockNode *>(node)) {
-            return visit(((BlockNode *) node)->getFullBlock());
+            ret =  visit(((BlockNode *) node)->getFullBlock());
         }
         else if (dynamic_cast<BasicBlockNode *>(node)) {
-            return visit((BasicBlockNode *) node);
+            ret =  visit((BasicBlockNode *) node);
         }
         else if (dynamic_cast<ProcedureNode *>(node)) {
-            return visit((ProcedureNode *) node);
+            ret =  visit((ProcedureNode *) node);
         }
         else if (dynamic_cast<ParamNode *>(node)) {
-            return visit((ParamNode *) node);
+            ret =  visit((ParamNode *) node);
         }
         else if (dynamic_cast<ReturnNode *>(node)) {
-            return visit((ReturnNode *) node);
+            ret =  visit((ReturnNode *) node);
         }
         else if (dynamic_cast<INTNode *>(node)) {
-            return visit((INTNode *) node);
+            ret =  visit((INTNode *) node);
         }
         else if (dynamic_cast<RealNode *>(node)) {
-            return visit((RealNode *) node);
+            ret =  visit((RealNode *) node);
         }
         else if (dynamic_cast<CharNode *>(node)) {
-            return visit((CharNode *) node);
+            ret =  visit((CharNode *) node);
         }
         else if (dynamic_cast<BoolNode *>(node)) {
-            return visit((BoolNode *) node);
+            ret =  visit((BoolNode *) node);
         }
         else if (dynamic_cast<NullNode *>(node)) {
-            return visit((NullNode *) node);
+            ret =  visit((NullNode *) node);
         }
         else if (dynamic_cast<CondNode *>(node)) {
-            return visit((CondNode *) node);
+            ret =  visit((CondNode *) node);
         }
         else if (dynamic_cast<LoopNode *>(node)) {
-            return visit((LoopNode *) node);
+            ret =  visit((LoopNode *) node);
         }
         else if (dynamic_cast<DoLoopNode *>(node)) {
-            return visit((DoLoopNode *) node);
+            ret =  visit((DoLoopNode *) node);
         }
         else if (dynamic_cast<InLoopNode *>(node)) {
-            return visit((InLoopNode *) node);
+            ret =  visit((InLoopNode *) node);
         }
         else if (dynamic_cast<AssignNode *>(node)) {
-            return visit((AssignNode *) node);
+            ret =  visit((AssignNode *) node);
         }
         else if (dynamic_cast<DeclNode *>(node)) {
-            return visit((DeclNode *) node);
+            ret =  visit((DeclNode *) node);
         }
         else if (dynamic_cast<CastExprNode *>(node)) {
-            return visit((CastExprNode *) node);
+            ret =  visit((CastExprNode *) node);
         }
         else if (dynamic_cast<IDNode *>(node)) {
-            return visit((IDNode *) node);
+            ret =  visit((IDNode *) node);
         }
         else if (dynamic_cast<IdnNode *>(node)) {
-            return visit((IdnNode *) node);
+            ret =  visit((IdnNode *) node);
         }
         else if (dynamic_cast<InputNode *>(node)) {
-            return visit((InputNode *) node);
+            ret =  visit((InputNode *) node);
         }
         else if (dynamic_cast<OutputNode *>(node)) {
-            return visit((OutputNode *) node);
+            ret =  visit((OutputNode *) node);
         }
         else if (dynamic_cast<StreamDeclNode *>(node)) {
-            return visit((StreamDeclNode *) node);
+            ret =  visit((StreamDeclNode *) node);
         }
         else if (dynamic_cast<TypeDefNode *>(node)) {
-            return visit((TypeDefNode *) node);
+            ret =  visit((TypeDefNode *) node);
         }
         else if (dynamic_cast<CallNode *>(node)) {
-            return visit((CallNode *) node);
+            ret =  visit((CallNode *) node);
         }
         else if (dynamic_cast<AddNode *>(node)) {
-            return visit((AddNode *) node);
+            ret =  visit((AddNode *) node);
         }
         else if (dynamic_cast<SubNode *>(node)) {
-            return visit((SubNode *) node);
+            ret =  visit((SubNode *) node);
         }
         else if (dynamic_cast<MulNode *>(node)) {
-            return visit((MulNode *) node);
+            ret =  visit((MulNode *) node);
         }
         else if (dynamic_cast<DivNode *>(node)) {
-            return visit((DivNode *) node);
+            ret =  visit((DivNode *) node);
         }
         else if (dynamic_cast<RemNode *>(node)) {
-            return visit((RemNode *) node);
+            ret =  visit((RemNode *) node);
         }
         else if (dynamic_cast<ExpNode *>(node)) {
-            return visit((ExpNode *) node);
+            ret =  visit((ExpNode *) node);
         }
         else if (dynamic_cast<EQNode *>(node)) {
-            return visit((EQNode *) node);
+            ret =  visit((EQNode *) node);
         }
         else if (dynamic_cast<NEQNode *>(node)) {
-            return visit((NEQNode *) node);
+            ret =  visit((NEQNode *) node);
         }
         else if (dynamic_cast<LTNode *>(node)) {
-            return visit((LTNode *) node);
+            ret =  visit((LTNode *) node);
         }
         else if (dynamic_cast<GTNode *>(node)) {
-            return visit((GTNode *) node);
+            ret =  visit((GTNode *) node);
         }
         else if (dynamic_cast<NegateNode *>(node)) {
-            return visit((NegateNode *) node);
+            ret =  visit((NegateNode *) node);
         }
         else if (dynamic_cast<AndNode *>(node)) {
-            return visit((AndNode *) node);
+            ret =  visit((AndNode *) node);
         }
         else if (dynamic_cast<OrNode *>(node)) {
-            return visit((OrNode *) node);
+            ret =  visit((OrNode *) node);
         }
         else if (dynamic_cast<XOrNode *>(node)) {
-            return visit((XOrNode *) node);
+            ret =  visit((XOrNode *) node);
         }
         else if (dynamic_cast<LTENode *>(node)) {
-            return visit((LTENode *) node);
+            ret =  visit((LTENode *) node);
         }
         else if (dynamic_cast<GTENode *>(node)) {
-            return visit((GTENode *) node);
+            ret =  visit((GTENode *) node);
         }
         else if (dynamic_cast<ContinueNode *>(node)) {
-            return visit((ContinueNode *) node);
+            ret =  visit((ContinueNode *) node);
         }
         else if (dynamic_cast<BreakNode *>(node)) {
-            return visit((BreakNode *) node);
-        }
-        else if (dynamic_cast<ProcedureCallNode *>(node)) {
-            return visit((ProcedureCallNode *) node);
+            ret =  visit((BreakNode *) node);
         }
         else if (dynamic_cast<TupleDeclNode *>(node)) {
-            return visit((TupleDeclNode *) node);
+            ret =  visit((TupleDeclNode *) node);
         }
         else if (dynamic_cast<ProtoProcedureNode *>(node)) {
-            return visit((ProtoProcedureNode *) node);
+            ret =  visit((ProtoProcedureNode *) node);
         }
         else if (dynamic_cast<TupleType *>(node)) {
-            return visit((TupleType *) node);
+            ret =  visit((TupleType *) node);
         }
         else if (dynamic_cast<GlobalDeclNode *>(node)) {
-            return visit((GlobalDeclNode *) node);
+            ret =  visit((GlobalDeclNode *) node);
         }
         else if (dynamic_cast<GlobalRefNode *>(node)) {
-            return visit((GlobalRefNode *) node);
+            ret =  visit((GlobalRefNode *) node);
         }
         else if (dynamic_cast<TupleNode *>(node)) {
-            return visit((TupleNode *) node);
+            ret =  visit((TupleNode *) node);
         }
         else if (dynamic_cast<PythonTupleAssNode *>(node)) {
-            return visit((PythonTupleAssNode *) node);
+            ret =  visit((PythonTupleAssNode *) node);
         }
         else if (dynamic_cast<IndexTupleNode *>(node)) {
-            return visit((IndexTupleNode *) node);
+            ret =  visit((IndexTupleNode *) node);
         }
         else if (dynamic_cast<TupleMemberAssNode *>(node)) {
-            return visit((TupleMemberAssNode *) node);
+            ret =  visit((TupleMemberAssNode *) node);
         }
         else if (dynamic_cast<TupleInputNode *>(node)) {
-            return visit((TupleInputNode *) node);
+            ret =  visit((TupleInputNode *) node);
         }
         else if (dynamic_cast<FunctionNode *>(node)) {
-            return visit((FunctionNode *) node);
+            ret =  visit((FunctionNode *) node);
         }
-        else if (dynamic_cast<FunctionCallNode *>(node)) {
-            return visit((FunctionCallNode *) node);
+
+        if (ret){
+            node->setLlvmType(ret->getType());
         }
-        return nullptr;
+
+        return ret;
     };
 
     llvm::Value* visit(FileNode  *node) override { return nullptr;};
@@ -226,20 +225,18 @@ public:
     llvm::Value* visit(LTENode *node) override { return nullptr;};
     llvm::Value* visit(ContinueNode *node) override { return nullptr;};
     llvm::Value* visit(BreakNode *node) override { return nullptr;};
-    llvm::Value* visit(ProcedureCallNode *node) override { return nullptr;};
     llvm::Value* visit(ProtoProcedureNode *node) override { return nullptr;};
-    llvm::Value *visit(TupleDeclNode *node) override {return nullptr;}
-    llvm::Value *visit(TupleType *node) override { return nullptr; }
-    llvm::Value *visit(PythonTupleAssNode *node) override { return nullptr; }
-    llvm::Value *visit(GlobalDeclNode *node) override { return nullptr; }
-    llvm::Value *visit(GlobalRefNode *node) override { return nullptr; }
-    llvm::Value *visit(TupleNode *node) override { return nullptr; }
-    llvm::Value *visit(IndexTupleNode *node) override { return nullptr; }
-    llvm::Value *visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
-    llvm::Value *visit(TupleMemberAssNode *node) override { return nullptr; }
-    llvm::Value *visit(TupleInputNode *node) override { return nullptr; }
-    llvm::Value *visit(FunctionNode *node) override { return nullptr; }
-    llvm::Value *visit(FunctionCallNode *node) override { return nullptr; }
+    llvm::Value* visit(TupleDeclNode *node) override {return nullptr;}
+    llvm::Value* visit(TupleType *node) override { return nullptr; }
+    llvm::Value* visit(PythonTupleAssNode *node) override { return nullptr; }
+    llvm::Value* visit(GlobalDeclNode *node) override { return nullptr; }
+    llvm::Value* visit(GlobalRefNode *node) override { return nullptr; }
+    llvm::Value* visit(TupleNode *node) override { return nullptr; }
+    llvm::Value* visit(IndexTupleNode *node) override { return nullptr; }
+    llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
+    llvm::Value* visit(TupleMemberAssNode *node) override { return nullptr; }
+    llvm::Value* visit(TupleInputNode *node) override { return nullptr; }
+    llvm::Value* visit(FunctionNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

@@ -25,7 +25,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     std::string uniqueIden;
     llvm::Value *newParamPtr;
 
-    for (unsigned int i = 0; i < arguNode->size(); ++i) {
+    for (unsigned long i = 0; i < arguNode->size(); ++i) {
         pNode = dynamic_cast<ParamNode *>(paramNode->at(i));
         llvm::Type * arguType;
         llvm::Type * paramType;
@@ -155,21 +155,32 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
 }
 
 llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
-    auto *declNodes  = node->getDecls();
-    auto *members    = new std::vector<llvm::Type *>;
-    llvm::Type* type;
-    auto *memberNames = new std::unordered_map<std::string, int>;
-    int i = 0;
+    auto *declNodes     = node->getDecls();
+    auto *members       = new std::vector<llvm::Type *>;
+    auto *memberNames   = new std::unordered_map<std::string, int>;
+    int   i             = 0;
+    std::string tupleID = "tuple";
+
+    llvm::StructType* newStruct;
+    llvm::Type*       type;
+    std::string       typeStr;
+    std::string       memberID;
+
     for (auto element : * declNodes) {
-        type = symbolTable->resolveType(((DeclNode *) element)->getTypeIds()->at(0))->getTypeDef();
+        typeStr = ((DeclNode *) element)->getTypeIds()->at(0);
+        type    = symbolTable->resolveType(typeStr)->getTypeDef();
         members->push_back(type->getPointerTo());
-        if(!(((DeclNode *) element)->getID().empty()))
-            memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
-        i++;
+
+        tupleID += typeStr;
+        memberID = ((DeclNode *) element)->getID();
+        if(not(memberID.empty())) {
+            memberNames->insert(std::pair<std::string, int>(memberID, i));
+            tupleID += "|" + memberID;
+        }
+        ++i;
     }
 
-
-    llvm::StructType * newStruct = llvm::StructType::create(*members, "tuple");
+    newStruct = llvm::StructType::create(*members, tupleID);
     symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
     return newStruct;
 }
@@ -191,3 +202,121 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
     return idx;
 }
 
+llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
+        *paramsList, int nodeType, int line, TupleType *tupleType) {
+    std::vector<llvm::Type *> params;
+    llvm::Type               *retType;
+    llvm::FunctionType       *funcTy;
+    llvm::Function           *F;
+    llvm::StructType         *structType;
+    std::string               typeName;
+
+    /*
+     * Setting Return Type
+     *
+     * Case 1: Return type is tuple and it has not been added to the table yet
+     * Case 2: Return type is tuple and it was added to the symbol table
+     * Case 3: Return type is either global or a base type
+     */
+    if ((tupleType) && (not(symbolTable->resolveType(strRetType)))) {
+        retType = parseStructType(tupleType);
+        GazpreaTupleType *garb = symbolTable->resolveTupleType(retType);
+        symbolTable->addTupleType(strRetType, retType, garb->getStringRefMap(), garb->getMembers());
+    } else if (tupleType) {
+        GazpreaType * gazpreaType = symbolTable->resolveType(strRetType);
+        retType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
+    } else {
+        retType = symbolTable->resolveType(strRetType)->getTypeDef();
+    }
+
+    /*
+     * Setting parameter type
+     *
+     * Similar process to above, we just do it for each parameter
+     */
+    for (auto it = paramsList->begin(); it!= paramsList->end(); ++it) {
+        //var decl
+        auto * pNode = (ParamNode *) it.operator*();
+        typeName = (pNode)->getDeclaredType();
+
+        if(pNode->getTupleType() && not(symbolTable->resolveType(typeName))){
+            structType = parseStructType(pNode->getTupleType());
+            GazpreaTupleType * garb = symbolTable->resolveTupleType(structType);
+            symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
+
+            params.push_back(structType->getPointerTo());
+        } else if(pNode->getTupleType()) {
+            GazpreaType * gazpreaType = symbolTable->resolveType(typeName);
+            structType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
+
+            params.push_back(structType->getPointerTo());
+        } else {
+            params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        }
+    }
+
+    symbolTable->addFunctionSymbol(functionName, nodeType, paramsList);
+
+    if(tupleType){
+        funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
+    } else {
+        funcTy = llvm::FunctionType::get(retType, params, false);
+    }
+
+    F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, functionName, mod);
+
+    //handle errors
+    if (F->getName() != functionName) {
+        F->eraseFromParent();
+        F = mod->getFunction(functionName);
+
+        if (!F->empty()) {
+            std::cerr << "redefinition of function at line " << line << ". Aborting...\n";
+            exit(1);
+        }
+
+        if(F->arg_size() != paramsList->size()) {
+            std::cerr << "redefinition of function with different # args at line " << line << ". Aborting...\n";
+            exit(1);
+        }
+    }
+    return F;
+}
+
+void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block) {
+    //new scope
+    symbolTable->pushNewScope();
+
+    //preserve old while stack
+    auto *oldWhileStack = whileStack;
+    whileStack = new std::stack<WhileBuilder *>;
+
+    size_t idx = 0;
+    for (auto AI = F->arg_begin(); idx != F->arg_size(); ++AI, ++idx){
+        auto *p = (ParamNode *) paramsList->at(idx);
+        symbolTable->addSymbol(p->getVarName(), p->getType(), false, AI);
+        AI->setName(p->getVarName());
+    }
+
+    // Create an entry block and set the inserter.
+    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
+    ir->SetInsertPoint(entry);
+
+    //visit block and create ir
+    visit(block);
+
+    //pop scope, swap back in while stack
+    symbolTable->popScope();
+    whileStack = oldWhileStack;
+}
+
+llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments){
+    //get function
+    FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(functionName);
+    llvm::Function *func = mod->getFunction(functionName);
+
+    //get params
+    std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), arguments);
+
+    return ir->CreateCall(func, paramVec);
+}

@@ -15,12 +15,12 @@
 #define INSTREAM  0
 #define OUTSTREAM 1
 #define BOOLEAN   2
-#define INTEGER   3
-#define VECTOR    4
+#define CHAR      3
+#define INTEGER   4
 #define REAL      5
-#define CHAR      6
-#define TUPLE     7
-
+#define TUPLE     6
+#define VECTOR    7
+#define MATRIX    8
 #define NEQ 0
 #define EQ  1
 
@@ -28,19 +28,12 @@
 class ASTNode  {
 public:
     virtual ~ASTNode() = default;
-
     explicit ASTNode(int);
-
     virtual int getType() const;
-
     llvm::Type *getLlvmType() const;
-
     void setLlvmType(llvm::Type *llvmType);
-
     int getLine() const;
-
     void setLine(int);
-
 
 protected:
     int type = UNDEF;

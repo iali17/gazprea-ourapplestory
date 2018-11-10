@@ -28,13 +28,13 @@ expr
     | functionCall                                                  #functionExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
-    | <assoc=right> left=expr EXP right=expr                        #exponentExpr
-    | left=expr op=(MUL | DIV | REM) right=expr                     #mulExpr
-    | left=expr op=(ADD | SUB) right=expr                           #addExpr
-    | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #lessExpr
-    | left=expr op=(EEQL | NEQL) right=expr                         #eqlExpr
-    | left=expr AND right=expr                                      #andExpr
-    | left=expr op=(OR | XOR) right=expr                            #orExpr
+    | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
+    | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
+    | left=expr op=(ADD | SUB) right=expr                           #arithExpr
+    | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #compExpr
+    | left=expr op=(EEQL | NEQL) right=expr                         #compExpr
+    | left=expr op=AND right=expr                                   #compExpr
+    | left=expr op=(OR | XOR) right=expr                            #compExpr
     ;
 
 continueStat
@@ -64,8 +64,6 @@ statement
 
 assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
-    | Identifier EQL op=(ADD | SUB | NOT)? Identifier
-    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
@@ -73,8 +71,6 @@ assignment
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    | (CONST | VAR | type) type* Identifier EQL
-    op=(ADD | SUB | NOT)? Identifier'(' (expr (COMMA expr)*)? ')' SEMICOLON #procedureCallDecl
     | (CONST | VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     | (CONST | VAR | type) type* Identifier SEMICOLON                        #emptyDecl
     ;

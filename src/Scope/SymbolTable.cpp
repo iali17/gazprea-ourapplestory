@@ -43,7 +43,7 @@ Symbol *SymbolTable::resolveSymbol(std::string symbolName) {
 }
 
 std::string SymbolTable::getNewScopeString(){
-    return "_s" + std::to_string(scopeCount++) + "_";
+    return "_s" + std::to_string(++scopeCount) + "_";
 }
 
 void SymbolTable::pushNewScope() {

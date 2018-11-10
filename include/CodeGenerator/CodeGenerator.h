@@ -38,7 +38,6 @@ public:
     llvm::Value* visit(BasicBlockNode     *node) override;
     llvm::Value* visit(ASTNode            *node) override;
     llvm::Value* visit(ProcedureNode      *node) override;
-    llvm::Value* visit(ParamNode          *node) override;
     llvm::Value* visit(ReturnNode         *node) override;
     llvm::Value* visit(INTNode            *node) override;
     llvm::Value* visit(RealNode           *node) override;
@@ -77,7 +76,6 @@ public:
     llvm::Value* visit(NegateNode         *node) override;
     llvm::Value* visit(ContinueNode       *node) override;
     llvm::Value* visit(BreakNode          *node) override;
-    llvm::Value* visit(ProcedureCallNode  *node) override;
     llvm::Value* visit(ProtoProcedureNode *node) override;
     llvm::Value* visit(TupleDeclNode      *node) override;
     llvm::Value* visit(TupleType          *node) override;
@@ -89,7 +87,6 @@ public:
     llvm::Value* visit(TupleMemberAssNode *node) override;
     llvm::Value* visit(TupleInputNode     *node) override;
     llvm::Value* visit(FunctionNode       *node) override;
-    llvm::Value* visit(FunctionCallNode   *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
@@ -98,6 +95,9 @@ public:
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
+    llvm::Function *declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line, TupleType * tupleType = nullptr);
+    void generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block);
+    llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
 
