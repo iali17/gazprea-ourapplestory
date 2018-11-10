@@ -105,19 +105,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
  * @return llvm::Value *
  */
 llvm::Value *CodeGenerator::visit(TupleType *node) {
-    auto * declNodes = node->getDecls();
-    auto members = new std::vector<llvm::Type *>;
-    auto *memberNames = new std::unordered_map<std::string, int>;
-    int i = 0;
-    for (auto element : * declNodes) {
-        members->push_back(element->getLlvmType()->getPointerTo());
-        if(!(((DeclNode *) element)->getID().empty()))
-            memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
-        ++i;
-    }
-
-    auto * newStruct = llvm::StructType::create(*members);
-    symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
+    llvm::StructType * newStruct = parseStructType(node);
     return ir->CreateAlloca(newStruct);
 }
 

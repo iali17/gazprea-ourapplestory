@@ -155,11 +155,14 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
 }
 
 llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
-    auto *declNodes  = node->getDecls();
-    auto *members    = new std::vector<llvm::Type *>;
-    llvm::Type* type;
+    auto *declNodes   = node->getDecls();
+    auto *members     = new std::vector<llvm::Type *>;
     auto *memberNames = new std::unordered_map<std::string, int>;
-    int i = 0;
+    int   i           = 0;
+
+    llvm::StructType* newStruct;
+    llvm::Type*       type;
+
     for (auto element : * declNodes) {
         type = symbolTable->resolveType(((DeclNode *) element)->getTypeIds()->at(0))->getTypeDef();
         members->push_back(type->getPointerTo());
@@ -168,8 +171,7 @@ llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
         ++i;
     }
 
-
-    llvm::StructType * newStruct = llvm::StructType::create(*members, "tuple");
+    newStruct = llvm::StructType::create(*members, "tuple");
     symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
     return newStruct;
 }
