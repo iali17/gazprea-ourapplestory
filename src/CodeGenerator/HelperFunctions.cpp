@@ -198,6 +198,7 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
     llvm::FunctionType       *funcTy;
     llvm::Function           *F;
     llvm::StructType         *structType;
+    std::string               typeName;
 
     /*
      * Setting Return Type
@@ -224,12 +225,10 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
      *
      * Similar process to above, we just do it for each parameter
      */
-
     for (auto it = paramsList->begin(); it!= paramsList->end(); ++it) {
         //var decl
         auto * pNode = (ParamNode *) it.operator*();
-        std::string typeName = (pNode)->getDeclaredType();
-
+        typeName = (pNode)->getDeclaredType();
 
         if(pNode->getTupleType() && not(symbolTable->resolveType(typeName))){
             structType = parseStructType(pNode->getTupleType());
@@ -277,3 +276,40 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
     return F;
 }
 
+void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block) {
+    //new scope
+    symbolTable->pushNewScope();
+
+    //preserve old while stack
+    auto *oldWhileStack = whileStack;
+    whileStack = new std::stack<WhileBuilder *>;
+
+    size_t idx = 0;
+    for (auto AI = F->arg_begin(); idx != F->arg_size(); ++AI, ++idx){
+        auto *p = (ParamNode *) paramsList->at(idx);
+        symbolTable->addSymbol(p->getVarName(), p->getType(), false, AI);
+        AI->setName(p->getVarName());
+    }
+
+    // Create an entry block and set the inserter.
+    llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
+    ir->SetInsertPoint(entry);
+
+    //visit block and create ir
+    visit(block);
+
+    //pop scope, swap back in while stack
+    symbolTable->popScope();
+    whileStack = oldWhileStack;
+}
+
+llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments){
+    //get function
+    FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(functionName);
+    llvm::Function *func = mod->getFunction(functionName);
+
+    //get params
+    std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), arguments);
+
+    return ir->CreateCall(func, paramVec);
+}
