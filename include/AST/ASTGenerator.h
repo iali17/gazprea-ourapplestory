@@ -7,6 +7,7 @@
 
 #include "GazpreaBaseVisitor.h"
 #include "AST.h"
+#include "Scope/SymbolTable.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
@@ -18,6 +19,7 @@ private:
     std::unordered_set<std::string> * globalVars;
     std::unordered_set<std::string> * functionNames;
     std::unordered_set<std::string> * procedureNames;
+    SymbolTable                     * symbolTable;
     bool inFunction = false;
     antlrcpp::Any visitFile(gazprea::GazpreaParser::FileContext *ctx) override;
     antlrcpp::Any visitIntegerExpr(gazprea::GazpreaParser::IntegerExprContext *ctx) override;

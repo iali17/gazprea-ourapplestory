@@ -126,8 +126,8 @@ antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::Identifi
     //check if global
     if (not(globalVar == globalVars->end()))
         return (ASTNode *) new GlobalRefNode(id, (int)ctx->getStart()->getLine());
-
-    return (ASTNode *) new IDNode(id, (int)ctx->getStart()->getLine());
+    IDNode *idNode = new IDNode(id, (int)ctx->getStart()->getLine());
+    return (ASTNode *) idNode;
 }
 
 /**
@@ -390,6 +390,7 @@ ASTGenerator::ASTGenerator() {
     globalVars     = new std::unordered_set<std::string>();
     functionNames  = new std::unordered_set<std::string>();
     procedureNames = new std::unordered_set<std::string>();
+    symbolTable    = new SymbolTable();
 }
 
 /**

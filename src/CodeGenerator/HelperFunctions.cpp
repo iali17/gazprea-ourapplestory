@@ -155,23 +155,32 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
 }
 
 llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
-    auto *declNodes   = node->getDecls();
-    auto *members     = new std::vector<llvm::Type *>;
-    auto *memberNames = new std::unordered_map<std::string, int>;
-    int   i           = 0;
+    auto *declNodes     = node->getDecls();
+    auto *members       = new std::vector<llvm::Type *>;
+    auto *memberNames   = new std::unordered_map<std::string, int>;
+    int   i             = 0;
+    std::string tupleID = "tuple";
 
     llvm::StructType* newStruct;
     llvm::Type*       type;
+    std::string       typeStr;
+    std::string       memberID;
 
     for (auto element : * declNodes) {
-        type = symbolTable->resolveType(((DeclNode *) element)->getTypeIds()->at(0))->getTypeDef();
+        typeStr = ((DeclNode *) element)->getTypeIds()->at(0);
+        type    = symbolTable->resolveType(typeStr)->getTypeDef();
         members->push_back(type->getPointerTo());
-        if(!(((DeclNode *) element)->getID().empty()))
-            memberNames->insert(std::pair<std::string, int> (((DeclNode *) element)->getID(), i));
+
+        tupleID += typeStr;
+        memberID = ((DeclNode *) element)->getID();
+        if(not(memberID.empty())) {
+            memberNames->insert(std::pair<std::string, int>(memberID, i));
+            tupleID += "|" + memberID;
+        }
         ++i;
     }
 
-    newStruct = llvm::StructType::create(*members, "tuple");
+    newStruct = llvm::StructType::create(*members, tupleID);
     symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
     return newStruct;
 }
