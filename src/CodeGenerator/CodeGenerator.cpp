@@ -89,7 +89,7 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
  * @return nullptr
  */
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
-    if (node->getExpr() == nullptr){
+    if (node->getExpr() == nullptr) {
         ir->CreateRetVoid();
     } else {
         llvm::Value *ret = visit(node->getExpr());
@@ -202,11 +202,12 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
     //begin while
     whileBuilder->beginWhile();
     //insert control
-    if(node->getControl()) {
+    if (node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
         whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
-    } else
+    } else {
         whileBuilder->insertControl(it->geti1(1));
+    }
 
     //generate body
     visit(node->getBlock());
