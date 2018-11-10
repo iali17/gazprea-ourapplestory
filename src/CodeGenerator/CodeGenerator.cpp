@@ -199,14 +199,18 @@ llvm::Value *CodeGenerator::visit(CondNode *node) {
 llvm::Value *CodeGenerator::visit(LoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileStack->push(whileBuilder);
+    //begin while
     whileBuilder->beginWhile();
+    //insert control
     if(node->getControl()) {
         llvm::Value *cond = visit(node->getControl());
         whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
     } else
         whileBuilder->insertControl(it->geti1(1));
 
+    //generate body
     visit(node->getBlock());
+    //end while
     whileBuilder->endWhile();
     whileStack->pop();
     return nullptr;
@@ -221,11 +225,16 @@ llvm::Value *CodeGenerator::visit(LoopNode *node) {
 llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     auto whileBuilder = new WhileBuilder(globalCtx, ir, mod);
     whileStack->push(whileBuilder);
+
+    //begin while
     whileBuilder->beginWhile();
+    //insert body
     visit(node->getBlock());
+    //insert control
     whileBuilder->beginInsertControl();
     llvm::Value *cond = visit(node->getControl());
-    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));
+    whileBuilder->insertControl(ct->varCast(boolTy, cond, node->getLine()));\
+    //end while
     whileBuilder->endWhile();
     whileStack->pop();
     return nullptr;
