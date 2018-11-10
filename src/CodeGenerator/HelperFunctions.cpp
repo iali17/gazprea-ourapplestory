@@ -191,3 +191,89 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
     return idx;
 }
 
+llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line,
+                                 TupleType *tupleType) {
+    std::vector<llvm::Type *> params;
+    llvm::Type               *retType;
+    llvm::FunctionType       *funcTy;
+    llvm::Function           *F;
+    llvm::StructType         *structType;
+
+    /*
+     * Setting Return Type
+     *
+     * Case 1: Return type is tuple and it has not been added to the table yet
+     * Case 2: Return type is tuple and it was added to the symbol table
+     * Case 3: Return type is either global or a base type
+     */
+    if ((tupleType) && (not(symbolTable->resolveType(strRetType)))) {
+        retType = parseStructType(tupleType);
+        GazpreaTupleType *garb = symbolTable->resolveTupleType(retType);
+        symbolTable->addTupleType(strRetType, retType, garb->getStringRefMap(), garb->getMembers());
+    }
+    else if (tupleType) {
+        GazpreaType * gazpreaType = symbolTable->resolveType(strRetType);
+        retType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
+    }
+    else {
+        retType = symbolTable->resolveType(strRetType)->getTypeDef();
+    }
+
+    /*
+     * Setting parameter type
+     *
+     * Similar process to above, we just do it for each parameter
+     */
+
+    for (auto it = paramsList->begin(); it!= paramsList->end(); ++it) {
+        //var decl
+        auto * pNode = (ParamNode *) it.operator*();
+        std::string typeName = (pNode)->getDeclaredType();
+
+
+        if(pNode->getTupleType() && not(symbolTable->resolveType(typeName))){
+            structType = parseStructType(pNode->getTupleType());
+            GazpreaTupleType * garb = symbolTable->resolveTupleType(structType);
+            symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
+
+            params.push_back(structType->getPointerTo());
+        }
+        else if(pNode->getTupleType()) {
+            GazpreaType * gazpreaType = symbolTable->resolveType(typeName);
+            structType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
+
+            params.push_back(structType->getPointerTo());
+        }
+        else {
+            params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
+        }
+    }
+
+    symbolTable->addFunctionSymbol(functionName, nodeType, paramsList);
+
+    if(tupleType){
+        funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
+    } else {
+        funcTy = llvm::FunctionType::get(retType, params, false);
+    }
+
+    F = llvm::Function::Create(funcTy, llvm::Function::ExternalLinkage, functionName, mod);
+
+    //handle errors
+    if (F->getName() != functionName) {
+        F->eraseFromParent();
+        F = mod->getFunction(functionName);
+
+        if (!F->empty()) {
+            std::cerr << "redefinition of function at line " << line << ". Aborting...\n";
+            exit(1);
+        }
+
+        if(F->arg_size() != paramsList->size()) {
+            std::cerr << "redefinition of function with different # args at line " << line << ". Aborting...\n";
+            exit(1);
+        }
+    }
+    return F;
+}
+
