@@ -6,7 +6,7 @@ procedure main() returns integer {
     var out = std_output();
     var stdin = std_input();
 
-    x = cubed(2);
+    var x = cubed(2);
 
     x -> out; '\n' -> out;
 

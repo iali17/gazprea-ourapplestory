@@ -38,7 +38,6 @@ public:
     llvm::Value* visit(BasicBlockNode     *node) override;
     llvm::Value* visit(ASTNode            *node) override;
     llvm::Value* visit(ProcedureNode      *node) override;
-    llvm::Value* visit(ParamNode          *node) override;
     llvm::Value* visit(ReturnNode         *node) override;
     llvm::Value* visit(INTNode            *node) override;
     llvm::Value* visit(RealNode           *node) override;
@@ -77,7 +76,6 @@ public:
     llvm::Value* visit(NegateNode         *node) override;
     llvm::Value* visit(ContinueNode       *node) override;
     llvm::Value* visit(BreakNode          *node) override;
-    llvm::Value* visit(ProcedureCallNode  *node) override;
     llvm::Value* visit(ProtoProcedureNode *node) override;
     llvm::Value* visit(TupleDeclNode      *node) override;
     llvm::Value* visit(TupleType          *node) override;
@@ -89,7 +87,6 @@ public:
     llvm::Value* visit(TupleMemberAssNode *node) override;
     llvm::Value* visit(TupleInputNode     *node) override;
     llvm::Value* visit(FunctionNode       *node) override;
-    llvm::Value* visit(FunctionCallNode   *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions

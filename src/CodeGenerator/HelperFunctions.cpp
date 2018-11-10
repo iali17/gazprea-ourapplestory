@@ -191,8 +191,8 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
     return idx;
 }
 
-llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line,
-                                 TupleType *tupleType) {
+llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
+        *paramsList, int nodeType, int line, TupleType *tupleType) {
     std::vector<llvm::Type *> params;
     llvm::Type               *retType;
     llvm::FunctionType       *funcTy;
@@ -211,12 +211,10 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
         retType = parseStructType(tupleType);
         GazpreaTupleType *garb = symbolTable->resolveTupleType(retType);
         symbolTable->addTupleType(strRetType, retType, garb->getStringRefMap(), garb->getMembers());
-    }
-    else if (tupleType) {
+    } else if (tupleType) {
         GazpreaType * gazpreaType = symbolTable->resolveType(strRetType);
         retType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
-    }
-    else {
+    } else {
         retType = symbolTable->resolveType(strRetType)->getTypeDef();
     }
 
@@ -236,14 +234,12 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             symbolTable->addTupleType(typeName, structType, garb->getStringRefMap(),  garb->getMembers());
 
             params.push_back(structType->getPointerTo());
-        }
-        else if(pNode->getTupleType()) {
+        } else if(pNode->getTupleType()) {
             GazpreaType * gazpreaType = symbolTable->resolveType(typeName);
             structType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
 
             params.push_back(structType->getPointerTo());
-        }
-        else {
+        } else {
             params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
         }
     }

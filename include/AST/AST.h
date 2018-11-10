@@ -42,9 +42,7 @@
 
 #include "AST/ASTNodes/FuncProcNodes/CallNode.h"
 #include "AST/ASTNodes/FuncProcNodes/FunctionNode.h"
-#include "AST/ASTNodes/FuncProcNodes/FunctionCallNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ParamNode.h"
-#include "AST/ASTNodes/FuncProcNodes/ProcedureCallNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProcedureNode.h"
 #include "AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h"
 

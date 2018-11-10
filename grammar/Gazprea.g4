@@ -64,8 +64,6 @@ statement
 
 assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
-    | Identifier EQL op=(ADD | SUB | NOT)? Identifier
-    '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
@@ -73,8 +71,6 @@ assignment
 
 declaration
     : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    | (CONST | VAR | type) type* Identifier EQL
-    op=(ADD | SUB | NOT)? Identifier'(' (expr (COMMA expr)*)? ')' SEMICOLON #procedureCallDecl
     | (CONST | VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
     | (CONST | VAR | type) type* Identifier SEMICOLON                        #emptyDecl
     ;

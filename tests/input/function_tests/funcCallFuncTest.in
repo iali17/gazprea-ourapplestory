@@ -5,7 +5,7 @@ procedure main() returns integer {
     var out = std_output();
     var stdin = std_input();
 
-    x = squared(2);
+    var x = squared(2);
 
     x -> out; '\n' -> out;
 
