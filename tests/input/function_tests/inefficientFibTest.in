@@ -4,7 +4,7 @@ function fib(integer x) returns integer;
 procedure main() returns integer{
 var out = std_output();
 
-integer a = fib(43);
+integer a = fib(30);
 
 a->out;
 

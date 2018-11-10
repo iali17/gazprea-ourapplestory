@@ -226,9 +226,9 @@ llvm::Value *CodeGenerator::visit(FunctionNode *node) {
 llvm::Value* CodeGenerator::visit(ProcedureCallNode *node) {
     FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getProcedureName());
     llvm::Function *func = mod->getFunction(node->getProcedureName());
-    std::vector<llvm::Value *> dumb = getParamVec(functionSymbol->getParamsVec(), node->getExprNode());
+    std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), node->getExprNode());
 
-    llvm::Value *val = ir->CreateCall(func, dumb);
+    llvm::Value *val = ir->CreateCall(func, paramVec);
 
 
     if (node->getUnOp() == NEG) {
@@ -356,4 +356,18 @@ llvm::Value *CodeGenerator::visit(ProtoProcedureNode * node) {
         }
     }
     return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(FunctionCallNode *node) {
+    std::vector<ASTNode *>  paramsList = *node->getArguments();
+    std::vector<llvm::Type *> params;
+
+    FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(node->getFunctionName());
+    llvm::Function *func = mod->getFunction(node->getFunctionName());
+    std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), node->getArguments());
+
+    llvm::Value *val = ir->CreateCall(func, paramVec);
+
+    return val;
+
 }

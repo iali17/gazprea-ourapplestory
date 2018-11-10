@@ -25,7 +25,7 @@ expr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr ']'                                       #indexExpr
     | tupleMember                                                   #tupleIndexExpr
- //   | functionCall                                                  #functionExpr
+    | functionCall                                                  #functionExpr
     | left=expr DOTDOT right=expr                                   #domainExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr EXP right=expr                        #exponentExpr
@@ -64,10 +64,10 @@ statement
 
 assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
-    | Identifier EQL expr SEMICOLON                                         #normalAss
     | Identifier EQL op=(ADD | SUB | NOT)? Identifier
     '(' (expr (COMMA expr)*)? ')' SEMICOLON                                 #procedureCallAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
+    | Identifier EQL expr SEMICOLON                                         #normalAss
     | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
     ;
 

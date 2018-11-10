@@ -931,3 +931,20 @@ antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoCont
             (int)ctx->getStart()->getLine(), tupleType);
     return p;
 }
+
+antlrcpp::Any ASTGenerator::visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) {
+    std::string functionName = ctx->Identifier()->getText();
+
+    // Checks if in a function
+    if(inFunction) {
+        auto ret = functionNames->find(ctx->Identifier()->getText());
+        assert(ret != functionNames->end());
+    }
+
+    auto *exprNodes = new std::vector<ASTNode*>;
+    for(unsigned int i = 0; i < ctx->expr().size(); ++i) {
+        ASTNode * node = (ASTNode *) visit(ctx->expr()[i]);
+        exprNodes->push_back(node);
+    }
+    return (ASTNode *) new FunctionCallNode((int)ctx->getStart()->getLine(), functionName, exprNodes);
+}

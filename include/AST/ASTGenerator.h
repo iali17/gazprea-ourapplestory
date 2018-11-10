@@ -78,6 +78,7 @@ private:
     antlrcpp::Any visitFunctionReturns(gazprea::GazpreaParser::FunctionReturnsContext *ctx) override;
     antlrcpp::Any visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) override;
     antlrcpp::Any visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) override;
+    antlrcpp::Any visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) override;
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

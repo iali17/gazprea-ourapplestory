@@ -67,6 +67,7 @@ public:
     virtual llvm::Value* visit(TupleMemberAssNode *node)                  = 0;
     virtual llvm::Value* visit(TupleInputNode *node)                      = 0;
     virtual llvm::Value* visit(FunctionNode *node)                        = 0;
+    virtual llvm::Value* visit(FunctionCallNode *node)                    = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

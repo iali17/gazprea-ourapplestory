@@ -177,6 +177,9 @@ public:
         else if (dynamic_cast<FunctionNode *>(node)) {
             return visit((FunctionNode *) node);
         }
+        else if (dynamic_cast<FunctionCallNode *>(node)) {
+            return visit((FunctionCallNode *) node);
+        }
         return nullptr;
     };
 
@@ -236,6 +239,7 @@ public:
     llvm::Value *visit(TupleMemberAssNode *node) override { return nullptr; }
     llvm::Value *visit(TupleInputNode *node) override { return nullptr; }
     llvm::Value *visit(FunctionNode *node) override { return nullptr; }
+    llvm::Value *visit(FunctionCallNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

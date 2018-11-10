@@ -89,6 +89,7 @@ public:
     llvm::Value* visit(TupleMemberAssNode *node) override;
     llvm::Value* visit(TupleInputNode     *node) override;
     llvm::Value* visit(FunctionNode       *node) override;
+    llvm::Value* visit(FunctionCallNode   *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
