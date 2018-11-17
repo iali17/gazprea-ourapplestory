@@ -10,3 +10,6 @@ llvm::Type *intTy;
 llvm::Type *charTy;
 llvm::Type *realTy;
 llvm::Type *boolTy;
+llvm::Type *vecTy;
+llvm::Type *matrixTy;
+llvm::Type *intervalTy;

@@ -50,6 +50,16 @@ llvm::Value *ExternalTools::aliCalloc(llvm::Value *arrSize, int elementSize, boo
     return x;
 }
 
+void ExternalTools::registerTest() {
+    llvm::FunctionType *fTy = llvm::TypeBuilder<void (int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("dummyPrint", fTy));
+}
+
+void ExternalTools::callTest(llvm::Value *val) {
+    llvm::Function *myDummy = mod->getFunction("dummyPrint");
+    ir->CreateCall(myDummy, {val});
+}
+
 void ExternalTools::registerFree() {
     // Declare calloc. Returns char *, takes array size, element size.
     llvm::FunctionType *fTy = llvm::TypeBuilder<void (void *), false>::get(*globalCtx);
@@ -374,4 +384,12 @@ llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
         return aliScanf(FLOAT_FORMAT_STR, scanTo);
     }
     return nullptr;
+}
+
+llvm::StructType* ExternalTools::setUpVector() {
+    std::vector<llvm::Type *> d;
+    d.push_back(intTy->getPointerTo());
+    d.push_back(intTy->getPointerTo());
+    d.push_back(charTy->getPointerTo());
+    return llvm::StructType::create(*globalCtx, d, "vector");
 }

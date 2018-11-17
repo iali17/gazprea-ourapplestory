@@ -11,6 +11,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     return callFuncOrProc(node->getProcedureName(), node->getExprNodes());

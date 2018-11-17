@@ -26,9 +26,6 @@ target_include_directories(gazc PUBLIC ${ANTLR_GEN_DIR})
 # Ensure that the antlr4-runtime is available.
 add_dependencies(gazc antlr)
 
-# Add the antlr runtime and parser as libraries to link.
-target_link_libraries(gazc parser antlr4-runtime)
-
 # Get llvm components.
 llvm_map_components_to_libnames(llvm_libs core)
 

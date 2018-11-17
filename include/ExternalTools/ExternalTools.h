@@ -47,6 +47,11 @@ public:
     llvm::Value *aliScanf(std::string consScanString, llvm::Value *scanTo);
     llvm::Value *aliScanf(llvm::Value *scanTo);
 
+    //test
+    void registerTest();
+    void callTest(llvm::Value *val);
+    llvm::StructType * setUpVector();
+
     //printing
     void registerPrintf();
     void printStaticStr(std::string constStr);
