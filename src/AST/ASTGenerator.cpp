@@ -85,8 +85,8 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
     return (ASTNode *) visit(ctx->expr());
 }
 
-antlrcpp::Any ASTGenerator::visitDomainExpr(gazprea::GazpreaParser::DomainExprContext *ctx) {
-    return GazpreaBaseVisitor::visitDomainExpr(ctx);
+antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalExprContext *ctx) {
+    return GazpreaBaseVisitor::visitIntervalExpr(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
