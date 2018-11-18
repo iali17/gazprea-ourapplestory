@@ -55,9 +55,16 @@ public:
     //vector functions
     void registerVectorFunctions();
     llvm::Value * getNewVector(llvm::Value *ty);
-    llvm::Value * initVector(llvm::Value * vec);
+    llvm::Value * initVector(llvm::Value *vec, llvm::Value *size);
     llvm::Value * setNullVector(llvm::Value * vec);
     llvm::Value * setIdentityVector(llvm::Value * vec);
+    llvm::Value * getVectorLength(llvm::Value *vec);
+    llvm::Value * getReverseVector(llvm::Value *fromVec);
+
+    //Interval functions
+    void registerIntervalFunctions();
+    llvm::Value * getNewInterval(llvm::Value * lower, llvm::Value * upper);
+    llvm::Value * getVectorFromInterval(llvm::Value *interval, llvm::Value * by);
 
     //printing
     void registerPrintf();

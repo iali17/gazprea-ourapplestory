@@ -34,28 +34,83 @@ void ExternalTools::registerVectorFunctions() {
     //setIdentityVector
     fTy = llvm::TypeBuilder<void (void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction("setIdentityVector", fTy));
+
+    //getVectorLength
+    fTy = llvm::TypeBuilder<int(void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("getVectorLength", fTy));
+
+    //getReverseVector
+    fTy = llvm::TypeBuilder<void *(void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("getReverseVector", fTy));
 }
 
+/**
+ * Get a pointer to a new vector, size is determined on init
+ * @param ty
+ * @return
+ */
 llvm::Value *ExternalTools::getNewVector(llvm::Value *ty) {
     llvm::Function *getV = mod->getFunction("getEmptyVector");
-    llvm::Value    *ret = ir->CreateCall(getV, {ty});
+    llvm::Value    *ret  = ir->CreateCall(getV, {ty});
     return ir->CreatePointerCast(ret, vecTy->getPointerTo());
 }
 
-llvm::Value *ExternalTools::initVector(llvm::Value *vec) {
-    llvm::Function *getV = mod->getFunction("initVector");
-    llvm::Value    *ret = ir->CreateCall(getV, {vec});
+/**
+ * Initialize a vector with a size
+ * @param vec
+ * @return
+ */
+llvm::Value *ExternalTools::initVector(llvm::Value *vec, llvm::Value *size) {
+    llvm::Function *getV  = mod->getFunction("initVector");
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, size});
     return ret;
 }
 
+/**
+ * Set the passed vector to have null values
+ * @param vec
+ * @return
+ */
 llvm::Value *ExternalTools::setNullVector(llvm::Value *vec) {
-    llvm::Function *getV = mod->getFunction("setNullVector");
-    llvm::Value    *ret = ir->CreateCall(getV, {vec});
+    llvm::Function *getV  = mod->getFunction("setNullVector");
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
     return ret;
 }
 
+/**
+ * Set the passed vector to have identity
+ * @param vec
+ * @return
+ */
 llvm::Value *ExternalTools::setIdentityVector(llvm::Value *vec) {
-    llvm::Function *getV = mod->getFunction("setIdentityVector");
-    llvm::Value    *ret = ir->CreateCall(getV, {vec});
+    llvm::Function *getV  = mod->getFunction("setIdentityVector");
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
     return ret;
+}
+
+/**
+ * return the length of a vector
+ * @param vec
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorLength(llvm::Value *vec) {
+    llvm::Function *getV  = mod->getFunction("getVectorLength");
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ret;
+}
+
+/**
+ * Get the reverse of a vector
+ * @param fromVec
+ * @return
+ */
+llvm::Value *ExternalTools::getReverseVector(llvm::Value *fromVec) {
+    llvm::Function *getV  = mod->getFunction("getReverseVector");
+    llvm::Value    *v_vec = ir->CreatePointerCast(fromVec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ir->CreatePointerCast(ret, vecTy->getPointerTo());
 }

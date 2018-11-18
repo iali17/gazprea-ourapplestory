@@ -1,30 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdbool.h>
-#include "../../include/globals.h"
-typedef struct{
-    int  *type;
-    int  *numElements;
-    void *elements;
-} vector;
-
-typedef struct{
-    int     *type;
-    int     *numRows;
-    int     *numCols;
-    vector **elements;
-} matrix;
-
-typedef struct{
-    int *upper;
-    int *lower;
-} interval;
-
-// Add function named dummyPrint with signature void(int) to llvm to have this linked in.
-void dummyPrint(int i) {
-  printf("I'm a function! %d\n", i);
-}
+#include "vector_tools.h"
 
 /**
  * Creates a vector with set size and type
@@ -63,6 +37,12 @@ void *getEmptyVector(int type){
     return ret;
 }
 
+/**
+ * set a value of a vector at a given index to the value at the given pointer
+ * @param v
+ * @param idx
+ * @param val
+ */
 void setVectorVal(vector * v, int idx, void *val){
     if(*v->type == BOOLEAN){
         ((bool *) v->elements)[idx] = *((bool *) val);
@@ -78,6 +58,12 @@ void setVectorVal(vector * v, int idx, void *val){
     }
 }
 
+/**
+ * gets the value of the null and stores it in the return pointer
+ * @param type
+ * @param ret
+ * @return
+ */
 void * getNull(int type, void *ret){
     if(type == BOOLEAN){
         *((bool *) ret) =  false;
@@ -94,6 +80,12 @@ void * getNull(int type, void *ret){
     return ret;
 }
 
+/**
+ * gets the value of the identity and stores it in the return pointer
+ * @param type
+ * @param ret
+ * @return
+ */
 void * getIdentity(int type, void *ret){
     if(type == BOOLEAN){
         *((bool *) ret) = true;
@@ -110,6 +102,10 @@ void * getIdentity(int type, void *ret){
     return ret;
 }
 
+/**
+ * sets the given vector to be the null vector
+ * @param v_vector
+ */
 void setNullVector(void * v_vector){
     //cast the vector
     vector * vec = (vector *) v_vector;
@@ -127,6 +123,10 @@ void setNullVector(void * v_vector){
     free(myNull);
 }
 
+/**
+ * sets a given vector to be the idenity
+ * @param v_vector
+ */
 void setIdentityVector(void * v_vector){
     //cast the vector
     vector * vec = (vector *) v_vector;
@@ -144,6 +144,11 @@ void setIdentityVector(void * v_vector){
     free(myIdentity);
 }
 
+/**
+ * get the size of a member
+ * @param type
+ * @return
+ */
 size_t getMemberSize(int type){
     size_t memberSize = 0;
 
@@ -165,6 +170,20 @@ size_t getMemberSize(int type){
     return memberSize;
 }
 
+/**
+ * gets the length of a vector
+ * @param v_vector
+ * @return
+ */
+int getVectorLength(void * v_vector){
+    return *((vector *) v_vector)->numElements;
+}
+
+/**
+ * initalizes the vector to have a size and sets all of the members to null
+ * @param v_vector
+ * @param numMem
+ */
 void initVector(void * v_vector,  int numMem){
     assert(numMem > 0);
     //cast it
@@ -177,4 +196,45 @@ void initVector(void * v_vector,  int numMem){
 
     //set it to its null
     setNullVector(vec);
+}
+
+void *getVectorElementPointer(void *v_vector, int idx){
+    vector * v = (vector *) v_vector;
+
+    if(*v->type == BOOLEAN){
+        return ((bool *) v->elements)  + idx;
+    }
+    else if (*v->type == CHAR){
+        return ((char *) v->elements)  + idx;
+    }
+    else if (*v->type == INTEGER){
+        return ((int *) v->elements)   + idx;
+    }
+    else if (*v->type == REAL){
+        return ((float *) v->elements) + idx;
+    }
+    return NULL;
+}
+
+/**
+ *
+ * @param v_vector
+ * @return
+ */
+void *getReverseVector(void * v_vector){
+    //cast vector
+    vector * from_vector = (vector *) v_vector;
+
+    //init return
+    vector * ret         = getEmptyVector(*from_vector->type);
+    initVector(ret, *from_vector->numElements);
+
+    //sets the return to contain the reverse
+    int upper = *from_vector->numElements - 1;
+    int i;
+    for(i = 0; i <= upper; i++){
+        setVectorVal(ret, upper - 1 - i, getVectorElementPointer(from_vector, i));
+    }
+
+    return ret;
 }
