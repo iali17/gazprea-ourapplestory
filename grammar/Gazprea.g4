@@ -14,6 +14,7 @@ termsAndConditions
 // TODO: check for precendence
 expr
     : '(' expr ')'                                                  #brackExpr
+    | Interval                                                      #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
@@ -21,20 +22,32 @@ expr
     | IDENTITY                                                      #identityExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
+    | matrix                                                        #matrixExpr
+    | String                                                        #stringExpr
+    | vector                                                        #vectorExpr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
-    | Identifier '[' expr ']'                                       #indexExpr
+    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
+    | left=expr DOTDOT right=expr                                   #intervalExpr
     | tupleMember                                                   #tupleIndexExpr
     | functionCall                                                  #functionExpr
-    | left=expr DOTDOT right=expr                                   #domainExpr
+    | generator                                                     #generatorExpr
+    | filter                                                        #filterExpr
+    | vectorLength                                                  #vectorLengthExpr
+    | rowLength                                                     #rowLengthExpr
+    | colLength                                                     #colLengthExpr
+    | reverse                                                       #reverseExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
     | left=expr op=(ADD | SUB) right=expr                           #arithExpr
+    | left=expr op=DOTPRODUCT right=expr                            #dotProductExpr
+    | left=expr op=BY right=expr                                    #byExpr
     | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #compExpr
     | left=expr op=(EEQL | NEQL) right=expr                         #compExpr
     | left=expr op=AND right=expr                                   #compExpr
     | left=expr op=(OR | XOR) right=expr                            #compExpr
+    | left=expr op=CONCAT right=expr                                #concatExpr
     ;
 
 continueStat
@@ -70,9 +83,9 @@ assignment
     ;
 
 declaration
-    : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                 #streamDecl
-    | (CONST | VAR | type) type* Identifier EQL expr SEMICOLON               #normalDecl
-    | (CONST | VAR | type) type* Identifier SEMICOLON                        #emptyDecl
+    : VAR Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                                                    #streamDecl
+    | (CONST | VAR | type) type* Identifier extension? EQL expr SEMICOLON                                      #normalDecl
+    | (CONST | VAR | type) type* Identifier extension? SEMICOLON                                               #emptyDecl
     ;
 
 conditional
@@ -104,6 +117,10 @@ bodyBlock
     : statement+
     ;
 
+extension
+    : '[' (expr | MUL) (COMMA (expr | MUL) )? ']'
+    ;
+
 stream
     : expr '->' Identifier SEMICOLON                                #outStream
     | Identifier  '<-' Identifier SEMICOLON                         #inStream
@@ -118,9 +135,32 @@ functionCall
     : Identifier '(' (expr (COMMA expr)*)? ')'
     ;
 
-
 procedureCall
     : CALL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON
+    ;
+
+generator
+    : '[' Identifier IN expr (COMMA Identifier IN expr)? '|' expr ']'
+    ;
+
+filter
+    : '[' Identifier IN expr (AMPERSAND expr)+ ']'
+    ;
+
+vectorLength
+    : LENGTH '(' expr ')'
+    ;
+
+rowLength
+    : ROWS '(' expr ')'
+    ;
+
+colLength
+    : COLUMNS '(' expr ')'
+    ;
+
+reverse
+    : REVERSE '(' expr ')'
     ;
 
 globalDecl
@@ -131,9 +171,13 @@ type
     : BOOLEAN
     | CHARACTER
     | INTEGER //'[' Integer ']'
+    | INTERVAL
     | REAL
     | Identifier
     | tupleType
+    | STRING
+    | VECTOR
+    | MATRIX
     // | STRING '[' Integer ']'
     ;
 
@@ -168,6 +212,12 @@ tuple
     : '(' expr (COMMA expr)+ ')'
     ;
 
+vector
+    : '[' ( expr (COMMA expr)* )? ']';
+
+matrix
+    : '[' ( vector (COMMA vector)* )? ']';
+
 tupleType
     : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)+ ')'
     ;
@@ -197,6 +247,9 @@ LESST: '<' ;
 MORET: '>' ;
 LESSTE: '<=' ;
 MORETE: '>=' ;
+CONCAT: '||' ;
+AMPERSAND: '&';
+DOTPRODUCT: '**';
 SEMICOLON: ';' ;
 DOTDOT: '..';
 DOT: '.';
@@ -249,25 +302,28 @@ XOR: 'xor';
 // Skip whitespace
 WS : [ \t\r\n]+ -> skip ;
 
-Integer: [0-9][0-9_]* ;
+Integer: [0-9] Digit? ;
 
 Real
-    : Integer? DOT [0-9_]+ Exponent?
+    : Integer? DOT Digit Exponent?
     | Integer DOT? Exponent?
     ;
+
+Interval: Integer DOTDOT Integer ;
 
 TupleIndex
     : Identifier '.'
     ;
 
-Exponent: 'e' '_'* (ADD | SUB)? [0-9_]+;
+fragment Exponent: 'e' '_'* (ADD | SUB)? Digit;
+fragment Digit: [0-9_]+;
 
 Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
 
 Boolean: (TRUE | FALSE);
 
 Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
-String: '\'' .*? '\'' ;  //TODO: for part 2
+String: '"' .*? '"' ;  //TODO: for part 2
 
 // skip comments
 BlockComment: '/*' (BlockComment | LineComment | .)*? '*/' -> skip ;
