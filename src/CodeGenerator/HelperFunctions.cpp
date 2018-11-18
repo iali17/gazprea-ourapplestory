@@ -304,11 +304,14 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     // Create an entry block and set the inserter.
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
+
+    //kyle's testing code
+    /*
     ir->CreateAlloca(vecTy);
     ir->CreateAlloca(matrixTy);
     llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
     et->setNullVector(ir->CreatePointerCast(vec, charTy->getPointerTo()));
-
+    */
     //visit block and create ir
     visit(block);
 
