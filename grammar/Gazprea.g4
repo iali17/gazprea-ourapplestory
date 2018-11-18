@@ -1,6 +1,5 @@
 grammar Gazprea;
 
-//file: (statement | procedure)* EOF;
 file: ( termsAndConditions )* EOF ;
 
 termsAndConditions
@@ -309,7 +308,7 @@ Real
     | Integer DOT? Exponent?
     ;
 
-Interval: Integer DOTDOT Integer ;
+Interval: (Identifier | Integer) DOTDOT (Integer | Identifier) ;
 
 TupleIndex
     : Identifier '.'
