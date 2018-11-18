@@ -240,3 +240,14 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
 }
+
+llvm::Value *CodeGenerator::getNewVector(llvm::Type *ty, llvm::Value *size) {
+
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::getNewVector(llvm::Type *ty) {
+    llvm::Value *tyInt = it->getConstFromType(ty);
+
+    return nullptr;
+}

@@ -306,7 +306,9 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     ir->SetInsertPoint(entry);
     ir->CreateAlloca(vecTy);
     ir->CreateAlloca(matrixTy);
-    //et->callTest(it->getConsi32(5));
+    llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
+    et->setNullVector(ir->CreatePointerCast(vec, charTy->getPointerTo()));
+
     //visit block and create ir
     visit(block);
 

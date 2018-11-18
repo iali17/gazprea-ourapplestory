@@ -52,6 +52,13 @@ public:
     void callTest(llvm::Value *val);
     llvm::StructType * setUpVector();
 
+    //vector functions
+    void registerVectorFunctions();
+    llvm::Value * getNewVector(llvm::Value *ty);
+    llvm::Value * initVector(llvm::Value * vec);
+    llvm::Value * setNullVector(llvm::Value * vec);
+    llvm::Value * setIdentityVector(llvm::Value * vec);
+
     //printing
     void registerPrintf();
     void printStaticStr(std::string constStr);

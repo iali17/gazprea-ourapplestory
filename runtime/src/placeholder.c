@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <stdbool.h>
+#include "../../include/globals.h"
 typedef struct{
     int  *type;
     int  *numElements;
@@ -47,49 +48,133 @@ vector *getVector(int type, int numElements){
 }
 
 /**
- * Creates a vector with known type and uknown size
+ * Creates a vector with known type and unknown size
  * @param type
  * @return
  */
-vector *getEmptyVector(int type){
+void *getEmptyVector(int type){
     vector* ret      = (vector *) calloc(1, sizeof(vector *));
     ret->type        = (int *) malloc(sizeof(int *));
     ret->numElements = (int *) malloc(sizeof(int *));
 
-
+    *ret->type        = type;
+    *ret->numElements = -1;
+    ret->elements     = NULL;
     return ret;
 }
 
-void setVal(int idx, int type, void *l, void *r){
-    if(type == 1){
-        
+void setVectorVal(vector * v, int idx, void *val){
+    if(*v->type == BOOLEAN){
+        ((bool *) v->elements)[idx] = *((bool *) val);
+    }
+    else if (*v->type == CHAR){
+        ((char *) v->elements)[idx] = *((char *) val);
+    }
+    else if (*v->type == INTEGER){
+        ((int *) v->elements)[idx] = *((int *) val);
+    }
+    else if (*v->type == REAL){
+        ((float *) v->elements)[idx] = *((float *) val);
     }
 }
 
-void setNull(int idx, int type, void *l){
-
+void * getNull(int type, void *ret){
+    if(type == BOOLEAN){
+        *((bool *) ret) =  false;
+    }
+    else if (type == CHAR){
+        *((char *) ret) =  (char) 0;
+    }
+    else if (type == INTEGER){
+        *((int *) ret) = 0;
+    }
+    else if (type == REAL){
+        *((float *) ret) =  0.0;
+    }
+    return ret;
 }
 
-vector *getVectorFromVector(int type, int numElements, vector *old_vector){
-    vector *ret = getEmptyVector(type);
-    if (numElements >= 0){
-        *ret->numElements = numElements;
-        assert(*ret->numElements >= *old_vector->numElements);
-    } else {
-        *ret->numElements = old_vector->numElements;
+void * getIdentity(int type, void *ret){
+    if(type == BOOLEAN){
+        *((bool *) ret) = true;
+    }
+    else if (type == CHAR){
+        *((char *) ret) = 0x01;
+    }
+    else if (type == INTEGER){
+        *((int *) ret) = 1;
+    }
+    else if (type == REAL){
+        *((float *) ret) =  1.0;
+    }
+    return ret;
+}
+
+void setNullVector(void * v_vector){
+    //cast the vector
+    vector * vec = (vector *) v_vector;
+
+    //get the null value
+    void *myNull = malloc(sizeof(int));
+    getNull(*vec->type, myNull);
+
+    //set the vector to null
+    int i;
+    for(i = 0; i < *vec->numElements; i++){
+        setVectorVal(vec, i, myNull);
     }
 
-    ret->elements = calloc(*ret->numElements, sizeof(void *));
-
-    int  i;
-    for(i = 0; i < *ret->numElements; i++)
-        if(i < *old_vector->numElements)
-            ((int *) ret->elements)[i] = ((int *) old_vector->elements)[i];
-        else
-            ((int *) ret->elements)[i] = 0;
-
+    free(myNull);
 }
 
-void setVectorElement(int idx, void* val){
+void setIdentityVector(void * v_vector){
+    //cast the vector
+    vector * vec = (vector *) v_vector;
 
+    //get the identity value
+    void *myIdentity = malloc(sizeof(int));
+    getIdentity(*vec->type, myIdentity);
+
+    //set the vector to identity
+    int i;
+    for(i = 0; i < *vec->numElements; i++){
+        setVectorVal(vec, i, myIdentity);
+    }
+
+    free(myIdentity);
+}
+
+size_t getMemberSize(int type){
+    size_t memberSize = 0;
+
+    if(type == BOOLEAN){
+        memberSize = sizeof(bool);
+    }
+    else if (type == CHAR){
+        memberSize = sizeof(char);
+    }
+    else if (type == INTEGER){
+        memberSize = sizeof(int);
+    }
+    else if (type == REAL){
+        memberSize = sizeof(float);
+    }
+    else {
+        exit(1);
+    }
+    return memberSize;
+}
+
+void initVector(void * v_vector,  int numMem){
+    assert(numMem > 0);
+    //cast it
+    vector * vec = (vector *) v_vector;
+
+    //allocate that space
+    size_t memberSize = getMemberSize(*vec->type);
+    *vec->numElements = numMem;
+    vec->elements = calloc((size_t) numMem, memberSize);
+
+    //set it to its null
+    setNullVector(vec);
 }

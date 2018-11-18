@@ -90,6 +90,8 @@ public:
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
+    llvm::Value *getNewVector(llvm::Type * ty, llvm::Value * size);
+    llvm::Value *getNewVector(llvm::Type * ty);
     llvm::StructType* parseStructType(TupleType *node);
 	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);

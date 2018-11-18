@@ -421,3 +421,22 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
     else
         return nullptr;
 }
+
+/**
+ * get the integer constant representation of the type for vector and matrix generation
+ *
+ * @param ty
+ * @return
+ */
+llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
+    if(ty == boolTy)
+        return getConsi32(BOOLEAN);
+    else if (ty == charTy)
+        return getConsi32(CHAR);
+    else if (ty == intTy)
+        return getConsi32(INTEGER);
+    else if (ty == realTy)
+        return getConsi32(REAL);
+
+    return nullptr;
+}

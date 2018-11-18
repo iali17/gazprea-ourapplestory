@@ -29,7 +29,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerCalloc();
     et->registerScanf();
     et->registerPow();
-    et->registerTest();
+    et->registerVectorFunctions();
 
     symbolTable->pushNewScope("_globalScope_");
 
