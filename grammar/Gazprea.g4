@@ -63,6 +63,7 @@ single_statement
     | conditional
     | loop
     | stream
+    | streamState
     | procedureCall
     | continueStat
     | breakStat
@@ -124,6 +125,10 @@ stream
     : expr '->' Identifier SEMICOLON                                #outStream
     | Identifier  '<-' Identifier SEMICOLON                         #inStream
     | tupleMember '<-' Identifier SEMICOLON                         #inStream
+    ;
+
+streamState
+    : STREAM_STATE '(' Identifier ')' SEMICOLON
     ;
 
 typeDefine
