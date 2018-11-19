@@ -47,6 +47,25 @@ public:
     llvm::Value *aliScanf(std::string consScanString, llvm::Value *scanTo);
     llvm::Value *aliScanf(llvm::Value *scanTo);
 
+    //test
+    void registerTest();
+    void callTest(llvm::Value *val);
+    llvm::StructType * setUpVector();
+
+    //vector functions
+    void registerVectorFunctions();
+    llvm::Value * getNewVector(llvm::Value *ty);
+    llvm::Value * initVector(llvm::Value *vec, llvm::Value *size);
+    llvm::Value * setNullVector(llvm::Value * vec);
+    llvm::Value * setIdentityVector(llvm::Value * vec);
+    llvm::Value * getVectorLength(llvm::Value *vec);
+    llvm::Value * getReverseVector(llvm::Value *fromVec);
+
+    //Interval functions
+    void registerIntervalFunctions();
+    llvm::Value * getNewInterval(llvm::Value * lower, llvm::Value * upper);
+    llvm::Value * getVectorFromInterval(llvm::Value *interval, llvm::Value * by);
+
     //printing
     void registerPrintf();
     void printStaticStr(std::string constStr);

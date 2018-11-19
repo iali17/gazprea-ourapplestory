@@ -11,6 +11,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 /**
  * Pushes global scope and inserts base types into symbolTable.
@@ -26,6 +29,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerCalloc();
     et->registerScanf();
     et->registerPow();
+    et->registerVectorFunctions();
 
     symbolTable->pushNewScope("_globalScope_");
 
@@ -35,6 +39,10 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("integer"  , intTy);
     symbolTable->addBaseType("real"     , realTy);
     symbolTable->addBaseType("void"     , llvm::Type::getVoidTy(*globalCtx));
+    symbolTable->addBaseType("vector"   , vecTy);
+    symbolTable->addBaseType("matrix"   , matrixTy);
+    symbolTable->addBaseType("interval" , intervalTy);
+
 
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
@@ -580,4 +588,12 @@ llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
 llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     llvm::GlobalVariable *global = mod->getGlobalVariable(node->getGlobalName());
     return global->getInitializer();
+}
+
+llvm::Value *CodeGenerator::visit(IndexNode *node) {
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(IntervalNode *node) {
+    return nullptr;
 }

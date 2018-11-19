@@ -73,7 +73,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
 }
 
 /**
- * Gets the value at the posititon of the tuple
+ * Gets the value at the position of the tuple
  *
  * @param INIT
  * @param tuple

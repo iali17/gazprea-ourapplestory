@@ -14,6 +14,8 @@ termsAndConditions
 expr
     : '(' expr ')'                                                  #brackExpr
     | Interval                                                      #intervalExpr
+    | IntervalThing expr                                            #intervalExpr
+    | expr DOTDOT (Integer | Identifier)                            #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
@@ -27,7 +29,6 @@ expr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
-    | left=expr DOTDOT right=expr                                   #intervalExpr
     | tupleMember                                                   #tupleIndexExpr
     | functionCall                                                  #functionExpr
     | generator                                                     #generatorExpr
@@ -313,7 +314,11 @@ Real
     | Integer DOT? Exponent?
     ;
 
-Interval: (Identifier | Integer) DOTDOT (Integer | Identifier) ;
+Interval: IntervalThing (Integer | Identifier) ;
+
+IntervalThing
+    : (Identifier | Integer) '..'
+    ;
 
 TupleIndex
     : Identifier '.'

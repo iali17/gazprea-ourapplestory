@@ -13,6 +13,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 ExternalTools::ExternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
@@ -48,6 +51,16 @@ llvm::Value *ExternalTools::aliCalloc(llvm::Value *arrSize, int elementSize, boo
     if (castToIntP)
         return ir->CreatePointerCast(x, intTy->getPointerTo());
     return x;
+}
+
+void ExternalTools::registerTest() {
+    llvm::FunctionType *fTy = llvm::TypeBuilder<void (int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("dummyPrint", fTy));
+}
+
+void ExternalTools::callTest(llvm::Value *val) {
+    llvm::Function *myDummy = mod->getFunction("dummyPrint");
+    ir->CreateCall(myDummy, {val});
 }
 
 void ExternalTools::registerFree() {
@@ -374,4 +387,12 @@ llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
         return aliScanf(FLOAT_FORMAT_STR, scanTo);
     }
     return nullptr;
+}
+
+llvm::StructType* ExternalTools::setUpVector() {
+    std::vector<llvm::Type *> d;
+    d.push_back(intTy->getPointerTo());
+    d.push_back(intTy->getPointerTo());
+    d.push_back(charTy->getPointerTo());
+    return llvm::StructType::create(*globalCtx, d, "vector");
 }

@@ -11,6 +11,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
     pair pair1;
@@ -120,6 +123,27 @@ void InternalTools::setUpTypes() {
     charTy = llvm::TypeBuilder<llvm::types::i<8>,  true>::get(*globalCtx);
     boolTy = llvm::TypeBuilder<llvm::types::i<1>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
+
+    //vector type
+    std::vector<llvm::Type *> types;
+    types.push_back(intTy->getPointerTo());
+    types.push_back(intTy->getPointerTo());
+    types.push_back(charTy->getPointerTo());
+    vecTy = llvm::StructType::create(*globalCtx, types, "vector");
+
+    //matrix type
+    std::vector<llvm::Type *> mTypes;
+    mTypes.push_back(intTy->getPointerTo());
+    mTypes.push_back(intTy->getPointerTo());
+    mTypes.push_back(intTy->getPointerTo());
+    mTypes.push_back(vecTy->getPointerTo()->getPointerTo());
+    matrixTy = llvm::StructType::create(*globalCtx, mTypes, "matrix");
+
+    //interval type
+    std::vector<llvm::Type *> iTypes;
+    iTypes.push_back(intTy->getPointerTo());
+    iTypes.push_back(intTy->getPointerTo());
+    intervalTy = llvm::StructType::create(*globalCtx, iTypes, "interval");
 }
 
 llvm::Value *InternalTools::getNull(llvm::Type *type) {
@@ -396,4 +420,23 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
         return "tuple(*)";
     else
         return nullptr;
+}
+
+/**
+ * get the integer constant representation of the type for vector and matrix generation
+ *
+ * @param ty
+ * @return
+ */
+llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
+    if(ty == boolTy)
+        return getConsi32(BOOLEAN);
+    else if (ty == charTy)
+        return getConsi32(CHAR);
+    else if (ty == intTy)
+        return getConsi32(INTEGER);
+    else if (ty == realTy)
+        return getConsi32(REAL);
+
+    return nullptr;
 }

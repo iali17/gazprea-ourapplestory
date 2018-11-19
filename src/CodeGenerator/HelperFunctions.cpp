@@ -11,6 +11,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
     std::vector<llvm::Value *> paramVector;
@@ -302,6 +305,13 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
+    //kyle's testing code
+    /*
+    ir->CreateAlloca(vecTy);
+    ir->CreateAlloca(matrixTy);
+    llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
+    et->setNullVector(ir->CreatePointerCast(vec, charTy->getPointerTo()));
+    */
     //visit block and create ir
     visit(block);
 
