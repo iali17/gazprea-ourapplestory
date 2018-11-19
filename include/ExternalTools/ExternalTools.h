@@ -60,6 +60,9 @@ public:
     llvm::Value * setIdentityVector(llvm::Value * vec);
     llvm::Value * getVectorLength(llvm::Value *vec);
     llvm::Value * getReverseVector(llvm::Value *fromVec);
+    llvm::Value * printVector(llvm::Value *vec);
+    llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
+
 
     //Interval functions
     void registerIntervalFunctions();

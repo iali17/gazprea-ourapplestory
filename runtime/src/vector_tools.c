@@ -1,27 +1,6 @@
 #include "vector_tools.h"
 
 /**
- * Creates a vector with set size and type
- * @param type
- * @param numElements
- * @return
- */
-vector *getVector(int type, int numElements){
-    //get space
-    assert(numElements > 0);
-    unsigned int numElm = (unsigned int) numElements;
-    vector* ret      = (vector *) calloc(1, sizeof(vector *));
-    ret->type        = (int *) malloc(sizeof(int *));
-    ret->numElements = (int *) malloc(sizeof(int *));
-    ret->elements    = calloc(numElm, sizeof(void *));
-
-    //fill
-    *ret->type        = type;
-    *ret->numElements = numElements;
-    return ret;
-}
-
-/**
  * Creates a vector with known type and unknown size
  * @param type
  * @return
@@ -111,16 +90,16 @@ void setNullVector(void * v_vector){
     vector * vec = (vector *) v_vector;
 
     //get the null value
-    void *myNull = malloc(sizeof(int));
-    getNull(*vec->type, myNull);
+    void *my_null = malloc(sizeof(int));
+    getNull(*vec->type, my_null);
 
     //set the vector to null
     int i;
     for(i = 0; i < *vec->numElements; i++){
-        setVectorVal(vec, i, myNull);
+        setVectorVal(vec, i, my_null);
     }
 
-    free(myNull);
+    free(my_null);
 }
 
 /**
@@ -132,16 +111,16 @@ void setIdentityVector(void * v_vector){
     vector * vec = (vector *) v_vector;
 
     //get the identity value
-    void *myIdentity = malloc(sizeof(int));
-    getIdentity(*vec->type, myIdentity);
+    void *my_identity = malloc(sizeof(int));
+    getIdentity(*vec->type, my_identity);
 
     //set the vector to identity
     int i;
     for(i = 0; i < *vec->numElements; i++){
-        setVectorVal(vec, i, myIdentity);
+        setVectorVal(vec, i, my_identity);
     }
 
-    free(myIdentity);
+    free(my_identity);
 }
 
 /**
@@ -198,6 +177,12 @@ void initVector(void * v_vector,  int numMem){
     setNullVector(vec);
 }
 
+/**
+ * get a pointer to an element in a vector at the given index
+ * @param v_vector
+ * @param idx
+ * @return
+ */
 void *getVectorElementPointer(void *v_vector, int idx){
     vector * v = (vector *) v_vector;
 
@@ -237,4 +222,50 @@ void *getReverseVector(void * v_vector){
     }
 
     return ret;
+}
+
+/**
+ * Take a pointer to a vector elements and print the value
+ * @param v_elm_ptr
+ * @param type
+ */
+void printVectorElement(void *v_elm_ptr, int type){
+    if(type == BOOLEAN){
+        if (*((bool *) v_elm_ptr) == true)
+            printf("T");
+        else
+            printf("F");
+    }
+    else if (type == CHAR){
+        printf("%c", *((char *) v_elm_ptr));
+    }
+    else if (type == INTEGER){
+        printf("%d", *((int *) v_elm_ptr));
+    }
+    else if (type == REAL){
+        printf("%g", *((float *) v_elm_ptr));
+    }
+}
+
+/**
+ * Print all of the elements of a vector
+ * @param v_vector
+ */
+void printVector(void* v_vector){
+    //cast to vector
+    vector * vec = (vector *) v_vector;
+
+    //local vars
+    int type = *vec->type;
+    int i    = 0;
+    void *element_pointer;
+
+    //print vector
+    for(i = 0; i < *vec->numElements - 1; i++){
+        element_pointer = getVectorElementPointer(vec, i);
+        printVectorElement(element_pointer, type);
+        printf(" ");
+    }
+    element_pointer = getVectorElementPointer(vec, i);
+    printVectorElement(element_pointer, type);
 }

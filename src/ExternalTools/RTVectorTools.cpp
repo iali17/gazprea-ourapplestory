@@ -42,6 +42,14 @@ void ExternalTools::registerVectorFunctions() {
     //getReverseVector
     fTy = llvm::TypeBuilder<void *(void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction("getReverseVector", fTy));
+
+    //printVector
+    fTy = llvm::TypeBuilder<void (void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("printVector", fTy));
+
+    //printVectorElement
+    fTy = llvm::TypeBuilder<void (void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("printVectorElement", fTy));
 }
 
 /**
@@ -113,4 +121,27 @@ llvm::Value *ExternalTools::getReverseVector(llvm::Value *fromVec) {
     llvm::Value    *v_vec = ir->CreatePointerCast(fromVec, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
     return ir->CreatePointerCast(ret, vecTy->getPointerTo());
+}
+
+/**
+ * print all of the elements of a vector
+ * @param v_vector
+ * @return
+ */
+llvm::Value *ExternalTools::printVector(llvm::Value *vec) {
+    llvm::Function *getV  = mod->getFunction("printVector");
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ret;
+}
+/**
+ * Take a pointer to a vector elements and print the value
+ * @param v_elm_ptr
+ * @return
+ */
+llvm::Value *ExternalTools::printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type) {
+    llvm::Function *getV  = mod->getFunction("printVectorElement");
+    llvm::Value    *v_vec_elm_ptr = ir->CreatePointerCast(vecElmPtr, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec_elm_ptr, type});
+    return ret;
 }
