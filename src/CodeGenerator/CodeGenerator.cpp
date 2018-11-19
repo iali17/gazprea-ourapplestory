@@ -581,3 +581,11 @@ llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     llvm::GlobalVariable *global = mod->getGlobalVariable(node->getGlobalName());
     return global->getInitializer();
 }
+
+llvm::Value *CodeGenerator::visit(IndexNode *node) {
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::visit(IntervalNode *node) {
+    return nullptr;
+}
