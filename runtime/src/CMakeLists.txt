@@ -1,8 +1,8 @@
 # Gather our source files in this directory.
 set(
   gazprea_rt_files
-  "${CMAKE_CURRENT_SOURCE_DIR}/placeholder.c"
-)
+  "${CMAKE_CURRENT_SOURCE_DIR}/vector_tools.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/interval_tools.c")
 
 # Build our executable from the source files.
 add_library(gazrt SHARED ${gazprea_rt_files})
