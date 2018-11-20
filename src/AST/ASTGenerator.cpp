@@ -471,13 +471,22 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     bool constant = (nullptr != ctx->CONST());
     std::string id = ctx->Identifier()->getText();
     std::string ty;
-    if (!ctx->type().empty())  ty = ctx->type(0)->getText();
+    if (!ctx->type().empty()) ty = ctx->type(0)->getText();
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
-
-    } else { // else it's a normal decl
+    }
+    // if matrix decl then
+    else if ((ctx->type().size() == 2) && (ctx->type(1)->getText().substr(0, 6) == "matrix")){
+        if (ctx->extension() == nullptr) {
+            return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
+                    constant, id, ty, nullptr);
+        }
+        return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
+                constant, id, ty, visit(ctx->extension()));
+    }
+    else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
 
         for (unsigned long i = 0; i < ctx->type().size(); ++i) {
@@ -582,7 +591,6 @@ antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::Tup
         return (ASTNode *) new DeclNode(expr, constant, ctx->Identifier()->getText(), typeVec, expr->getType(), (int)ctx->getStart()->getLine());
     }
 }
-
 
 antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) {
     auto *expr = (ASTNode *) new NullNode((int)ctx->getStart()->getLine());
@@ -812,8 +820,40 @@ antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprCo
     return GazpreaBaseVisitor::visitVectorExpr(ctx);
 }
 
+// this just calls visitMatrix
 antlrcpp::Any ASTGenerator::visitMatrixExpr(gazprea::GazpreaParser::MatrixExprContext *ctx) {
     return GazpreaBaseVisitor::visitMatrixExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitMatrix(gazprea::GazpreaParser::MatrixContext *ctx) {
+    auto *expr  = new std::vector<ASTNode *>;
+    for(auto vector : ctx->vector()){
+        expr->push_back((ASTNode *) visit(vector));
+    }
+    return (ASTNode *) new MatrixNode(expr, (int)ctx->getStart()->getLine());
+}
+
+antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) {
+
+    // if it s a [] of size 2
+    if (ctx->getText().find(',') != std::string::npos) {
+        ASTNode *left;
+        ASTNode *right;
+
+        if (ctx->left == nullptr) {         // being nullptr assumes it's actually a *
+            left = nullptr;
+        } else {
+            left = visit(ctx->left);
+        }
+        if (ctx->right == nullptr) {
+            right = nullptr;
+        } else {
+            right = visit(ctx->right);
+        }
+
+        return (ASTNode *) new MatrixType(left, right, (int) ctx->getStart()->getLine());
+    }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {
@@ -855,3 +895,7 @@ antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *c
 antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
     return GazpreaBaseVisitor::visitConcatExpr(ctx);
 }
+
+
+
+

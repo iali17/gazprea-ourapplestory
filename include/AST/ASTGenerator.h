@@ -86,6 +86,10 @@ private:
     antlrcpp::Any visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) override;
     antlrcpp::Any visitArithExpr(gazprea::GazpreaParser::ArithExprContext *ctx) override;
     antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
+    antlrcpp::Any visitMatrix(gazprea::GazpreaParser::MatrixContext *ctx) override;
+    antlrcpp::Any visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) override;
+
+private:
 
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);

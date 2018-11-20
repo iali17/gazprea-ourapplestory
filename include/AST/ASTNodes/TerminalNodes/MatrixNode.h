@@ -9,7 +9,12 @@
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
 class MatrixNode : public ASTNode{
-    explicit MatrixNode(std::vector<ASTNode *> *insideElement, int line);
+public:
+    MatrixNode(std::vector<ASTNode *> *insideElement, int line);
+    std::vector<ASTNode*>* getElements();
+
+protected:
+    std::vector<ASTNode*>* insideElement;
 
 };
 
