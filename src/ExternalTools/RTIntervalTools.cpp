@@ -7,15 +7,11 @@
 #include <ExternalTools/ExternalTools.h>
 #include <InternalTools/CondBuilder.h>
 
-extern llvm::Type *i64Ty;
-extern llvm::Type *i32Ty;
-extern llvm::Type *intTy;
-extern llvm::Type *i8Ty;
+#define GET_NEW_INTERVAL "getNewInterval"
+#define GET_VECTOR_FROM_INTERVAL "getVectorFromInterval"
+
 extern llvm::Type *charTy;
-extern llvm::Type *realTy;
-extern llvm::Type *boolTy;
-extern llvm::Type *vecTy;
-extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
 extern llvm::Type *intervalTy;
 
 /**
@@ -23,11 +19,11 @@ extern llvm::Type *intervalTy;
  */
 void ExternalTools::registerIntervalFunctions() {
     llvm::FunctionType *fTy = llvm::TypeBuilder<void* (int, int), false>::get(*globalCtx);
-    llvm::cast<llvm::Function>(mod->getOrInsertFunction("getNewInterval", fTy));
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_NEW_INTERVAL, fTy));
 
     //initVector
     fTy = llvm::TypeBuilder<void* (void *, int), false>::get(*globalCtx);
-    llvm::cast<llvm::Function>(mod->getOrInsertFunction("getVectorFromInterval", fTy));
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_FROM_INTERVAL, fTy));
 }
 
 /**
@@ -37,7 +33,7 @@ void ExternalTools::registerIntervalFunctions() {
  * @return
  */
 llvm::Value *ExternalTools::getNewInterval(llvm::Value *lower, llvm::Value *upper) {
-    llvm::Function *getV = mod->getFunction("getNewInterval");
+    llvm::Function *getV = mod->getFunction(GET_NEW_INTERVAL);
     llvm::Value    *ret  = ir->CreateCall(getV, {lower, upper});
     return ir->CreatePointerCast(ret, intervalTy->getPointerTo());
 }
@@ -49,8 +45,8 @@ llvm::Value *ExternalTools::getNewInterval(llvm::Value *lower, llvm::Value *uppe
  * @return
  */
 llvm::Value *ExternalTools::getVectorFromInterval(llvm::Value *interval, llvm::Value *by) {
-    llvm::Function *getV  = mod->getFunction("getVectorFromInterval");
+    llvm::Function *getV  = mod->getFunction(GET_VECTOR_FROM_INTERVAL);
     llvm::Value    *v_int = ir->CreatePointerCast(interval, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_int, by});
-    return ir->CreatePointerCast(ret, vecTy->getPointerTo());
+    return ir->CreatePointerCast(ret, intVecTy->getPointerTo());
 }

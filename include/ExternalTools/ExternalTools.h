@@ -69,6 +69,15 @@ public:
     llvm::Value * getNewInterval(llvm::Value * lower, llvm::Value * upper);
     llvm::Value * getVectorFromInterval(llvm::Value *interval, llvm::Value * by);
 
+    //matrix functions
+    void registerMatrixFunctions();
+    llvm::Value *getNewMatrix(llvm::Value *ty);
+    llvm::Value *initMatrix(llvm::Value *mat, llvm::Value * numRows, llvm::Value *numCols);
+    llvm::Value *setNullMatrix(llvm::Value * mat);
+    llvm::Value *setIdentityMatrix(llvm::Value *mat);
+    llvm::Value *getNumRows(llvm::Value *mat);
+    llvm::Value *getNumCols(llvm::Value *mat);
+
     //printing
     void registerPrintf();
     void printStaticStr(std::string constStr);

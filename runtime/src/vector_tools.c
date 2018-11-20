@@ -181,7 +181,7 @@ int getVectorLength(void * v_vector){
  * @param numMem
  */
 void initVector(void * v_vector,  int numMem){
-    assert(numMem > 0);
+    assert(numMem >= 0);
     //cast it
     vector * vec = (vector *) v_vector;
 

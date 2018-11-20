@@ -30,6 +30,8 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerScanf();
     et->registerPow();
     et->registerVectorFunctions();
+    et->registerIntervalFunctions();
+    et->registerMatrixFunctions();
 
     symbolTable->pushNewScope("_globalScope_");
 
