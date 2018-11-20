@@ -855,3 +855,8 @@ antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *c
 antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
     return GazpreaBaseVisitor::visitConcatExpr(ctx);
 }
+
+antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) {
+    std::string streamName = ctx->Identifier()->getText();
+    return (ASTNode *) new StreamStateNode((int)ctx->getStart()->getLine(),streamName);
+}

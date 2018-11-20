@@ -597,3 +597,8 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
 llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     return nullptr;
 }
+
+llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+
