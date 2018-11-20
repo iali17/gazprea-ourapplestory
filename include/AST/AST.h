@@ -24,10 +24,13 @@
 #include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
 #include "AST/ASTNodes/BaseNodes/BitArithNode.h"
 #include "AST/ASTNodes/BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BuiltIn.h"
 #include "AST/ASTNodes/BaseNodes/CompNode.h"
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 #include "AST/ASTNodes/BaseNodes/IONode.h"
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
+
+#include "AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h"
 
 #include "AST/ASTNodes/CompNodes/EQNode.h"
 #include "AST/ASTNodes/CompNodes/GTENode.h"

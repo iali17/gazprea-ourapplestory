@@ -479,7 +479,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     }
     // if matrix decl then
     else if ((ctx->type().size() == 2) && (ctx->type(1)->getText().substr(0, 6) == "matrix")){
-        if (ctx->extension() == nullptr) {
+        if (ctx->extension() == nullptr) {  // if extension not provided
             return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
                     constant, id, ty, nullptr);
         }
@@ -897,5 +897,7 @@ antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprCo
 }
 
 
-
-
+antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) {
+    std::string streamName = ctx->Identifier()->getText();
+    return (ASTNode *) new StreamStateNode((int)ctx->getStart()->getLine(),streamName);
+}
