@@ -33,4 +33,6 @@ tests/gazc.ll
 tests/lli-temp.out
 tests/KyleConfig.json
 tests/BigGarbo.json
+tests/src/libgazrt_safe.so
+tests/src/libgazrt_t.so
 *.*~

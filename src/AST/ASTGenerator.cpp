@@ -86,11 +86,25 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalExprContext *ctx) {
-    return GazpreaBaseVisitor::visitIntervalExpr(ctx);
+    ASTNode *leftExpr;
+    ASTNode *rightExpr = (ASTNode *) visit(ctx->right);
+
+    if(ctx->IntervalThing())
+        leftExpr = (ASTNode *) visit(ctx->IntervalThing());
+    else
+        leftExpr = (ASTNode *) visit(ctx->left);
+
+    return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
-    return GazpreaBaseVisitor::visitIndexExpr(ctx);
+    auto *expr  = new std::vector<ASTNode *>;
+
+    for(unsigned long i = 0; i < ctx->expr().size(); ++i){
+        expr->push_back((ASTNode *) visit(ctx->expr(i)));
+    }
+
+    return (ASTNode *) new IndexNode(expr, (int)ctx->expr().size(),(int)ctx->getStart()->getLine());
 }
 
 /**
@@ -306,24 +320,17 @@ antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamCont
  * @return - InputNode
  */
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
-    if(ctx->tupleMember()){
-        std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-        idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+    if(ctx->TupleIndex()){
+        std::string tupleText = ctx->TupleIndex()->getText();
+        std::vector<std::string> values;
+        boost::split(values, tupleText, [](char c){return c == '.';});
+        std::string idName = values[0];
 
-        auto idNode =  new IDNode(idName, (int)ctx->getStart()->getLine());
-        ASTNode *index;
-        if(ctx->tupleMember()->Integer()){
-            int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-            assert(val > 0);
-            --val;
-            index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-        }
-        else{
-            assert(ctx->tupleMember()->Identifier());
-            index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-        }
+        int lineNum = (int)ctx->getStart()->getLine();
+        auto idNode =  (ASTNode *) new IDNode(idName, lineNum);
+        ASTNode *index = getTupleMemberNode(values, lineNum);
 
-        auto LHS = new IndexTupleNode(index, idNode, (int)ctx->getStart()->getLine());
+        auto LHS = (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
         return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
     }
     return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
@@ -511,20 +518,15 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
  * ignore the warning on dynamic cast
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
-    auto idNode = (ASTNode *) new IDNode(idName, (int)ctx->getStart()->getLine());
-    ASTNode *index;
-    if(ctx->tupleMember()->Integer()){
-        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-        assert(val > 0);
-        --val;
-        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-    }
-    else{
-        assert(ctx->tupleMember()->Identifier());
-        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-    }
+    std::string tupleText = ctx->TupleIndex()->getText();
+    std::vector<std::string> values;
+    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::string idName = values[0];
+
+    int lineNum = (int)ctx->getStart()->getLine();
+    auto idNode = (ASTNode *) new IDNode(idName, lineNum);
+    ASTNode *index = getTupleMemberNode(values, lineNum);
+
     return (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 }
 
@@ -634,24 +636,17 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
-    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+    std::string tupleText = ctx->TupleIndex()->getText();
+    std::vector<std::string> values;
+    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::string idName = values[0];
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
 
-    auto idNode =  new IDNode(idName, (int)ctx->getStart()->getLine());
-    ASTNode *index;
-    if(ctx->tupleMember()->Integer()){
-        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-        assert(val > 0);
-        --val;
-        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-    }
-    else{
-        assert(ctx->tupleMember()->Identifier());
-        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-    }
+    int lineNum = (int)ctx->getStart()->getLine();
+    auto idNode =  (ASTNode*) new IDNode(idName, lineNum);
+    ASTNode *index = getTupleMemberNode(values, lineNum);
 
-    auto LHS = new IndexTupleNode(index, idNode, (int)ctx->getStart()->getLine());
+    auto LHS = new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 
    return (ASTNode *) new TupleMemberAssNode(expr, LHS, (int)ctx->getStart()->getLine());
 }
@@ -810,4 +805,52 @@ antlrcpp::Any ASTGenerator::visitCompExpr(gazprea::GazpreaParser::CompExprContex
         return (ASTNode *) new NEQNode(left, right, (int)ctx->getStart()->getLine());
     }
     return nullptr;
+}
+
+antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) {
+    return GazpreaBaseVisitor::visitVectorExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitMatrixExpr(gazprea::GazpreaParser::MatrixExprContext *ctx) {
+    return GazpreaBaseVisitor::visitMatrixExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {
+    return GazpreaBaseVisitor::visitStringExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) {
+    return GazpreaBaseVisitor::visitGeneratorExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitFilterExpr(gazprea::GazpreaParser::FilterExprContext *ctx) {
+    return GazpreaBaseVisitor::visitFilterExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitVectorLengthExpr(gazprea::GazpreaParser::VectorLengthExprContext *ctx) {
+    return GazpreaBaseVisitor::visitVectorLengthExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitRowLengthExpr(gazprea::GazpreaParser::RowLengthExprContext *ctx) {
+    return GazpreaBaseVisitor::visitRowLengthExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitColLengthExpr(gazprea::GazpreaParser::ColLengthExprContext *ctx) {
+    return GazpreaBaseVisitor::visitColLengthExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitReverseExpr(gazprea::GazpreaParser::ReverseExprContext *ctx) {
+    return GazpreaBaseVisitor::visitReverseExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) {
+    return GazpreaBaseVisitor::visitDotProductExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) {
+    return GazpreaBaseVisitor::visitByExpr(ctx);
+}
+
+antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
+    return GazpreaBaseVisitor::visitConcatExpr(ctx);
 }

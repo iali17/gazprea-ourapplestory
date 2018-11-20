@@ -13,7 +13,8 @@ termsAndConditions
 // TODO: check for precendence
 expr
     : '(' expr ')'                                                  #brackExpr
-    | Interval                                                      #intervalExpr
+    | left=expr (DOTDOT right=expr)                                 #intervalExpr
+    | IntervalThing right=expr                                      #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
@@ -21,14 +22,13 @@ expr
     | IDENTITY                                                      #identityExpr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
+    | TupleIndex                                                    #tupleIndexExpr
     | matrix                                                        #matrixExpr
     | String                                                        #stringExpr
     | vector                                                        #vectorExpr
+    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
-    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
-    | left=expr DOTDOT right=expr                                   #intervalExpr
-    | tupleMember                                                   #tupleIndexExpr
     | functionCall                                                  #functionExpr
     | generator                                                     #generatorExpr
     | filter                                                        #filterExpr
@@ -63,6 +63,7 @@ single_statement
     | conditional
     | loop
     | stream
+    | streamState
     | procedureCall
     | continueStat
     | breakStat
@@ -78,7 +79,7 @@ assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
-    | tupleMember EQL expr SEMICOLON                                        #tupleMemberAss
+    | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
     ;
 
 declaration
@@ -104,10 +105,6 @@ block
     |  single_statement
     ;
 
-tupleMember
-    : TupleIndex  (Integer | Identifier)
-    ;
-
 decBlock
     : declaration+
     ;
@@ -123,7 +120,11 @@ extension
 stream
     : expr '->' Identifier SEMICOLON                                #outStream
     | Identifier  '<-' Identifier SEMICOLON                         #inStream
-    | tupleMember '<-' Identifier SEMICOLON                         #inStream
+    | TupleIndex '<-' Identifier SEMICOLON                          #inStream
+    ;
+
+streamState
+    : STREAM_STATE '(' Identifier ')' SEMICOLON
     ;
 
 typeDefine
@@ -303,15 +304,21 @@ WS : [ \t\r\n]+ -> skip ;
 
 Integer: [0-9] Digit? ;
 
+TupleIndex
+    : Identifier DOT Identifier
+    | Identifier DOT Integer
+    ;
+
 Real
     : Integer? DOT Digit Exponent?
     | Integer DOT? Exponent?
     ;
 
-Interval: (Identifier | Integer) DOTDOT (Integer | Identifier) ;
 
-TupleIndex
-    : Identifier '.'
+//Interval: IntervalThing (Integer | Identifier) ;
+
+IntervalThing
+    : (Identifier | Integer) '..'
     ;
 
 fragment Exponent: 'e' '_'* (ADD | SUB)? Digit;

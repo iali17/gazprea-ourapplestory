@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 class ASTGenerator : public gazprea::GazpreaBaseVisitor {
 public:
@@ -26,6 +27,18 @@ private:
     antlrcpp::Any visitNullExpr(gazprea::GazpreaParser::NullExprContext *ctx) override;
     antlrcpp::Any visitCastExpr(gazprea::GazpreaParser::CastExprContext *ctx) override;
     antlrcpp::Any visitRealExpr(gazprea::GazpreaParser::RealExprContext *ctx) override;
+    antlrcpp::Any visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) override;
+    antlrcpp::Any visitMatrixExpr(gazprea::GazpreaParser::MatrixExprContext *ctx) override;
+    antlrcpp::Any visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) override;
+    antlrcpp::Any visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) override;
+    antlrcpp::Any visitFilterExpr(gazprea::GazpreaParser::FilterExprContext *ctx) override;
+    antlrcpp::Any visitVectorLengthExpr(gazprea::GazpreaParser::VectorLengthExprContext *ctx) override;
+    antlrcpp::Any visitRowLengthExpr(gazprea::GazpreaParser::RowLengthExprContext *ctx) override;
+    antlrcpp::Any visitColLengthExpr(gazprea::GazpreaParser::ColLengthExprContext *ctx) override;
+    antlrcpp::Any visitReverseExpr(gazprea::GazpreaParser::ReverseExprContext *ctx) override;
+    antlrcpp::Any visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) override;
+    antlrcpp::Any visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) override;
+    antlrcpp::Any visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) override;
     antlrcpp::Any visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) override;
     antlrcpp::Any visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) override;
     antlrcpp::Any visitIntervalExpr(gazprea::GazpreaParser::IntervalExprContext *ctx) override;
@@ -74,6 +87,9 @@ private:
     antlrcpp::Any visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) override;
     antlrcpp::Any visitArithExpr(gazprea::GazpreaParser::ArithExprContext *ctx) override;
     antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
+
+    //Helper Functions
+    ASTNode *getTupleMemberNode(std::vector<std::string>values, int lineNum);
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
