@@ -4,18 +4,19 @@
 
 #include <AST/ASTGenerator.h>
 
-ASTNode *ASTGenerator::getTupleMemberNode(std::vector<std::string> values, int lineNum) {
+ASTNode *ASTGenerator::getTupleMemberNode(std::vector<std::string> values, int num, int lineNum) {
 
     ASTNode *index;
-    assert(!values[1].empty());
-    if(isdigit(values[1][0])){
-        int val = std::stoi(values[1]);
+    assert(!values[num].empty());
+    if(isdigit(values[num][0])){
+        int val = std::stoi(values[num]);
         assert(val > 0);
         --val;
         index = (ASTNode *) new INTNode(val, lineNum);
     }
     else {
-        index = (ASTNode *) new IDNode(values[1], lineNum);
+        index = (ASTNode *) new IDNode(values[num], lineNum);
     }
     return index;
 }
+

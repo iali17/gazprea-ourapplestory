@@ -89,9 +89,14 @@ antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalEx
     ASTNode *leftExpr;
     ASTNode *rightExpr = (ASTNode *) visit(ctx->right);
 
-    if(ctx->IntervalThing())
-        leftExpr = (ASTNode *) visit(ctx->IntervalThing());
-    else
+    if(ctx->IntervalThing()) {
+        std::string IntervalText = ctx->IntervalThing()->getText();
+        std::vector<std::string> values;
+        boost::split(values, IntervalText, [](char c){return c == '.';});
+        std::string idName = values[0];
+
+        leftExpr = getTupleMemberNode(values, 0, (int)ctx->getStart()->getLine());
+    } else
         leftExpr = (ASTNode *) visit(ctx->left);
 
     return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
@@ -328,7 +333,7 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
 
         int lineNum = (int)ctx->getStart()->getLine();
         auto idNode =  (ASTNode *) new IDNode(idName, lineNum);
-        ASTNode *index = getTupleMemberNode(values, lineNum);
+        ASTNode *index = getTupleMemberNode(values, 1,lineNum);
 
         auto LHS = (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
         return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
@@ -525,7 +530,7 @@ antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleInd
 
     int lineNum = (int)ctx->getStart()->getLine();
     auto idNode = (ASTNode *) new IDNode(idName, lineNum);
-    ASTNode *index = getTupleMemberNode(values, lineNum);
+    ASTNode *index = getTupleMemberNode(values, 1, lineNum);
 
     return (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 }
@@ -644,7 +649,7 @@ antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMem
 
     int lineNum = (int)ctx->getStart()->getLine();
     auto idNode =  (ASTNode*) new IDNode(idName, lineNum);
-    ASTNode *index = getTupleMemberNode(values, lineNum);
+    ASTNode *index = getTupleMemberNode(values, 1, lineNum);
 
     auto LHS = new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 

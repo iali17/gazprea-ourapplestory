@@ -89,7 +89,7 @@ private:
     antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
 
     //Helper Functions
-    ASTNode *getTupleMemberNode(std::vector<std::string>values, int lineNum);
+    ASTNode *getTupleMemberNode(std::vector<std::string>values, int num, int lineNum);
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
