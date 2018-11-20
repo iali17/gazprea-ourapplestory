@@ -38,6 +38,8 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     et->registerScanf();
     et->registerPow();
     et->registerVectorFunctions();
+    et->registerIntervalFunctions();
+    et->registerMatrixFunctions();
 
     symbolTable->pushNewScope("_globalScope_");
 
@@ -497,3 +499,8 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 
     return vec;
 }
+
+llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
+    return ASTBaseVisitor::visit(node);
+}
+

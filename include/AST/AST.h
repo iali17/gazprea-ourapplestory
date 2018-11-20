@@ -24,10 +24,13 @@
 #include "AST/ASTNodes/BaseNodes/BaseBlockParent.h"
 #include "AST/ASTNodes/BaseNodes/BitArithNode.h"
 #include "AST/ASTNodes/BaseNodes/BlockNode.h"
+#include "AST/ASTNodes/BaseNodes/BuiltIn.h"
 #include "AST/ASTNodes/BaseNodes/CompNode.h"
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 #include "AST/ASTNodes/BaseNodes/IONode.h"
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
+
+#include "AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h"
 
 #include "AST/ASTNodes/CompNodes/EQNode.h"
 #include "AST/ASTNodes/CompNodes/GTENode.h"
@@ -56,6 +59,7 @@
 #include "AST/ASTNodes/StatementNodes/ContinueNode.h"
 #include "AST/ASTNodes/StatementNodes/DeclNode.h"
 #include "AST/ASTNodes/StatementNodes/GlobalDeclNode.h"
+#include "AST/ASTNodes/StatementNodes/MatrixDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/PythonTupleAssNode.h"
 #include "AST/ASTNodes/StatementNodes/ReturnNode.h"
 #include "AST/ASTNodes/StatementNodes/TupleDeclNode.h"
@@ -69,6 +73,7 @@
 #include "AST/ASTNodes/TerminalNodes/IndexTupleNode.h"
 #include "AST/ASTNodes/TerminalNodes/InputNode.h"
 #include "AST/ASTNodes/TerminalNodes/INTNode.h"
+#include "AST/ASTNodes/TerminalNodes/MatrixNode.h"
 #include "AST/ASTNodes/TerminalNodes/NullNode.h"
 #include "AST/ASTNodes/TerminalNodes/OutputNode.h"
 #include "AST/ASTNodes/TerminalNodes/RealNode.h"
@@ -81,6 +86,7 @@
 #include "AST/ASTNodes/TerminalNodes/VectorNode.h"
 
 #include "AST/ASTNodes/TypeNodes/TupleType.h"
+#include "AST/ASTNodes/TypeNodes/MatrixType.h"
 
 #include "AST/ASTNodes/FileNode.h"
 

@@ -183,6 +183,9 @@ public:
         else if (dynamic_cast<VectorNode *>(node)) {
             ret = visit((VectorNode *) node);
         }
+        else if (dynamic_cast<StreamStateNode *>(node)) {
+            ret = visit((StreamStateNode *) node);
+        }
 
         if (ret){
             node->setLlvmType(ret->getType());
@@ -249,6 +252,7 @@ public:
     llvm::Value* visit(IndexNode *node) override { return nullptr; }
     llvm::Value* visit(IntervalNode *node) override { return nullptr; }
     llvm::Value* visit(VectorNode *node) override { return nullptr; }
+    llvm::Value* visit(StreamStateNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

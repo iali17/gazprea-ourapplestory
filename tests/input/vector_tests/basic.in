@@ -1,0 +1,25 @@
+procedure main() returns integer {
+var out = std_output();
+integer x = 88;
+
+integer vector a    = [1, 2, 3, x];
+integer vector b[4] = [1+1, 2-1, 3*4, x/11];
+real    vector c    = [1.1, 4.e3, 1.234e-5, 1.1e2 - 23e-2, x - 55.5];
+string         d    = "The cat said \"Meow!\"\nThat was a good day.\n";
+
+a[1] -> out; '\n' -> out ;
+a[2] -> out; '\n' -> out ;
+a[3] -> out; '\n' -> out ;
+a[4] -> out; '\n' -> out ;
+b[1] -> out; '\n' -> out ;
+b[2] -> out; '\n' -> out ;
+b[3] -> out; '\n' -> out ;
+b[4] -> out; '\n' -> out ;
+c[1] -> out; '\n' -> out ;
+c[2] -> out; '\n' -> out ;
+c[3] -> out; '\n' -> out ;
+c[4] -> out; '\n' -> out ;
+c[5] -> out; '\n' -> out ;
+d    -> out;
+return 0;
+}
