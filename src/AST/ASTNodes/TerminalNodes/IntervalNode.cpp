@@ -4,14 +4,14 @@
 
 #include <AST/ASTNodes/TerminalNodes/IntervalNode.h>
 
-IntervalNode::IntervalNode(int leftBound, int rightBound, int line) : ASTNode(line), leftBound(leftBound), rightBound(rightBound){
+IntervalNode::IntervalNode(ASTNode* leftBound, ASTNode* rightBound, int line) : ASTNode(line), leftBound(leftBound), rightBound(rightBound){
 
 }
 
-int IntervalNode::getLeftBound() {
+ASTNode* IntervalNode::getLeftBound() {
     return this->leftBound;
 }
 
-int IntervalNode::getRightBound() {
+ASTNode* IntervalNode::getRightBound() {
     return this->rightBound;
 }

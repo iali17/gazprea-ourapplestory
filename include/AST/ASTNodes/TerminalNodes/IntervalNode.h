@@ -9,12 +9,13 @@
 
 class IntervalNode : ASTNode {
 public:
-    IntervalNode(int leftBound, int rightBound, int line);
-    int getLeftBound();
-    int getRightBound();
+    IntervalNode(ASTNode* leftBound, ASTNode* rightBound, int line);
+    ASTNode* getLeftBound();
+    ASTNode* getRightBound();
 
 protected:
-    int leftBound, rightBound;
+    ASTNode* leftBound;
+    ASTNode* rightBound;
 };
 
 #endif //GAZPREABASE_INTERVALNODE_H

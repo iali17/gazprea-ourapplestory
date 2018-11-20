@@ -10,6 +10,9 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intervalTy;
 
 CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb) : globalCtx(globalctx), ir(ir), it(it), mod(mod), eb(eb) {
     // Do nothing
@@ -24,6 +27,12 @@ int CastTable::getType(llvm::Type *expr) {
         return 0;
     else if(expr == charTy || i8Ty)
         return 1;
+    else if(expr == intervalTy)
+        return 4;
+    else if(expr == vecTy)
+        return 5;
+    else if(expr == matrixTy)
+        return 6;
     return -1;
 }
 

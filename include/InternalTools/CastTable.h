@@ -25,20 +25,29 @@ public:
     int getType(llvm::Type *expr);
 
 private:
-    std::string typeTable[4][4] = { {"bool", "char", "int", "real"},
-                                    {"bool", "char", "int", "real"},
-                                    {"bool", "char", "int", "real"},
-                                    {"null", "null", "int", "real"}};
+    std::string typeTable[7][7] = { {"bool", "char", "int", "real", "null", "vector", "matrix"},
+                                    {"bool", "char", "int", "real", "null", "vector", "matrix"},
+                                    {"bool", "char", "int", "real", "null", "vector", "matrix"},
+                                    {"null", "null", "int", "real", "null", "vector", "matrix"},
+                                    {"null", "null", "null", "null", "interval", "vector", "null"},
+                                    {"null", "null", "null", "null", "null", "vector", "null"},
+                                    {"null", "null", "null", "null", "null", "null", "matrix"}};
 
-    std::string typePTable[4][4] = { {"bool", "null", "null", "null"},
-                                     {"null", "char", "null", "null"},
-                                     {"null", "null", "int", "real"},
-                                     {"null", "null", "real", "real"}};
+    std::string typePTable[7][7] = { {"bool", "null", "null", "null", "null", "vector", "matrix"},
+                                     {"null", "char", "null", "null", "null", "vector", "matrix"},
+                                     {"null", "null", "int", "real", "null", "vector", "matrix"},
+                                     {"null", "null", "real", "real", "null", "vector", "matrix"},
+                                     {"null", "null", "null", "null", "interval", "vector", "null"},
+                                     {"vector", "vector", "vector", "vector", "vector", "vector", "null"},
+                                     {"matrix", "matrix", "matrix", "matrix", "null", "null", "matrix"}};
 
-    std::string typeAssTable[4][4] = { {"bool", "null", "null", "null"},
-                                       {"null", "char", "null", "null"},
-                                       {"null", "null", "int", "null"},
-                                       {"null", "null", "real", "real"}};
+    std::string typeAssTable[7][7] = { {"bool", "null", "null", "null", "null", "null", "null"},
+                                       {"null", "char", "null", "null", "null", "null", "null"},
+                                       {"null", "null", "int", "null", "null", "null", "null"},
+                                       {"null", "null", "real", "real", "null", "null", "null"},
+                                       {"null", "null", "null", "null", "interval", "null", "null"},
+                                       {"vector", "vector", "vector", "vector", "vector", "vector", "null"},
+                                       {"matrix", "matrix", "matrix", "matrix", "null", "null", "matrix"}};
 
 
 

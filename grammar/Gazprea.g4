@@ -13,8 +13,8 @@ termsAndConditions
 // TODO: check for precendence
 expr
     : '(' expr ')'                                                  #brackExpr
-    | expr (DOTDOT expr)                                            #intervalExpr
-    | IntervalThing expr                                            #intervalExpr
+    | left=expr (DOTDOT right=expr)                                 #intervalExpr
+    | IntervalThing right=expr                                      #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
@@ -26,9 +26,9 @@ expr
     | matrix                                                        #matrixExpr
     | String                                                        #stringExpr
     | vector                                                        #vectorExpr
+    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
-    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
     | functionCall                                                  #functionExpr
     | generator                                                     #generatorExpr
     | filter                                                        #filterExpr
@@ -79,7 +79,7 @@ assignment
     : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
-    | TupleIndex EQL expr SEMICOLON                                        #tupleMemberAss
+    | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
     ;
 
 declaration
@@ -120,7 +120,7 @@ extension
 stream
     : expr '->' Identifier SEMICOLON                                #outStream
     | Identifier  '<-' Identifier SEMICOLON                         #inStream
-    | TupleIndex '<-' Identifier SEMICOLON                         #inStream
+    | TupleIndex '<-' Identifier SEMICOLON                          #inStream
     ;
 
 streamState

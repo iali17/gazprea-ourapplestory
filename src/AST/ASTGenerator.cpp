@@ -86,8 +86,15 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalExprContext *ctx) {
-    return nullptr;
-    //return (ASTNode *) new IntervalNode()
+    ASTNode *leftExpr;
+    ASTNode *rightExpr = (ASTNode *) visit(ctx->right);
+
+    if(ctx->IntervalThing())
+        leftExpr = (ASTNode *) visit(ctx->IntervalThing());
+    else
+        leftExpr = (ASTNode *) visit(ctx->left);
+
+    return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
@@ -313,12 +320,13 @@ antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamCont
  * @return - InputNode
  */
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
-    if(ctx->tupleMember()){
-        std::string idName = ctx->tupleMember()->TupleIndex()->getText();
+    if(ctx->TupleIndex()){
+        std::string idName = ctx->TupleIndex()->getText();
         idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
 
         auto idNode =  new IDNode(idName, (int)ctx->getStart()->getLine());
         ASTNode *index;
+
         if(ctx->tupleMember()->Integer()){
             int val = std::stoi(ctx->tupleMember()->Integer()->getText());
             assert(val > 0);
@@ -326,7 +334,7 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
             index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
         }
         else{
-            assert(ctx->tupleMember()->Identifier());
+            assert(ctx->Identifier(0));
             index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
         }
 
