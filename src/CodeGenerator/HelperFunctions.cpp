@@ -313,7 +313,7 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
-    ///*//kyle's testing code
+    /*//kyle's testing code
     printf("running kyles print test\n");
     llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
     et->initVector(vec, it->getConsi32(5));
