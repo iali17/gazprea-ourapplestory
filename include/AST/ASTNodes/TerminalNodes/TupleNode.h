@@ -14,9 +14,6 @@ public:
 
 protected:
     std::vector<ASTNode*>* insideElement;
-
-
-
 };
 
 

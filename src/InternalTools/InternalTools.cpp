@@ -249,7 +249,7 @@ llvm::Value *InternalTools::initTupleFromPtrs(llvm::Value *tuplePtr, std::vector
     return tuplePtr ;
 }
 
-std::vector<llvm::Value *> *InternalTools::getValueVectorFromStruct(llvm::Value *structPtr) {
+std::vector<llvm::Value *> *InternalTools::getValueVectorFromTuple(llvm::Value *structPtr) {
     auto *structType = llvm::cast<llvm::StructType>(structPtr->getType()->getPointerElementType());
     auto types   = structType->elements();
     auto * values = new std::vector<llvm::Value *>;
@@ -500,4 +500,29 @@ llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, llvm::Value *idx
 llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, llvm::Value *idx) {
     llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), idx});
     return ir->CreateLoad(ptr);
+}
+
+llvm::Value *InternalTools::castVectorToType(llvm::Value *vec, llvm::Type *type) {
+    if(type == boolTy)
+        return ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
+    else if (type == charTy)
+        return ir->CreatePointerCast(vec, charVecTy->getPointerTo());
+    else if (type == intTy)
+        return ir->CreatePointerCast(vec, intVecTy->getPointerTo());
+    else if (type == realTy)
+        return ir->CreatePointerCast(vec, realVecTy->getPointerTo());
+
+    return nullptr;
+}
+
+llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::Value *> *values) {
+    llvm::Value *ptr = getPtrFromStruct(vec, getConsi32(2));
+    llvm::Value *curPosPtr;
+
+    for(uint i = 0; i < values->size(); i++) {
+        curPosPtr = ir->CreateGEP(ptr, getConsi32(i));
+        ir->CreateStore(values->at(i), curPosPtr);
+    }
+
+    return nullptr;
 }

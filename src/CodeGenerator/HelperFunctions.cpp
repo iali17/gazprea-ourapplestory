@@ -66,7 +66,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             if(argNode || constant) {
                 assert(constant);
                 newParamPtr = ir->CreateAlloca(paramType);
-                newParamPtr = it->initTuple(newParamPtr, it->getValueVectorFromStruct(argPtr));
+                newParamPtr = it->initTuple(newParamPtr, it->getValueVectorFromTuple(argPtr));
                 paramVector.push_back(newParamPtr);
                 continue;
             } else if(!constant) {

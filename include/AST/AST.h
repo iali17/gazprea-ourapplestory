@@ -78,6 +78,7 @@
 #include "AST/ASTNodes/TerminalNodes/TypeDefNode.h"
 #include "AST/ASTNodes/TerminalNodes/IndexNode.h"
 #include "AST/ASTNodes/TerminalNodes/IntervalNode.h"
+#include "AST/ASTNodes/TerminalNodes/VectorNode.h"
 
 #include "AST/ASTNodes/TypeNodes/TupleType.h"
 

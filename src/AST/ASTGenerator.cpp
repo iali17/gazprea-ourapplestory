@@ -813,7 +813,13 @@ antlrcpp::Any ASTGenerator::visitCompExpr(gazprea::GazpreaParser::CompExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) {
-    return GazpreaBaseVisitor::visitVectorExpr(ctx);
+    auto *expr  = new std::vector<ASTNode *>;
+
+    for(unsigned long i = 0; i < ctx->vector()->expr().size(); ++i){
+        expr->push_back((ASTNode *) visit(ctx->vector()->expr(i)));
+    }
+
+    return (ASTNode *) new VectorNode(expr, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitMatrixExpr(gazprea::GazpreaParser::MatrixExprContext *ctx) {

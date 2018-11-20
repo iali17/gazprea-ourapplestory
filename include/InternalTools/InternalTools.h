@@ -64,10 +64,12 @@ public:
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
-    std::vector<llvm::Value *> * getValueVectorFromStruct(llvm::Value * structPtr);
+    std::vector<llvm::Value *> * getValueVectorFromTuple(llvm::Value *structPtr);
     std::string getType(llvm::Type * type, llvm::Value *expr);
     llvm::Value *getConstFromType(llvm::Type* ty);
     llvm::Type *getVectorElementType(llvm::Value *vec);
+    llvm::Value *castVectorToType(llvm::Value *vec, llvm::Type *type);
+    llvm::Value *setVectorValues(llvm::Value *vec, std::vector<llvm::Value *> *values);
 
 protected:
     llvm::LLVMContext * globalCtx;

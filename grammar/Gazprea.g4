@@ -176,8 +176,8 @@ type
     | Identifier
     | tupleType
     | STRING
-    | VECTOR
-    | MATRIX
+    | vectorType
+    | matrixType
     // | STRING '[' Integer ']'
     ;
 
@@ -220,6 +220,20 @@ matrix
 
 tupleType
     : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)+ ')'
+    ;
+
+vectorType
+    : BOOLEAN VECTOR
+    | CHARACTER VECTOR
+    | INTEGER VECTOR
+    | REAL VECTOR
+    ;
+
+matrixType
+    : BOOLEAN MATRIX
+    | CHARACTER MATRIX
+    | INTEGER MATRIX
+    | REAL MATRIX
     ;
 
 tupleTypeIdentifier

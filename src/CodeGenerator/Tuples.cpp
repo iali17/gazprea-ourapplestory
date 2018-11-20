@@ -231,7 +231,7 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     else if (not(tupleNode) && (dynamic_cast<IDNode *>(node->getExpr()) || dynamic_cast<CastExprNode *>(node->getExpr()))){
         llvm::Value * tuplePtr = visit(node->getExpr());
         ptr = ir->CreateAlloca(structType);
-        ptr = it->initTuple(ptr, it->getValueVectorFromStruct(tuplePtr));
+        ptr = it->initTuple(ptr, it->getValueVectorFromTuple(tuplePtr));
     }
     else {
         ptr = visit(tupleNode, structType);

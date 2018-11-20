@@ -89,6 +89,7 @@ public:
     llvm::Value* visit(FunctionNode       *node) override;
     llvm::Value* visit(IndexNode          *node) override;
     llvm::Value* visit(IntervalNode       *node) override;
+    llvm::Value* visit(VectorNode         *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
