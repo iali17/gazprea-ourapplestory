@@ -30,6 +30,8 @@ public:
     //tools
 	llvm::Value *getValFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
 	llvm::Value *getPtrFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
+	llvm::Value *getValFromStruct(llvm::Value * sPtr, llvm::Value *idx);
+	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, llvm::Value *idx);
 	llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
 	llvm::Value *initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs);
 	std::vector<llvm::Value *> *getPtrVectorFromStruct(llvm::Value *structPtr);
@@ -65,6 +67,7 @@ public:
     std::vector<llvm::Value *> * getValueVectorFromStruct(llvm::Value * structPtr);
     std::string getType(llvm::Type * type, llvm::Value *expr);
     llvm::Value *getConstFromType(llvm::Type* ty);
+    llvm::Type *getVectorElementType(llvm::Value *vec);
 
 protected:
     llvm::LLVMContext * globalCtx;

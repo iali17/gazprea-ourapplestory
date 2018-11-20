@@ -13,6 +13,14 @@ extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
@@ -305,12 +313,16 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
-    /*//kyle's testing code
+    ///*//kyle's testing code
     printf("running kyles print test\n");
     llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
     et->initVector(vec, it->getConsi32(5));
     et->setIdentityVector(vec);
     et->printVector(vec);
+    ir->CreatePointerCast(vec, intVecTy->getPointerTo());
+    ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
+    ir->CreatePointerCast(vec, charVecTy->getPointerTo());
+    ir->CreatePointerCast(vec, realVecTy->getPointerTo());
     //*/
 
     //visit block and create ir

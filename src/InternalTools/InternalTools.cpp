@@ -13,6 +13,14 @@ extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
@@ -124,6 +132,7 @@ void InternalTools::setUpTypes() {
     boolTy = llvm::TypeBuilder<llvm::types::i<1>,  true>::get(*globalCtx);
     realTy = llvm::Type::getFloatTy(*globalCtx);
 
+    //generic types (void *)
     //vector type
     std::vector<llvm::Type *> types;
     types.push_back(intTy->getPointerTo());
@@ -138,6 +147,42 @@ void InternalTools::setUpTypes() {
     mTypes.push_back(intTy->getPointerTo());
     mTypes.push_back(vecTy->getPointerTo()->getPointerTo());
     matrixTy = llvm::StructType::create(*globalCtx, mTypes, "matrix");
+
+    //INTEGER
+    //vector type
+    types.back() = intTy->getPointerTo();
+    intVecTy = llvm::StructType::create(*globalCtx, types, "intVector");
+
+    //matrix type
+    mTypes.back() = intVecTy->getPointerTo();
+    intMatrixTy = llvm::StructType::create(*globalCtx, mTypes, "intMatrix");
+
+    //CHAR
+    //vector type
+    types.back() = charTy->getPointerTo();
+    charVecTy = llvm::StructType::create(*globalCtx, types, "charVector");
+
+    //matrix type
+    mTypes.back() = charVecTy->getPointerTo();
+    charMatrixTy = llvm::StructType::create(*globalCtx, mTypes, "charMatrix");
+
+    //BOOL
+    //vector type
+    types.back() = boolTy->getPointerTo();
+    boolVecTy = llvm::StructType::create(*globalCtx, types, "boolVector");
+
+    //matrix type
+    mTypes.back() = boolVecTy->getPointerTo();
+    boolMatrixTy = llvm::StructType::create(*globalCtx, mTypes, "boolMatrix");
+
+    //REAL
+    //vector type
+    types.back() = realTy->getPointerTo();
+    realVecTy = llvm::StructType::create(*globalCtx, types, "realVector");
+
+    //matrix type
+    mTypes.back() = realVecTy->getPointerTo();
+    realMatrixTy = llvm::StructType::create(*globalCtx, mTypes, "realMatrix");
 
     //interval type
     std::vector<llvm::Type *> iTypes;
@@ -439,4 +484,20 @@ llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
         return getConsi32(REAL);
 
     return nullptr;
+}
+
+llvm::Type *InternalTools::getVectorElementType(llvm::Value *vec) {
+    llvm::Value * ptr = getPtrFromStruct(vec, getConsi32(2));
+    return ptr->getType()->getPointerElementType();
+}
+
+llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, llvm::Value *idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), idx});
+    llvm::Value *val = ir->CreateLoad(ptr);
+    return ir->CreateLoad(val);
+}
+
+llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, llvm::Value *idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), idx});
+    return ir->CreateLoad(ptr);
 }

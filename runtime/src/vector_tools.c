@@ -81,6 +81,23 @@ void * getIdentity(int type, void *ret){
     return ret;
 }
 
+
+void * getCast(void * v_p, int type, void *ret){
+    if(type == BOOLEAN){
+        *((bool *) ret) = true;
+    }
+    else if (type == CHAR){
+        *((char *) ret) = 0x01;
+    }
+    else if (type == INTEGER){
+        *((int *) ret) = 1;
+    }
+    else if (type == REAL){
+        *((float *) ret) =  1.0;
+    }
+    return ret;
+}
+
 /**
  * sets the given vector to be the null vector
  * @param v_vector
@@ -199,6 +216,26 @@ void *getVectorElementPointer(void *v_vector, int idx){
         return ((float *) v->elements) + idx;
     }
     return NULL;
+}
+
+/**
+ * return null value if out of bounds
+ * @param v_vector
+ * @param idx
+ * @return
+ */
+void  *getVectorElementPointerSafe(void *v_vector, int idx){
+    if (validIndex(v_vector, idx))
+        return getVectorElementPointer(v_vector, idx);
+    else {
+        void *ret = malloc(sizeof(int));
+        getNull(*((vector *) v_vector)->type, ret);
+        return ret;
+    }
+}
+
+bool validIndex(void *v_vector, int idx){
+    return ((0 <= idx) && (idx < *((vector *) v_vector)->numElements));
 }
 
 /**

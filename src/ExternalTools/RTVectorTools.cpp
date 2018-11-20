@@ -15,6 +15,14 @@ extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 

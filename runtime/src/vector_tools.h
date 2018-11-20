@@ -16,6 +16,8 @@ void printVectorElement(void *v_elm_ptr, int type);
 size_t getMemberSize(int type);
 void   setVectorVal(vector * v, int idx, void *val);
 void  *getVectorElementPointer(void *v_vector, int idx);
+void  *getVectorElementPointerSafe(void *v_vector, int idx);
+bool   validIndex(void *v_vector, int idx);
 void  *getNull(int type, void *ret);
 void  *getIdentity(int type, void *ret);
 
