@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
-#include <boost/algorithm/string.hpp>
 
 class ASTGenerator : public gazprea::GazpreaBaseVisitor {
 public:
@@ -89,7 +88,8 @@ private:
     antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
 
     //Helper Functions
-    ASTNode *getTupleMemberNode(std::vector<std::string>values, int num, int lineNum);
+    ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
+    std::vector<std::string> split(const std::string& s, char delimiter);
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H
