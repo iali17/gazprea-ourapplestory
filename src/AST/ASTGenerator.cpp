@@ -89,9 +89,13 @@ antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalEx
     ASTNode *leftExpr;
     ASTNode *rightExpr = (ASTNode *) visit(ctx->right);
 
-    if(ctx->IntervalThing())
-        leftExpr = (ASTNode *) visit(ctx->IntervalThing());
-    else
+    if(ctx->IntervalThing()) {
+        std::string IntervalText = ctx->IntervalThing()->getText();
+        std::vector<std::string> values = split(IntervalText,'.');
+        std::string idName = values[0];
+
+        leftExpr = getIndexNode(values, 0, (int)ctx->getStart()->getLine());
+    } else
         leftExpr = (ASTNode *) visit(ctx->left);
 
     return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
@@ -322,13 +326,12 @@ antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamCont
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
     if(ctx->TupleIndex()){
         std::string tupleText = ctx->TupleIndex()->getText();
-        std::vector<std::string> values;
-        boost::split(values, tupleText, [](char c){return c == '.';});
+        std::vector<std::string> values = split(tupleText,'.');
         std::string idName = values[0];
 
         int lineNum = (int)ctx->getStart()->getLine();
         auto idNode =  (ASTNode *) new IDNode(idName, lineNum);
-        ASTNode *index = getTupleMemberNode(values, lineNum);
+        ASTNode *index = getIndexNode(values, 1,lineNum);
 
         auto LHS = (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
         return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
@@ -519,13 +522,12 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
     std::string tupleText = ctx->TupleIndex()->getText();
-    std::vector<std::string> values;
-    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::vector<std::string> values = split(tupleText,'.');
     std::string idName = values[0];
 
     int lineNum = (int)ctx->getStart()->getLine();
     auto idNode = (ASTNode *) new IDNode(idName, lineNum);
-    ASTNode *index = getTupleMemberNode(values, lineNum);
+    ASTNode *index = getIndexNode(values, 1, lineNum);
 
     return (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 }
@@ -637,14 +639,13 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
 
 antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
     std::string tupleText = ctx->TupleIndex()->getText();
-    std::vector<std::string> values;
-    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::vector<std::string> values = split(tupleText,'.');
     std::string idName = values[0];
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
 
     int lineNum = (int)ctx->getStart()->getLine();
     auto idNode =  (ASTNode*) new IDNode(idName, lineNum);
-    ASTNode *index = getTupleMemberNode(values, lineNum);
+    ASTNode *index = getIndexNode(values, 1, lineNum);
 
     auto LHS = new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 
