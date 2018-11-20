@@ -16,7 +16,7 @@ typedef struct{
     int     *type;
     int     *numRows;
     int     *numCols;
-    vector **elements;
+    vector  *elements;
 } matrix;
 
 typedef struct{
