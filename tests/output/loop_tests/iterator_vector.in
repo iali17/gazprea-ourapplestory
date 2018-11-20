@@ -1,0 +1,20 @@
+procedure main() returns integer {
+var out = std_output();
+
+integer vector v = [5,4,3,2,1];
+
+loop i in v {
+i -> out;
+}
+
+
+loop i in 11..15 {
+i -> out;
+}
+
+loop i in 18..21 by by 2 {
+i -> out;
+}
+
+return 0;
+}
