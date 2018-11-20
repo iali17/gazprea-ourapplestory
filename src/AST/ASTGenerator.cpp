@@ -313,24 +313,17 @@ antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamCont
  * @return - InputNode
  */
 antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContext *ctx) {
-    if(ctx->tupleMember()){
-        std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-        idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+    if(ctx->TupleIndex()){
+        std::string tupleText = ctx->TupleIndex()->getText();
+        std::vector<std::string> values;
+        boost::split(values, tupleText, [](char c){return c == '.';});
+        std::string idName = values[0];
 
-        auto idNode =  new IDNode(idName, (int)ctx->getStart()->getLine());
-        ASTNode *index;
-        if(ctx->tupleMember()->Integer()){
-            int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-            assert(val > 0);
-            --val;
-            index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-        }
-        else{
-            assert(ctx->tupleMember()->Identifier());
-            index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-        }
+        int lineNum = (int)ctx->getStart()->getLine();
+        auto idNode =  (ASTNode *) new IDNode(idName, lineNum);
+        ASTNode *index = getTupleMemberNode(values, lineNum);
 
-        auto LHS = new IndexTupleNode(index, idNode, (int)ctx->getStart()->getLine());
+        auto LHS = (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
         return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
     }
     return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
@@ -518,20 +511,15 @@ antlrcpp::Any ASTGenerator::visitCharExpr(gazprea::GazpreaParser::CharExprContex
  * ignore the warning on dynamic cast
  */
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
-    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
-    auto idNode = (ASTNode *) new IDNode(idName, (int)ctx->getStart()->getLine());
-    ASTNode *index;
-    if(ctx->tupleMember()->Integer()){
-        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-        assert(val > 0);
-        --val;
-        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-    }
-    else{
-        assert(ctx->tupleMember()->Identifier());
-        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-    }
+    std::string tupleText = ctx->TupleIndex()->getText();
+    std::vector<std::string> values;
+    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::string idName = values[0];
+
+    int lineNum = (int)ctx->getStart()->getLine();
+    auto idNode = (ASTNode *) new IDNode(idName, lineNum);
+    ASTNode *index = getTupleMemberNode(values, lineNum);
+
     return (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 }
 
@@ -641,24 +629,17 @@ antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
-    std::string idName = ctx->tupleMember()->TupleIndex()->getText();
-    idName.erase(std::remove(idName.begin(), idName.end(), '.'), idName.end());
+    std::string tupleText = ctx->TupleIndex()->getText();
+    std::vector<std::string> values;
+    boost::split(values, tupleText, [](char c){return c == '.';});
+    std::string idName = values[0];
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
 
-    auto idNode =  new IDNode(idName, (int)ctx->getStart()->getLine());
-    ASTNode *index;
-    if(ctx->tupleMember()->Integer()){
-        int val = std::stoi(ctx->tupleMember()->Integer()->getText());
-        assert(val > 0);
-        --val;
-        index = (ASTNode *) new INTNode(val, (int)ctx->getStart()->getLine());
-    }
-    else{
-        assert(ctx->tupleMember()->Identifier());
-        index = (ASTNode *) new IDNode(ctx->tupleMember()->Identifier()->getText(), (int)ctx->getStart()->getLine());
-    }
+    int lineNum = (int)ctx->getStart()->getLine();
+    auto idNode =  (ASTNode*) new IDNode(idName, lineNum);
+    ASTNode *index = getTupleMemberNode(values, lineNum);
 
-    auto LHS = new IndexTupleNode(index, idNode, (int)ctx->getStart()->getLine());
+    auto LHS = new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
 
    return (ASTNode *) new TupleMemberAssNode(expr, LHS, (int)ctx->getStart()->getLine());
 }
