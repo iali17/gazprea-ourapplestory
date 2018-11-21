@@ -6,8 +6,9 @@
 #define GAZPREABASE_VECTORTYPE_H
 
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
+#include <string>
 
-class VectorType : ASTNode{
+class VectorType : public ASTNode{
 public:
     VectorType(ASTNode *size, int line);
     ASTNode *getSize() const;
