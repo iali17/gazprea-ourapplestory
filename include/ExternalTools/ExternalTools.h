@@ -62,7 +62,10 @@ public:
     llvm::Value * getReverseVector(llvm::Value *fromVec);
     llvm::Value * printVector(llvm::Value *vec);
     llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
-
+    llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value *src);
+    llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
+    llvm::Value * getVectorCopy(llvm::Value * vec);
+    llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);
 
     //Interval functions
     void registerIntervalFunctions();
@@ -71,12 +74,16 @@ public:
 
     //matrix functions
     void registerMatrixFunctions();
-    llvm::Value *getNewMatrix(llvm::Value *ty);
-    llvm::Value *initMatrix(llvm::Value *mat, llvm::Value * numRows, llvm::Value *numCols);
-    llvm::Value *setNullMatrix(llvm::Value * mat);
-    llvm::Value *setIdentityMatrix(llvm::Value *mat);
-    llvm::Value *getNumRows(llvm::Value *mat);
-    llvm::Value *getNumCols(llvm::Value *mat);
+    llvm::Value * getNewMatrix(llvm::Value *ty);
+    llvm::Value * initMatrix(llvm::Value *mat, llvm::Value * numRows, llvm::Value *numCols);
+    llvm::Value * setNullMatrix(llvm::Value * mat);
+    llvm::Value * setIdentityMatrix(llvm::Value *mat);
+    llvm::Value * getNumRows(llvm::Value *mat);
+    llvm::Value * getNumCols(llvm::Value *mat);
+    llvm::Value * printMatrix(llvm::Value *mat);
+    llvm::Value * sliceMatrix(llvm::Value *mat, llvm::Value *l, llvm::Value *r);
+    llvm::Value * indexMatrix(llvm::Value *mat, llvm::Value *l, llvm::Value *r);
+    llvm::Value * getMatrixElementPointer(llvm::Value *mat, llvm::Value *row, llvm::Value *col);
 
     //printing
     void registerPrintf();
@@ -92,6 +99,15 @@ protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     llvm::Module      * mod;
-    //TODO - move these declarations
+
+    //matrix slicing
+    llvm::Value * sliceScalarVector(llvm::Value * mat, llvm::Value * scalar, llvm::Value *vec);
+    llvm::Value * sliceVectorScalar(llvm::Value * mat, llvm::Value * vec,    llvm::Value *scalar);
+    llvm::Value * sliceVectorVector(llvm::Value * mat, llvm::Value * vecRow, llvm::Value *vecCol);
+
+    //matrix indexing
+    llvm::Value * indexScalarVector(llvm::Value * mat, llvm::Value * scalar, llvm::Value *vec);
+    llvm::Value * indexVectorScalar(llvm::Value * mat, llvm::Value * vec,    llvm::Value *scalar);
+    llvm::Value * indexVectorVector(llvm::Value * mat, llvm::Value * vecRow, llvm::Value *vecCol);
 };
 #endif //VCALCBASE_EXTERNALTOOLS_H

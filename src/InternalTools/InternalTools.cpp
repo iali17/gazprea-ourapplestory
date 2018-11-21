@@ -11,6 +11,7 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *strTy;
 extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
 extern llvm::Type *intVecTy;
@@ -161,6 +162,9 @@ void InternalTools::setUpTypes() {
     //vector type
     types.back() = charTy->getPointerTo();
     charVecTy = llvm::StructType::create(*globalCtx, types, "charVector");
+
+    //quickly do string as well
+    strTy = llvm::StructType::create(*globalCtx, types, "string");
 
     //matrix type
     mTypes.back() = charVecTy->getPointerTo();

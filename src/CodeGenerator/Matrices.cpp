@@ -71,6 +71,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
         auto *cb = new CondBuilder(globalCtx, ir, mod);
         cb->beginIf(ir->CreateICmpSGT(curCols, numCols));
             ir->CreateStore(curCols, numColsPtr);
+        cb->endIf();
         cb->finalize();
     }
 
