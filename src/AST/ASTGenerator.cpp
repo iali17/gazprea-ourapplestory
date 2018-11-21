@@ -473,6 +473,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     std::string ty;
     if (!ctx->type().empty()) ty = ctx->type(0)->getText();
 
+    // todo string decl, vec, interval
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
@@ -863,7 +864,41 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
 }
 
 antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {
-    return GazpreaBaseVisitor::visitStringExpr(ctx);
+    int line = (int)ctx->getStart()->getLine();
+    auto str = ctx->getText();
+    auto strVec = new std::vector<ASTNode *>;
+
+    for (int i = 1; i < (int) str.size() - 1; i++){
+        if (str[i] != '\\') {
+            strVec->push_back((ASTNode *) new CharNode(str[i], line));
+        }
+        else {
+            i = i + 1;
+            if (str[i] == 'n' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x0A, line));
+            } else if (str[i] == '0' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x00, line));
+            } else if (str[i] == 'a' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x07, line));
+            } else if (str[i] == 'b' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x08, line));
+            } else if (str[i] == 't' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x09, line));
+            } else if (str[i] == 'r' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x0D, line));
+            } else if (str[i] == '"' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x22, line));
+            } else if (str[i] == '\'' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x27, line));
+            } else if (str[i] == '\\' ) {
+                strVec->push_back((ASTNode *) new CharNode(0x5C, line));
+            } else {
+                std::cerr << "Unrecognized character\nAborting....";
+                exit(1);
+            }
+        }
+    }
+    return (ASTNode *) new VectorNode(strVec, line);
 }
 
 antlrcpp::Any ASTGenerator::visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) {
@@ -901,7 +936,6 @@ antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *c
 antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
     return GazpreaBaseVisitor::visitConcatExpr(ctx);
 }
-
 
 antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) {
     std::string streamName = ctx->Identifier()->getText();
