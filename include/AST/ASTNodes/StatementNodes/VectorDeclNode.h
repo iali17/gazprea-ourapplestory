@@ -10,15 +10,17 @@
 
 class VectorDeclNode : public UnaryNode {
 public:
-    VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *vectorType, int line);
+    VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID, const std::string &stringType,ASTNode *vectorType, int line);
 
     const std::string &getID() const;
+    const std::string &getStringType() const;
     bool isConstant() const;
     ASTNode *getVectorType();
 
 protected:
     bool constant;
     std::string ID;
+    std::string stringType;
     ASTNode *vectorType = nullptr;
 
 };

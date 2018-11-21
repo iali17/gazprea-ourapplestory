@@ -371,63 +371,6 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     symbolTable->addUserType(node->getId(), type);
     return nullptr;
 }
-/**
- * Deals with implicit and explicit casting.
- *
- * @param node
- * @return llvm::Value *
- */
-llvm::Value *CodeGenerator::visit(CastExprNode *node) {
-    llvm::Type *type;
-    llvm::Value *expr;
-    std::string temp = node->getTypeString();
-
-    if(node->getTuple() || it->isStructType(visit(node->getExpr()))) {
-        // Checks if casting a tuple to another type
-        if(!node->getTuple()) {
-            std::string left = node->getTypeString();
-            std::string right = "tuple(*)";
-            auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
-            eb->printError(error);
-        }
-
-        auto *values = new std::vector<llvm::Value *>();
-        llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
-        llvm::Value *exprP = visit(node->getExpr());
-        llvm::Value *ptr = ir->CreateAlloca(types);
-
-
-        // Checks if casting another type to a tuple
-        if(!it->isStructType(exprP)) {
-            std::string left = "tuple(*)";
-            std::string right = it->getType(exprP->getType(), exprP);
-            auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
-            eb->printError(error);
-        }
-
-        // Checks if tuples are different size
-        if(types->getStructNumElements() != exprP->getType()->getPointerElementType()->getStructNumElements()){
-            std::cerr << "Mismatching tuple lengths on line " << node->getLine() <<". Aborting...\n";
-            exit(1);
-        }
-
-        for(unsigned long i = 0; i < types->elements().size(); ++i) {
-            expr = it->getValFromTuple(exprP, it->getConsi32(i));
-            type = types->elements()[i];
-
-            expr = ct->varCast(type->getPointerElementType(), expr, node->getLine());
-            values->push_back(expr);
-        }
-        return it->initTuple(ptr, values);
-
-    } else {
-        expr = visit(node->getExpr());
-        GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
-        type = gazpreaType->getTypeDef();
-
-        return ct->varCast(type, expr, node->getLine());
-    }
-}
 
 /**
  * Deals with continue statements

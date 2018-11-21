@@ -18,4 +18,12 @@
 #define MATRIX    8
 #define NEQ 0
 #define EQ  1
+#define VEC_TYPE_INDEX 0
+#define VEC_LEN_INDEX 1
+#define VEC_ELEM_INDEX 2
+#define MATRIX_TYPE_INDEX 0
+#define MATRIX_NUMROW_INDEX 1
+#define MATRIX_NUMCOL_INDEX 2
+#define MATRIX_ELEM_INDEX 3
+
 #endif //GAZPREABASE_GLOBALS_H

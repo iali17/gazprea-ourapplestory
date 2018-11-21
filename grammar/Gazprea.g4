@@ -223,10 +223,10 @@ tupleType
     ;
 
 vectorType
-    : BOOLEAN VECTOR
-    | CHARACTER VECTOR
-    | INTEGER VECTOR
-    | REAL VECTOR
+    : (BOOLEAN VECTOR) extension?
+    | (CHARACTER VECTOR) extension?
+    | (INTEGER VECTOR) extension?
+    | (REAL VECTOR) extension?
     ;
 
 matrixType

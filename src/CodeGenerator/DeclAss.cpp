@@ -108,10 +108,6 @@ llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
-    return nullptr;
-}
-
 llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     return nullptr;
 }

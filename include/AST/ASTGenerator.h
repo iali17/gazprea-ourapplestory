@@ -72,6 +72,8 @@ private:
     antlrcpp::Any visitCharExpr(gazprea::GazpreaParser::CharExprContext *ctx) override;
     antlrcpp::Any visitTuple(gazprea::GazpreaParser::TupleContext *ctx) override;
     antlrcpp::Any visitTupleType(gazprea::GazpreaParser::TupleTypeContext *ctx) override;
+    antlrcpp::Any visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) override;
+    antlrcpp::Any visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) override;
     antlrcpp::Any visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) override;
     antlrcpp::Any visitContinueStat(gazprea::GazpreaParser::ContinueStatContext *ctx) override;
     antlrcpp::Any visitBreakStat(gazprea::GazpreaParser::BreakStatContext *ctx) override;

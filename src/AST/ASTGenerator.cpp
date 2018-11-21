@@ -55,7 +55,19 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
 
     if(ctx->type()->tupleType()) {
         ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
+
         return (ASTNode *) new CastExprNode(expr, tuple, (int)ctx->getStart()->getLine());
+    } else if(ctx->type()->vectorType()) {
+        std::cout << ctx->type()->getText() << std::endl;
+        std::cout << ctx->expr()->getText() << std::endl;
+
+        ASTNode *vector = (ASTNode *) visit(ctx->type()->vectorType());
+
+        return (ASTNode *) new CastExprNode(expr, vector, (int)ctx->getStart()->getLine());
+    } else if(ctx->type()->matrixType()) {
+        ASTNode *matrix = (ASTNode *) visit(ctx->type()->matrixType());
+
+        return (ASTNode *) new CastExprNode(expr, matrix, (int)ctx->getStart()->getLine());
     }
 
     return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
@@ -491,11 +503,10 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     // if vector decl then
     else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "vector")) {
         if (ctx->extension() == nullptr) {
-            return (ASTNode *) new VectorDeclNode(expr, constant, id, nullptr, (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, nullptr, (int)ctx->getStart()->getLine());
         }
-        return (ASTNode *) new VectorDeclNode(expr, constant, id, visit(ctx->extension()), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, visit(ctx->extension()), (int)ctx->getStart()->getLine());
     }
-
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
 
@@ -585,6 +596,25 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
     }
 
     return (ASTNode *) new TupleType(typeIdNodes, (int)ctx->getStart()->getLine());
+}
+
+antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) {
+    std::string hi = ctx->getText();
+
+    if(ctx->getText().at(0) == 'b')
+        return (ASTNode *) new VectorType(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
+    else if(ctx->getText().at(0) == 'i')
+        return (ASTNode *) new VectorType(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
+    else if(ctx->getText().at(0) == 'c')
+        return (ASTNode *) new VectorType(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
+    else if(ctx->getText().at(0) == 'r')
+        return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
+
+    return nullptr;
+}
+
+antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) {
+    return nullptr;
 }
 
 // everything inside the tuple() is a empty decl

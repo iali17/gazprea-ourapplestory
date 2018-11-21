@@ -4,7 +4,8 @@
 
 #include "AST/ASTNodes/StatementNodes/VectorDeclNode.h"
 
-VectorDeclNode::VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID, ASTNode *vectorType, int line) : UnaryNode(expr, line), constant(constant), ID(ID), vectorType(vectorType){}
+VectorDeclNode::VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID, const std::string &stringType, ASTNode *vectorType, int line)
+: UnaryNode(expr, line), constant(constant), ID(ID), stringType(stringType), vectorType(vectorType){}
 
 const std::string& VectorDeclNode::getID() const {
     return this->ID;
@@ -16,4 +17,8 @@ bool VectorDeclNode::isConstant() const {
 
 ASTNode* VectorDeclNode::getVectorType() {
     return  this->vectorType;
+}
+
+const std::string& VectorDeclNode::getStringType() const {
+    return this->stringType;
 }

@@ -42,3 +42,28 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 
     return vec;
 }
+
+
+llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
+    auto values = new std::vector<llvm::Value *>();
+    VectorNode *vectorNode = nullptr;
+    llvm::Value *ptr = nullptr;
+
+    vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
+
+    if(node->getStringType() == "integervector") {
+        ptr = et->getNewVector(it->getConsi32(INTEGER));
+    } else if(node->getStringType() == "charactervector") {
+        ptr = et->getNewVector(it->getConsi32(CHAR));
+    } else if(node->getStringType() == "booleanvector") {
+        ptr = et->getNewVector(it->getConsi32(BOOLEAN));
+    } else if(node->getStringType() == "realvector") {
+        ptr = et->getNewVector(it->getConsi32(REAL));
+    }
+
+    llvm::Value *length = visit(node->getVectorType());
+    et->initVector(ptr, length);
+
+    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+    return nullptr;
+}

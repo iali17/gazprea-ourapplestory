@@ -108,6 +108,11 @@ public:
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
 
+    //Casting functions
+    llvm::Value* tupleCasting(CastExprNode *node);
+    llvm::Value* vectorCasting(CastExprNode *node);
+    llvm::Value* matrixCasting(CastExprNode *node);
+
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
