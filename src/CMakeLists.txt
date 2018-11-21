@@ -178,7 +178,9 @@ set(
 	AST/ASTNodes/BuiltInFuncNode/StreamStateNode.cpp
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
-	ExternalTools/RTMatrixTools.cpp)
+	ExternalTools/RTMatrixTools.cpp
+	../include/AST/ASTNodes/TypeNodes/VectorType.h
+		AST/ASTNodes/TypeNodes/VectorType.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

@@ -60,6 +60,7 @@
 #include "AST/ASTNodes/StatementNodes/DeclNode.h"
 #include "AST/ASTNodes/StatementNodes/GlobalDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/MatrixDeclNode.h"
+#include "AST/ASTNodes/StatementNodes/VectorDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/PythonTupleAssNode.h"
 #include "AST/ASTNodes/StatementNodes/ReturnNode.h"
 #include "AST/ASTNodes/StatementNodes/TupleDeclNode.h"
@@ -87,6 +88,7 @@
 
 #include "AST/ASTNodes/TypeNodes/TupleType.h"
 #include "AST/ASTNodes/TypeNodes/MatrixType.h"
+#include "AST/ASTNodes/TypeNodes/VectorType.h"
 
 #include "AST/ASTNodes/FileNode.h"
 

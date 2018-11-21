@@ -78,6 +78,8 @@ public:
     llvm::Value* visit(BreakNode          *node) override;
     llvm::Value* visit(ProtoProcedureNode *node) override;
     llvm::Value* visit(TupleDeclNode      *node) override;
+    llvm::Value* visit(VectorDeclNode     *node) override;
+    llvm::Value* visit(MatrixDeclNode     *node) override;
     llvm::Value* visit(TupleType          *node) override;
     llvm::Value* visit(GlobalDeclNode     *node) override;
     llvm::Value* visit(GlobalRefNode      *node) override;
@@ -90,6 +92,7 @@ public:
     llvm::Value* visit(IndexNode          *node) override;
     llvm::Value* visit(IntervalNode       *node) override;
     llvm::Value* visit(VectorNode         *node) override;
+    llvm::Value* visit(MatrixNode         *node) override;
     llvm::Value* visit(StreamStateNode    *node) override;
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 

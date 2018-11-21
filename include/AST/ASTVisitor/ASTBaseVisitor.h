@@ -150,8 +150,20 @@ public:
         else if (dynamic_cast<TupleType *>(node)) {
             ret =  visit((TupleType *) node);
         }
+        else if (dynamic_cast<VectorType *>(node)) {
+            ret = visit((VectorType *) node);
+        }
+        else if (dynamic_cast<MatrixType *>(node)) {
+            ret = visit((MatrixType *) node);
+        }
         else if (dynamic_cast<GlobalDeclNode *>(node)) {
             ret =  visit((GlobalDeclNode *) node);
+        }
+        else if (dynamic_cast<VectorDeclNode *>(node)) {
+            ret = visit((VectorDeclNode *) node);
+        }
+        else if (dynamic_cast<MatrixDeclNode *>(node)) {
+            ret = visit((MatrixDeclNode *) node);
         }
         else if (dynamic_cast<GlobalRefNode *>(node)) {
             ret =  visit((GlobalRefNode *) node);
@@ -182,6 +194,9 @@ public:
         }
         else if (dynamic_cast<VectorNode *>(node)) {
             ret = visit((VectorNode *) node);
+        }
+        else if (dynamic_cast<MatrixNode *>(node)) {
+            ret = visit((MatrixNode *) node);
         }
         else if (dynamic_cast<StreamStateNode *>(node)) {
             ret = visit((StreamStateNode *) node);
@@ -242,16 +257,21 @@ public:
     llvm::Value* visit(TupleType *node) override { return nullptr; }
     llvm::Value* visit(PythonTupleAssNode *node) override { return nullptr; }
     llvm::Value* visit(GlobalDeclNode *node) override { return nullptr; }
+    llvm::Value* visit(VectorDeclNode *node) override { return nullptr; }
+    llvm::Value* visit(MatrixDeclNode *node) override { return nullptr; }
     llvm::Value* visit(GlobalRefNode *node) override { return nullptr; }
     llvm::Value* visit(TupleNode *node) override { return nullptr; }
     llvm::Value* visit(IndexTupleNode *node) override { return nullptr; }
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override {return nullptr; }
+    llvm::Value* visit(VectorType *node) override { return nullptr; }
+    llvm::Value* visit(MatrixType *node) override { return nullptr; }
     llvm::Value* visit(TupleMemberAssNode *node) override { return nullptr; }
     llvm::Value* visit(TupleInputNode *node) override { return nullptr; }
     llvm::Value* visit(FunctionNode *node) override { return nullptr; }
     llvm::Value* visit(IndexNode *node) override { return nullptr; }
     llvm::Value* visit(IntervalNode *node) override { return nullptr; }
     llvm::Value* visit(VectorNode *node) override { return nullptr; }
+    llvm::Value* visit(MatrixNode *node) override { return nullptr; }
     llvm::Value* visit(StreamStateNode *node) override { return nullptr; }
 };
 
