@@ -1,5 +1,5 @@
-#include "matrix_tools.h"
-#include "vector_tools.h"
+#include "../rt_headers/matrix_tools.h"
+#include "../rt_headers/vector_tools.h"
 
 /**
  * Allocates space for a matrix with known type and unknown size
@@ -114,6 +114,121 @@ void *getMatrixElementPointer(void *v_matrix, int row, int col){
  * @return - vector
  */
 void *indexScalarVector(void * v_matrix, int scalar, void * v_vector){
+    //get a slice
+    vector * slice = sliceScalarVector(v_matrix, scalar, v_vector);
+
+    //copy the slice
+    vector * ret = getVectorCopy(slice);
+
+    //discard the slice
+    free(slice);
+
+    //return the copy
+    return ret;
+}
+
+/**
+ * For accessing matrix by vector, scalar. Assumes ranges have been dealt with
+ * @param v_matrix
+ * @param v_vector
+ * @param scalar
+ * @return - vector
+ */
+void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
+    //get a slice
+    vector * slice = sliceVectorScalar(v_matrix, v_vector, scalar);
+
+    //copy the slice
+    vector * ret = getVectorCopy(slice);
+
+    //discard the slice
+    free(slice);
+
+    //return the copy
+    return ret;
+}
+
+/**
+ * For accessing matrix by vector, vector. Assumes ranges have been dealt with
+ * @param v_matrix
+ * @param v_vector_row
+ * @param v_vector_col
+ * @return - matrix
+ */
+void *indexVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col) {
+    //get a slice
+    matrix *slice = sliceVectorVector(v_matrix, v_vector_row, v_vector_col);
+
+    //copy the slice
+    matrix *ret = getMatrixCopy(slice);
+
+    //free the pointer to the slice old one
+    free(slice);
+
+    //return the copy
+    return ret;
+}
+
+/**
+ * print a matrix of any type
+ * @param v_matrix
+ */
+void printMatrix(void *v_matrix){
+    //cast the vector
+    matrix * mat = (matrix *) v_matrix;
+
+    //loop vars
+    int numRows = *mat->numRows;
+    int curRow  = 0;
+    vector * curVec;
+
+    //exit is no rows
+    if(numRows <= 0) return;
+
+    for(curRow = 0; curRow < numRows - 1; curRow++){
+        curVec = mat->elements + curRow;
+        printVector(curVec);
+        printf("\n");
+    }
+
+    curVec = mat->elements + curRow;
+    printVector(curVec);
+}
+
+/**
+ * creates a clone of the matrix and returns it
+ * @param v_matrix
+ * @return
+ */
+void *getMatrixCopy(void *v_matrix){
+    //cast the null
+    matrix * mat = (matrix *) v_matrix;
+
+    //get attibutes for cloning
+    int ty = *mat->type;
+    int numRows = *mat->numRows;
+    int numCols = *mat->numCols;
+
+    //init the return
+    matrix * ret = (matrix *) getEmptyMatrix(ty);
+    initMatrix(ret, numRows, numCols);
+
+    //loop variables
+    int curRow;
+    vector * destVec, * srcVec;
+
+    for(curRow = 0; curRow < numRows; curRow++){
+        destVec = ret->elements + curRow;
+        srcVec  = mat->elements + curRow;
+        copyVectorElements(destVec, srcVec);
+    }
+
+    //return the copied vector
+    return ret;
+}
+
+
+void *sliceScalarVector(void * v_matrix, int scalar, void * v_vector){
     //cast the voids
     matrix * mat = (matrix *) v_matrix;
     vector * vec = (vector *) v_vector;
@@ -139,20 +254,13 @@ void *indexScalarVector(void * v_matrix, int scalar, void * v_vector){
 
         //get cell to assign from
         assign_to = ret->elements + i;
-        assignValFromPointers(assign_to, cur, *ret->type);
+        assignPointers(assign_to, cur, *ret->type);
     }
 
     return ret;
 }
 
-/**
- * For accessing matrix by vector, scalar. Assumes ranges have been dealt with
- * @param v_matrix
- * @param v_vector
- * @param scalar
- * @return - vector
- */
-void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
+void *sliceVectorScalar(void * v_matrix, void * v_vector, int scalar){
     //cast the voids
     matrix * mat = (matrix *) v_matrix;
     vector * vec = (vector *) v_vector;
@@ -165,7 +273,7 @@ void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
     initVector(ret, *vec->numElements);
 
     //loop var
-    int row, i = 0, col= scalar;
+    int row, i = 0, col = scalar;
     void *cur, *assign_to;
 
     //loop and copy the values to the return vector
@@ -178,29 +286,30 @@ void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
 
         //get cell to assign from
         assign_to = ret->elements + i;
-        assignValFromPointers(assign_to, cur, *ret->type);
+        assignPointers(assign_to, cur, *ret->type);
     }
 
     return ret;
 }
 
 /**
- * For accessing matrix by vector, vector. Assumes ranges have been dealt with
+ * Create a new matrix determined by the vector row and col dimensions
+ * All pointers in the returned matrix will share with the slice source
  * @param v_matrix
  * @param v_vector_row
  * @param v_vector_col
- * @return - matrix
+ * @return
  */
-void *indexVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col) {
+void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col){
     //case the voids
     matrix *mat = (matrix *) v_matrix;
     vector *row_vec = (vector *) v_vector_row;
     vector *col_vec = (vector *) v_vector_col;
 
     //get rows and cols
-    int *rows = (int *) row_vec->elements;
+    int *rows   = (int *) row_vec->elements;
     int numRows = *row_vec->numElements;
-    int *cols = (int *) col_vec->elements;
+    int *cols   = (int *) col_vec->elements;
     int numCols = *col_vec->numElements;
 
     //init return
@@ -220,7 +329,7 @@ void *indexVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
             col   = cols[j];
             left  = (ret->elements +   i)->elements + j;
             right = (mat->elements + row)->elements + col;
-            assignValFromPointers(left, right, type);
+            assignPointers(left, right, type);
         }
     }
     return ret;

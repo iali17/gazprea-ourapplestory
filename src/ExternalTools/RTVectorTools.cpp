@@ -14,6 +14,10 @@
 #define GET_REVERSE_VECTOR   "getReverseVector"
 #define PRINT_VECTOR         "printVector"
 #define PRINT_VECTOR_ELEMENT "printVectorElement"
+#define COPY_VECTOR_ELEMENTS "copyVectorElements"
+#define GET_VECTOR_SLICE     "getVectorSlice"
+#define GET_VECTOR_COPY      "getVectorCopy"
+#define VECTOR_GEP           "getVectorElementPointer"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -67,6 +71,22 @@ void ExternalTools::registerVectorFunctions() {
     //printVectorElement
     fTy = llvm::TypeBuilder<void (void*, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(PRINT_VECTOR_ELEMENT, fTy));
+
+    //copyVectorElements
+    fTy = llvm::TypeBuilder<void (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(COPY_VECTOR_ELEMENTS, fTy));
+
+    //getVectorSlice
+    fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_SLICE, fTy));
+
+    //getVectorCopy
+    fTy = llvm::TypeBuilder<void* (void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_COPY, fTy));
+
+    //getVectorElementPointer
+    fTy = llvm::TypeBuilder<void* (void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(VECTOR_GEP, fTy));
 }
 
 /**
@@ -160,5 +180,57 @@ llvm::Value *ExternalTools::printVectorElement(llvm::Value *vecElmPtr, llvm::Val
     llvm::Function *getV  = mod->getFunction(PRINT_VECTOR_ELEMENT);
     llvm::Value    *v_vec_elm_ptr = ir->CreatePointerCast(vecElmPtr, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec_elm_ptr, type});
+    return ret;
+}
+
+/**
+ * copies the elements of src into the elements of dest. padding performed
+ * @param dest
+ * @param src
+ * @return
+ */
+llvm::Value *ExternalTools::copyVectorElements(llvm::Value *dest, llvm::Value *src) {
+    llvm::Function *getV   = mod->getFunction(COPY_VECTOR_ELEMENTS);
+    llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_dest, v_src});
+}
+
+/**
+ * Get the slice of a vector and casts it for you too
+ * @param vec
+ * @param idxVec
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorSlice(llvm::Value *vec, llvm::Value *idxVec) {
+    llvm::Function *getV  = mod->getFunction(GET_VECTOR_SLICE);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *v_idx = ir->CreatePointerCast(idxVec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, v_idx});
+    return ir->CreatePointerCast(ret, vec->getType());
+}
+
+/**
+ * Create a clone of the vector and casts it for you too
+ * @param vec
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorCopy(llvm::Value *vec) {
+    llvm::Function *getV  = mod->getFunction(GET_VECTOR_COPY);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ir->CreatePointerCast(ret, vec->getType());
+}
+
+/**
+ * Returns a pointer to a given element. you will have to cast the return type
+ * @param vec
+ * @param idx
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorElementPointer(llvm::Value *vec, llvm::Value *idx) {
+    llvm::Function *getV  = mod->getFunction(VECTOR_GEP);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, idx});
     return ret;
 }

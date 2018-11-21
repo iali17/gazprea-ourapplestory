@@ -378,8 +378,17 @@ void ExternalTools::print(llvm::Value *val) {
     else if(llvmType->isFloatTy()){
         printReal(val);
     }
-    else if(llvmType == intVecTy->getPointerTo()){
+    else if(llvmType == boolVecTy->getPointerTo() ||
+            llvmType == charVecTy->getPointerTo() ||
+            llvmType == intVecTy->getPointerTo()  ||
+            llvmType == realVecTy->getPointerTo() ){
         printVector(val);
+    }
+    else if(llvmType == boolMatrixTy->getPointerTo() ||
+            llvmType == charMatrixTy->getPointerTo() ||
+            llvmType == intMatrixTy->getPointerTo()  ||
+            llvmType == realMatrixTy->getPointerTo() ){
+        printMatrix(val);
     }
 }
 

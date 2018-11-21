@@ -1,4 +1,4 @@
-#include "vector_tools.h"
+#include "../rt_headers/vector_tools.h"
 
 /**
  * Creates a vector with known type and unknown size
@@ -307,6 +307,12 @@ void printVector(void* v_vector){
     printVectorElement(element_pointer, type);
 }
 
+/**
+ * Assigns value pointed to by right hand side to the left hand side
+ * @param l
+ * @param r
+ * @param type
+ */
 void assignValFromPointers(void *l, void *r, int type){
     if(type == BOOLEAN)
         *((bool *) l) = *((bool *) r);
@@ -316,4 +322,100 @@ void assignValFromPointers(void *l, void *r, int type){
         *((int *) l) = *((int *) r);
     else if (type == REAL)
         *((float *) l) = *((float *) r);
+}
+
+/**
+ * make the left hand a side a copy of the right hand side pointer
+ * @param l
+ * @param r
+ * @param type
+ */
+void assignPointers(void *l, void *r, int type){
+    if(type == BOOLEAN)
+        l = ((bool *) r);
+    else if (type == CHAR)
+        l = ((char *) r);
+    else if (type == INTEGER)
+        l = ((int *) r);
+    else if (type == REAL)
+        l = ((float *) r);
+}
+
+/**
+ * Copies the right side elements to the left side. If RHS is shorter than LHS padding will occur
+ * @param v_dest
+ * @param v_src
+ */
+void copyVectorElements(void *v_dest, void *v_src){
+	//cast the voids
+	vector * dest = (vector *) v_dest;
+	vector * src  = (vector *) v_src;
+	
+	//loop vars
+	int i = 0;
+	int ty = *dest->type;
+	int numElements = *src->numElements;
+	void *src_p, *dest_p;
+
+	//copt values. note that we load safe from the source vector
+	for(i = 0; i < numElements; i++){
+		src_p  = getVectorElementPointerSafe(src, i);
+		dest_p = getVectorElementPointer(dest,i);
+		assignValFromPointers(dest_p, src_p, ty);
+	}
+}
+
+/**
+ * Returns a slice of the vector. The returned vector will share the same pointers as the argument vector
+ * @param v_vector
+ * @param v_index
+ * @return
+ */
+void *getVectorSlice(void *v_vector, void *v_index){
+	//cast the void. Not we will assume idx is a int vector
+	vector * vec     = (vector *) v_vector;
+	vector * idx_vec = (vector *) v_index;
+
+	//get return info
+	int ty = *vec->type;
+	int numElements = *idx_vec->numElements;
+
+	//init return
+	vector * ret = (vector *) getEmptyVector(ty);
+	initVector(ret, numElements);
+
+	//loop vars
+	int i, idx;
+	void *src_p, *dest_p;
+
+	//copy pointers
+	for(i = 0; i < numElements; i++){
+		idx = ((int *) idx_vec->elements)[i];
+		src_p  = vec->elements + i;
+        dest_p = ret->elements + i;
+        assignPointers(dest_p, src_p, ty);
+	}
+
+	//return
+	return ret;
+}
+
+/**
+ * clone a vector
+ * @param v_vector
+ * @return - clone
+ */
+void *getVectorCopy(void *v_vector){
+	//cast the void
+	vector * src = (vector *) v_vector;
+	
+	//init the return
+	vector * ret = (vector *) getEmptyVector(*src->type);
+	initVector(ret, *src->numElements);
+	
+	//copy
+	copyVectorElements(ret, src);
+
+	//return
+	return ret;
 }
