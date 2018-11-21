@@ -306,3 +306,14 @@ void printVector(void* v_vector){
     element_pointer = getVectorElementPointer(vec, i);
     printVectorElement(element_pointer, type);
 }
+
+void assignValFromPointers(void *l, void *r, int type){
+    if(type == BOOLEAN)
+        *((bool *) l) = *((bool *) r);
+    else if (type == CHAR)
+        *((char *) l) = *((char *) r);
+    else if (type == INTEGER)
+        *((int *) l) = *((int *) r);
+    else if (type == REAL)
+        *((float *) l) = *((float *) r);
+}
