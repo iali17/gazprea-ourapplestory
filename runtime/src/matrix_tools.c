@@ -122,8 +122,8 @@ void *indexScalarVector(void * v_matrix, int scalar, void * v_vector){
     int * cols = (int *) vec->elements;
 
     //init the return
-    matrix * ret = getEmptyMatrix(*mat->type);
-    initMatrix(ret, scalar, *vec->numElements);
+    vector * ret = (vector *) getEmptyVector(*mat->type);
+    initVector(ret, *vec->numElements);
 
     //loop var
     int row = scalar, i = 0, col;
@@ -138,7 +138,7 @@ void *indexScalarVector(void * v_matrix, int scalar, void * v_vector){
         cur = (mat->elements + row)->elements + col;
 
         //get cell to assign from
-        assign_to = (ret->elements + row) + i;
+        assign_to = ret->elements + i;
         assignValFromPointers(assign_to, cur, *ret->type);
     }
 
@@ -161,8 +161,8 @@ void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
     int * rows = (int *) vec->elements;
 
     //init the return
-    matrix * ret = getEmptyMatrix(*mat->type);
-    initMatrix(ret, scalar, *vec->numElements);
+    vector * ret = (vector *) getEmptyVector(*mat->type);
+    initVector(ret, *vec->numElements);
 
     //loop var
     int row, i = 0, col= scalar;
@@ -177,7 +177,7 @@ void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar){
         cur = (mat->elements + row)->elements + col;
 
         //get cell to assign from
-        assign_to = (ret->elements + i) + col;
+        assign_to = ret->elements + i;
         assignValFromPointers(assign_to, cur, *ret->type);
     }
 
@@ -205,7 +205,7 @@ void *indexVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
 
     //init return
     int type = *mat->type;
-    matrix *ret = getEmptyMatrix(type);
+    matrix *ret = (matrix *) getEmptyMatrix(type);
     initMatrix(ret, numRows, numCols);
 
     //loop vars
