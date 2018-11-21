@@ -504,3 +504,6 @@ llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
     return ASTBaseVisitor::visit(node);
 }
 
+llvm::Value *CodeGenerator::visit(MatrixNode *node) {
+    return nullptr;
+}

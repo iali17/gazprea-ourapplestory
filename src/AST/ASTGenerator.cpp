@@ -478,7 +478,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
     }
     // if matrix decl then
-    else if ((ctx->type().size() == 2) && (ctx->type(1)->getText().substr(0, 6) == "matrix")){
+    else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "matrix")) {
         if (ctx->extension() == nullptr) {  // if extension not provided
             return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
                     constant, id, ty, nullptr);
@@ -486,6 +486,14 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
                 constant, id, ty, visit(ctx->extension()));
     }
+    // if vector decl then
+    else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "vector")) {
+        if (ctx->extension() == nullptr) {
+            return (ASTNode *) new VectorDeclNode(expr, constant, id, nullptr, (int)ctx->getStart()->getLine());
+        }
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, visit(ctx->extension()), (int)ctx->getStart()->getLine());
+    }
+
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
 
@@ -841,7 +849,7 @@ antlrcpp::Any ASTGenerator::visitMatrix(gazprea::GazpreaParser::MatrixContext *c
 
 antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) {
 
-    // if it s a [] of size 2
+    // if it is a [] of size 2
     if (ctx->getText().find(',') != std::string::npos) {
         ASTNode *left;
         ASTNode *right;
@@ -859,6 +867,20 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
 
         return (ASTNode *) new MatrixType(left, right, (int) ctx->getStart()->getLine());
     }
+
+    // if it is a [] of size 1
+    else if (!ctx->right) {
+        ASTNode *size;
+
+        if(ctx->left == nullptr) {
+            size = nullptr;
+        } else {
+            size = visit(ctx->left);
+        }
+
+        return (ASTNode *) new VectorType(size, (int)ctx->getStart()->getLine());
+    }
+
     return nullptr;
 }
 
