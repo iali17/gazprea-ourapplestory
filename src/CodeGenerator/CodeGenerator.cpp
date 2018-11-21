@@ -480,30 +480,6 @@ llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(VectorNode *node) {
-    auto values = new std::vector<llvm::Value *>();
-
-    for(uint i = 0; i < node->getElements()->size(); i++)
-        values->push_back(visit(node->getElements()->at(i)));
-
-    // Casting empty vector with proper type
-    llvm::Type *type = values->at(0)->getType();
-    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
-    et->initVector(vec, it->getConsi32(values->size()));
-
-    vec = it->castVectorToType(vec, type);
-
-    // Populate vector
-    it->setVectorValues(vec, values);
-    et->printVector(vec);
-
-    return vec;
-}
-
 llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
     return ASTBaseVisitor::visit(node);
-}
-
-llvm::Value *CodeGenerator::visit(MatrixNode *node) {
-    return nullptr;
 }

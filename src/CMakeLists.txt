@@ -180,7 +180,7 @@ set(
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
 	ExternalTools/RTMatrixTools.cpp
 	../include/AST/ASTNodes/TypeNodes/VectorType.h
-		AST/ASTNodes/TypeNodes/VectorType.cpp)
+		AST/ASTNodes/TypeNodes/VectorType.cpp CodeGenerator/Vectors.cpp CodeGenerator/Matrices.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

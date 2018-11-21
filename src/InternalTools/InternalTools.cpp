@@ -526,3 +526,22 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
 
     return nullptr;
 }
+
+/**
+ * Either pass the element type or the vector type
+ * @param mat
+ * @param type
+ * @return a cast of the matrix pointer to the destination type
+ */
+llvm::Value *InternalTools::castMatrixToType(llvm::Value *mat, llvm::Type *type) {
+    if((type == boolTy) || (type == boolVecTy->getPointerTo()))
+        return ir->CreatePointerCast(mat, boolMatrixTy->getPointerTo());
+    else if ((type == charTy) || (type == charVecTy->getPointerTo()))
+        return ir->CreatePointerCast(mat, charMatrixTy->getPointerTo());
+    else if ((type == intTy)  || (type == intVecTy->getPointerTo()))
+        return ir->CreatePointerCast(mat, intMatrixTy->getPointerTo());
+    else if ((type == realTy) || (type == realVecTy->getPointerTo()))
+        return ir->CreatePointerCast(mat, realMatrixTy->getPointerTo());
+
+    return nullptr;
+}
