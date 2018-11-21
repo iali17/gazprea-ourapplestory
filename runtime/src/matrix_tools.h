@@ -9,7 +9,13 @@ void  setNullMatrix(void * v_matrix);
 void  setIdentityMatrix(void * v_matrix);
 
 //indexing
+void *indexScalarVector(void * v_matrix, int scalar, void * v_vector);
+void *indexVectorScalar(void * v_matrix, void * v_vector, int scalar);
+void *indexVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col);
 
 //built ins
 int getNumRows(void *v_matrix);
 int getNumCols(void *v_matrix);
+
+//helpers
+void *getMatrixElementPointer(void *v_matrix, int row, int col);
