@@ -549,3 +549,16 @@ llvm::Value *InternalTools::castMatrixToType(llvm::Value *mat, llvm::Type *type)
 
     return nullptr;
 }
+
+llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
+    if(typeString == "integervector")
+        return intTy;
+    else if(typeString == "realvector")
+        return realTy;
+    else if(typeString == "booleanvector")
+        return boolTy;
+    else if(typeString == "charactervector")
+        return charTy;
+
+    return nullptr;
+}

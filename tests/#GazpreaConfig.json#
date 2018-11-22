@@ -1,8 +1,8 @@
 {
-  "inDir": "input/",
-  "outDir": "output/",
+  "inDir": "/antlr/projects/gazprea-ourapplestory/tests/input/",
+  "outDir": "/antlr/projects/gazprea-ourapplestory/tests/output/",
   "testedExecutablePaths": {
-    "<gazprea-ourapplestory>": "../bin/gazc"
+    "": "../bin/gazc"
   },
   "runtimes": {
     "ourapplestory": "../bin/libgazrt.so"
@@ -19,10 +19,9 @@
         "output": "gazc.ll"
       },
       {
-          "stepName": "lli",
-	  
-	  "executablePath": "~/llvm-ins/bin/lli",
-          "arguments": [
+        "stepName": "lli",
+        "executablePath": "/cshome/c415/415-resources/llvmi/bin/lli",
+        "arguments": [
           "$INPUT"
         ],
         "output": "-",

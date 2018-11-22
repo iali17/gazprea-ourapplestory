@@ -18,7 +18,7 @@ public:
 
 protected:
     ASTNode * size;
-    const std::string stringType;
+    std::string stringType;
 };
 
 #endif //GAZPREABASE_VECTORTYPE_H

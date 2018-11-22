@@ -30,19 +30,16 @@ extern llvm::Type *intervalTy;
  * @return llvm::Value *
  */
 llvm::Value *CodeGenerator::visit(CastExprNode *node) {
-    llvm::Type *type;
-    llvm::Value *expr;
-
-    if(node->getTuple() || it->isStructType(visit(node->getExpr()))) {
+    if(node->getCastType() == CastExprNode::TUPLE_CAST) {
         return tupleCasting(node);
-    } else if(node->getTypeString() == "integervector") {
+    } else if(node->getCastType() == CastExprNode::VECTOR_CAST) {
         return vectorCasting(node);
+    } else if(node->getCastType() == CastExprNode::MATRIX_CAST) {
+        return matrixCasting(node);
+    } else if(node->getCastType() == CastExprNode::SCALAR_CAST) {
+        return scalarCasting(node);
     } else {
-        expr = visit(node->getExpr());
-        GazpreaType *gazpreaType = symbolTable->resolveType(node->getTypeString());
-        type = gazpreaType->getTypeDef();
-
-        return ct->varCast(type, expr, node->getLine());
+        return nullptr;
     }
 }
 
@@ -56,16 +53,8 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
     llvm::Type *type;
     llvm::Value *expr;
 
-    // Checks if casting a tuple to another type
-    if(!node->getTuple()) {
-        std::string left = node->getTypeString();
-        std::string right = "tuple(*)";
-        auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
-        eb->printError(error);
-    }
-
     auto *values = new std::vector<llvm::Value *>();
-    llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
+    llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(dynamic_cast<TupleCastNode *>(node)->getTuple()));
     llvm::Value *exprP = visit(node->getExpr());
     llvm::Value *ptr = ir->CreateAlloca(types);
 
@@ -101,6 +90,31 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
  * @return
  */
 llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
+    std::cout << "THIS IS VECTOR CASTING" << std::endl;
+
+    llvm::Type *type;
+    llvm::Value *expr;
+    llvm::Value *exprP = visit(node->getExpr());
+
+    if(!it->isStructType(exprP)) {
+        auto values = new std::vector<llvm::Value *>();
+
+        // Todo: Segfaults right here
+        type = it->getVectorType(((VectorType *)visit(dynamic_cast<VectorCastNode *>(node)->getVector()))->getStringType());
+        llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+        et->initVector(vec, visit(((VectorType *)visit(dynamic_cast<VectorCastNode *>(node)->getVector()))->getSize()));
+
+        vec = it->castVectorToType(vec, type);
+
+        for(unsigned long i = 0; i < 3; i++) {
+            values->push_back(ct->varCast(type, exprP, node->getLine()));
+        }
+
+        it->setVectorValues(vec, values);
+        et->printVector(vec);
+
+        return vec;
+    }
 
 }
 
@@ -112,4 +126,24 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
  */
 llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
 
+}
+
+llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
+    llvm::Type *type;
+    llvm::Value *expr;
+    llvm::Value *exprP = visit(node->getExpr());
+
+    // Casting error when casting tuple to scalar
+    if(it->isStructType(exprP)) {
+        std::string left = dynamic_cast<ScalarCastNode *>(node)->getTypeString();
+        std::string right = "tuple(*)";
+        auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
+        eb->printError(error);
+    }
+
+    expr = visit(node->getExpr());
+    GazpreaType *gazpreaType = symbolTable->resolveType(dynamic_cast<ScalarCastNode *>(node)->getTypeString());
+    type = gazpreaType->getTypeDef();
+
+    return ct->varCast(type, expr, node->getLine());
 }

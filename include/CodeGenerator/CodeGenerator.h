@@ -109,6 +109,7 @@ public:
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
 
     //Casting functions
+    llvm::Value* scalarCasting(CastExprNode *node);
     llvm::Value* tupleCasting(CastExprNode *node);
     llvm::Value* vectorCasting(CastExprNode *node);
     llvm::Value* matrixCasting(CastExprNode *node);

@@ -71,6 +71,7 @@ public:
     llvm::Value *castVectorToType(llvm::Value *vec, llvm::Type *type);
 	llvm::Value *castMatrixToType(llvm::Value *mat, llvm::Type *type);
     llvm::Value *setVectorValues(llvm::Value *vec, std::vector<llvm::Value *> *values);
+	llvm::Type *getVectorType(const std::string &typeString);
 
 protected:
     llvm::LLVMContext * globalCtx;

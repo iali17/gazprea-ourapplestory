@@ -56,21 +56,18 @@ antlrcpp::Any ASTGenerator::visitCastExpr(gazprea::GazpreaParser::CastExprContex
     if(ctx->type()->tupleType()) {
         ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
 
-        return (ASTNode *) new CastExprNode(expr, tuple, (int)ctx->getStart()->getLine());
+        return (ASTNode *) new TupleCastNode(expr, tuple, (int)ctx->getStart()->getLine());
     } else if(ctx->type()->vectorType()) {
-        std::cout << ctx->type()->getText() << std::endl;
-        std::cout << ctx->expr()->getText() << std::endl;
-
         ASTNode *vector = (ASTNode *) visit(ctx->type()->vectorType());
 
-        return (ASTNode *) new CastExprNode(expr, vector, (int)ctx->getStart()->getLine());
+        return (ASTNode *) new VectorCastNode(expr, vector, (int)ctx->getStart()->getLine());
     } else if(ctx->type()->matrixType()) {
         ASTNode *matrix = (ASTNode *) visit(ctx->type()->matrixType());
 
-        return (ASTNode *) new CastExprNode(expr, matrix, (int)ctx->getStart()->getLine());
+        return (ASTNode *) new MatrixCastNode(expr, matrix, (int)ctx->getStart()->getLine());
     }
 
-    return (ASTNode *) new CastExprNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
+    return (ASTNode *) new ScalarCastNode(expr, ctx->type()->getText(), (int)ctx->getStart()->getLine());
 }
 
 /**
@@ -599,18 +596,26 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
 }
 
 antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) {
-    std::string hi = ctx->getText();
+    if (ctx->extension() == nullptr) {
+        if (ctx->getText().at(0) == 'b')
+            return (ASTNode *) new VectorType(nullptr, "booleanvector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'i')
+            return (ASTNode *) new VectorType(nullptr, "integervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'c')
+            return (ASTNode *) new VectorType(nullptr, "charactervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'r')
+            return (ASTNode *) new VectorType(nullptr, "realvector", (int)ctx->getStart()->getLine());
 
-    if(ctx->getText().at(0) == 'b')
-        return (ASTNode *) new VectorType(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
-    else if(ctx->getText().at(0) == 'i')
-        return (ASTNode *) new VectorType(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
-    else if(ctx->getText().at(0) == 'c')
-        return (ASTNode *) new VectorType(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
-    else if(ctx->getText().at(0) == 'r')
-        return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
-
-    return nullptr;
+    } else {
+        if (ctx->getText().at(0) == 'b')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'i')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'c')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'r')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
+    }
 }
 
 antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) {
@@ -882,7 +887,7 @@ antlrcpp::Any ASTGenerator::visitMatrix(gazprea::GazpreaParser::MatrixContext *c
 antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) {
 
     // if it is a [] of size 2
-    if (ctx->getText().find(',') != std::string::npos) {
+    if (ctx->rightExtension()) {
         ASTNode *left;
         ASTNode *right;
 
@@ -891,17 +896,12 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         } else {
             left = visit(ctx->left);
         }
-        if (ctx->right == nullptr) {
-            right = nullptr;
-        } else {
-            right = visit(ctx->right);
-        }
 
-        return (ASTNode *) new MatrixType(left, right, (int) ctx->getStart()->getLine());
+        return (ASTNode *) new MatrixType(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
     }
 
     // if it is a [] of size 1
-    else if (!ctx->right) {
+    else if (!ctx->rightExtension()) {
         ASTNode *size;
 
         if(ctx->left == nullptr) {
@@ -910,10 +910,17 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
             size = visit(ctx->left);
         }
 
-        return (ASTNode *) new VectorType(size, (int)ctx->getStart()->getLine());
+        return size;
     }
 
     return nullptr;
+}
+
+antlrcpp::Any ASTGenerator::visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) {
+    if(ctx->right == nullptr)
+        return nullptr;
+    else
+        return visit(ctx->right);
 }
 
 antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {

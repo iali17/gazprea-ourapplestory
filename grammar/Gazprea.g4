@@ -114,7 +114,11 @@ bodyBlock
     ;
 
 extension
-    : '[' (left=expr | MUL) (COMMA (right=expr | MUL) )? ']'
+    : '[' (left=expr | MUL) rightExtension? ']'
+    ;
+
+rightExtension
+    : COMMA (right=expr | MUL)
     ;
 
 stream
