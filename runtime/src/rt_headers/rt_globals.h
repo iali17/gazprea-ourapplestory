@@ -41,3 +41,11 @@ typedef struct{
     int *upper;
     int *lower;
 } interval;
+
+/**
+ * stream state boy
+ */
+typedef struct{
+    int stream_type;
+    int stream_state;
+} stream;

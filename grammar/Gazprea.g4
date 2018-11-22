@@ -37,6 +37,7 @@ expr
     | rowLength                                                     #rowLengthExpr
     | colLength                                                     #colLengthExpr
     | reverse                                                       #reverseExpr
+    | streamState                                                   #streamStateExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
@@ -64,7 +65,6 @@ single_statement
     | conditional
     | loop
     | stream
-    | streamState
     | procedureCall
     | continueStat
     | breakStat
@@ -129,7 +129,7 @@ stream
     ;
 
 streamState
-    : STREAM_STATE '(' Identifier ')' SEMICOLON
+    : STREAM_STATE '(' Identifier ')'
     ;
 
 typeDefine
