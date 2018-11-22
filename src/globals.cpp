@@ -23,3 +23,4 @@ llvm::Type *boolMatrixTy;
 llvm::Type *realVecTy;
 llvm::Type *realMatrixTy;
 llvm::Type *intervalTy;
+llvm::Type *streamStateTy;

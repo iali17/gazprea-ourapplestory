@@ -23,6 +23,7 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
+extern llvm::Type *streamStateTy;
 
 InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
     pair pair1;
@@ -193,6 +194,12 @@ void InternalTools::setUpTypes() {
     iTypes.push_back(intTy->getPointerTo());
     iTypes.push_back(intTy->getPointerTo());
     intervalTy = llvm::StructType::create(*globalCtx, iTypes, "interval");
+
+    //stream state
+    std::vector<llvm::Type *> sTypes;
+    iTypes.push_back(intTy);
+    iTypes.push_back(intTy);
+    streamStateTy = llvm::StructType::create(*globalCtx, sTypes, "streamState");
 }
 
 llvm::Value *InternalTools::getNull(llvm::Type *type) {

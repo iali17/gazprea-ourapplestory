@@ -81,23 +81,6 @@ void * getIdentity(int type, void *ret){
     return ret;
 }
 
-
-void * getCast(void * v_p, int type, void *ret){
-    if(type == BOOLEAN){
-        *((bool *) ret) = true;
-    }
-    else if (type == CHAR){
-        *((char *) ret) = 0x01;
-    }
-    else if (type == INTEGER){
-        *((int *) ret) = 1;
-    }
-    else if (type == REAL){
-        *((float *) ret) =  1.0;
-    }
-    return ret;
-}
-
 /**
  * sets the given vector to be the null vector
  * @param v_vector
@@ -305,6 +288,17 @@ void printVector(void* v_vector){
     }
     element_pointer = getVectorElementPointer(vec, i);
     printVectorElement(element_pointer, type);
+}
+
+void printVectorAsString(void * v_vector){
+	//cast the void
+	vector * vec = (vector *) v_vector;
+
+	//get the string
+	char * str = (char *) vec->elements;
+
+	//print it
+	printf("%s", str);
 }
 
 /**

@@ -3,6 +3,7 @@ set(
   gazprea_rt_files
   "rt_source/vector_tools.c"
   "rt_source/interval_tools.c"
+  "rt_source/stream_state.c"
   "rt_source/matrix_tools.c")
 
 # Build our executable from the source files.
