@@ -197,8 +197,8 @@ void InternalTools::setUpTypes() {
 
     //stream state
     std::vector<llvm::Type *> sTypes;
-    iTypes.push_back(intTy);
-    iTypes.push_back(intTy);
+    sTypes.push_back(intTy);
+    sTypes.push_back(intTy);
     streamStateTy = llvm::StructType::create(*globalCtx, sTypes, "streamState");
 }
 

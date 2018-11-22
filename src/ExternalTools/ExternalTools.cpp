@@ -24,6 +24,7 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
+extern llvm::Type *streamStateTy;
 
 ExternalTools::ExternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
@@ -309,25 +310,28 @@ void ExternalTools::printReal(llvm::Value *val) {
 }
 
 void ExternalTools::registerScanf() {
-    llvm::FunctionType *fTy = llvm::TypeBuilder<int (char *, ...), false>::get(*globalCtx);
-    llvm::cast<llvm::Function>(mod->getOrInsertFunction("scanf", fTy));
+    llvm::FunctionType *fTy = llvm::TypeBuilder<void (void *, void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction("read_in", fTy));
 }
 
 /**
  * @param scanString - the string used for reading, USE THE PREDEFINED CONSTANT STRINGS
  * @return pointer to the read value or null otherwise
  */
-llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *scanTo) {
-    llvm::Function *scanfFunc = mod->getFunction("scanf");
+llvm::Value *ExternalTools::aliScanf(llvm::Value *stream, llvm::Value *scanTo, llvm::Value *type) {
+    llvm::Function *scanfFunc = mod->getFunction("read_in");
 
     // Get your string to print.
-    auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(constScanString));
+    //auto *formatStrGlobal = llvm::cast<llvm::Value>(mod->getGlobalVariable(constScanString));
 
     // Call printf. Printing multiple values is easy: just add to the {}.
-    llvm::Value *formatStr =
-            ir->CreatePointerCast(formatStrGlobal, scanfFunc->arg_begin()->getType());
+    //llvm::Value *formatStr =
+     //       ir->CreatePointerCast(formatStrGlobal, scanfFunc->arg_begin()->getType());
 
     //TODO - check stream state
+
+    llvm::Value *vStream = ir->CreatePointerCast(stream, charTy->getPointerTo());
+    llvm::Value *vDest = ir->CreatePointerCast(scanTo, charTy->getPointerTo());
 
     //bool only garbage
     if(scanTo->getType()->getPointerElementType() == boolTy){
@@ -342,7 +346,7 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
 
 
         llvm::Value * tmp = ir->CreateAlloca(charTy);
-        ir->CreateCall(scanfFunc, {formatStr, tmp});
+        ir->CreateCall(scanfFunc, {vStream, vDest, type});
         llvm::Value *val = ir->CreateLoad(tmp);
 
         //TODO - change after cond builder is fixed
@@ -358,7 +362,7 @@ llvm::Value *ExternalTools::aliScanf(std::string constScanString, llvm::Value *s
         condBuilder->finalize();
     }
     else {
-        ir->CreateCall(scanfFunc, {formatStr, scanTo});
+        ir->CreateCall(scanfFunc, {vStream, vDest, type});
     }
 
     return nullptr;
@@ -391,7 +395,7 @@ void ExternalTools::print(llvm::Value *val) {
         printMatrix(val);
     }
 }
-
+/*
 llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
     llvm::Type * llvmType = scanTo->getType();
     if     (llvmType == intTy->getPointerTo()){
@@ -408,6 +412,7 @@ llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
     }
     return nullptr;
 }
+ */
 
 llvm::StructType* ExternalTools::setUpVector() {
     std::vector<llvm::Type *> d;

@@ -22,7 +22,7 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
-
+extern llvm::Type *streamStateTy;
 
 /**
  * Creates declarations statements and adds the
@@ -81,7 +81,14 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
  * @return nullptr
  */
 llvm::Value *CodeGenerator::visit(StreamDeclNode *node) {
-    symbolTable->addSymbol(node->getId(), node->getType(), false);
+    llvm::Value *ptr = ir->CreateAlloca(streamStateTy);
+
+    llvm::Value *structElemPtr = ir->CreateInBoundsGEP(ptr,{it->getConsi32(0), it->getConsi32(0)});
+    ir->CreateStore(it->getConsi32(node->getType()), structElemPtr);
+    structElemPtr = ir->CreateInBoundsGEP(ptr,{it->getConsi32(0), it->getConsi32(1)});
+    ir->CreateStore(it->getConsi32(-1), structElemPtr);
+
+    symbolTable->addSymbol(node->getId(), node->getType(), false, ptr);
     return nullptr;
 }
 

@@ -315,8 +315,9 @@ llvm::Value *CodeGenerator::visit(InputNode *node) {
 
     symbol = symbolTable->resolveSymbol(node->getStoreID());
     ptr    = symbol->getPtr();
+    llvm::Value * stream = symbolTable->resolveSymbol(node->getStreamName())->getPtr();
 
-    et->aliScanf(ptr);
+    et->aliScanf(stream,ptr,it->getConstFromType(ptr->getType()->getPointerElementType()));
     return nullptr;
 }
 
@@ -433,5 +434,8 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
-    return ASTBaseVisitor::visit(node);
+    llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
+    llvm::Value *ret = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(1)});
+
+    return ir->CreateLoad(ret);
 }
