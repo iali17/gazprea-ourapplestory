@@ -91,8 +91,6 @@ private:
     antlrcpp::Any visitMatrix(gazprea::GazpreaParser::MatrixContext *ctx) override;
     antlrcpp::Any visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) override;
     antlrcpp::Any visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) override;
-
-private:
     antlrcpp::Any visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) override;
 
     //Helper Functions
