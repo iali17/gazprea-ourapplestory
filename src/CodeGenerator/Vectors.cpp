@@ -38,7 +38,6 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 
     // Populate vector
     it->setVectorValues(vec, values);
-    et->printVector(vec);
 
     return vec;
 }

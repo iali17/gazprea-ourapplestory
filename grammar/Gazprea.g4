@@ -25,6 +25,7 @@ expr
     | TupleIndex                                                    #tupleIndexExpr
     | matrix                                                        #matrixExpr
     | String                                                        #stringExpr
+    | emptyVector                                                   #emptyVectorExpr
     | vector                                                        #vectorExpr
     | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
     | Identifier                                                    #identifierExpr
@@ -216,11 +217,15 @@ tuple
     : '(' expr (COMMA expr)+ ')'
     ;
 
+emptyVector
+    : '[' ']'
+    ;
+
 vector
     : '[' ( expr (COMMA expr)* )? ']';
 
 matrix
-    : '[' ( vector (COMMA vector)* )? ']';
+    : '[' ( vector (COMMA vector)* ) ']';
 
 tupleType
     : TUPLE '(' tupleTypeIdentifier (COMMA tupleTypeIdentifier)+ ')'

@@ -354,7 +354,7 @@ void copyVectorElements(void *v_dest, void *v_src){
 	//loop vars
 	int i = 0;
 	int ty = *dest->type;
-	int numElements = *src->numElements;
+	int numElements = *dest->numElements;
 	void *src_p, *dest_p;
 
 	//copt values. note that we load safe from the source vector

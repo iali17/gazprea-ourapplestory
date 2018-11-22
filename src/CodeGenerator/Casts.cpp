@@ -92,26 +92,58 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
 llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     std::cout << "THIS IS VECTOR CASTING" << std::endl;
 
+    auto values = new std::vector<llvm::Value *>();
     llvm::Type *type;
     llvm::Value *expr;
     llvm::Value *exprP = visit(node->getExpr());
 
+    ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
+    std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
+    type = it->getVectorType(stype);
+
+    // Extension size if exists
+    llvm::Value *size  = visit(dynamic_cast<VectorType *>(vnode)->getSize());
+
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+
+    // This is for cases such as: as<integer vector[3]>(1)
     if(!it->isStructType(exprP)) {
-        auto values = new std::vector<llvm::Value *>();
+        // Todo: Add error for casting without extension (size)
+        if(!size) {
+            assert(size);
+        }
 
-        // Todo: Segfaults right here
-        type = it->getVectorType(((VectorType *)visit(dynamic_cast<VectorCastNode *>(node)->getVector()))->getStringType());
-        llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
-        et->initVector(vec, visit(((VectorType *)visit(dynamic_cast<VectorCastNode *>(node)->getVector()))->getSize()));
-
+        et->initVector(vec, size);
         vec = it->castVectorToType(vec, type);
 
-        for(unsigned long i = 0; i < 3; i++) {
-            values->push_back(ct->varCast(type, exprP, node->getLine()));
+        for(unsigned long i = 0; i < llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(); i++) {
+            expr = ct->varCast(type, exprP, node->getLine());
+            values->push_back(expr);
         }
 
         it->setVectorValues(vec, values);
-        et->printVector(vec);
+        return vec;
+    }
+
+    else if(exprP->getType() == intervalTy) {
+        std::cout << "this is interval to vector casting\n";
+
+        return nullptr;
+    }
+
+    else {
+        vec = vectorNoSizeCast(vec, exprP, type, node->getLine());
+
+        if(size) {
+            llvm::Value *newVec = et->getNewVector(it->getConstFromType(type));
+            newVec = it->castVectorToType(newVec, type);
+            et->initVector(newVec, size);
+
+            et->copyVectorElements(newVec, vec);
+
+            return newVec;
+        }
 
         return vec;
     }
@@ -125,9 +157,16 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
  * @return
  */
 llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
+    std::cout << "THIS IS MATRIX CASTING\n";
 
+    return nullptr;
 }
 
+/**
+ *
+ * @param node
+ * @return
+ */
 llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
     llvm::Type *type;
     llvm::Value *expr;
@@ -146,4 +185,53 @@ llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
     type = gazpreaType->getTypeDef();
 
     return ct->varCast(type, expr, node->getLine());
+}
+
+llvm::Value *CodeGenerator::vectorNoSizeCast(llvm::Value *vec, llvm::Value *exprP, llvm::Type *type, int line) {
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    llvm::Value *elemPtr;
+    llvm::Value *elemValue;
+    llvm::Value *newVecElemPtr;
+    llvm::Value *elements = it->getPtrFromStruct(exprP, it->getConsi32(VEC_ELEM_INDEX));
+
+    // Counter
+    llvm::Value *curVecSize = it->getConsi32(0);
+    llvm::Value *curVecPtr = ir->CreateAlloca(intTy);
+
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    // Max loop count
+    llvm::Value *maxSize = it->getValFromStruct(exprP, it->getConsi32(VEC_LEN_INDEX));
+
+    // Creates empty vector of cast type and size of expr
+    et->initVector(vec, maxSize);
+
+    wb->beginWhile();
+
+    curVecSize = ir->CreateLoad(curVecPtr);
+    llvm::Value *cmpStatement = ir->CreateICmpSLT(curVecSize, maxSize, "CompStatement");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    // This loads a pointer to the position in the vector
+    elemPtr = ir->CreateGEP(elements, curVecSize);
+    elemValue = ir->CreateLoad(elemPtr);
+
+    // Casted element value
+    elemValue = ct->varCast(type, elemValue, line);
+
+    newVecElemPtr = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
+    newVecElemPtr = ir->CreateGEP(newVecElemPtr, curVecSize);
+
+    // Store casted value into new vector at current position
+    ir->CreateStore(elemValue, newVecElemPtr);
+
+    // Increment counter
+    curVecSize = ir->CreateAdd(curVecSize, it->getConsi32(1));
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    wb->endWhile();
+
+    return vec;
 }
