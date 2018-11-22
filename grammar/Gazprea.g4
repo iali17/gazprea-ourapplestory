@@ -11,9 +11,10 @@ termsAndConditions
     ;
 
 // TODO: check for precendence
+// todo: interval precendence is wrong
 expr
     : '(' expr ')'                                                  #brackExpr
-    | left=expr (DOTDOT right=expr)                                 #intervalExpr
+    | left=expr DOTDOT right=expr                                   #intervalExpr
     | IntervalThing right=expr                                      #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr

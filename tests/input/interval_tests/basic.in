@@ -1,0 +1,7 @@
+procedure main() returns integer {
+
+integer interval a = 1..10;
+
+
+return 0;
+}

@@ -2,6 +2,7 @@
 // Created by kyle on 20/10/18.
 //
 #include <AST/ASTGenerator.h>
+#include <AST/ASTNodes/StatementNodes/CastNodes/ByNode.h>
 
 /**
  * visits the file
@@ -108,6 +109,10 @@ antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalEx
         leftExpr = (ASTNode *) visit(ctx->left);
 
     return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
+}
+
+antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) {
+    return (ASTNode *) new ByNode(visit(ctx->left), visit((ctx->right)), (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
@@ -482,7 +487,8 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     std::string ty;
     if (!ctx->type().empty()) ty = ctx->type(0)->getText();
 
-    // todo string decl, vec, interval
+    // todo string decl, interval
+    // TODO if user defined a type called xxxvector then it would go to vector
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
@@ -503,6 +509,10 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
             return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, nullptr, (int)ctx->getStart()->getLine());
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, visit(ctx->extension()), (int)ctx->getStart()->getLine());
+    }
+    else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "interval")) {
+
+
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -987,10 +997,6 @@ antlrcpp::Any ASTGenerator::visitReverseExpr(gazprea::GazpreaParser::ReverseExpr
 
 antlrcpp::Any ASTGenerator::visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) {
     return GazpreaBaseVisitor::visitDotProductExpr(ctx);
-}
-
-antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) {
-    return GazpreaBaseVisitor::visitByExpr(ctx);
 }
 
 antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
