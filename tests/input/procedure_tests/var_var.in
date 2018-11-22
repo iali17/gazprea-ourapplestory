@@ -14,7 +14,7 @@ procedure main() returns integer {
     return 0;
 }
 
-procedure f(tuple(real,real) x) returns real {
+procedure f(var tuple(real,real) x) returns real {
     x.1 = 2.0;
     return x.1;
 }

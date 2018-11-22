@@ -44,7 +44,7 @@ public:
 
     //scanf
     void registerScanf();
-    llvm::Value *aliScanf(std::string consScanString, llvm::Value *scanTo);
+    llvm::Value *aliScanf(llvm::Value *stream, llvm::Value *scanTo, llvm::Value *type);
     llvm::Value *aliScanf(llvm::Value *scanTo);
 
     //test

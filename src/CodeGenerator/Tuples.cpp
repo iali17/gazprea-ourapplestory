@@ -68,7 +68,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     idx = getIndexForTuple(tupleInputNode->getIndex(), ptr);
     ptr = it->getPtrFromTuple(ptr, idx);
 
-    et->aliScanf(ptr);
+    //et->aliScanf(ptr);
     return nullptr;
 }
 
