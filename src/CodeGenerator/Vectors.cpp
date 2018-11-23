@@ -52,7 +52,7 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
     std::string stype = vectorType->getStringType();
     llvm::Type *type = it->getVectorType(stype);
-    llvm::Value *size = visit(vectorType->getSize());
+    llvm::Value *size = visit(node->getSize());
     /*
      * ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
     std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
