@@ -650,7 +650,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
     }
-    else if(!ctx->type(0)->vectorType()->isEmpty()){
+    else if(ctx->type().size() > 1 && !ctx->type(0)->vectorType()->isEmpty()){
         ASTNode * node = (ASTNode *) visit(ctx->type(0)->vectorType());
         return (ASTNode *) new VectorDeclNode(expr, constant, id, node, (int)ctx->getStart()->getLine());
     }
