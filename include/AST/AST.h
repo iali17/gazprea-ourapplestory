@@ -84,6 +84,7 @@
 #include "AST/ASTNodes/TerminalNodes/NullNode.h"
 #include "AST/ASTNodes/TerminalNodes/OutputNode.h"
 #include "AST/ASTNodes/TerminalNodes/RealNode.h"
+#include "AST/ASTNodes/TerminalNodes/ReverseVectorNode.h"
 #include "AST/ASTNodes/TerminalNodes/StreamDecl.h"
 #include "AST/ASTNodes/TerminalNodes/TupleNode.h"
 #include "AST/ASTNodes/TerminalNodes/TupleInputNode.h"

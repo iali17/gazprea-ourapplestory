@@ -196,7 +196,7 @@ set(
 	../include/AST/ASTNodes/StatementNodes/CastNodes/ByNode.h
 	AST/ASTNodes/StatementNodes/IntervalDeclNode.cpp
 	../include/AST/ASTNodes/StatementNodes/IntervalDeclNode.h
-	CodeGenerator/Intervals.cpp)
+	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

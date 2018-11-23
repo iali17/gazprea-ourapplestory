@@ -230,15 +230,22 @@ void *getReverseVector(void * v_vector){
     //cast vector
     vector * from_vector = (vector *) v_vector;
 
+    //local constants
+    int ty = *from_vector->type;
+
     //init return
-    vector * ret         = getEmptyVector(*from_vector->type);
+    vector * ret = (vector *) getEmptyVector(ty);
     initVector(ret, *from_vector->numElements);
 
     //sets the return to contain the reverse
     int upper = *from_vector->numElements - 1;
     int i;
-    for(i = 0; i <= upper; i++){
-        setVectorVal(ret, upper - 1 - i, getVectorElementPointer(from_vector, i));
+    void *l, *r;
+    for(i = upper; i >= 0; i--){
+
+        l = getVectorElementPointer(ret, upper - i);
+        r = getVectorElementPointer(from_vector, i);
+        assignValFromPointers(l, r, ty);
     }
 
     return ret;

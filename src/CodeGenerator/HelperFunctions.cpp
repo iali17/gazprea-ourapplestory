@@ -343,5 +343,3 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
 
     return ir->CreateCall(func, paramVec);
 }
-
-

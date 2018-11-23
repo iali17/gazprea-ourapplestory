@@ -995,7 +995,8 @@ antlrcpp::Any ASTGenerator::visitColLengthExpr(gazprea::GazpreaParser::ColLength
 }
 
 antlrcpp::Any ASTGenerator::visitReverseExpr(gazprea::GazpreaParser::ReverseExprContext *ctx) {
-    return GazpreaBaseVisitor::visitReverseExpr(ctx);
+    ASTNode * expr = (ASTNode *) visit(ctx->reverse()->expr());
+    return (ASTNode *) new ReverseVectorNode(expr, (int) ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) {

@@ -91,3 +91,12 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 //    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
 }
+
+
+llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
+    llvm::Value *vecPtr = visit(node->getExpr());
+    llvm::Type * ty = it->getVectorElementType(vecPtr);
+    vecPtr = et->getReverseVector(vecPtr);
+    return it->castVectorToType(vecPtr, ty);
+}
+

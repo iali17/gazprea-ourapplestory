@@ -95,6 +95,7 @@ public:
     llvm::Value* visit(MatrixNode         *node) override;
     llvm::Value* visit(StreamStateNode    *node) override;
     llvm::Value* visit(ByNode             *node) override;
+    llvm::Value* visit(ReverseVectorNode  *node) override;
     llvm::Value* visit(IntervalDeclNode   *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
