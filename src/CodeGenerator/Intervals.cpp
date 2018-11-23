@@ -56,12 +56,6 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
         intervalPtr = visit((IntervalNode *) node->getExpr());
     }
     symbolTable->addSymbol(id, INTEGER, node->isConstant(), intervalPtr);
-
-    auto result = et->getVectorFromInterval(intervalPtr, it->getConsi32(1));
-    et->printVector(result);
-
-
-
     return nullptr;
 }
 
