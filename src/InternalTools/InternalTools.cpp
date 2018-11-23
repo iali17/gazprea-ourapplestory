@@ -463,6 +463,26 @@ bool InternalTools::isStructType(llvm::Value *ptr) {
     return false;
 }
 
+
+bool InternalTools::isIntervalType(llvm::Value *ptr) {
+    return  ptr->getType() == intervalTy->getPointerTo();
+}
+
+bool InternalTools::isVectorType(llvm::Value *ptr) {
+    if(ptr->getType() == intVecTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == realVecTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == charVecTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == boolVecTy->getPointerTo()) {
+        return true;
+    }
+
+    return false;
+}
+
+
 std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
     if(type == intTy)
         return "integer";

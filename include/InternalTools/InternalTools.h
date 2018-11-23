@@ -64,6 +64,8 @@ public:
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
+    bool isVectorType(llvm::Value *ptr);
+    bool isIntervalType(llvm::Value *ptr);
     std::vector<llvm::Value *> * getValueVectorFromTuple(llvm::Value *structPtr);
     std::string getType(llvm::Type * type, llvm::Value *expr);
     llvm::Value *getConstFromType(llvm::Type* ty);

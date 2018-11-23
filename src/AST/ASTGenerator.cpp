@@ -496,6 +496,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
                 constant, id, ty, visit(ctx->extension()));
     }
+
     // TODO: Parse vector type and add it as a string to vectorDeclNode
     // if vector decl then
     else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "vector")) {

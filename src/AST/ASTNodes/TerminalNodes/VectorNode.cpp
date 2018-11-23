@@ -4,8 +4,8 @@
 
 #include <AST/ASTNodes/TerminalNodes/VectorNode.h>
 
-VectorNode::VectorNode(std::vector<ASTNode *> *elements, int line) : elements(elements), ASTNode(line){
-    type = VECTOR;
+VectorNode::VectorNode(std::vector<ASTNode *> *elements, int line) : ASTNode(line), elements(elements) {
+    type = VECTOR_T;
 }
 
 std::vector<ASTNode *>* VectorNode::getElements() {

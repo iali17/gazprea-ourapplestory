@@ -14,7 +14,7 @@ extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
 extern llvm::Type *intervalTy;
 
-CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb) : globalCtx(globalctx), ir(ir), it(it), mod(mod), eb(eb) {
+CastTable::CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, ExternalTools *et, llvm::Module *mod, ErrorBuilder *eb) : globalCtx(globalctx), ir(ir), it(it), et(et), mod(mod), eb(eb) {
     // Do nothing
 }
 
@@ -49,6 +49,10 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
         lValueLoad = it->getIdn(rValueLoad->getType());
     else if(rValueLoad->getName() == "IdnNode")
         rValueLoad = it->getIdn(lValueLoad->getType());
+
+    if(it->isVectorType(lValueLoad) || it->isVectorType(rValueLoad)) {
+        return vectorTypePromotion(lValueLoad, rValueLoad, line);
+    }
 
     // Gazprea type of left and right expr
     llvm::Type *lTypeP = lValueLoad->getType();
@@ -203,4 +207,225 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
         eb->printError(error);
     }
     return nullptr;
+}
+
+llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    llvm::Value *elemValue = varCast(type, exprP, line);
+    llvm::Value *newVecElemPtr;
+
+    // Create new empty vector
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+
+    // Counter
+    llvm::Value *curVecSize = it->getConsi32(0);
+    llvm::Value *curVecPtr = ir->CreateAlloca(intTy);
+
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    // Creates empty vector of cast type and size of expr
+    et->initVector(vec, size);
+
+    wb->beginWhile();
+
+    curVecSize = ir->CreateLoad(curVecPtr);
+    llvm::Value *cmpStatement = ir->CreateICmpSLT(curVecSize, size, "CompStatement");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    newVecElemPtr = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
+    newVecElemPtr = ir->CreateGEP(newVecElemPtr, curVecSize);
+
+    // Store casted value into new vector at current position
+    ir->CreateStore(elemValue, newVecElemPtr);
+
+    // Increment counter
+    curVecSize = ir->CreateAdd(curVecSize, it->getConsi32(1));
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    wb->endWhile();
+
+    return vec;
+}
+
+llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line) {
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    llvm::Value *elemPtr;
+    llvm::Value *elemValue;
+    llvm::Value *newVecElemPtr;
+    llvm::Value *elements = it->getPtrFromStruct(exprP, it->getConsi32(VEC_ELEM_INDEX));
+
+    // Create new empty vector
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+
+    // Counter
+    llvm::Value *curVecSize = it->getConsi32(0);
+    llvm::Value *curVecPtr = ir->CreateAlloca(intTy);
+
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    // Creates empty vector of cast type and size of expr
+    et->initVector(vec, maxSize);
+
+    wb->beginWhile();
+
+    curVecSize = ir->CreateLoad(curVecPtr);
+    llvm::Value *cmpStatement = ir->CreateICmpSLT(curVecSize, maxSize, "CompStatement");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    // This loads a pointer to the position in the vector
+    elemPtr = ir->CreateGEP(elements, curVecSize);
+    elemValue = ir->CreateLoad(elemPtr);
+
+    // Casted element value
+    elemValue = varCast(type, elemValue, line);
+
+    newVecElemPtr = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
+    newVecElemPtr = ir->CreateGEP(newVecElemPtr, curVecSize);
+
+    // Store casted value into new vector at current position
+    ir->CreateStore(elemValue, newVecElemPtr);
+
+    // Increment counter
+    curVecSize = ir->CreateAdd(curVecSize, it->getConsi32(1));
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    wb->endWhile();
+
+    return vec;
+}
+
+InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
+    int lType;
+    int rType;
+    llvm::Type *lTypeP;
+    llvm::Type *rTypeP;
+    std::string castType;
+    std::string lTypeString;
+    std::string rTypeString;
+    llvm::Value *vec;
+    llvm::Value *size;
+
+    // Type promotion between scalar and vector where leftExpr is the vector
+    if (lValueLoad->getType()->isPointerTy() && !rValueLoad->getType()->isPointerTy()) {
+        lTypeP = it->getVectorElementType(lValueLoad);
+        rTypeP = rValueLoad->getType();
+
+        lType = getType(lTypeP);
+        rType = getType(rTypeP);
+
+        castType = typePTable[lType][rType];
+        lTypeString = typePTable[lType][lType];
+        rTypeString = typePTable[rType][rType];
+
+        size = it->getValFromStruct(lValueLoad, it->getConsi32(VEC_LEN_INDEX));
+
+        if (castType == "real") {
+            if (lTypeString == "int") {
+                lValueLoad = createVecFromVec(lValueLoad, realTy, size, line);
+                rValueLoad = createVecFromScalar(rValueLoad, realTy, size, line);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            } else {
+                rValueLoad = createVecFromScalar(rValueLoad, realTy, size, line);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            }
+        } else {
+            // Todo: make new error node for vectors
+            auto *error = new ScalarNode(lTypeString, rTypeString, line);
+            eb->printError(error);
+
+            return it->makePair(lValueLoad, rValueLoad);
+        }
+    }
+
+    // Type promotion between scalar and vector where rightExpr is vector
+    else if (rValueLoad->getType()->isPointerTy() && !lValueLoad->getType()->isPointerTy()) {
+        lTypeP = lValueLoad->getType();
+        rTypeP = it->getVectorElementType(rValueLoad);
+
+        lType = getType(lTypeP);
+        rType = getType(rTypeP);
+
+        castType = typePTable[lType][rType];
+        lTypeString = typePTable[lType][lType];
+        rTypeString = typePTable[rType][rType];
+
+        size = it->getValFromStruct(rValueLoad, it->getConsi32(VEC_LEN_INDEX));
+
+        if (castType == "real") {
+            if (lTypeString == "int") {
+                lValueLoad = createVecFromScalar(lValueLoad, realTy, size, line);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            } else {
+                lValueLoad = createVecFromScalar(lValueLoad, realTy, size, line);
+                rValueLoad = createVecFromVec(rValueLoad, realTy, size, line);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            }
+        } else {
+            // Todo: make new error node for vectors
+            auto *error = new ScalarNode(lTypeString, rTypeString, line);
+            eb->printError(error);
+
+            return it->makePair(lValueLoad, rValueLoad);
+        }
+
+    // Type promotion between vector and vector
+    } else {
+        auto cb = new CondBuilder(globalCtx, ir, mod);
+
+        lTypeP = it->getVectorElementType(lValueLoad);
+        rTypeP = it->getVectorElementType(rValueLoad);
+
+        lType = getType(lTypeP);
+        rType = getType(rTypeP);
+
+        castType = typePTable[lType][rType];
+        lTypeString = typePTable[lType][lType];
+        rTypeString = typePTable[rType][rType];
+
+        llvm::Value *lSize = it->getValFromStruct(lValueLoad, it->getConsi32(VEC_LEN_INDEX));
+        llvm::Value *rSize = it->getValFromStruct(rValueLoad, it->getConsi32(VEC_LEN_INDEX));
+
+        size = ir->CreateAlloca(intTy);
+        llvm::Value *cond = ir->CreateICmpSLT(lSize, rSize);
+        cb->beginIf(cond);
+
+        // Set size as rightExpr
+        ir->CreateStore(rSize, size);
+
+        cb->endIf();
+        cb->beginElse();
+
+        // Set size as leftExpr
+        ir->CreateStore(lSize, size);
+
+        cb->finalize();
+
+        size = ir->CreateLoad(size);
+
+        if (castType == "real") {
+            if (lTypeString == "int") {
+                lValueLoad = createVecFromVec(lValueLoad, realTy, size, line);
+                rValueLoad = createVecFromVec(rValueLoad, realTy, size, line);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            } else {
+                // Todo: make new error node for vectors
+                auto *error = new ScalarNode(lTypeString, rTypeString, line);
+                eb->printError(error);
+
+                return it->makePair(lValueLoad, rValueLoad);
+            }
+        }
+    }
+
 }

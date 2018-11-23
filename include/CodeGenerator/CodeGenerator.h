@@ -141,7 +141,7 @@ protected:
         et          = new ExternalTools(globalCtx, ir, mod);
         it          = new InternalTools(globalCtx, ir, mod);
         symbolTable = new SymbolTable();
-        ct          = new CastTable(globalCtx, ir, it, mod, eb);
+        ct          = new CastTable(globalCtx, ir, it, et, mod, eb);
         whileStack  = new std::stack<WhileBuilder *>;
         eb          = new ErrorBuilder();
     }

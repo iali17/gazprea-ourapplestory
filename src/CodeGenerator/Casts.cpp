@@ -90,7 +90,7 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
  * @return
  */
 llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
-    std::cout << "THIS IS VECTOR CASTING" << std::endl;
+    std::cout << "THIS IS T_VECTOR CASTING" << std::endl;
 
     auto values = new std::vector<llvm::Value *>();
     llvm::Type *type;
@@ -108,7 +108,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     vec = it->castVectorToType(vec, type);
 
     // This is for cases such as: as<integer vector[3]>(1)
-    if(!it->isStructType(exprP)) {
+    if(!(it->isVectorType(exprP) && it->isIntervalType(exprP))) {
         // Todo: Add error for casting without extension (size)
         if(!size) {
             assert(size);
@@ -126,7 +126,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
         return vec;
     }
 
-    else if(exprP->getType() == intervalTy) {
+    else if(it->isIntervalType(exprP)) {
         std::cout << "this is interval to vector casting\n";
 
         return nullptr;

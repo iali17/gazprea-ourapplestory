@@ -14,7 +14,7 @@
 #define INTEGER   4
 #define REAL      5
 #define TUPLE     6
-#define VECTOR    7
+#define VECTOR_T    7
 #define MATRIX    8
 #define NEQ 0
 #define EQ  1

@@ -9,18 +9,24 @@
 
 #include <llvm/IR/IRBuilder.h>
 #include "InternalTools.h"
+#include "ExternalTools/ExternalTools.h"
 #include "CondBuilder.h"
 #include "ErrorBuilder.h"
+#include "WhileBuilder.h"
 #include "AST/ASTNodes/ErrorNodes/ScalarNode.h"
+#include "AST/ASTNodes/TerminalNodes/VectorNode.h"
 #include "globals.h"
 
 class CastTable {
 public:
-    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, llvm::Module *mod, ErrorBuilder *eb);
+    CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, ExternalTools *et, llvm::Module *mod, ErrorBuilder *eb);
 
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
     llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line);
+    InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+    llvm::Value *createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line);
+    llvm::Value *createVecFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *size, int line);
 
     int getType(llvm::Type *expr);
 
@@ -55,6 +61,7 @@ protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
     InternalTools * it;
+    ExternalTools * et;
     llvm::Module * mod;
     ErrorBuilder * eb;
 };

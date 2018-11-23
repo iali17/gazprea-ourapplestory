@@ -341,6 +341,7 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
         llvm::Value *expr = visit(node->getExpr());
         et->print(expr);
     }
+
     return nullptr;
 }
 
