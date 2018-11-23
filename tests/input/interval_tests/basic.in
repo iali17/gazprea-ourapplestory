@@ -1,6 +1,6 @@
 procedure main() returns integer {
 
-integer interval a = 1..10;
+integer interval x = 1..2;
 
 
 return 0;

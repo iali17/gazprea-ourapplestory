@@ -61,6 +61,7 @@ public:
     virtual llvm::Value* visit(PythonTupleAssNode *node)                  = 0;
     virtual llvm::Value* visit(MatrixDeclNode *node)                      = 0;
     virtual llvm::Value* visit(VectorDeclNode *node)                      = 0;
+    virtual llvm::Value* visit(IntervalDeclNode *node)                    = 0;
     virtual llvm::Value* visit(GlobalDeclNode *node)                      = 0;
     virtual llvm::Value* visit(GlobalRefNode *node)                       = 0;
     virtual llvm::Value* visit(TupleNode *node)                           = 0;
@@ -72,11 +73,11 @@ public:
     virtual llvm::Value* visit(TupleInputNode *node)                      = 0;
     virtual llvm::Value* visit(FunctionNode *node)                        = 0;
     virtual llvm::Value* visit(IndexNode *node)                           = 0;
-    virtual llvm::Value* visit(IntervalNode *node)                        = 0;
     virtual llvm::Value* visit(VectorNode *node)                          = 0;
     virtual llvm::Value* visit(MatrixNode *node)                          = 0;
+    virtual llvm::Value* visit(IntervalNode *node)                        = 0;
+    virtual llvm::Value* visit(ByNode *node)                              = 0;
     virtual llvm::Value* visit(StreamStateNode *node)                     = 0;
-    virtual llvm::Value* visit(ByNode *node)                     = 0;
 
 };
 

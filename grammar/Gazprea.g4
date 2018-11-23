@@ -177,7 +177,7 @@ type
     : BOOLEAN
     | CHARACTER
     | INTEGER //'[' Integer ']'
-    | INTERVAL
+    | INTEGER INTERVAL
     | REAL
     | Identifier
     | tupleType

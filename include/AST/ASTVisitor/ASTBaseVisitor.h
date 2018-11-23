@@ -204,6 +204,9 @@ public:
         else if (dynamic_cast<ByNode *>(node)) {
             ret = visit((ByNode *) node);
         }
+        else if (dynamic_cast<IntervalDeclNode *>(node)) {
+            ret = visit((IntervalDeclNode *) node);
+        }
         if (ret){
             node->setLlvmType(ret->getType());
         }
@@ -276,6 +279,7 @@ public:
     llvm::Value* visit(MatrixNode *node) override { return nullptr; }
     llvm::Value* visit(StreamStateNode *node) override { return nullptr; }
     llvm::Value* visit(ByNode *node) override { return nullptr; }
+    llvm::Value* visit(IntervalDeclNode *node) override { return nullptr; }
 
 };
 

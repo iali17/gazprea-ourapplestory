@@ -420,19 +420,6 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
     return nullptr;
 }
 
-// todo: check this and by
-llvm::Value *CodeGenerator::visit(IntervalNode *node) {
-    llvm::Value * left = visit(node->getLeftBound());
-    llvm::Value * right = visit(node->getRightBound());
-    return et->getNewInterval(left, right);
-}
-
-llvm::Value *CodeGenerator::visit(ByNode *node) {
-    llvm::Value * interval = visit(node->getLeft());
-    llvm::Value * expr = visit(node->getRight());
-    return et->getVectorFromInterval(interval, expr);
-}
-
 llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     llvm::Value *ret = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(1)});

@@ -2,7 +2,6 @@
 // Created by kyle on 20/10/18.
 //
 #include <AST/ASTGenerator.h>
-#include <AST/ASTNodes/StatementNodes/CastNodes/ByNode.h>
 
 /**
  * visits the file
@@ -477,6 +476,7 @@ antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclCo
 }
 
 antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
+    int line = (int)ctx->getStart()->getLine();
     ASTNode *expr = nullptr;
     if(ctx->expr()){
         expr = (ASTNode *) visit(ctx->expr());
@@ -488,31 +488,29 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     if (!ctx->type().empty()) ty = ctx->type(0)->getText();
 
     // todo string decl, interval
-    // TODO if user defined a type called xxxvector then it would go to vector
+    // TODO if user defined a type called xxxvector then it would go to vector, same for interval and matrix
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
-        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
     // if matrix decl then
     else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "matrix")) {
         if (ctx->extension() == nullptr) {  // if extension not provided
-            return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
-                    constant, id, ty, nullptr);
+            return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, nullptr);
         }
-        return (ASTNode *) new MatrixDeclNode(expr, (int)ctx->getStart()->getLine(),
-                constant, id, ty, visit(ctx->extension()));
+        return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, visit(ctx->extension()));
     }
     // TODO: Parse vector type and add it as a string to vectorDeclNode
     // if vector decl then
     else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "vector")) {
         if (ctx->extension() == nullptr) {
-            return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, nullptr, (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, nullptr, line);
         }
-        return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, visit(ctx->extension()), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, visit(ctx->extension()), line);
     }
-    else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "interval")) {
-
-
+    // if interval decl then
+    else if (ctx->type().size() == 1 && ty.size() > 8 && ty.substr(ty.size() - 8) == "interval") {
+        return (ASTNode *) new IntervalDeclNode(expr, constant, id, line);
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -520,7 +518,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         for (unsigned long i = 0; i < ctx->type().size(); ++i) {
             typeVec->push_back(ctx->type().at(i)->getText());
         }
-        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType(), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType(), line);
     }
 }
 
@@ -626,6 +624,7 @@ antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeCo
         else if (ctx->getText().at(0) == 'r')
             return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
     }
+    return nullptr;
 }
 
 antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) {
@@ -899,7 +898,6 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
     // if it is a [] of size 2
     if (ctx->rightExtension()) {
         ASTNode *left;
-        ASTNode *right;
 
         if (ctx->left == nullptr) {         // being nullptr assumes it's actually a *
             left = nullptr;
@@ -968,7 +966,7 @@ antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprCo
             }
         }
     }
-    return (ASTNode *) new VectorNode(strVec, line);
+    return (ASTNode *) new VectorNode(strVec, line);        // todo maybe shouldnt be a vector node
 }
 
 antlrcpp::Any ASTGenerator::visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) {
