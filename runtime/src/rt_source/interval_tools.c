@@ -28,9 +28,8 @@ void *getNewInterval(int lower, int upper){
  */
 void *getVectorFromInterval(void * v_interval, int by){
     //get bounds
-    int lower = *((interval *) v_interval)->lower;
+    int lower = *(((interval *) v_interval)->lower);
     int upper = *((interval *) v_interval)->upper;
-
     //get a vector
     size_t numElements = (size_t) (upper - lower + 1) / by;
     vector *v = (vector *) getEmptyVector(INTEGER);

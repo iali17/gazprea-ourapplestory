@@ -95,6 +95,7 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
 }
 
 antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalExprContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
     ASTNode *leftExpr;
     ASTNode *rightExpr = (ASTNode *) visit(ctx->right);
 
@@ -103,11 +104,22 @@ antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalEx
         std::vector<std::string> values = split(IntervalText,'.');
         std::string idName = values[0];
 
-        leftExpr = getIndexNode(values, 0, (int)ctx->getStart()->getLine());
+        for (char letter : idName) {        // do stuff depending on if it's identifier o integer
+            if (letter == '_') { continue;}
+            else if (isdigit(letter)) {
+                idName.erase(std::remove(idName.begin(), idName.end(), '_'), idName.end());     // remove the underscores
+                leftExpr = new INTNode(std::stoi(idName), line);
+                break;
+            }
+            else {
+                leftExpr = new IDNode(idName, line);
+                break;
+            }
+        }
     } else
         leftExpr = (ASTNode *) visit(ctx->left);
 
-    return (ASTNode *) new IntervalNode(leftExpr, rightExpr, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new IntervalNode(leftExpr, rightExpr, line);
 }
 
 antlrcpp::Any ASTGenerator::visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) {
@@ -157,7 +169,7 @@ antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::Identifi
     //check if global
     if (not(globalVar == globalVars->end()))
         return (ASTNode *) new GlobalRefNode(id, (int)ctx->getStart()->getLine());
-    IDNode *idNode = new IDNode(id, (int)ctx->getStart()->getLine());
+    auto *idNode = new IDNode(id, (int)ctx->getStart()->getLine());
     return (ASTNode *) idNode;
 }
 
