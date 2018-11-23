@@ -54,6 +54,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         if(val == nullptr) {
             if (!(it->setNull(type, ptr))) {
                 std::cerr << "Unable to initialize to null at line " << node->getLine() << ". Aborting...\n";
+                exit(0);
             }
             symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
             return nullptr;

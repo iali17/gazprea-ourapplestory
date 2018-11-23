@@ -35,15 +35,35 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
     llvm::Value * interval = visit((IntervalNode *) node->getLeft());
     llvm::Value * expr = visit(node->getRight());
     auto result = et->getVectorFromInterval(interval, expr);
-//    et->printVector(result);
     return result;
 }
 
 
 llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
-    auto intervalPtr = visit((IntervalNode *) node->getExpr());
+    llvm::Value * intervalPtr;
     const std::string &id = node->getID();
 
+    // if null or identity
+    if(!(dynamic_cast<IntervalNode *>(node->getExpr()))) {
+        if (dynamic_cast<NullNode *>(node->getExpr())){
+            intervalPtr = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
+        }
+        else if (dynamic_cast<IdnNode *>(node->getExpr())) {
+            intervalPtr = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
+        }
+    }
+    else {
+        intervalPtr = visit((IntervalNode *) node->getExpr());
+    }
     symbolTable->addSymbol(id, INTEGER, node->isConstant(), intervalPtr);
+
+    auto result = et->getVectorFromInterval(intervalPtr, it->getConsi32(1));
+    et->printVector(result);
+
+
+
     return nullptr;
 }
+
+
+
