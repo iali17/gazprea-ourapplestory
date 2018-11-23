@@ -10,16 +10,17 @@
 
 class VectorDeclNode : public UnaryNode {
 public:
-    VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID,ASTNode *vectorType, int line);
+    VectorDeclNode(ASTNode *expr, bool constant, const std::string &ID,ASTNode *vectorType, ASTNode *size, int line);
     const std::string &getID() const;
     bool isConstant() const;
     ASTNode *getVectorType();
+    ASTNode *getSize() const;
 
 protected:
     bool constant;
     std::string ID;
     ASTNode *vectorType = nullptr;
-
+    ASTNode *size;
 };
 
 #endif //GAZPREABASE_VECTORDECLNODE_H

@@ -44,15 +44,13 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 
 
 llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
-    auto values = new std::vector<llvm::Value *>();
     VectorNode *vectorNode = nullptr;
-    llvm::Value *ptr = nullptr;
-    VectorType *vectorType = dynamic_cast<VectorType *>(node->getVectorType());
+    auto *vectorType = dynamic_cast<VectorType *>(node->getVectorType());
 
     vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
     std::string stype = vectorType->getStringType();
     llvm::Type *type = it->getVectorType(stype);
-    llvm::Value *size = visit(vectorType->getSize());
+    llvm::Value *size = visit(node->getSize());
     /*
      * ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
     std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
@@ -66,13 +64,14 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
      */
 
-    if(not(vectorNode)) {
-        llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
-        vec = it->castVectorToType(vec, type);
-        if (size) {
-            et->initVector(vec, size);
-            et->printVector(vec);
-        }
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+    if (size){
+        et->initVector(vec, size);
+    }
+
+    if (vectorNode) {
+        //TODO: this
     }
 
 //    if(node->getStringType() == "integervector") {
@@ -88,7 +87,7 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 //    llvm::Value *length = visit(node->getVectorType());
 //    et->initVector(ptr, length);
 
-//    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
     return nullptr;
 }
 
