@@ -112,6 +112,7 @@ public:
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
 
+
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);
     llvm::Value* tupleCasting(CastExprNode *node);

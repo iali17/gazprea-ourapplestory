@@ -661,7 +661,8 @@ antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::Tup
 }
 
 antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclContext *ctx) {
-    auto *expr = (ASTNode *) new NullNode((int)ctx->getStart()->getLine());
+    int line = (int)ctx->getStart()->getLine();
+    auto *expr = (ASTNode *) new NullNode(line);
 
     bool constant = (nullptr != ctx->CONST());
     std::string id = ctx->Identifier()->getText();
@@ -670,10 +671,10 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
 
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
-        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
     // if decl is a vector type
-    else if(ctx->type().size() == 1 && ctx->type(0)->vectorType()){
+    else if(ctx->type().size() == 1 && ctx->type(0)->vectorType()) {
         ASTNode *typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         ASTNode *size = nullptr;
         if (!ctx->extension()->isEmpty()) {
@@ -681,13 +682,17 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, size, (int)ctx->getStart()->getLine());
     }
+    // if decl is interval
+    else if (ctx->type().size() == 1 && (ctx->type(0)->intervalType())) {
+        return (ASTNode *) new IntervalDeclNode(expr, constant, id, line);
+    }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
         for (unsigned long i = 0; i < ctx->type().size(); ++i) {
             typeVec->push_back(ctx->type().at(i)->getText());
         }
 
-        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType(), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new DeclNode(expr, constant, id, typeVec, expr->getType(), line);
     }
 }
 

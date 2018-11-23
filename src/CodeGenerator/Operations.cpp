@@ -11,11 +11,32 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
+extern llvm::Type *intervalTy;
 
 llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
+
+    if (node->getLeft()->getType() == INTEGER && node->getRight()->getType() == INTERVAL){
+
+
+
+
+
+    }
+
+
 
     retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;

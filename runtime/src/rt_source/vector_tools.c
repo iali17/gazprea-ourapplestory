@@ -287,6 +287,8 @@ void printVector(void* v_vector){
     int i    = 0;
     void *element_pointer;
 
+    printf("[");
+
     //print vector
     for(i = 0; i < *vec->numElements - 1; i++){
         element_pointer = getVectorElementPointer(vec, i);
@@ -295,6 +297,8 @@ void printVector(void* v_vector){
     }
     element_pointer = getVectorElementPointer(vec, i);
     printVectorElement(element_pointer, type);
+
+    printf("]");
 }
 
 void printVectorAsString(void * v_vector){
@@ -333,13 +337,13 @@ void assignValFromPointers(void *l, void *r, int type){
  */
 void assignPointers(void *l, void *r, int type){
     if(type == BOOLEAN)
-        l = ((bool *) r);
+        *((bool *) l) = *((bool *) r);
     else if (type == CHAR)
-        l = ((char *) r);
+        *((char *) l) = *((char *) r);
     else if (type == INTEGER)
-        l = ((int *) r);
+        *((int *) l) = *((int *) r);
     else if (type == REAL)
-        l = ((float *) r);
+        *((float *) l) = *((float *) r);
 }
 
 /**
@@ -394,7 +398,7 @@ void *getVectorSlice(void *v_vector, void *v_index){
 		idx = ((int *) idx_vec->elements)[i];
 		src_p  = vec->elements + i;
         dest_p = ret->elements + i;
-        assignPointers(dest_p, src_p, ty);
+        assignPointers(&dest_p, &src_p, ty);
 	}
 
 	//return
