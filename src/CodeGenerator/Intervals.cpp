@@ -28,15 +28,15 @@ extern llvm::Type *intervalTy;
 llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     llvm::Value * left = visit(node->getLeftBound());
     llvm::Value * right = visit(node->getRightBound());
+//    node->setLlvmType(intervalTy);
     return et->getNewInterval(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(ByNode *node) {
-    llvm::Value * interval = visit((IntervalNode *) node->getLeft());
+    llvm::Value * interval = visit(node->getLeft());
     llvm::Value * expr = visit(node->getRight());
-    auto result = et->getVectorFromInterval(interval, expr);
-//    et->printVector(result);
-    return ir->CreatePointerCast(result, intVecTy->getPointerTo());
+//    node->setLlvmType(intVecTy);
+    return ir->CreatePointerCast(et->getVectorFromInterval(interval, expr), intVecTy->getPointerTo());
 }
 
 
@@ -56,7 +56,7 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
     else {
         intervalPtr = visit((IntervalNode *) node->getExpr());
     }
-    symbolTable->addSymbol(id, INTERVAL, node->isConstant(), intervalPtr);
+    symbolTable->addSymbol(id, node->getType(), node->isConstant(), intervalPtr);
     return nullptr;
 }
 
