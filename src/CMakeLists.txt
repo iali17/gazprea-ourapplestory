@@ -180,7 +180,23 @@ set(
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
 	ExternalTools/RTMatrixTools.cpp
 	../include/AST/ASTNodes/TypeNodes/VectorType.h
-		AST/ASTNodes/TypeNodes/VectorType.cpp CodeGenerator/Vectors.cpp CodeGenerator/Matrices.cpp CodeGenerator/Casts.cpp ../include/AST/ASTNodes/StatementNodes/CastNodes/ScalarCastNode.h ../include/AST/ASTNodes/StatementNodes/CastNodes/TupleCastNode.h AST/ASTNodes/StatementNodes/CastNodes/ScalarCastNode.cpp AST/ASTNodes/StatementNodes/CastNodes/TupleCastNode.cpp ../include/AST/ASTNodes/StatementNodes/CastNodes/VectorCastNode.h AST/ASTNodes/StatementNodes/CastNodes/VectorCastNode.cpp ../include/AST/ASTNodes/StatementNodes/CastNodes/MatrixCastNode.h AST/ASTNodes/StatementNodes/CastNodes/MatrixCastNode.cpp)
+		AST/ASTNodes/TypeNodes/VectorType.cpp
+	CodeGenerator/Vectors.cpp
+	CodeGenerator/Matrices.cpp
+	CodeGenerator/Casts.cpp
+	../include/AST/ASTNodes/StatementNodes/CastNodes/ScalarCastNode.h
+	../include/AST/ASTNodes/StatementNodes/CastNodes/TupleCastNode.h
+	AST/ASTNodes/StatementNodes/CastNodes/ScalarCastNode.cpp
+	AST/ASTNodes/StatementNodes/CastNodes/TupleCastNode.cpp
+	../include/AST/ASTNodes/StatementNodes/CastNodes/VectorCastNode.h
+	AST/ASTNodes/StatementNodes/CastNodes/VectorCastNode.cpp
+	../include/AST/ASTNodes/StatementNodes/CastNodes/MatrixCastNode.h
+	AST/ASTNodes/StatementNodes/CastNodes/MatrixCastNode.cpp
+	AST/ASTNodes/StatementNodes/CastNodes/ByNode.cpp
+	../include/AST/ASTNodes/StatementNodes/CastNodes/ByNode.h
+	AST/ASTNodes/StatementNodes/IntervalDeclNode.cpp
+	../include/AST/ASTNodes/StatementNodes/IntervalDeclNode.h
+	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

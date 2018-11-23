@@ -15,6 +15,7 @@ void printVectorElement(void *v_elm_ptr, int type);
 //built ins
 int   getVectorLength(void * v_vector);
 void *getReverseVector(void * v_vector);
+void *concatenateVectors(void * v_vector_left, void * v_vector_right);
 
 //helpers
 size_t getMemberSize(int type);
@@ -33,3 +34,8 @@ void copyVectorElements(void *v_dest, void *v_src);
 //slicing, and cloning
 void *getVectorSlice(void *v_vector, void *v_index);
 void *getVectorCopy(void *v_vector);
+
+//operations
+void *dotProduct(void * v_vector_left, void * v_vector_right);
+int   getIntDotProduct(void * v_vector_left, void * v_vector_right);
+float getRealDotProduct(void * v_vector_left, void * v_vector_right);

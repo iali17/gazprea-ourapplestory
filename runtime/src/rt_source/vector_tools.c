@@ -230,15 +230,22 @@ void *getReverseVector(void * v_vector){
     //cast vector
     vector * from_vector = (vector *) v_vector;
 
+    //local constants
+    int ty = *from_vector->type;
+
     //init return
-    vector * ret         = getEmptyVector(*from_vector->type);
+    vector * ret = (vector *) getEmptyVector(ty);
     initVector(ret, *from_vector->numElements);
 
     //sets the return to contain the reverse
     int upper = *from_vector->numElements - 1;
     int i;
-    for(i = 0; i <= upper; i++){
-        setVectorVal(ret, upper - 1 - i, getVectorElementPointer(from_vector, i));
+    void *l, *r;
+    for(i = upper; i >= 0; i--){
+
+        l = getVectorElementPointer(ret, upper - i);
+        r = getVectorElementPointer(from_vector, i);
+        assignValFromPointers(l, r, ty);
     }
 
     return ret;
@@ -412,4 +419,164 @@ void *getVectorCopy(void *v_vector){
 
 	//return
 	return ret;
+}
+
+/**
+ * concatenates both vectors into a new one
+ * @param v_vector_left
+ * @param v_vector_right
+ * @return
+ */
+void *concatenateVectors(void * v_vector_left, void * v_vector_right) {
+    //cast the voids
+    vector *left  = (vector *) v_vector_left;
+    vector *right = (vector *) v_vector_right;
+
+    //get variables for the return vector
+    int numLeftElements  = *left->numElements;
+    int numRightElements = *right->numElements;
+    int numElements      = numLeftElements + numRightElements;
+    int ty               = *left->type;
+
+    //init ret
+    vector * ret = getEmptyVector(ty);
+    initVector(ret, numElements);
+
+    //loop vars
+    int i = 0;
+    void * v_dest, * v_src;
+
+    //copy the left
+    for(i = 0; i < numLeftElements; i++){
+        v_dest = ret->elements  + i;
+        v_src  = left->elements + i;
+        assignValFromPointers(v_dest, v_src, ty);
+    }
+
+    //copy the right
+    for(i = 0; i < numRightElements; i++){
+        v_dest = ret->elements + numLeftElements + i;
+        v_src  = right + i;
+        assignValFromPointers(v_dest, v_src, ty);
+    }
+
+    //return it
+    return ret;
+}
+
+/**
+ * returns pointer to result
+ * @param v_vector_left
+ * @param v_vector_right
+ * @return
+ */
+void *dotProduct(void * v_vector_left, void * v_vector_right){
+    //cast the voids
+    vector * left  = (vector *) v_vector_left;
+    vector * right = (vector *) v_vector_right;
+
+    //get constants
+    int ty = *left->type;
+
+    //init return
+    void * ret = malloc(sizeof(int));
+
+    assert((ty == INTEGER) || (ty == REAL));
+
+    if(ty == INTEGER){
+        int res = getIntDotProduct(left, right);
+        *((int *) ret) = res;
+    }
+    else {
+        float res = getRealDotProduct(left, right);
+        *((float *) ret) = res;
+    }
+
+    return ret;
+}
+
+/**
+ * does the dot product on an int vector
+ * @param v_vector_left
+ * @param v_vector_right
+ * @return
+ */
+int getIntDotProduct(void * v_vector_left, void * v_vector_right){
+    //cast the voids
+    vector * left  = (vector *) v_vector_left;
+    vector * right = (vector *) v_vector_right;
+
+    //local vars
+    int numElements = (*right->numElements > *left->numElements) ?  *right->numElements : *left->numElements;
+
+    //init return
+    int ret = 0;
+
+    //loop vars
+    int i = 0;
+    int l_op, r_op;
+
+    //perform operation
+    for(i = 0; i < numElements; i++){
+        l_op = *((int *) getVectorElementPointerSafe(left,  i));
+        r_op = *((int *) getVectorElementPointerSafe(right, i));
+        ret += l_op + r_op;
+    }
+
+    //return
+    return ret;
+}
+
+/**
+ * does the dot product on a real vector
+ * @param v_vector_left
+ * @param v_vector_right
+ * @return
+ */
+float getRealDotProduct(void * v_vector_left, void * v_vector_right){
+    //cast the voids
+    vector * left  = (vector *) v_vector_left;
+    vector * right = (vector *) v_vector_right;
+
+    //local vars
+    int numElements = (*right->numElements > *left->numElements) ?  *right->numElements : *left->numElements;
+
+    //init return
+    float ret = 0;
+
+    //loop vars
+    int i = 0;
+    float l_op, r_op;
+
+    //perform operation
+    for(i = 0; i < numElements; i++){
+        l_op = *((float *) getVectorElementPointerSafe(left,  i));
+        r_op = *((float *) getVectorElementPointerSafe(right, i));
+        ret += l_op + r_op;
+    }
+
+    //return
+    return ret;
+}
+
+/**
+ * just returns an empty vector with the proper result size
+ * @param v_vector_left
+ * @param v_vector_right
+ * @return
+ */
+void *getOpResultVector(void * v_vector_left, void * v_vector_right){
+    //cast the voids
+    vector * left  = (vector *) v_vector_left;
+    vector * right = (vector *) v_vector_right;
+
+    //get constants
+    int ty = *left->type;
+    int numElements = (*right->numElements > *left->numElements) ?  *right->numElements : *left->numElements;
+
+    //init return
+    vector * ret = (vector *) getEmptyVector(ty);
+    initVector(ret, numElements);
+
+    return ret;
 }

@@ -45,7 +45,6 @@ public:
     //scanf
     void registerScanf();
     llvm::Value *aliScanf(llvm::Value *stream, llvm::Value *scanTo, llvm::Value *type);
-    llvm::Value *aliScanf(llvm::Value *scanTo);
 
     //test
     void registerTest();
@@ -66,6 +65,7 @@ public:
     llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
     llvm::Value * getVectorCopy(llvm::Value * vec);
     llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);
+    llvm::Value * getDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
 
     //Interval functions
     void registerIntervalFunctions();
@@ -109,5 +109,9 @@ protected:
     llvm::Value * indexScalarVector(llvm::Value * mat, llvm::Value * scalar, llvm::Value *vec);
     llvm::Value * indexVectorScalar(llvm::Value * mat, llvm::Value * vec,    llvm::Value *scalar);
     llvm::Value * indexVectorVector(llvm::Value * mat, llvm::Value * vecRow, llvm::Value *vecCol);
+
+    //dot product
+    llvm::Value * getIntDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
+    llvm::Value * getRealDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
 };
 #endif //VCALCBASE_EXTERNALTOOLS_H

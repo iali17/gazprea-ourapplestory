@@ -421,10 +421,6 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(IntervalNode *node) {
-    return nullptr;
-}
-
 llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     llvm::Value *ret = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(1)});

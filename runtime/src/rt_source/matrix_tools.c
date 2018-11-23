@@ -334,3 +334,39 @@ void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
     }
     return ret;
 }
+
+/**
+ * assumes size has been handled
+ * @param v_matrix_left
+ * @param v_matrix_right
+ * @return
+ */
+void *concatenateMatrices(void * v_matrix_left, void * v_matrix_right){
+    //cast the voids
+    matrix *left  = (matrix *) v_matrix_left;
+    matrix *right = (matrix *) v_matrix_right;
+
+    //get dim and types
+    int ty      = *left->type;
+    int numRows = *left->numRows;
+    int numCols = *left->numRows + *right->numCols;
+
+    //init return
+    matrix *ret = (matrix *) getEmptyMatrix(ty);
+    initMatrix(ret, numRows, numCols);
+
+    //loop vars
+    int i = 0;
+    void * v_left_vec, * v_right_vec;
+    vector * conc_vec;
+
+    //loop, dont know if this works
+    for(i = 0; i < numRows; i++){
+        v_left_vec  = left->elements + i;
+        v_right_vec = right->elements + i;
+        ret->elements[i] = *((vector *) concatenateVectors(v_left_vec, v_right_vec));
+    }
+
+    //return
+    return ret;
+}

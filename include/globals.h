@@ -16,6 +16,7 @@
 #define TUPLE     6
 #define VECTOR_T    7
 #define MATRIX    8
+#define INTERVAL  9
 #define NEQ 0
 #define EQ  1
 #define VEC_TYPE_INDEX 0

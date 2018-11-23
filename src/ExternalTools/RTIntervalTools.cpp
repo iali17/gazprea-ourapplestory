@@ -27,7 +27,7 @@ void ExternalTools::registerIntervalFunctions() {
 }
 
 /**
- * Ger a new interval with the given bounds
+ * Get a new interval with the given bounds
  * @param lower
  * @param upper
  * @return

@@ -18,6 +18,8 @@
 #define GET_VECTOR_SLICE     "getVectorSlice"
 #define GET_VECTOR_COPY      "getVectorCopy"
 #define VECTOR_GEP           "getVectorElementPointer"
+#define GET_INT_DOT_PRODUCT  "getIntDotProduct"
+#define GET_REAL_DOT_PRODUCT "getRealDotProduct"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -87,6 +89,14 @@ void ExternalTools::registerVectorFunctions() {
     //getVectorElementPointer
     fTy = llvm::TypeBuilder<void* (void*, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(VECTOR_GEP, fTy));
+
+    //getIntDotProduct
+    fTy = llvm::TypeBuilder<int (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_INT_DOT_PRODUCT, fTy));
+
+    //getRealDotProduct
+    fTy = llvm::TypeBuilder<float (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_REAL_DOT_PRODUCT, fTy));
 }
 
 /**
@@ -233,4 +243,44 @@ llvm::Value *ExternalTools::getVectorElementPointer(llvm::Value *vec, llvm::Valu
     llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, idx});
     return ret;
+}
+
+/**
+ * performs the dot product on int vectors and returns the result
+ * @param leftVec
+ * @param rightVec
+ * @return
+ */
+llvm::Value *ExternalTools::getIntDotProduct(llvm::Value *leftVec, llvm::Value *rightVec) {
+    llvm::Function *getV   = mod->getFunction(GET_INT_DOT_PRODUCT);
+    llvm::Value    *v_dest = ir->CreatePointerCast(leftVec,  charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(rightVec, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_dest, v_src});
+}
+
+/**
+ * performs the dot product on real vectors and returns the result
+ * @param leftVec
+ * @param rightVec
+ * @return
+ */
+llvm::Value *ExternalTools::getRealDotProduct(llvm::Value *leftVec, llvm::Value *rightVec) {
+    llvm::Function *getV   = mod->getFunction(GET_REAL_DOT_PRODUCT);
+    llvm::Value    *v_dest = ir->CreatePointerCast(leftVec,  charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(rightVec, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_dest, v_src});
+}
+
+/**
+ * Checks op type and return the dot product
+ * @param leftVec
+ * @param rightVec
+ * @return
+ */
+llvm::Value *ExternalTools::getDotProduct(llvm::Value *leftVec, llvm::Value *rightVec) {
+    if(leftVec->getType() == intVecTy->getPointerTo())
+        return getIntDotProduct(leftVec, rightVec);
+    else if(leftVec->getType() == realVecTy->getPointerTo())
+        return getRealDotProduct(leftVec, rightVec);
+    return nullptr;
 }
