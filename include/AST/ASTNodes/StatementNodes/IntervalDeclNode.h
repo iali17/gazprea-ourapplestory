@@ -10,7 +10,7 @@
 
 class IntervalDeclNode : public UnaryNode {
 public:
-    IntervalDeclNode(ASTNode *expr, bool constant, const std::string &ID, int line);
+    explicit IntervalDeclNode(ASTNode *expr, bool constant, const std::string &ID, int line);
 
     bool isConstant() const;
     const std::string &getID() const;

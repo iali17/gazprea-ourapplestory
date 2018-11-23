@@ -177,7 +177,7 @@ type
     : BOOLEAN
     | CHARACTER
     | INTEGER //'[' Integer ']'
-    | INTEGER INTERVAL
+    | intervalType
     | REAL
     | Identifier
     | tupleType
@@ -185,6 +185,10 @@ type
     | vectorType
     | matrixType
     // | STRING '[' Integer ']'
+    ;
+
+intervalType
+    : INTEGER INTERVAL
     ;
 
 param

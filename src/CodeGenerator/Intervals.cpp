@@ -32,15 +32,17 @@ llvm::Value *CodeGenerator::visit(IntervalNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(ByNode *node) {
-    llvm::Value * interval = visit(node->getLeft());
+    llvm::Value * interval = visit((IntervalNode *)node->getLeft());
     llvm::Value * expr = visit(node->getRight());
+
     return et->getVectorFromInterval(interval, expr);
 }
 
 
 llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
-    llvm::Value * intervalPtr = visit(node->getExpr());
-    std::string id = node->getID();
+    auto expr = node->getExpr();
+    auto intervalPtr = visit((IntervalNode *) expr);
+    const std::string &id = node->getID();
 
     symbolTable->addSymbol(id, INTEGER, node->isConstant(), intervalPtr);
     return nullptr;

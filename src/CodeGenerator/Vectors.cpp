@@ -47,22 +47,47 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     auto values = new std::vector<llvm::Value *>();
     VectorNode *vectorNode = nullptr;
     llvm::Value *ptr = nullptr;
+    VectorType *vectorType = dynamic_cast<VectorType *>(node->getVectorType());
 
     vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
+    std::string stype = vectorType->getStringType();
+    llvm::Type *type = it->getVectorType(stype);
+    llvm::Value *size = visit(vectorType->getSize());
+    /*
+     * ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
+    std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
+    type = it->getVectorType(stype);
 
-    if(node->getStringType() == "integervector") {
-        ptr = et->getNewVector(it->getConsi32(INTEGER));
-    } else if(node->getStringType() == "charactervector") {
-        ptr = et->getNewVector(it->getConsi32(CHAR));
-    } else if(node->getStringType() == "booleanvector") {
-        ptr = et->getNewVector(it->getConsi32(BOOLEAN));
-    } else if(node->getStringType() == "realvector") {
-        ptr = et->getNewVector(it->getConsi32(REAL));
+    // Extension size if exists
+    llvm::Value *size  = visit(dynamic_cast<VectorType *>(vnode)->getSize());
+
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+
+     */
+
+    if(not(vectorNode)) {
+        llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+        vec = it->castVectorToType(vec, type);
+        if (size) {
+            et->initVector(vec, size);
+            et->printVector(vec);
+        }
     }
 
-    llvm::Value *length = visit(node->getVectorType());
-    et->initVector(ptr, length);
+//    if(node->getStringType() == "integervector") {
+//        ptr = et->getNewVector(it->getConsi32(INTEGER));
+//    } else if(node->getStringType() == "charactervector") {
+//        ptr = et->getNewVector(it->getConsi32(CHAR));
+//    } else if(node->getStringType() == "booleanvector") {
+//        ptr = et->getNewVector(it->getConsi32(BOOLEAN));
+//    } else if(node->getStringType() == "realvector") {
+//        ptr = et->getNewVector(it->getConsi32(REAL));
+//    }
 
-    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
+//    llvm::Value *length = visit(node->getVectorType());
+//    et->initVector(ptr, length);
+
+//    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     return nullptr;
 }
