@@ -35,7 +35,8 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
     llvm::Value * interval = visit((IntervalNode *) node->getLeft());
     llvm::Value * expr = visit(node->getRight());
     auto result = et->getVectorFromInterval(interval, expr);
-    return result;
+//    et->printVector(result);
+    return ir->CreatePointerCast(result, intVecTy->getPointerTo());
 }
 
 
@@ -55,7 +56,7 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
     else {
         intervalPtr = visit((IntervalNode *) node->getExpr());
     }
-    symbolTable->addSymbol(id, INTEGER, node->isConstant(), intervalPtr);
+    symbolTable->addSymbol(id, INTERVAL, node->isConstant(), intervalPtr);
     return nullptr;
 }
 
