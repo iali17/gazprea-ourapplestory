@@ -22,8 +22,12 @@
 #define SLICE_VECTOR_SCALAR "sliceVectorScalar"
 #define SLICE_VECTOR_VECTOR "sliceVectorVector"
 #define MATRIX_GEP          "getMatrixElementPointer"
+#define INT_MATRIX_MULT     "getIntMatrixMultiplication"
+#define REAL_MATRIX_MULT    "getRealMatrixMultiplication"
 
 extern llvm::Type *charTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *realMatrixTy;
 
 void ExternalTools::registerMatrixFunctions() {
     llvm::FunctionType *fTy = llvm::TypeBuilder<void* (void), false>::get(*globalCtx);
@@ -80,6 +84,14 @@ void ExternalTools::registerMatrixFunctions() {
     //getMatrixElementPointer
     fTy = llvm::TypeBuilder<void* (void *, int, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(MATRIX_GEP, fTy));
+
+    //getIntMatrixMultiplication
+    fTy = llvm::TypeBuilder<void* (void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(INT_MATRIX_MULT, fTy));
+
+    //getRealMatrixMultiplication
+    fTy = llvm::TypeBuilder<void* (void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(REAL_MATRIX_MULT, fTy));
 }
 
 /**
@@ -308,4 +320,46 @@ llvm::Value *ExternalTools::getMatrixElementPointer(llvm::Value *mat, llvm::Valu
     llvm::Value    *v_mat = ir->CreatePointerCast(mat, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getM, {v_mat, row, col});
     return ret;
+}
+
+/**
+ * Assumes that both matrices have beeeeeeeen type casted already
+ * @param leftMat
+ * @param rightMat
+ * @return
+ */
+llvm::Value *ExternalTools::getMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat) {
+    if(leftMat->getType() == intMatrixTy->getPointerTo())
+        return getIntMatrixMultiplication(leftMat, rightMat);
+    else if(leftMat->getType() == realMatrixTy->getPointerTo())
+        return getRealMatrixMultiplication(leftMat, rightMat);
+    return nullptr;
+}
+
+/**
+ * Performs the integer matrix multiplication. I cast for you
+ * @param leftMat
+ * @param rightMat
+ * @return
+ */
+llvm::Value *ExternalTools::getIntMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat) {
+    llvm::Function *getM    = mod->getFunction(INT_MATRIX_MULT);
+    llvm::Value    *v_left  = ir->CreatePointerCast(leftMat, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(rightMat, charTy->getPointerTo());
+    llvm::Value    *ret     = ir->CreateCall(getM, {v_left, v_right});
+    return ir->CreatePointerCast(ret, leftMat->getType());
+}
+
+/**
+ * Performs the real matrix multiplication. I cast for you
+ * @param leftMat
+ * @param rightMat
+ * @return
+ */
+llvm::Value *ExternalTools::getRealMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat) {
+    llvm::Function *getM    = mod->getFunction(REAL_MATRIX_MULT);
+    llvm::Value    *v_left  = ir->CreatePointerCast(leftMat, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(rightMat, charTy->getPointerTo());
+    llvm::Value    *ret     = ir->CreateCall(getM, {v_left, v_right});
+    return ir->CreatePointerCast(ret, leftMat->getType());
 }
