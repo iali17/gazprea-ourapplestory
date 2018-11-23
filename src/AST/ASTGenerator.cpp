@@ -500,9 +500,9 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     // if vector decl then
     else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "vector")) {
         if (ctx->extension() == nullptr) {
-            return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, nullptr, (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorDeclNode(expr, constant, id, nullptr, (int)ctx->getStart()->getLine());
         }
-        return (ASTNode *) new VectorDeclNode(expr, constant, id, ty, visit(ctx->extension()), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, visit(ctx->extension()), (int)ctx->getStart()->getLine());
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
@@ -645,9 +645,14 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     std::string ty;
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
+
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), (int)ctx->getStart()->getLine());
+    }
+    else if(!ctx->type(0)->vectorType()->isEmpty()){
+        ASTNode * node = (ASTNode *) visit(ctx->type(0)->vectorType());
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, node, (int)ctx->getStart()->getLine());
     }
     else { // else it's a normal decl
         auto *typeVec = new std::vector<std::string>();
