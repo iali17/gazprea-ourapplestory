@@ -84,6 +84,7 @@ public:
     llvm::Value * sliceMatrix(llvm::Value *mat, llvm::Value *l, llvm::Value *r);
     llvm::Value * indexMatrix(llvm::Value *mat, llvm::Value *l, llvm::Value *r);
     llvm::Value * getMatrixElementPointer(llvm::Value *mat, llvm::Value *row, llvm::Value *col);
+    llvm::Value * getMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat);
 
     //printing
     void registerPrintf();
@@ -109,6 +110,10 @@ protected:
     llvm::Value * indexScalarVector(llvm::Value * mat, llvm::Value * scalar, llvm::Value *vec);
     llvm::Value * indexVectorScalar(llvm::Value * mat, llvm::Value * vec,    llvm::Value *scalar);
     llvm::Value * indexVectorVector(llvm::Value * mat, llvm::Value * vecRow, llvm::Value *vecCol);
+
+    //matrix multiplication
+    llvm::Value * getIntMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat);
+    llvm::Value * getRealMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat);
 
     //dot product
     llvm::Value * getIntDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);

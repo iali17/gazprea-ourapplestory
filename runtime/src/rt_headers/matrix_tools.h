@@ -26,6 +26,8 @@ int  getNumRows(void *v_matrix);
 int  getNumCols(void *v_matrix);
 void printMatrix(void *v_matrix);
 void *concatenateMatrices(void * v_matrix_left, void * v_matrix_right);
+void *getIntMatrixMultiplication(void * v_matrix_left, void * v_matrix_right);
+void *getRealMatrixMultiplication(void * v_matrix_left, void * v_matrix_right);
 
 //helpers
 void *getMatrixElementPointer(void *v_matrix, int row, int col);
