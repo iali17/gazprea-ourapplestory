@@ -22,6 +22,7 @@ void read_in(void * v_stream, void * v_dest, int type) {
     //locals
     int ret;
     void *read = malloc(sizeof(int));
+    FILE *inStream = fdopen(0, "r");
 
     //make a buffer
     char *inBuffer = (char *) calloc(3, sizeof(char *));
@@ -32,9 +33,9 @@ void read_in(void * v_stream, void * v_dest, int type) {
 
     //reading
     if (type == INTEGER)
-        ret = fscanf(stdin, "%d", (int *) read); //ret now has the ascii value of the first character default '\0'
+        ret = fscanf(inStream, "%d", (int *) read); //ret now has the ascii value of the first character default '\0'
     else if (type == CHAR){
-        ret = *fgets(inBuffer, 3, stdin);
+        ret = *fgets(inBuffer, 3, inStream);
         *(char *) read = (char) ret;
     }
     else if(type == BOOLEAN)
@@ -43,18 +44,20 @@ void read_in(void * v_stream, void * v_dest, int type) {
         ret = scanf("%f", (float *) read);
 
     //debug string
-    printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(stdin), (ret > 0 && feof(stdin)),inBuffer[0], *(char *) read, type);
+    printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(inStream), (ret > 0 && feof(inStream)),inBuffer[0], *(char *) read, type);
 
     //set the state
-    if (ret > 0 && feof(stdin)){
+    if (ret > 0 && feof(inStream)){
         s->stream_state = 0;
         // write the value into the dest
         assignValFromPointers(v_dest, read, type);
-    } else if (!feof(stdin)){
+        fflush(inStream);
+    } else if (!feof(inStream)){
         s->stream_state = 1;
-        fflush(stdin);
+        fflush(inStream);
     } else {
         s->stream_state = 2;
-        fflush(stdin);
+        fflush(inStream);
     }
+    //fclose(inStream);
 }
