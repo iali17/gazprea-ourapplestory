@@ -147,7 +147,6 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
 
         return vec;
     }
-
 }
 
 /**

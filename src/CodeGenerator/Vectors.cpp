@@ -79,6 +79,14 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size);
 
     }
+    // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested
+    else if (node->getExpr()) {
+
+        llvm::Value *regExpr = visit(node->getExpr());
+        llvm::Type *vecType = it->getDeclVectorType(stype);
+
+        vec = ct->typeAssCast(vecType, regExpr, node->getLine(), size);
+    }
 
 //    if(node->getStringType() == "integervector") {
 //        ptr = et->getNewVector(it->getConsi32(INTEGER));

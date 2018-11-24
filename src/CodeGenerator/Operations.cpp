@@ -40,7 +40,7 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     assert(left->getType() == right->getType());
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getAdd(left, right);
-}
+ }
 
 llvm::Value *CodeGenerator::visit(SubNode *node) {
     llvm::Value * left  = visit(node->getLeft());
