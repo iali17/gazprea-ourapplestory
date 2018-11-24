@@ -18,5 +18,5 @@ ASTNode *GeneratorNode::getExprNode() const {
 
 GeneratorNode::GeneratorNode(int line, std::vector<std::string> *loopVars, std::vector<ASTNode *> *ranges, ASTNode *condNode)
         : ASTNode(line), loopVars (loopVars), ranges(ranges), exprNode(condNode) {
-    setType(VECTOR);
+    setType(VECTOR_T);
 }
