@@ -64,6 +64,7 @@
 #include "AST/ASTNodes/StatementNodes/ContinueNode.h"
 #include "AST/ASTNodes/StatementNodes/DeclNode.h"
 #include "AST/ASTNodes/StatementNodes/GlobalDeclNode.h"
+#include "AST/ASTNodes/StatementNodes/GeneratorNode.h"
 #include "AST/ASTNodes/StatementNodes/MatrixDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/VectorDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/IntervalDeclNode.h"

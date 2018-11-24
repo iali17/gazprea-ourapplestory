@@ -1034,3 +1034,22 @@ antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamState
     std::string streamName = ctx->Identifier()->getText();
     return (ASTNode *) new StreamStateNode((int)ctx->getStart()->getLine(),streamName);
 }
+
+antlrcpp::Any ASTGenerator::visitGenerator(gazprea::GazpreaParser::GeneratorContext *ctx) {
+    auto *loopVars    = new std::vector<std::string>;
+    auto *ranges      = new std::vector<ASTNode *>;
+    ASTNode *exprNode = nullptr;
+    ASTNode *curExpr  = nullptr;
+    unsigned int i = 0;
+
+    for(i = 0; i < ctx->Identifier().size(); i++){
+        loopVars->push_back(ctx->Identifier().at(i)->getText());
+        curExpr = (ASTNode *) visit(ctx->expr().at(i));
+        //youll have to deal with intervals in codegen
+        ranges->push_back(curExpr);
+    }
+
+    exprNode = (ASTNode *) visit(ctx->expr().at(i));
+
+    return (ASTNode *) new GeneratorNode((int) ctx->getStart()->getLine(), loopVars, ranges, exprNode);
+}
