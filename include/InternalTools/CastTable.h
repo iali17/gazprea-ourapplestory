@@ -23,7 +23,9 @@ public:
 
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
-    llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line);
+
+    llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr);
+    llvm::Value *vecAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr);
     InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     llvm::Value *createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line);
     llvm::Value *createVecFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *size, int line);

@@ -62,6 +62,7 @@ public:
     llvm::Value * printVector(llvm::Value *vec);
     llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
     llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value *src);
+    llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value *src, llvm::Value *line);
     llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
     llvm::Value * getVectorCopy(llvm::Value * vec);
     llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);

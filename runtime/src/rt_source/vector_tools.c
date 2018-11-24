@@ -366,6 +366,25 @@ void copyVectorElements(void *v_dest, void *v_src){
 	}
 }
 
+void strictCopyVectorElements(void *v_dest, void *v_src, int line){
+    //cast the voids
+    vector * dest = (vector *) v_dest;
+    vector * src  = (vector *) v_src;
+
+    if(*dest->numElements != *src->numElements) {
+        char *srcType = getType(*src->type);
+        char *destType = getType(*dest->type);
+        int  srcIndex = *src->numElements;
+        int  destIndex = *dest->numElements;
+
+        printf("Type error: Cannot convert between %s vector[%d] and %s vector[%d] on line %d", srcType, srcIndex, destType, destIndex, line);
+        exit(1);
+    } else {
+        copyVectorElements(v_dest, v_src);
+    }
+}
+
+
 /**
  * Returns a slice of the vector. The returned vector will share the same pointers as the argument vector
  * @param v_vector
@@ -579,4 +598,15 @@ void *getOpResultVector(void * v_vector_left, void * v_vector_right){
     initVector(ret, numElements);
 
     return ret;
+}
+
+char *getType(int type) {
+    if(type == BOOLEAN)
+        return "boolean";
+    else if (type == CHAR)
+        return "character";
+    else if (type == INTEGER)
+        return "integer";
+    else if (type == REAL)
+        return "real";
 }

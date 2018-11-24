@@ -72,6 +72,12 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
     if (vectorNode) {
         //TODO: this
+
+        llvm::Value *vecExpr = visit(node->getExpr());
+        llvm::Type *vecType = it->getDeclVectorType(stype);
+
+        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size);
+
     }
 
 //    if(node->getStringType() == "integervector") {

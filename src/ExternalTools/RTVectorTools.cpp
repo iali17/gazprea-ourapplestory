@@ -15,6 +15,7 @@
 #define PRINT_VECTOR         "printVector"
 #define PRINT_VECTOR_ELEMENT "printVectorElement"
 #define COPY_VECTOR_ELEMENTS "copyVectorElements"
+#define STRICT_COPY_VECTOR   "strictCopyVectorElements"
 #define GET_VECTOR_SLICE     "getVectorSlice"
 #define GET_VECTOR_COPY      "getVectorCopy"
 #define VECTOR_GEP           "getVectorElementPointer"
@@ -77,6 +78,10 @@ void ExternalTools::registerVectorFunctions() {
     //copyVectorElements
     fTy = llvm::TypeBuilder<void (void*, void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(COPY_VECTOR_ELEMENTS, fTy));
+
+    //strictCopyVectorElements
+    fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(STRICT_COPY_VECTOR, fTy));
 
     //getVectorSlice
     fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
@@ -204,6 +209,21 @@ llvm::Value *ExternalTools::copyVectorElements(llvm::Value *dest, llvm::Value *s
     llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
     llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
     return ir->CreateCall(getV, {v_dest, v_src});
+}
+
+/**
+ * copies the elements of src into the elements of dest, only if size is the same
+ * otherwise, throw error
+ * @param dest
+ * @param src
+ * @param line
+ * @return
+ */
+llvm::Value *ExternalTools::strictCopyVectorElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line) {
+    llvm::Function *getV   = mod->getFunction(STRICT_COPY_VECTOR);
+    llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_dest, v_src, line});
 }
 
 /**

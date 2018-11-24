@@ -4,5 +4,5 @@
 #include "AST/AST.h"
 
 ReverseVectorNode::ReverseVectorNode(ASTNode *expr, int line) : UnaryNode(expr, line) {
-    setType(VECTOR);
+    setType(VECTOR_T);
 }

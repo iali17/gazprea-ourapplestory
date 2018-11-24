@@ -518,7 +518,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     else if (ctx->type().size() == 1 && ctx->type(0)->vectorType()) {
         ASTNode *typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         ASTNode *size = nullptr;
-        if (!ctx->extension()->isEmpty()){
+        if (ctx->extension()){
             size = visit(ctx->extension());
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, size, line);
