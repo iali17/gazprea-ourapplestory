@@ -21,6 +21,7 @@
 #define VECTOR_GEP           "getVectorElementPointer"
 #define GET_INT_DOT_PRODUCT  "getIntDotProduct"
 #define GET_REAL_DOT_PRODUCT "getRealDotProduct"
+#define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -40,7 +41,6 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
-
 
 void ExternalTools::registerVectorFunctions() {
     //getEmptyVector
@@ -102,6 +102,10 @@ void ExternalTools::registerVectorFunctions() {
     //getRealDotProduct
     fTy = llvm::TypeBuilder<float (void*, void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_REAL_DOT_PRODUCT, fTy));
+
+    //assignValFromPointers
+    fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASSIGN_VAL_FROM_PTRS, fTy));
 }
 
 /**
@@ -303,4 +307,11 @@ llvm::Value *ExternalTools::getDotProduct(llvm::Value *leftVec, llvm::Value *rig
     else if(leftVec->getType() == realVecTy->getPointerTo())
         return getRealDotProduct(leftVec, rightVec);
     return nullptr;
+}
+
+llvm::Value *ExternalTools::assignValFromPointers(llvm::Value *left, llvm::Value *right, llvm::Value *ty) {
+    llvm::Function *getV    = mod->getFunction(ASSIGN_VAL_FROM_PTRS);
+    llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_left, v_right, ty});
 }

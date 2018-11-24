@@ -395,24 +395,6 @@ void ExternalTools::print(llvm::Value *val) {
         printMatrix(val);
     }
 }
-/*
-llvm::Value *ExternalTools::aliScanf(llvm::Value *scanTo) {
-    llvm::Type * llvmType = scanTo->getType();
-    if     (llvmType == intTy->getPointerTo()){
-        return aliScanf(INT_FORMAT_STR, scanTo);
-    }
-    else if(llvmType == charTy->getPointerTo()){
-        return aliScanf(CHAR_FORMAT_STR, scanTo);
-    }
-    else if(llvmType == boolTy->getPointerTo()){
-        return aliScanf(BOOL_FORMAT_STR, scanTo);
-    }
-    else if(llvmType == realTy->getPointerTo()){
-        return aliScanf(FLOAT_FORMAT_STR, scanTo);
-    }
-    return nullptr;
-}
- */
 
 llvm::StructType* ExternalTools::setUpVector() {
     std::vector<llvm::Type *> d;
