@@ -79,7 +79,7 @@ public:
     virtual llvm::Value* visit(ByNode *node)                              = 0;
     virtual llvm::Value* visit(ReverseVectorNode *node)                   = 0;
     virtual llvm::Value* visit(StreamStateNode *node)                     = 0;
-
+    virtual llvm::Value* visit(GeneratorNode *node)                       = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

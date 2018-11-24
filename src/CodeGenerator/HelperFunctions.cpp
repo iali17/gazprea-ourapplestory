@@ -313,18 +313,6 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     llvm::BasicBlock *entry = llvm::BasicBlock::Create(*globalCtx, "entry", F);
     ir->SetInsertPoint(entry);
 
-    /*//kyle's testing code
-    printf("running kyles print test\n");
-    llvm::Value * vec = et->getNewVector(it->getConsi32(INTEGER));
-    et->initVector(vec, it->getConsi32(5));
-    et->setIdentityVector(vec);
-    et->printVector(vec);
-    ir->CreatePointerCast(vec, intVecTy->getPointerTo());
-    ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
-    ir->CreatePointerCast(vec, charVecTy->getPointerTo());
-    ir->CreatePointerCast(vec, realVecTy->getPointerTo());
-    //*/
-
     //visit block and create ir
     visit(block);
 
@@ -342,4 +330,13 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
     std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), arguments);
 
     return ir->CreateCall(func, paramVec);
+}
+
+llvm::Value *CodeGenerator::getRange(ASTNode *range) {
+    //visit the range, do the implicit by if needed, point to the integer elements
+    llvm::Value * rangeVecPtr = visit(range);
+    if(rangeVecPtr->getType() == intervalTy->getPointerTo()){
+        rangeVecPtr = et->getVectorFromInterval(rangeVecPtr, it->getConsi32(1));
+    }
+    return rangeVecPtr;
 }

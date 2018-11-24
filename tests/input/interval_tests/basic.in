@@ -1,7 +1,0 @@
-procedure main() returns integer {
-
-integer interval x = 1..2;
-
-
-return 0;
-}

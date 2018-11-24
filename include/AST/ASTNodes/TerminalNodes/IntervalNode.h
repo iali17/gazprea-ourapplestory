@@ -7,7 +7,7 @@
 
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
-class IntervalNode : ASTNode {
+class IntervalNode : public ASTNode {
 public:
     IntervalNode(ASTNode* leftBound, ASTNode* rightBound, int line);
     ASTNode* getLeftBound();

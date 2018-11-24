@@ -1,5 +1,5 @@
 {
-  "inDir": "input/",
+  "inDir": "input/OurAppleStory",
   "outDir": "output/",
   "testedExecutablePaths": {
     "<gazprea-ourapplestory>": "../bin/gazc"

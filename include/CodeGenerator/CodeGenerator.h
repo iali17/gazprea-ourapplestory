@@ -97,6 +97,7 @@ public:
     llvm::Value* visit(ByNode             *node) override;
     llvm::Value* visit(ReverseVectorNode  *node) override;
     llvm::Value* visit(IntervalDeclNode   *node) override;
+    llvm::Value* visit(GeneratorNode      *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
@@ -111,6 +112,12 @@ public:
     llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
+    llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
+    llvm::Value *generateFilter(std::string loopVar, ASTNode *range, ASTNode *condNode);
+    llvm::Value *getRange(ASTNode *range);
+
+    // Interval operation stuff
+    llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

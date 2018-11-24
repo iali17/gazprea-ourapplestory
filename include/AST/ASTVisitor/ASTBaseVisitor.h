@@ -210,6 +210,9 @@ public:
         else if (dynamic_cast<IntervalDeclNode *>(node)) {
             ret = visit((IntervalDeclNode *) node);
         }
+        else if (dynamic_cast<GeneratorNode *>(node)) {
+            ret = visit((GeneratorNode *) node);
+        }
         if (ret){
             node->setLlvmType(ret->getType());
         }
@@ -284,6 +287,7 @@ public:
     llvm::Value* visit(ByNode *node) override { return nullptr; }
     llvm::Value* visit(ReverseVectorNode *node) override { return nullptr; }
     llvm::Value* visit(IntervalDeclNode *node) override { return nullptr; }
+    llvm::Value* visit(GeneratorNode *node) override { return nullptr; }
 
 };
 

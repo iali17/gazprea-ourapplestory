@@ -14,8 +14,6 @@ termsAndConditions
 // todo: interval precendence is wrong
 expr
     : '(' expr ')'                                                  #brackExpr
-    | left=expr DOTDOT right=expr                                   #intervalExpr
-    | IntervalThing right=expr                                      #intervalExpr
     | Integer                                                       #integerExpr
     | Real                                                          #realExpr
     | (TRUE|FALSE)                                                  #boolExpr
@@ -39,6 +37,10 @@ expr
     | colLength                                                     #colLengthExpr
     | reverse                                                       #reverseExpr
     | streamState                                                   #streamStateExpr
+
+        | left=expr DOTDOT right=expr                                   #intervalExpr
+        | IntervalThing right=expr                                      #intervalExpr
+
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
@@ -145,6 +147,7 @@ procedureCall
     : CALL Identifier '(' (expr (COMMA expr)*)? ')' SEMICOLON
     ;
 
+// todo commas
 generator
     : '[' Identifier IN expr (COMMA Identifier IN expr)? '|' expr ']'
     ;
