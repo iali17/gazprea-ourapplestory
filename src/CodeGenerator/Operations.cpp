@@ -28,15 +28,10 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    if (node->getLeft()->getType() == INTEGER && node->getRight()->getType() == INTERVAL){
-
-
-
-
-
+    // todo
+    if (node->getLeft()->getType() == INTERVAL || node->getRight()->getType() == INTERVAL){
+        return IntervalAdd(left, right);
     }
-
-
 
     retVal = ct->typePromotion(left, right, node->getLine());
     left = retVal.left;

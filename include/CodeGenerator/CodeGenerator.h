@@ -112,6 +112,11 @@ public:
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
 
+    // Interval operation stuff
+    llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
+
+
+
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

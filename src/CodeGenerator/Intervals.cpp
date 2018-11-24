@@ -61,4 +61,10 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
 }
 
 
+llvm::Value *CodeGenerator::IntervalAdd(llvm::Value *left, llvm::Value *right) {
+    // todo
+    return nullptr;
+}
+
+
 
