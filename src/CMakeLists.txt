@@ -196,7 +196,7 @@ set(
 	../include/AST/ASTNodes/StatementNodes/CastNodes/ByNode.h
 	AST/ASTNodes/StatementNodes/IntervalDeclNode.cpp
 	../include/AST/ASTNodes/StatementNodes/IntervalDeclNode.h
-	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp AST/ASTGenerator/DeclAss.cpp AST/ASTGenerator/Tuples.cpp AST/ASTGenerator/ProceduresAndFunctions.cpp AST/ASTGenerator/Vectors.cpp AST/ASTGenerator/Matrices.cpp AST/ASTGenerator/Intervals.cpp)
+	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp AST/ASTGenerator/DeclAss.cpp AST/ASTGenerator/Tuples.cpp AST/ASTGenerator/ProceduresAndFunctions.cpp AST/ASTGenerator/Vectors.cpp AST/ASTGenerator/Matrices.cpp AST/ASTGenerator/Intervals.cpp CodeGenerator/VectorOperations.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

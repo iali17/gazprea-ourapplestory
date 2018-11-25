@@ -483,6 +483,20 @@ bool InternalTools::isVectorType(llvm::Value *ptr) {
 }
 
 
+bool InternalTools::isMatrixType(llvm::Value *ptr) {
+    if(ptr->getType() == intMatrixTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == realMatrixTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == charMatrixTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == boolMatrixTy->getPointerTo()) {
+        return true;
+    }
+
+    return false;
+}
+
 bool InternalTools::isDeclVectorType(llvm::Type *type) {
     if(type == intVecTy) {
         return true;

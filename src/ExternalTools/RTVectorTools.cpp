@@ -22,6 +22,7 @@
 #define GET_INT_DOT_PRODUCT  "getIntDotProduct"
 #define GET_REAL_DOT_PRODUCT "getRealDotProduct"
 #define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
+#define GET_OP_RESULT_VECTOR "getOpResultVector"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -106,6 +107,10 @@ void ExternalTools::registerVectorFunctions() {
     //assignValFromPointers
     fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASSIGN_VAL_FROM_PTRS, fTy));
+
+    //getOpResultVector
+    fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_OP_RESULT_VECTOR, fTy));
 }
 
 /**
@@ -309,9 +314,30 @@ llvm::Value *ExternalTools::getDotProduct(llvm::Value *leftVec, llvm::Value *rig
     return nullptr;
 }
 
+/**
+ * Assigns right hand value to left hand value assuming the type is ty
+ * @param left
+ * @param right
+ * @param ty
+ * @return
+ */
 llvm::Value *ExternalTools::assignValFromPointers(llvm::Value *left, llvm::Value *right, llvm::Value *ty) {
     llvm::Function *getV    = mod->getFunction(ASSIGN_VAL_FROM_PTRS);
     llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
     llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
     return ir->CreateCall(getV, {v_left, v_right, ty});
+}
+
+/**
+ * allocates a new vector with the proper size for the return
+ * @param left
+ * @param right
+ * @return
+ */
+llvm::Value *ExternalTools::getOpResultVector(llvm::Value *left, llvm::Value *right) {
+    llvm::Function *getV    = mod->getFunction(GET_OP_RESULT_VECTOR);
+    llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
+    llvm::Value    *ret     = ir->CreateCall(getV, {v_left, v_right});
+    return ir->CreatePointerCast(ret, left->getType());
 }

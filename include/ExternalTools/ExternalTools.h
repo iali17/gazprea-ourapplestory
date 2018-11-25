@@ -68,6 +68,7 @@ public:
     llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);
     llvm::Value * getDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
     llvm::Value * assignValFromPointers(llvm::Value * left, llvm::Value *right, llvm::Value *ty);
+    llvm::Value * getOpResultVector(llvm::Value *left, llvm::Value *right);
 
     //Interval functions
     void registerIntervalFunctions();
