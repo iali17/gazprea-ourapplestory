@@ -17,6 +17,7 @@ int get_stream_state(void * v_stream){
  */
 void read_in(void * v_stream, void * v_dest, int type) {
     //cast the void
+    if (feof(stdin)) return;
     stream *s = (stream *) v_stream;
 
     //locals
@@ -32,28 +33,50 @@ void read_in(void * v_stream, void * v_dest, int type) {
     getNull(type, v_dest);
 
     //reading
-    if (type == INTEGER)
+    if (type == INTEGER){
         ret = fscanf(inStream, "%d", (int *) read); //ret now has the ascii value of the first character default '\0'
+    }
     else if (type == CHAR){
+        ret = *fgets(inBuffer, 3, inStream);
+        *(char*) read = (char) ret;
+    }
+    else if(type == BOOLEAN) {
         ret = *fgets(inBuffer, 3, inStream);
         *(char *) read = (char) ret;
     }
-    else if(type == BOOLEAN)
-        ret = scanf("%c", (char *) read);
-    else if(type == REAL)
-        ret = scanf("%f", (float *) read);
+    else if(type == REAL){
+        ret = fscanf(inStream, "%f", (float *) read);
+    }
 
     //debug string
     printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(inStream), (ret > 0 && feof(inStream)),inBuffer[0], *(char *) read, type);
 
+    //boolean only garbage
+    if (type == BOOLEAN && feof(inStream) && (*(char *)read == 'T' || *(char *)read == 'F' )) {
+        s->stream_state = 0;
+        if(*(char *)read == 'T') *(int *)read = 1;
+        else *(int *)read = 0;
+        assignValFromPointers(v_dest, read, INTEGER);
+        fflush(inStream);
+    } else if(type == BOOLEAN) {
+        s->stream_state = 1;
+        *(int *)read = 0;
+        assignValFromPointers(v_dest, read, INTEGER);
+        fflush(inStream);
+    }
+
     //set the state
-    if (ret > 0 && feof(inStream)){
+    if (ret > 0 && feof(inStream) && type != BOOLEAN){
         s->stream_state = 0;
         // write the value into the dest
         assignValFromPointers(v_dest, read, type);
         fflush(inStream);
+
     } else if (!feof(inStream)){
         s->stream_state = 1;
+        fflush(inStream);
+    } else if (ret <= 0 && feof(inStream)) {
+        s->stream_state = 2;
         fflush(inStream);
     } else {
         s->stream_state = 2;

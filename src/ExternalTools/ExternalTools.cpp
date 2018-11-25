@@ -333,37 +333,7 @@ llvm::Value *ExternalTools::aliScanf(llvm::Value *stream, llvm::Value *scanTo, l
     llvm::Value *vStream = ir->CreatePointerCast(stream, charTy->getPointerTo());
     llvm::Value *vDest = ir->CreatePointerCast(scanTo, charTy->getPointerTo());
 
-    //bool only garbage
-    if(scanTo->getType()->getPointerElementType() == boolTy){
-        uint64_t trueValue = static_cast<uint64_t>(static_cast<int64_t>('T'));
-        llvm::Value * t = llvm::ConstantInt::get(i8Ty, trueValue, true);
-        trueValue = static_cast<uint64_t>(static_cast<int64_t>('F'));
-        llvm::Value * f = llvm::ConstantInt::get(i8Ty, trueValue, true);
-        trueValue = static_cast<uint64_t>(static_cast<int64_t>(0));
-        llvm::Value * zero = llvm::ConstantInt::get(boolTy, trueValue, true);
-        trueValue = static_cast<uint64_t>(static_cast<int64_t>(1));
-        llvm::Value * one  = llvm::ConstantInt::get(boolTy, trueValue, true);
-
-
-        llvm::Value * tmp = ir->CreateAlloca(charTy);
-        ir->CreateCall(scanfFunc, {vStream, vDest, type});
-        llvm::Value *val = ir->CreateLoad(tmp);
-
-        //TODO - change after cond builder is fixed
-        CondBuilder *condBuilder = new CondBuilder(globalCtx, ir, mod);
-        condBuilder->beginIf(ir->CreateICmpEQ(val, t));
-            ir->CreateStore(one, scanTo);
-        condBuilder->endIf();
-        condBuilder->beginElseIf(ir->CreateICmpEQ(val, f));
-            ir->CreateStore(zero, scanTo);
-        condBuilder->endIf();
-        condBuilder->beginElse();
-            ir->CreateStore(zero, scanTo);
-        condBuilder->finalize();
-    }
-    else {
-        ir->CreateCall(scanfFunc, {vStream, vDest, type});
-    }
+    ir->CreateCall(scanfFunc, {vStream, vDest, type});
 
     return nullptr;
 }
