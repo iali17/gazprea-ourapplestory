@@ -1,0 +1,40 @@
+//
+// Created by iali on 11/24/18.
+//
+
+#include <AST/ASTGenerator.h>
+
+antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) {
+    if (ctx->extension() == nullptr) {
+        if (ctx->getText().at(0) == 'b')
+            return (ASTNode *) new VectorType(nullptr, "booleanvector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'i')
+            return (ASTNode *) new VectorType(nullptr, "integervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'c')
+            return (ASTNode *) new VectorType(nullptr, "charactervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'r')
+            return (ASTNode *) new VectorType(nullptr, "realvector", (int)ctx->getStart()->getLine());
+
+    } else {
+        if (ctx->getText().at(0) == 'b')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'i')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'c')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'r')
+            return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
+    }
+    return nullptr;
+}
+
+antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) {
+    auto *expr  = new std::vector<ASTNode *>;
+
+    for(unsigned long i = 0; i < ctx->vector()->expr().size(); ++i){
+        expr->push_back((ASTNode *) visit(ctx->vector()->expr(i)));
+    }
+
+    return (ASTNode *) new VectorNode(expr, (int)ctx->getStart()->getLine());
+}
+

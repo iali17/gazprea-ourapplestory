@@ -22,7 +22,7 @@ set(
 	../include/AST/AST.h
 	AST/ASTNodes/BaseNodes/ASTNode.cpp
 	../include/AST/ASTGenerator.h
-	AST/ASTGenerator.cpp
+        AST/ASTGenerator/ASTGenerator.cpp
 	../include/AST/ASTNodes/BaseNodes/InfixNode.h
 	../include/AST/ASTNodes/BaseNodes/UnaryNode.h
 	AST/ASTNodes/BaseNodes/InfixNode.cpp
@@ -161,7 +161,7 @@ set(
 	AST/ASTNodes/TerminalNodes/IntervalNode.cpp
 	ExternalTools/RTVectorTools.cpp
 	ExternalTools/RTIntervalTools.cpp
-	AST/ASTHelperFunctions.cpp
+		AST/ASTGenerator/HelperFunctions.cpp
 	AST/ASTNodes/TerminalNodes/VectorNode.cpp
 	../include/AST/ASTNodes/TerminalNodes/VectorNode.h
 	CodeGenerator/DeclAss.cpp
@@ -196,7 +196,7 @@ set(
 	../include/AST/ASTNodes/StatementNodes/CastNodes/ByNode.h
 	AST/ASTNodes/StatementNodes/IntervalDeclNode.cpp
 	../include/AST/ASTNodes/StatementNodes/IntervalDeclNode.h
-	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp)
+	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp AST/ASTGenerator/DeclAss.cpp AST/ASTGenerator/Tuples.cpp AST/ASTGenerator/ProceduresAndFunctions.cpp AST/ASTGenerator/Vectors.cpp AST/ASTGenerator/Matrices.cpp AST/ASTGenerator/Intervals.cpp)
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})
