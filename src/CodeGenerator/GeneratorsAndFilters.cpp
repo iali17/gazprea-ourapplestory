@@ -84,41 +84,41 @@ llvm::Value *CodeGenerator::generateVector(std::string loopVar, ASTNode *range, 
     //welcome to my while statement
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     wb->beginWhile();
-        //load loop var
-        curIdx = ir->CreateLoad(curIdxPtr);
+    //load loop var
+    curIdx = ir->CreateLoad(curIdxPtr);
 
     //control
     wb->beginInsertControl();
     cond = ir->CreateICmpSLT(curIdx, rangeSize);
     wb->insertControl(cond);
 
-        //get current index for the return
-        curIdx = ir->CreateLoad(curIdxPtr, "curIdx");
+    //get current index for the return
+    curIdx = ir->CreateLoad(curIdxPtr, "curIdx");
 
-        //set the loopvar
-        curRangePtr = ir->CreateGEP(rangePtr, curIdx, "curRangePtr");
-        curLoopVar  = ir->CreateLoad(curRangePtr, "loopVar");
-        ir->CreateStore(curLoopVar, loopVarPtr);
+    //set the loopvar
+    curRangePtr = ir->CreateGEP(rangePtr, curIdx, "curRangePtr");
+    curLoopVar  = ir->CreateLoad(curRangePtr, "loopVar");
+    ir->CreateStore(curLoopVar, loopVarPtr);
 
-        //get current value and its type
-        curVal          = visit(exprNode);
-        retElmtType     = curVal->getType();
-        retElmtTypeCons = it->getConstFromType(retElmtType);
+    //get current value and its type
+    curVal          = visit(exprNode);
+    retElmtType     = curVal->getType();
+    retElmtTypeCons = it->getConstFromType(retElmtType);
 
-        //cast the void *  and get some addresses
-        retElmtsPtr = ir->CreatePointerCast(retElmtsPtr, retElmtType->getPointerTo());
-        retElmtPtr  = ir->CreateGEP(retElmtsPtr, curIdx);
+    //cast the void *  and get some addresses
+    retElmtsPtr = ir->CreatePointerCast(retElmtsPtr, retElmtType->getPointerTo());
+    retElmtPtr  = ir->CreateGEP(retElmtsPtr, curIdx);
 
-        //prepare for call
-        curValPtr = ir->CreatePointerCast(curValPtr, curVal->getType()->getPointerTo(), "curValPtr");
-        ir->CreateStore(curVal, curValPtr);
+    //prepare for call
+    curValPtr = ir->CreatePointerCast(curValPtr, curVal->getType()->getPointerTo(), "curValPtr");
+    ir->CreateStore(curVal, curValPtr);
 
-        //store
-        et->assignValFromPointers(retElmtPtr, curValPtr, retElmtTypeCons);
+    //store
+    et->assignValFromPointers(retElmtPtr, curValPtr, retElmtTypeCons);
 
-        //increment and store indices
-        curIdx = ir->CreateAdd(curIdx, it->getConsi32(1));
-        ir->CreateStore(curIdx, curIdxPtr);
+    //increment and store indices
+    curIdx = ir->CreateAdd(curIdx, it->getConsi32(1));
+    ir->CreateStore(curIdx, curIdxPtr);
 
     wb->endWhile();
 

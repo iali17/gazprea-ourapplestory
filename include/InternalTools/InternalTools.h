@@ -65,6 +65,7 @@ public:
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
     bool isVectorType(llvm::Value *ptr);
+	bool isMatrixType(llvm::Value *ptr);
     bool isDeclVectorType(llvm::Type *type);
     bool isIntervalType(llvm::Value *ptr);
     std::vector<llvm::Value *> * getValueVectorFromTuple(llvm::Value *structPtr);

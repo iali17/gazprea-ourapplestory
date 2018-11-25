@@ -23,94 +23,125 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
-llvm::Value *CodeGenerator::visit(AddNode *node) {
+
+InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
     InternalTools::pair retVal;
 
-    // todo
+    retVal = ct->typePromotion(left, right, node->getLine());
+
+    assert(retVal.left->getType() == retVal.right->getType());
+
+    return retVal;
+}
+
+llvm::Value *CodeGenerator::visit(AddNode *node) {
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
+
+
+    // todo - dont use getType, check left, right llvm types
     if (node->getLeft()->getType() == INTERVAL || node->getRight()->getType() == INTERVAL){
         return IntervalAdd(left, right);
     }
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getAdd(left, right);
  }
 
 llvm::Value *CodeGenerator::visit(SubNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getSub(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(MulNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getMul(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(DivNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getDiv(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(RemNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
     return it->getRem(left, right);
 }
 
 //TODO - split
 llvm::Value *CodeGenerator::visit(ExpNode *node) {
-    llvm::Value * left = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performArithVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
 
-    assert(left->getType() == right->getType());
+    }
+
     assert((left->getType() == intTy) || (left->getType() == realTy));
-
     if((left->getType() == intTy) || (left->getType() == realTy)){
         return et->aliPow(left, right);
     }
@@ -123,16 +154,14 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
-    if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
+    //if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
+    if(it->isStructType(left)){
         return performTupleOp(left, right, EQ, node->getLine());
     }
 
-    InternalTools::pair retVal;
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    left  = retVal.left;
     right = retVal.right;
-
-    assert(left->getType() == right->getType());
 
     return it->getEQ(left, right);
 }
@@ -145,103 +174,66 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
         return performTupleOp(left, right, NEQ, node->getLine());
     }
 
-    InternalTools::pair retVal;
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    left  = retVal.left;
     right = retVal.right;
 
-    assert(left->getType() == right->getType());
     return it->getNEQ(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(GTNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getGT(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(LTNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getLT(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(GTENode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getGTE(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(LTENode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getLTE(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(AndNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getAnd(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(OrNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getOr(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(XOrNode *node) {
-    llvm::Value * left  = visit(node->getLeft());
-    llvm::Value * right = visit(node->getRight());
-    InternalTools::pair retVal;
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
 
-    retVal = ct->typePromotion(left, right, node->getLine());
-    left = retVal.left;
-    right = retVal.right;
-
-    assert(left->getType() == right->getType());
     return it->getXOr(left, right);
 }
 

@@ -1,0 +1,12 @@
+procedure main() returns integer{
+	var out = std_output();
+
+	[1,2] + [2,3] -> out; '\n' -> out;
+	[1,2] - [2,3] -> out; '\n' -> out;
+	[1,2] * [2,3] -> out; '\n' -> out;
+	[1,2] / [2,3] -> out; '\n' -> out;
+	[1,2] % [2,3] -> out; '\n' -> out;
+	[1,2] ^ [2,3] -> out; '\n' -> out;
+	
+	return 0;
+}

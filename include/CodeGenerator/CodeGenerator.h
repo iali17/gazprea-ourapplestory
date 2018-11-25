@@ -104,6 +104,8 @@ public:
     //Helper functions
     llvm::StructType* parseStructType(TupleType *node);
 	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
+	llvm::Value*      performArithVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
@@ -114,6 +116,7 @@ public:
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
     llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
     llvm::Value *generateFilter(std::string loopVar, ASTNode *range, ASTNode *condNode);
+    InternalTools::pair castForOp(InfixNode *node);
     llvm::Value *getRange(ASTNode *range);
 
     // Interval operation stuff
