@@ -2,49 +2,62 @@
 #include "../rt_headers/vector_tools.h"
 #include <sys/ioctl.h>
 #include <stropts.h>
+#include <string.h>
 
 int get_stream_state(void * v_stream){
     stream * s = (stream *) v_stream;
     return s->stream_state;
 }
+/*
+ * Things to try when reading a character
+ *  - ctrl-d should end the input immediately otherwise, they entered a character and we expect two ctrl-d inputs
+ *  - put more than 3 characters into the buffer, the next read is skipped somehow. maybe the buffer isnt getting
+ *      flushed properly?
+ *  - this seems to read EOLN fine
+ */
+void read_in(void * v_stream, void * v_dest, int type) {
+    //cast the void
+    stream *s = (stream *) v_stream;
 
-void read_in(void * v_stream, void * v_dest, int type){
-    stream * s = (stream *) v_stream;
+    //locals
     int ret;
-    void * read = malloc(sizeof(int));
+    void *read = malloc(sizeof(int));
+    FILE *inStream = fdopen(0, "r");
+
+    //make a buffer
+    char *inBuffer = (char *) calloc(3, sizeof(char *));
+    memset(inBuffer, '\0', sizeof(inBuffer));
+
+    //init read to null
     getNull(type, v_dest);
 
     //reading
-    if(type == INTEGER)
-        ret = scanf("%d", (int *) read);
-    else if(type == CHAR)
-        ret = scanf("%c", (char *) read);
+    if (type == INTEGER)
+        ret = fscanf(inStream, "%d", (int *) read); //ret now has the ascii value of the first character default '\0'
+    else if (type == CHAR){
+        ret = *fgets(inBuffer, 3, inStream);
+        *(char *) read = (char) ret;
+    }
     else if(type == BOOLEAN)
         ret = scanf("%c", (char *) read);
     else if(type == REAL)
         ret = scanf("%f", (float *) read);
 
+    //debug string
+    printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(inStream), (ret > 0 && feof(inStream)),inBuffer[0], *(char *) read, type);
 
     //set the state
-    //printf("retVal: %d, feofVal: %d read: %c type: %d\n", ret, feof(stdin), *(char *) read, type);
-    if (ret == 1){
+    if (ret > 0 && feof(inStream)){
         s->stream_state = 0;
         // write the value into the dest
         assignValFromPointers(v_dest, read, type);
-    } else if (!feof(stdin)){
+        fflush(inStream);
+    } else if (!feof(inStream)){
         s->stream_state = 1;
+        fflush(inStream);
     } else {
         s->stream_state = 2;
+        fflush(inStream);
     }
-/*
-    char c;
-    while((c =fgetc(stdin)) != EOF) {
-        printf("in buffer: %c\n", c);
-    }*/
-/*
-    int k = 0;
-    while(scanf("%*c")){
-        printf("%d\n", k);
-    }*/
-
+    //fclose(inStream);
 }
