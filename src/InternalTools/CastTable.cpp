@@ -300,16 +300,33 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     }
     // Todo: Not done this case
     // Third case: Expr is a scalar and size exist
-    else if (!it->isVectorType(expr) && size) {
-        if(it->getDeclScalarTypeFromVec(type) == type->getPointerTo()) {
+    else if (size && !it->isVectorType(expr)) {
+        if(it->getDeclScalarTypeFromVec(type) == expr->getType()) {
             llvm::Value *vec;
 
-            vec = createVecFromScalar(expr, type, size, line);
+            vec = createVecFromScalar(expr, it->getDeclScalarTypeFromVec(type), size, line);
 
             return vec;
+        } else if (expr->getType() == intTy) {
+            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
+
+            // Creates new vector
+            llvm::Value *vec = et->getNewVector(declType);
+            vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
+            et->initVector(vec, size);
+
+            if (type == realVecTy) {
+                expr = createVecFromScalar(expr, realTy, size, line);
+            } else {
+                // Todo: make error node for trying to implicit cast scalar integer to vector types other than real and int
+            }
+
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+
+            return vec;
+        } else {
+            // Todo: make error node for trying to implicit cast scalar to vector types other than real and int
         }
-
-
     }
     // Fourth case: Expr is a scalar and size doesn't exist
     else {
@@ -435,7 +452,11 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
 
         size = it->getValFromStruct(lValueLoad, it->getConsi32(VEC_LEN_INDEX));
 
-        if (castType == "real") {
+        if (lTypeString == rTypeString) {
+            rValueLoad = createVecFromScalar(rValueLoad, rTypeP, size, line);
+
+            return it->makePair(lValueLoad, rValueLoad);
+        } else if (castType == "real") {
             if (lTypeString == "int") {
                 lValueLoad = createVecFromVec(lValueLoad, realTy, size, line);
                 rValueLoad = createVecFromScalar(rValueLoad, realTy, size, line);
@@ -469,7 +490,11 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
 
         size = it->getValFromStruct(rValueLoad, it->getConsi32(VEC_LEN_INDEX));
 
-        if (castType == "real") {
+        if (lTypeString == rTypeString) {
+            lValueLoad = createVecFromScalar(lValueLoad, lTypeP, size, line);
+
+            return it->makePair(lValueLoad, rValueLoad);
+        } else if (castType == "real") {
             if (lTypeString == "int") {
                 lValueLoad = createVecFromScalar(lValueLoad, realTy, size, line);
 
@@ -522,7 +547,12 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
 
         size = ir->CreateLoad(size);
 
-        if (castType == "real") {
+        if (lTypeString == rTypeString) {
+            lValueLoad = createVecFromVec(lValueLoad, rTypeP, size, line);
+            rValueLoad = createVecFromVec(rValueLoad, rTypeP, size, line);
+
+            return it->makePair(lValueLoad, rValueLoad);
+        } else if (castType == "real") {
             if (lTypeString == "int") {
                 lValueLoad = createVecFromVec(lValueLoad, realTy, size, line);
                 rValueLoad = createVecFromVec(rValueLoad, realTy, size, line);
