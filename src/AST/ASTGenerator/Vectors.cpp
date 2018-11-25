@@ -38,3 +38,6 @@ antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprCo
     return (ASTNode *) new VectorNode(expr, (int)ctx->getStart()->getLine());
 }
 
+antlrcpp::Any ASTGenerator::visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVectorExprContext *ctx) {
+    return (ASTNode *) new VectorNode(new std::vector<ASTNode *>, (int)ctx->getStart()->getLine());
+}

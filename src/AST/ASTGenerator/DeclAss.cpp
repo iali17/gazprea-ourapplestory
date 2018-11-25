@@ -32,26 +32,32 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
-        // if matrix decl then
-    else if ((ctx->type().size() == 1 && ty.size() > 6) && (ty.substr(ty.size() - 6) == "matrix")) {
+    // if matrix decl then
+    else if ((ctx->type().size() == 1) && (ctx->type(0)->matrixType())) {
         if (ctx->extension() == nullptr) {  // if extension not provided
             return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, nullptr);
         }
         return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, visit(ctx->extension()));
     }
+    // TODO: Parse vector type and add it as a string to vectorDeclNode
+    // if vector decl then
+    else if ((ctx->type().size() == 1 && ctx->type(0)->vectorType())
+    || (ctx->type().size() == 1 && !ctx->type(0)->vectorType() && !ctx->type(0)->matrixType() && ctx->extension())) {
+        ASTNode *typeNode;
+        if (ctx->type(0)->vectorType()) {
+            typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
+        } else {
+            typeNode = (ASTNode *) new VectorType(nullptr, ctx->type(0)->getText() + "vector", line);
+        }
 
-        // TODO: Parse vector type and add it as a string to vectorDeclNode
-        // if vector decl then
-    else if (ctx->type().size() == 1 && ctx->type(0)->vectorType()) {
-        ASTNode *typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         ASTNode *size = nullptr;
         if (ctx->extension()){
             size = visit(ctx->extension());
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, size, line);
     }
-        // if interval decl then
-    else if (ctx->type().size() == 1 && ty.size() > 8 && (ctx->type(0)->intervalType())) {
+    // if interval decl then
+    else if (ctx->type().size() == 1  && (ctx->type(0)->intervalType())) {
         return (ASTNode *) new IntervalDeclNode(expr, constant, id, line);
     }
     else { // else it's a normal decl

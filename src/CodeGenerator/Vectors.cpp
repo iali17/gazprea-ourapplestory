@@ -72,11 +72,17 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
     if (vectorNode) {
         //TODO: this
+        if (!vectorNode->getElements()->empty()) {
+            llvm::Value *vecExpr = visit(node->getExpr());
+            llvm::Type *vecType = it->getDeclVectorType(stype);
 
-        llvm::Value *vecExpr = visit(node->getExpr());
-        llvm::Type *vecType = it->getDeclVectorType(stype);
+            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size);
+        }
+        // empty vector
+        else  {
+            et->initVector(vec, it->getConsi32(0));
+        }
 
-        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size);
 
     }
     // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested

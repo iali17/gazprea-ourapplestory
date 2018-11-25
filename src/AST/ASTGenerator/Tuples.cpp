@@ -85,3 +85,4 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
     return (ASTNode *) new TupleType(typeIdNodes, (int)ctx->getStart()->getLine());
 }
 
+

@@ -37,10 +37,8 @@ expr
     | colLength                                                     #colLengthExpr
     | reverse                                                       #reverseExpr
     | streamState                                                   #streamStateExpr
-
-        | left=expr DOTDOT right=expr                                   #intervalExpr
-        | IntervalThing right=expr                                      #intervalExpr
-
+    | left=expr DOTDOT right=expr                                   #intervalExpr
+    | IntervalThing right=expr                                      #intervalExpr
     | <assoc=right> op=(ADD | SUB | NOT) expr                       #unaryExpr
     | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr

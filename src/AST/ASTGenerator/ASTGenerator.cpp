@@ -466,6 +466,9 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         if (ctx->left == nullptr) {         // being nullptr assumes it's actually a *
             left = nullptr;
         } else {
+            if (ctx->left->getText() == "[*]") {
+                return nullptr;
+            }
             left = visit(ctx->left);
         }
 
@@ -479,6 +482,9 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         if(ctx->left == nullptr) {
             size = nullptr;
         } else {
+            if (ctx->left->getText() == "*") {
+                return nullptr;
+            }
             size = visit(ctx->left);
         }
 
@@ -491,8 +497,12 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
 antlrcpp::Any ASTGenerator::visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) {
     if(ctx->right == nullptr)
         return nullptr;
-    else
+    else {
+        if (ctx->right->getText() == "*") {
+            return nullptr;
+        }
         return visit(ctx->right);
+    }
 }
 
 antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {

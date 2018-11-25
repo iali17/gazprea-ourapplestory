@@ -93,6 +93,7 @@ private:
     antlrcpp::Any visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) override;
     antlrcpp::Any visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) override;
     antlrcpp::Any visitGenerator(gazprea::GazpreaParser::GeneratorContext *ctx) override;
+    antlrcpp::Any visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVectorExprContext *ctx) override;
 
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
