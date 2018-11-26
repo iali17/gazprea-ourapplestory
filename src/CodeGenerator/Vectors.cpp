@@ -30,14 +30,17 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
         values->push_back(visit(node->getElements()->at(i)));
 
     // Casting empty vector with proper type
-    llvm::Type *type = values->at(0)->getType();
+    llvm::Type *type;
+    if(!values->empty()) type = values->at(0)->getType();
+    else type = intTy;
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     et->initVector(vec, it->getConsi32(values->size()));
 
     vec = it->castVectorToType(vec, type);
 
     // Populate vector
-    it->setVectorValues(vec, values);
+    if(!values->empty())
+        it->setVectorValues(vec, values);
 
     return vec;
 }
@@ -81,6 +84,7 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         // empty vector
         else  {
             et->initVector(vec, it->getConsi32(0));
+            et->printVector(vec);
         }
 
 
