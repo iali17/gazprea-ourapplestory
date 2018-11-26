@@ -5,7 +5,7 @@
     "<gazprea-ourapplestory>": "../bin/gazc"
   },
   "runtimes": {
-    "ourapplestory": "../bin/libgazrt.so"
+    "<gazprea-ourapplestory>": "../bin/libgazrt.so"
   },
   "toolchains": {
     "gazprea": [
