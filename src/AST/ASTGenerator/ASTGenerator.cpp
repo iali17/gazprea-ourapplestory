@@ -466,7 +466,7 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         if (ctx->left == nullptr) {         // being nullptr assumes it's actually a *
             left = nullptr;
         } else {
-            if (ctx->left->getText() == "[*]") {
+            if (ctx->left->getText() == "*") {
                 return nullptr;
             }
             left = visit(ctx->left);

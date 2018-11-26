@@ -90,7 +90,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
         }
     }
     else {
-        auto *error = new ScalarNode(lTypeString, rTypeString, line);
+        auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
         eb->printError(error);
 
         return it->makePair(lValueLoad, rValueLoad);
@@ -184,13 +184,13 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     }
 
     else {
-        auto *error = new ScalarNode(realString, exprString, line);
+        auto *error = new ScalarErrorNode(realString, exprString, line);
         eb->printError(error);
     }
     return nullptr;
 }
 
-llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size) {
+llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size, int exprSize) {
     //auto *cb = new CondBuilder(globalCtx, ir, mod);
 
     if(expr->getName() == "IdnNode")
@@ -198,7 +198,7 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
 
     // Deals with type assignment when declaration type is of vector type
     if(it->isDeclVectorType(type)) {
-        return vecAssCast(type, expr, line, size);
+        return vecAssCast(type, expr, line, size, exprSize);
     }
 
     llvm::Type *rTypeP = expr->getType();
@@ -220,20 +220,26 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
         return ir->CreateSIToFP(expr, realTy, "upCastIntToReal");
     }
     else {
-        auto *error = new ScalarNode(lTypeString, rTypeString, line);
+        auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
     return nullptr;
 }
 
-llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size) {
+llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size, int exprSize) {
+    llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
+
+    llvm::Type *llType = it->getDeclScalarTypeFromVec(type);
+    int lType = getType(llType);
+
+    std::string lTypeString = typeAssTable[lType][lType];
+    std::string rTypeString;
+
     // First case: Expr is a vector and size exist
     if (it->isVectorType(expr) && size) {
         // Checks if types are the same
         if (expr->getType() == type) {
-            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
-
-            llvm::Value *vec = et->getNewVector(declType);
+           llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, size);
 
@@ -242,9 +248,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             return vec;
 
         } else if (expr->getType() == intVecTy->getPointerTo()) {
-            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
-
-            // Creates new vector
+           // Creates new vector
             llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, size);
@@ -252,53 +256,70 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             if (type == realVecTy) {
                 expr = createVecFromVec(expr, realTy, size, line);
             } else {
-                // Todo: make error node for trying to implicit cast integer vector type to vector types other than real and int
+                llvm::Type *rrType = it->getDeclScalarTypeFromVec(expr->getType()->getPointerElementType());
+                int rType = getType(rrType);
+                rTypeString = typeAssTable[rType][rType];
+
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), exprSize, line);
+                eb->printError(error);
             }
 
             et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
 
             return vec;
         } else {
-            // Todo: make error node for other vector types trying to implicit cast to integer vector
+            llvm::Type *rrType = it->getDeclScalarTypeFromVec(expr->getType());
+            int rType = getType(rrType);
+            rTypeString = typeAssTable[rType][rType];
+
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), exprSize, line);
+            eb->printError(error);
         }
     }
     // Second case: Expr is a vector and size doesn't exist
     else if (it->isVectorType(expr) && !size) {
         if (expr->getType() == type->getPointerTo()) {
-            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
-            llvm::Value *exprSize = it->getValFromStruct(expr, it->getConsi32(VEC_LEN_INDEX));
+            llvm::Value *exprlSize = it->getValFromStruct(expr, it->getConsi32(VEC_LEN_INDEX));
 
             llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
-            et->initVector(vec, exprSize);
+            et->initVector(vec, exprlSize);
 
             et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
 
             return vec;
 
         } else if (expr->getType() == intVecTy->getPointerTo()) {
-            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
-            llvm::Value *exprSize = it->getValFromStruct(expr, it->getConsi32(VEC_LEN_INDEX));
+            llvm::Value *exprlSize = it->getValFromStruct(expr, it->getConsi32(VEC_LEN_INDEX));
 
             // Creates new vector
             llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
-            et->initVector(vec, exprSize);
+            et->initVector(vec, exprlSize);
 
             if (type == realVecTy) {
-                expr = createVecFromVec(expr, realTy, exprSize, line);
+                expr = createVecFromVec(expr, realTy, exprlSize, line);
             } else {
-                // Todo: make error node for trying to implicit cast integer vector type to vector types other than real and int
+                llvm::Type *rrType = it->getDeclScalarTypeFromVec(expr->getType()->getPointerElementType());
+                int rType = getType(rrType);
+                rTypeString = typeAssTable[rType][rType];
+
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, exprSize, false, line);
+                eb->printError(error);
             }
 
             et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
 
             return vec;
         } else {
-            // Todo: make error node for other vector types trying to implicit cast to integer vector
+            llvm::Type *rrType = it->getDeclScalarTypeFromVec(expr->getType()->getPointerElementType());
+            int rType = getType(rrType);
+            rTypeString = typeAssTable[rType][rType];
+
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, exprSize, false, line);
+            eb->printError(error);
         }
     }
-    // Todo: Not done this case
     // Third case: Expr is a scalar and size exist
     else if (size && !it->isVectorType(expr)) {
         if(it->getDeclScalarTypeFromVec(type) == expr->getType()) {
@@ -308,8 +329,6 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
 
             return vec;
         } else if (expr->getType() == intTy) {
-            llvm::Value *declType = it->getConstFromType(it->getDeclScalarTypeFromVec(type));
-
             // Creates new vector
             llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
@@ -319,6 +338,12 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
                 expr = createVecFromScalar(expr, realTy, size, line);
             } else {
                 // Todo: make error node for trying to implicit cast scalar integer to vector types other than real and int
+                llvm::Type *rrType = expr->getType();
+                int rType = getType(rrType);
+                rTypeString = typeAssTable[rType][rType];
+
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), false, line);
+                eb->printError(error);
             }
 
             et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
@@ -469,7 +494,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
             }
         } else {
             // Todo: make new error node for vectors
-            auto *error = new ScalarNode(lTypeString, rTypeString, line);
+            auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
             eb->printError(error);
 
             return it->makePair(lValueLoad, rValueLoad);
@@ -507,7 +532,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
             }
         } else {
             // Todo: make new error node for vectors
-            auto *error = new ScalarNode(lTypeString, rTypeString, line);
+            auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
             eb->printError(error);
 
             return it->makePair(lValueLoad, rValueLoad);
@@ -560,7 +585,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
                 return it->makePair(lValueLoad, rValueLoad);
             } else {
                 // Todo: make new error node for vectors
-                auto *error = new ScalarNode(lTypeString, rTypeString, line);
+                auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
                 eb->printError(error);
 
                 return it->makePair(lValueLoad, rValueLoad);

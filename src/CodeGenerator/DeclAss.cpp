@@ -140,7 +140,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
             left->getType() != right->getType()) {
 
-            auto *error = new ScalarNode(outString, inString, node->getLine());
+            auto *error = new ScalarErrorNode(outString, inString, node->getLine());
             eb ->printError(error);
         } else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
                    left->getType() == right->getType()) {

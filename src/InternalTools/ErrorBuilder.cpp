@@ -5,6 +5,16 @@
 #include <InternalTools/ErrorBuilder.h>
 
 void ErrorBuilder::printError(ErrorNode *error) {
-    std::cerr << error->getNode();
-    exit(1);
+    if (error->getErrorType() == ErrorNode::VECTOR_ERROR) {
+        if (((VectorErrorNode *) error)->isStv()) {
+            std::cerr << ((VectorErrorNode *) error)->getSTVNode();
+            exit(1);
+        } else {
+            std::cerr << error->getNode();
+            exit(1);
+        }
+    } else {
+        std::cerr << error->getNode();
+        exit(1);
+    }
 }

@@ -80,10 +80,14 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
             llvm::Type *vecType = it->getDeclVectorType(stype);
             llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
-            //vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size);
+            vectorNode->getElements()->size();
+
+            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, vectorNode->getElements()->size());
+            /*
             if((vec->getType() == realVecTy->getPointerTo()) && (vecExpr->getType() == intVecTy->getPointerTo()))
                 vecExpr = ct->createVecFromVec(vecExpr, realTy, vecExprSize, node->getLine());
             et->strictCopyVectorElements(vec, vecExpr, it->getConsi32(node->getLine()));
+             */
         }
         // empty vector
         else  {
