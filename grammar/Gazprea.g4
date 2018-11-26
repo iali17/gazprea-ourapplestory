@@ -151,7 +151,7 @@ generator
     ;
 
 filter
-    : '[' Identifier IN expr (AMPERSAND expr)+ ']'
+    : '[' Identifier IN expr AMPERSAND expr (COMMA expr)* ']'
     ;
 
 vectorLength

@@ -85,4 +85,23 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
     return (ASTNode *) new TupleType(typeIdNodes, (int)ctx->getStart()->getLine());
 }
 
+antlrcpp::Any ASTGenerator::visitFilter(gazprea::GazpreaParser::FilterContext *ctx) {
+    int       line          = (int) ctx->getStart()->getLine();
+    ASTNode * range         = (ASTNode *) visit(ctx->expr().at(0));
+    ASTNode * curCond       = nullptr;
+    ASTNode * notCondsNodes = (ASTNode *) new BoolNode(false, line);
+    auto    * condNodes     = new std::vector<ASTNode *>;
 
+    for(unsigned int i = 1; i < ctx->expr().size(); i++){
+        //std::cout << ctx->expr().at(i)->getText() << '\n';
+        curCond = (ASTNode *) visit(ctx->expr().at(i));
+        notCondsNodes = (ASTNode *) new OrNode(notCondsNodes, curCond, line);
+        condNodes->push_back(curCond);
+    }
+
+    notCondsNodes = (ASTNode *) new NegateNode(notCondsNodes, line);
+    condNodes->push_back(notCondsNodes);
+
+    return (ASTNode *) new FilterNode((int) ctx->getStart()->getLine(),
+            ctx->Identifier()->getText(), condNodes, range, notCondsNodes);
+}

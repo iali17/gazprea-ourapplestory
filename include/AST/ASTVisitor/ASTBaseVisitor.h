@@ -219,6 +219,9 @@ public:
         else if (dynamic_cast<DotProductNode *>(node)) {
             ret = visit((DotProductNode *) node);
         }
+        else if (dynamic_cast<FilterNode *>(node)) {
+            ret = visit((FilterNode *) node);
+        }
         if (ret){
             node->setLlvmType(ret->getType());
         }
@@ -296,6 +299,7 @@ public:
     llvm::Value* visit(GeneratorNode *node) override { return nullptr; }
     llvm::Value* visit(ConcatenationNode *node) override { return nullptr; }
     llvm::Value* visit(DotProductNode *node) override { return nullptr; }
+    llvm::Value* visit(FilterNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

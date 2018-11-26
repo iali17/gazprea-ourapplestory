@@ -65,6 +65,7 @@
 #include "AST/ASTNodes/StatementNodes/CondNode.h"
 #include "AST/ASTNodes/StatementNodes/ContinueNode.h"
 #include "AST/ASTNodes/StatementNodes/DeclNode.h"
+#include "AST/ASTNodes/StatementNodes/FilterNode.h"
 #include "AST/ASTNodes/StatementNodes/GlobalDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/GeneratorNode.h"
 #include "AST/ASTNodes/StatementNodes/MatrixDeclNode.h"

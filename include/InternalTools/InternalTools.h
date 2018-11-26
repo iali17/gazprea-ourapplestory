@@ -79,6 +79,7 @@ public:
 	llvm::Type *getVectorType(const std::string &typeString);
 	llvm::Type *getDeclScalarTypeFromVec(llvm::Type *type);
 	llvm::Type *getDeclVectorType(const std::string &typeString);
+	std::string getVectorTypeString(llvm::Value *vec);
 
 protected:
     llvm::LLVMContext * globalCtx;

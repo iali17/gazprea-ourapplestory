@@ -628,6 +628,8 @@ llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
         return boolTy;
     else if(typeString == "charactervector")
         return charTy;
+    else if(typeString == "string")
+        return strTy;
 
     return nullptr;
 }
@@ -641,8 +643,25 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
         return boolVecTy;
     else if(typeString == "charactervector")
         return charVecTy;
+    else if(typeString == "string")
+        return strTy;
 
     return nullptr;
+}
+
+std::string InternalTools::getVectorTypeString(llvm::Value *vec) {
+    std::string ret = "";
+    if(vec->getType() == intVecTy->getPointerTo())
+        ret = "integervector";
+    else if(vec->getType() == realVecTy->getPointerTo())
+       ret = "realvector";
+    else if(vec->getType() == boolVecTy->getPointerTo())
+        ret = "booleanvector";
+    else if(vec->getType() == charVecTy->getPointerTo())
+        ret = "charactervector";
+    else if(vec->getType() == charVecTy->getPointerTo())
+        ret = "string";
+    return ret;
 }
 
 llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
@@ -650,7 +669,7 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
         return intTy;
     } else if(type == realVecTy) {
         return realTy;
-    } else if(type == charVecTy) {
+    } else if((type == charVecTy) || (type == strTy)) {
         return charTy;
     } else if(type == boolVecTy) {
         return boolTy;

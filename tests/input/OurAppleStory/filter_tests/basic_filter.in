@@ -1,0 +1,15 @@
+procedure main() returns integer {
+	var out = std_output();
+	boolean b = true;
+	var x = [i in [true,false] & i];
+	var y = [i in 1..10 & i == 1, i > 4, i % 2 == 0];
+	x.1 -> out; '\n' -> out;	
+    x.2 -> out; '\n' -> out;
+    
+    y.1 -> out; '\n' -> out;	
+    y.2 -> out; '\n' -> out;
+    y.3 -> out; '\n' -> out;	
+    y.4 -> out; '\n' -> out;
+	return 0;
+}
+

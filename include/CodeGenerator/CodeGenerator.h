@@ -100,6 +100,7 @@ public:
     llvm::Value* visit(GeneratorNode      *node) override;
     llvm::Value* visit(ConcatenationNode  *node) override;
     llvm::Value* visit(DotProductNode     *node) override;
+    llvm::Value* visit(FilterNode         *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
@@ -120,7 +121,7 @@ public:
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
     llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
-    llvm::Value *generateFilter(std::string loopVar, ASTNode *range, ASTNode *condNode);
+    llvm::Value *filterVector(std::string loopVar, llvm::Value *range, ASTNode *condNode);
     InternalTools::pair castForOp(InfixNode *node);
     InternalTools::pair castForConcat(InfixNode *node);
     InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
