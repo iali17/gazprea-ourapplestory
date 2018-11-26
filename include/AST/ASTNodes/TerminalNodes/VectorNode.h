@@ -9,8 +9,7 @@
 
 class VectorNode : public ASTNode {
 public:
-    explicit VectorNode(std::vector<ASTNode *> *elements, int line);
-
+    VectorNode(std::vector<ASTNode *> *elements, int line);
     std::vector<ASTNode *>* getElements();
 
 protected:

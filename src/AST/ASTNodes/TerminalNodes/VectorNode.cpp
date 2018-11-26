@@ -11,3 +11,4 @@ VectorNode::VectorNode(std::vector<ASTNode *> *elements, int line) : ASTNode(lin
 std::vector<ASTNode *>* VectorNode::getElements() {
     return this->elements;
 }
+

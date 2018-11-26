@@ -84,7 +84,6 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         // empty vector
         else  {
             et->initVector(vec, it->getConsi32(0));
-            et->printVector(vec);
         }
 
 
