@@ -279,7 +279,7 @@ llvm::Value *CodeGenerator::visit(IDNode *node) {
 
     Symbol *symbol   = symbolTable->resolveSymbol(node->getID());
     llvm::Value *ptr = symbol->getPtr();
-    if (ptr->getType()->getPointerElementType()->isStructTy())
+    if (it->isStructType(ptr))
         return ptr;
     return ir->CreateLoad(ptr);
 }

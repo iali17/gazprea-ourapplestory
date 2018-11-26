@@ -64,6 +64,7 @@ public:
     pair makePair(llvm::Value *left, llvm::Value *right);
     bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
+	bool isTupleType(llvm::Value *ptr);
     bool isVectorType(llvm::Value *ptr);
 	bool isMatrixType(llvm::Value *ptr);
     bool isDeclVectorType(llvm::Type *type);

@@ -115,9 +115,17 @@ llvm::Value *CodeGenerator::performArithVectorOp(ASTNode *opNode, llvm::Value *l
     return retVec;
 }
 
+/**
+ * perform == and != operations for vectors
+ * @param opNode
+ * @param left
+ * @param right
+ * @return
+ */
 llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
     //variables for the return
-    llvm::Value *ret = it->getConsi32(1);
+    llvm::Value *ret = it->geti1(1);
+    ret->setName("CompVecRet");
 
     //variables for left
     llvm::Value *leftElmtsPtr = it->getPtrFromStruct(left, it->getConsi32(VEC_ELEM_INDEX));
@@ -140,12 +148,12 @@ llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *le
 
     //loop
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
-    wb->beginWhile();
+    wb->beginWhile("BeginVectorComp");
 
     curIdx = ir->CreateLoad(curIdxPtr);
 
     wb->beginInsertControl();
-    wb->insertControl(ir->CreateICmpSLT(curIdx, loopIters));
+    wb->insertControl(ir->CreateICmpSLT(curIdx, loopIters), "ControlVectorComp");
 
     //get left
     leftElmtPtr = ir->CreateGEP(leftElmtsPtr, curIdx);
@@ -155,16 +163,24 @@ llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *le
     rightElmtPtr = ir->CreateGEP(rightElmtsPtr, curIdx);
     rightElmt    = ir->CreateLoad(rightElmtPtr);
 
-    //get op
-    curVal = getArithOpVal(opNode, leftElmt, rightElmt);
+    //do eq comparision
+    curVal = it->getEQ(leftElmt, rightElmt);
+
+    //and the result with the current return
+    ret = it->getAnd(ret, curVal);
 
     //increment loop var
     curIdx = it->getAdd(curIdx, it->getConsi32(1));
     ir->CreateStore(curIdx, curIdxPtr);
 
-    wb->endWhile();
+    wb->endWhile("EndVectorComp");
 
     //return
-    return ret;
+    if(dynamic_cast<EQNode *>(opNode))
+        return ret;
+    else if(dynamic_cast<NEQNode *>(opNode))
+        return it->getNegation(ret);
+    else
+        printf("invalid use of performCompVectorOp");
+    return nullptr;
 }
-

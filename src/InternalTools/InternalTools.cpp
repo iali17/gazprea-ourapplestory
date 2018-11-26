@@ -463,6 +463,15 @@ bool InternalTools::isStructType(llvm::Value *ptr) {
     return false;
 }
 
+bool InternalTools::isTupleType(llvm::Value *ptr) {
+    if (isVectorType(ptr) || isMatrixType(ptr) || isIntervalType(ptr)){
+        return false;
+    }
+    else if(ptr->getType()->isPointerTy()){
+        return ptr->getType()->getPointerElementType()->isStructTy();
+    }
+    return false;
+}
 
 bool InternalTools::isIntervalType(llvm::Value *ptr) {
     return  ptr->getType() == intervalTy->getPointerTo();
@@ -476,6 +485,8 @@ bool InternalTools::isVectorType(llvm::Value *ptr) {
     } else if(ptr->getType() == charVecTy->getPointerTo()) {
         return true;
     } else if(ptr->getType() == boolVecTy->getPointerTo()) {
+        return true;
+    } else if(ptr->getType() == strTy->getPointerTo()) {
         return true;
     }
 
@@ -505,6 +516,8 @@ bool InternalTools::isDeclVectorType(llvm::Type *type) {
     } else if(type == charVecTy) {
         return true;
     } else if(type == boolVecTy) {
+        return true;
+    } else if(type == strTy) {
         return true;
     }
 

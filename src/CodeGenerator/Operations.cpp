@@ -154,14 +154,21 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
-    //if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
-    if(it->isStructType(left)){
+    if(it->isTupleType(left)){
         return performTupleOp(left, right, EQ, node->getLine());
     }
 
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     left  = retVal.left;
     right = retVal.right;
+
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performCompVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
 
     return it->getEQ(left, right);
 }
@@ -170,13 +177,21 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
-    if ((left->getType()->isPointerTy()) && (left->getType()->getPointerElementType()->isStructTy())){
+    if (it->isTupleType(left)){
         return performTupleOp(left, right, NEQ, node->getLine());
     }
 
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     left  = retVal.left;
     right = retVal.right;
+
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performCompVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
 
     return it->getNEQ(left, right);
 }

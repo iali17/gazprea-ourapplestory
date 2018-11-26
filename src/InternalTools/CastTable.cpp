@@ -191,7 +191,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
 }
 
 llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size) {
-    auto *cb = new CondBuilder(globalCtx, ir, mod);
+    //auto *cb = new CondBuilder(globalCtx, ir, mod);
 
     if(expr->getName() == "IdnNode")
         expr = it->getIdn(type);
