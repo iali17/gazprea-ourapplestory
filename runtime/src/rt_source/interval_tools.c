@@ -30,14 +30,19 @@ void *getVectorFromInterval(void * v_interval, int by){
     //get bounds
     int lower = *(((interval *) v_interval)->lower);
     int upper = *((interval *) v_interval)->upper;
+
     //get a vector
-    size_t numElements = (size_t) (upper - lower + 1) / by;
+    int numElements =  (upper - lower + 1);
     vector *v = (vector *) getEmptyVector(INTEGER);
     initVector(v, numElements);
 
+    //loop
     int i, j = 0;
     for(i = lower; i <= upper; i+=by)
         ((int *)v->elements)[j++] = i;
+
+    //fix the return
+    *v->numElements = j;
 
     return v;
 }

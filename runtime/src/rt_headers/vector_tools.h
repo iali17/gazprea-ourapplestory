@@ -16,6 +16,7 @@ void printVectorElement(void *v_elm_ptr, int type);
 int   getVectorLength(void * v_vector);
 void *getReverseVector(void * v_vector);
 void *concatenateVectors(void * v_vector_left, void * v_vector_right);
+void *getVectorBy(void * v_vector, int by);
 
 //helpers
 size_t getMemberSize(int type);

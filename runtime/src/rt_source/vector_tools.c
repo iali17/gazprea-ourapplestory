@@ -607,6 +607,11 @@ void *getOpResultVector(void * v_vector_left, void * v_vector_right){
     return ret;
 }
 
+/**
+ * gets the string type
+ * @param type
+ * @return
+ */
 char *getType(int type) {
     if(type == BOOLEAN)
         return "boolean";
@@ -616,4 +621,41 @@ char *getType(int type) {
         return "integer";
     else if (type == REAL)
         return "real";
+}
+
+/**
+ * performs 'by' operation on vectors of any type
+ * @param v_vector
+ * @param by
+ * @return
+ */
+void *getVectorBy(void * v_vector, int by){
+    //cast the voids
+    vector * vec = (vector *) v_vector;
+
+    //local constants
+    int ty = *vec->type;
+
+    //prepare the return
+    vector * ret       = (vector *) getEmptyVector(ty);
+    int numElements = *vec->numElements;
+    initVector(ret, numElements);
+
+    //loop vars
+    int i = 0, j = 0;
+    void * left;
+    void * right;
+
+    for(i = 0; i < numElements; i+=by){
+        left  = getVectorElementPointer(ret, j);
+        right = getVectorElementPointer(vec, i);
+        assignValFromPointers(left, right, ty);
+        j++;
+    }
+
+    //fix size
+    *ret->numElements = j;
+
+    //return
+    return ret;
 }
