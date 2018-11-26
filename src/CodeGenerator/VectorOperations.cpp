@@ -114,3 +114,57 @@ llvm::Value *CodeGenerator::performArithVectorOp(ASTNode *opNode, llvm::Value *l
     //return
     return retVec;
 }
+
+llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
+    //variables for the return
+    llvm::Value *ret = it->getConsi32(1);
+
+    //variables for left
+    llvm::Value *leftElmtsPtr = it->getPtrFromStruct(left, it->getConsi32(VEC_ELEM_INDEX));
+    llvm::Value *leftElmtPtr  = nullptr;
+
+    //variables for right
+    llvm::Value *rightElmtsPtr = it->getPtrFromStruct(right, it->getConsi32(VEC_ELEM_INDEX));
+    llvm::Value *rightElmtPtr  = nullptr;
+
+    //variables for the current loop iteration
+    llvm::Value *curIdx    = it->getConsi32(0);
+    llvm::Value *curIdxPtr = ir->CreateAlloca(intTy);
+    llvm::Value *curVal    = nullptr;
+
+    //init loop vars
+    ir->CreateStore(curIdx, curIdxPtr);
+    llvm::Value *leftElmt  = nullptr;
+    llvm::Value *rightElmt = nullptr;
+    llvm::Value *loopIters = ir->CreateLoad(it->getPtrFromStruct(right, it->getConsi32(VEC_LEN_INDEX)));
+
+    //loop
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    wb->beginWhile();
+
+    curIdx = ir->CreateLoad(curIdxPtr);
+
+    wb->beginInsertControl();
+    wb->insertControl(ir->CreateICmpSLT(curIdx, loopIters));
+
+    //get left
+    leftElmtPtr = ir->CreateGEP(leftElmtsPtr, curIdx);
+    leftElmt    = ir->CreateLoad(leftElmtPtr);
+
+    //get right
+    rightElmtPtr = ir->CreateGEP(rightElmtsPtr, curIdx);
+    rightElmt    = ir->CreateLoad(rightElmtPtr);
+
+    //get op
+    curVal = getArithOpVal(opNode, leftElmt, rightElmt);
+
+    //increment loop var
+    curIdx = it->getAdd(curIdx, it->getConsi32(1));
+    ir->CreateStore(curIdx, curIdxPtr);
+
+    wb->endWhile();
+
+    //return
+    return ret;
+}
+
