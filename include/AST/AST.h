@@ -9,7 +9,9 @@
 
 #include "AST/ASTNodes/ArithNodes/AddNode.h"
 #include "AST/ASTNodes/ArithNodes/AndNode.h"
+#include "AST/ASTNodes/ArithNodes/ConcatenationNode.h"
 #include "AST/ASTNodes/ArithNodes/DivNode.h"
+#include "AST/ASTNodes/ArithNodes/DotProductNode.h"
 #include "AST/ASTNodes/ArithNodes/ExpNode.h"
 #include "AST/ASTNodes/ArithNodes/MulNode.h"
 #include "AST/ASTNodes/ArithNodes/OrNode.h"

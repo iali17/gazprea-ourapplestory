@@ -18,6 +18,39 @@ extern llvm::Type *boolVecTy;
 extern llvm::Type *realVecTy;
 
 /**
+ * dot products of vectors
+ * @param node
+ * @return
+ */
+llvm::Value *CodeGenerator::visit(DotProductNode *node) {
+    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
+
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return et->getDotProduct(left, right);
+    }
+    else {
+        //TODO - throw error
+        return nullptr;
+    }
+}
+
+/**
+ * performs unary op
+ * @param opNode
+ * @param curVal
+ * @return
+ */
+llvm::Value *CodeGenerator::getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal) {
+    if(dynamic_cast<NegateNode *>(opNode)){
+        return it->getNegation(curVal);
+    }
+    return nullptr;
+}
+
+/**
  * Return the proper operation based on the nodes class
  * @param opNode
  * @param leftElmt
@@ -43,6 +76,27 @@ llvm::Value *CodeGenerator::getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt
     else if (dynamic_cast<ExpNode *>(opNode)) {
         return et->aliPow(leftElmt, rightElmt);
     }
+    else if(dynamic_cast<GTNode* >(opNode)) {
+        return it->getGT(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<LTNode* >(opNode)) {
+        return it->getLT(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<GTENode* >(opNode)) {
+        return it->getGTE(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<LTENode* >(opNode)) {
+        return it->getLTE(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<AndNode* >(opNode)) {
+        return it->getAnd(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<OrNode* >(opNode)) {
+        return it->getOr(leftElmt, rightElmt);
+    }
+    else if(dynamic_cast<XOrNode* >(opNode)) {
+        return it->getXOr(leftElmt, rightElmt);
+    }
     return nullptr;
 }
 
@@ -53,13 +107,26 @@ llvm::Value *CodeGenerator::getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt
  * @param right
  * @return - result vector
  */
-llvm::Value *CodeGenerator::performArithVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
+llvm::Value *CodeGenerator::performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
     //variables for the return
-    llvm::Value *retVec          = et->getOpResultVector(left, right);
-    llvm::Value *retElmtsPtr     = it->getPtrFromStruct(retVec, it->getConsi32(VEC_ELEM_INDEX));
-    llvm::Value *retElmtPtr      = nullptr;
-    llvm::Value *retLenPtr       = it->getPtrFromStruct(retVec, it->getConsi32(VEC_LEN_INDEX));
-    llvm::Value *retLen          = ir->CreateLoad(retLenPtr);
+    llvm::Value *retVec      = et->getOpResultVector(left, right);
+    llvm::Value *retElmtsPtr = nullptr;
+    llvm::Value *retElmtPtr  = nullptr;
+    llvm::Value *retLenPtr   = nullptr;
+    llvm::Value *retLen      = nullptr;
+
+    //cover boolean return case
+    if(dynamic_cast<CompNode *>(opNode) || dynamic_cast<BitArithNode *>(opNode)){
+        llvm::Value *retTypePtr = it->getPtrFromStruct(retVec, it->getConsi32(VEC_TYPE_INDEX));
+        ir->CreateStore(it->getConsi32(BOOLEAN), retTypePtr);
+        retVec = it->castVectorToType(retVec, boolTy);
+    }
+
+    //finish ret init
+    retElmtsPtr     = it->getPtrFromStruct(retVec, it->getConsi32(VEC_ELEM_INDEX));
+    retElmtPtr      = nullptr;
+    retLenPtr       = it->getPtrFromStruct(retVec, it->getConsi32(VEC_LEN_INDEX));
+    retLen          = ir->CreateLoad(retLenPtr);
 
     //variables for left
     llvm::Value *leftElmtsPtr = it->getPtrFromStruct(left, it->getConsi32(VEC_ELEM_INDEX));
@@ -125,7 +192,9 @@ llvm::Value *CodeGenerator::performArithVectorOp(ASTNode *opNode, llvm::Value *l
 llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
     //variables for the return
     llvm::Value *ret = it->geti1(1);
-    ret->setName("CompVecRet");
+    llvm::Value *retPtr = ir->CreateAlloca(boolTy);
+    ir->CreateStore(ret, retPtr);
+    retPtr->setName("CMPRetPtr");
 
     //variables for left
     llvm::Value *leftElmtsPtr = it->getPtrFromStruct(left, it->getConsi32(VEC_ELEM_INDEX));
@@ -167,7 +236,9 @@ llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *le
     curVal = it->getEQ(leftElmt, rightElmt);
 
     //and the result with the current return
+    ret = ir->CreateLoad(retPtr);
     ret = it->getAnd(ret, curVal);
+    ir->CreateStore(ret, retPtr);
 
     //increment loop var
     curIdx = it->getAdd(curIdx, it->getConsi32(1));
@@ -175,12 +246,66 @@ llvm::Value *CodeGenerator::performCompVectorOp(ASTNode *opNode, llvm::Value *le
 
     wb->endWhile("EndVectorComp");
 
+    ret = ir->CreateLoad(retPtr);
+
     //return
     if(dynamic_cast<EQNode *>(opNode))
         return ret;
     else if(dynamic_cast<NEQNode *>(opNode))
         return it->getNegation(ret);
     else
-        printf("invalid use of performCompVectorOp");
+        printf("invalid use of performCompVectorOp\n");
     return nullptr;
+}
+
+/**
+ * basically only
+ * @param opNode
+ * @param left
+ * @param right
+ * @return
+ */
+llvm::Value *CodeGenerator::performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec) {
+    //variables for the return
+    llvm::Value *retVec      = et->getVectorCopy(vec);
+    llvm::Value *retElmtsPtr = it->getPtrFromStruct(retVec, it->getConsi32(VEC_ELEM_INDEX));
+    llvm::Value *retElmtPtr  = nullptr;
+    llvm::Value *retLenPtr   = it->getPtrFromStruct(retVec, it->getConsi32(VEC_LEN_INDEX));
+    llvm::Value *retLen      = ir->CreateLoad(retLenPtr);
+
+    //variables for the current loop iteration
+    llvm::Value *curIdx    = it->getConsi32(0);
+    llvm::Value *curIdxPtr = ir->CreateAlloca(intTy);
+    llvm::Value *curVal    = nullptr;
+
+    //init loop vars
+    ir->CreateStore(curIdx, curIdxPtr);
+    llvm::Value *retElmt = nullptr;
+
+    //loop
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    wb->beginWhile();
+
+    curIdx = ir->CreateLoad(curIdxPtr);
+
+    wb->beginInsertControl();
+    wb->insertControl(ir->CreateICmpSLT(curIdx, retLen));
+
+    //get cur
+    retElmtPtr = ir->CreateGEP(retElmtsPtr, curIdx);
+    retElmt    = ir->CreateLoad(retElmtPtr);
+
+    //do unary op
+    curVal = getUnaryOpVal(opNode, retElmt);
+
+    //re-store
+    ir->CreateStore(curVal, retElmtPtr);
+
+    //increment loop var
+    curIdx = it->getAdd(curIdx, it->getConsi32(1));
+    ir->CreateStore(curIdx, curIdxPtr);
+
+    wb->endWhile();
+
+    return retVec;
 }

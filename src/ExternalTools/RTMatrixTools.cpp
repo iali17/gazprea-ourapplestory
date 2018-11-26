@@ -8,22 +8,23 @@
 #include <InternalTools/CondBuilder.h>
 
 //local constants for function names
-#define GET_EMPTY_MATRIX    "getEmptyMatrix"
-#define INIT_MATRIX         "initMatrix"
-#define SET_NULL_MATRIX     "setNullMatrix"
-#define SET_IDENTITY_MATRIX "setIdentityMatrix"
-#define GET_NUM_ROWS        "getNumRows"
-#define GET_NUM_COLS        "getNumCols"
-#define INDEX_SCALAR_VECTOR "indexScalarVector"
-#define INDEX_VECTOR_SCALAR "indexVectorScalar"
-#define INDEX_VECTOR_VECTOR "indexVectorVector"
-#define PRINT_MATRIX        "printMatrix"
-#define SLICE_SCALAR_VECTOR "sliceScalarVector"
-#define SLICE_VECTOR_SCALAR "sliceVectorScalar"
-#define SLICE_VECTOR_VECTOR "sliceVectorVector"
-#define MATRIX_GEP          "getMatrixElementPointer"
-#define INT_MATRIX_MULT     "getIntMatrixMultiplication"
-#define REAL_MATRIX_MULT    "getRealMatrixMultiplication"
+#define GET_EMPTY_MATRIX     "getEmptyMatrix"
+#define INIT_MATRIX          "initMatrix"
+#define SET_NULL_MATRIX      "setNullMatrix"
+#define SET_IDENTITY_MATRIX  "setIdentityMatrix"
+#define GET_NUM_ROWS         "getNumRows"
+#define GET_NUM_COLS         "getNumCols"
+#define INDEX_SCALAR_VECTOR  "indexScalarVector"
+#define INDEX_VECTOR_SCALAR  "indexVectorScalar"
+#define INDEX_VECTOR_VECTOR  "indexVectorVector"
+#define PRINT_MATRIX         "printMatrix"
+#define SLICE_SCALAR_VECTOR  "sliceScalarVector"
+#define SLICE_VECTOR_SCALAR  "sliceVectorScalar"
+#define SLICE_VECTOR_VECTOR  "sliceVectorVector"
+#define MATRIX_GEP           "getMatrixElementPointer"
+#define INT_MATRIX_MULT      "getIntMatrixMultiplication"
+#define REAL_MATRIX_MULT     "getRealMatrixMultiplication"
+#define CONCATENATE_MATRICES "concatenateMatrices"
 
 extern llvm::Type *charTy;
 extern llvm::Type *intMatrixTy;
@@ -92,6 +93,10 @@ void ExternalTools::registerMatrixFunctions() {
     //getRealMatrixMultiplication
     fTy = llvm::TypeBuilder<void* (void *, void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(REAL_MATRIX_MULT, fTy));
+
+    //concatenateMatrices
+    fTy = llvm::TypeBuilder<void* (void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(CONCATENATE_MATRICES, fTy));
 }
 
 /**
@@ -362,4 +367,18 @@ llvm::Value *ExternalTools::getRealMatrixMultiplication(llvm::Value *leftMat, ll
     llvm::Value    *v_right = ir->CreatePointerCast(rightMat, charTy->getPointerTo());
     llvm::Value    *ret     = ir->CreateCall(getM, {v_left, v_right});
     return ir->CreatePointerCast(ret, leftMat->getType());
+}
+
+/**
+ * concatenate matrices and cast return
+ * @param left
+ * @param right
+ * @return
+ */
+llvm::Value *ExternalTools::concatenateMatrices(llvm::Value *left, llvm::Value *right) {
+    llvm::Function *getM    = mod->getFunction(CONCATENATE_MATRICES);
+    llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
+    llvm::Value    *ret     = ir->CreateCall(getM, {v_left, v_right});
+    return ir->CreatePointerCast(ret, left->getType());
 }

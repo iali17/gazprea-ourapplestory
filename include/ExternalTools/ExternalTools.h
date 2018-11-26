@@ -69,6 +69,7 @@ public:
     llvm::Value * getDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
     llvm::Value * assignValFromPointers(llvm::Value * left, llvm::Value *right, llvm::Value *ty);
     llvm::Value * getOpResultVector(llvm::Value *left, llvm::Value *right);
+    llvm::Value * concatenateVectors(llvm::Value * left,llvm::Value * right);
 
     //Interval functions
     void registerIntervalFunctions();
@@ -88,6 +89,7 @@ public:
     llvm::Value * indexMatrix(llvm::Value *mat, llvm::Value *l, llvm::Value *r);
     llvm::Value * getMatrixElementPointer(llvm::Value *mat, llvm::Value *row, llvm::Value *col);
     llvm::Value * getMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat);
+    llvm::Value * concatenateMatrices(llvm::Value * left, llvm::Value * right);
 
     //printing
     void registerPrintf();

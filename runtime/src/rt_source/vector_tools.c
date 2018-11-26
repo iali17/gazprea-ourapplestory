@@ -474,15 +474,15 @@ void *concatenateVectors(void * v_vector_left, void * v_vector_right) {
 
     //copy the left
     for(i = 0; i < numLeftElements; i++){
-        v_dest = ret->elements  + i;
-        v_src  = left->elements + i;
+        v_dest = getVectorElementPointer(ret, i);
+        v_src  = getVectorElementPointer(left, i);
         assignValFromPointers(v_dest, v_src, ty);
     }
 
     //copy the right
     for(i = 0; i < numRightElements; i++){
-        v_dest = ret->elements + numLeftElements + i;
-        v_src  = right + i;
+        v_dest = getVectorElementPointer(ret, numLeftElements + i);
+        v_src  = getVectorElementPointer(right, i);
         assignValFromPointers(v_dest, v_src, ty);
     }
 

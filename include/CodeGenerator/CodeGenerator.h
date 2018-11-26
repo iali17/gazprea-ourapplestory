@@ -98,15 +98,19 @@ public:
     llvm::Value* visit(ReverseVectorNode  *node) override;
     llvm::Value* visit(IntervalDeclNode   *node) override;
     llvm::Value* visit(GeneratorNode      *node) override;
+    llvm::Value* visit(ConcatenationNode  *node) override;
+    llvm::Value* visit(DotProductNode     *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
     llvm::StructType* parseStructType(TupleType *node);
 	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
-	llvm::Value*      performArithVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+    llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
+    llvm::Value*      getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
@@ -118,6 +122,8 @@ public:
     llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
     llvm::Value *generateFilter(std::string loopVar, ASTNode *range, ASTNode *condNode);
     InternalTools::pair castForOp(InfixNode *node);
+    InternalTools::pair castForConcat(InfixNode *node);
+    InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
 
     // Interval operation stuff

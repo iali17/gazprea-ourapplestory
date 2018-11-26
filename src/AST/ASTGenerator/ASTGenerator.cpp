@@ -569,11 +569,15 @@ antlrcpp::Any ASTGenerator::visitReverseExpr(gazprea::GazpreaParser::ReverseExpr
 }
 
 antlrcpp::Any ASTGenerator::visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) {
-    return GazpreaBaseVisitor::visitDotProductExpr(ctx);
+    ASTNode *left = (ASTNode *) visit(ctx->left);
+    ASTNode *right = (ASTNode *) visit(ctx->right);
+    return (ASTNode *) new DotProductNode(left, right, (int) ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) {
-    return GazpreaBaseVisitor::visitConcatExpr(ctx);
+    ASTNode *left = (ASTNode *) visit(ctx->left);
+    ASTNode *right = (ASTNode *) visit(ctx->right);
+    return (ASTNode *) new ConcatenationNode(left, right, (int) ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) {

@@ -23,6 +23,7 @@
 #define GET_REAL_DOT_PRODUCT "getRealDotProduct"
 #define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
 #define GET_OP_RESULT_VECTOR "getOpResultVector"
+#define CONCATENATE_VECTORS  "concatenateVectors"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -111,6 +112,10 @@ void ExternalTools::registerVectorFunctions() {
     //getOpResultVector
     fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_OP_RESULT_VECTOR, fTy));
+
+    //concatenateVectors
+    fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(CONCATENATE_VECTORS, fTy));
 }
 
 /**
@@ -336,6 +341,20 @@ llvm::Value *ExternalTools::assignValFromPointers(llvm::Value *left, llvm::Value
  */
 llvm::Value *ExternalTools::getOpResultVector(llvm::Value *left, llvm::Value *right) {
     llvm::Function *getV    = mod->getFunction(GET_OP_RESULT_VECTOR);
+    llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
+    llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
+    llvm::Value    *ret     = ir->CreateCall(getV, {v_left, v_right});
+    return ir->CreatePointerCast(ret, left->getType());
+}
+
+/**
+ * concatenates vectors, casts the return
+ * @param left
+ * @param right
+ * @return
+ */
+llvm::Value *ExternalTools::concatenateVectors(llvm::Value *left, llvm::Value *right) {
+    llvm::Function *getV    = mod->getFunction(CONCATENATE_VECTORS);
     llvm::Value    *v_left  = ir->CreatePointerCast(left, charTy->getPointerTo());
     llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
     llvm::Value    *ret     = ir->CreateCall(getV, {v_left, v_right});

@@ -213,6 +213,12 @@ public:
         else if (dynamic_cast<GeneratorNode *>(node)) {
             ret = visit((GeneratorNode *) node);
         }
+        else if (dynamic_cast<ConcatenationNode *>(node)) {
+            ret = visit((ConcatenationNode *) node);
+        }
+        else if (dynamic_cast<DotProductNode *>(node)) {
+            ret = visit((DotProductNode *) node);
+        }
         if (ret){
             node->setLlvmType(ret->getType());
         }
@@ -288,7 +294,8 @@ public:
     llvm::Value* visit(ReverseVectorNode *node) override { return nullptr; }
     llvm::Value* visit(IntervalDeclNode *node) override { return nullptr; }
     llvm::Value* visit(GeneratorNode *node) override { return nullptr; }
-
+    llvm::Value* visit(ConcatenationNode *node) override { return nullptr; }
+    llvm::Value* visit(DotProductNode *node) override { return nullptr; }
 };
 
 #endif //GAZPREABASE_ASTBASEVISITOR_H

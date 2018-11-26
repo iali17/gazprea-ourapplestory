@@ -23,7 +23,11 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
-
+/**
+ * performs basic visit and type promotion
+ * @param node
+ * @return
+ */
 InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
@@ -36,20 +40,68 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     return retVal;
 }
 
+/**
+ * cast but keep same dim for vector concat
+ * @param node
+ * @param left
+ * @param right
+ * @return
+ */
+InternalTools::pair CodeGenerator::castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right) {
+    //save size
+    llvm::Value *leftSize  = it->getValFromStruct(left,  it->getConsi32(VEC_LEN_INDEX));
+    llvm::Value *rightSize = it->getValFromStruct(right, it->getConsi32(VEC_LEN_INDEX));
+    llvm::Value *leftSizePtr  = nullptr;
+    llvm::Value *rightSizePtr = nullptr;
+
+    //promote
+    InternalTools::pair retVal;
+    retVal = ct->typePromotion(left, right, node->getLine());
+
+    //give size back
+    leftSizePtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(VEC_LEN_INDEX));
+    rightSizePtr = it->getPtrFromStruct(retVal.right, it->getConsi32(VEC_LEN_INDEX));
+    ir->CreateStore(leftSize, leftSizePtr);
+    ir->CreateStore(rightSize, rightSizePtr);
+
+    assert(retVal.left->getType() == retVal.right->getType());
+
+    return retVal;
+}
+
+/**
+ * performs basic visit and type promotion but keeps the same dim
+ * @param node
+ * @return
+ */
+InternalTools::pair CodeGenerator::castForConcat(InfixNode *node) {
+    llvm::Value * left  = visit(node->getLeft());
+    llvm::Value * right = visit(node->getRight());
+
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return castForVectorConcat(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
+    return *(new InternalTools::pair);
+}
+
 llvm::Value *CodeGenerator::visit(AddNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
 
-    // todo - dont use getType, check left, right llvm types
+    // todo - dont use getType, check left & right llvm types
     if (node->getLeft()->getType() == INTERVAL || node->getRight()->getType() == INTERVAL){
         return IntervalAdd(left, right);
     }
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -66,7 +118,7 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -83,7 +135,7 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -100,7 +152,7 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -117,7 +169,7 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -135,7 +187,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return performArithVectorOp(node, left, right);
+        return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
 
@@ -201,6 +253,13 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getGT(left, right);
 }
 
@@ -209,6 +268,13 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getLT(left, right);
 }
 
@@ -217,6 +283,13 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getGTE(left, right);
 }
 
@@ -225,6 +298,13 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getLTE(left, right);
 }
 
@@ -233,6 +313,13 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getAnd(left, right);
 }
 
@@ -241,6 +328,13 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getOr(left, right);
 }
 
@@ -249,12 +343,26 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return performInfixVectorOp(node, left, right);
+    }
+    else if(it->isMatrixType(left)){
+
+    }
     return it->getXOr(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(NegateNode *node) {
     llvm::Value * expr  = visit(node->getExpr());
+    //check for non base type cases
 
+    if(it->isVectorType(expr)){
+        return performUnaryVectorOp(node, expr);
+    }
+    else if(it->isMatrixType(expr)){
+
+    }
     return it->getNegation(expr);
 }
 
@@ -314,4 +422,24 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
         //update return value
 	}
     return ret;
+}
+
+/**
+ * Concatenates things
+ * @param node
+ * @return
+ */
+llvm::Value *CodeGenerator::visit(ConcatenationNode *node) {
+    InternalTools::pair retVal = castForConcat(dynamic_cast<InfixNode *>(node));
+    llvm::Value * left         = retVal.left;
+    llvm::Value * right        = retVal.right;
+
+    //check for non base type cases
+    if(it->isVectorType(left)){
+        return et->concatenateVectors(left, right);
+    }
+    else if(it->isMatrixType(left)){
+        return et->concatenateMatrices(left, right);
+    }
+    return nullptr;
 }

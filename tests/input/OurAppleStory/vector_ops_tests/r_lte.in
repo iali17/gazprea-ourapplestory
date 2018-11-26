@@ -1,0 +1,7 @@
+procedure main() returns integer{
+	var out = std_output();
+	[1.3] < [1.300] -> out; '\n' -> out;
+	[-1,-2,-3] < [3.,4.0,8.6] -> out; '\n' -> out;
+	[--2_147_483_646.2] < [-1.1] -> out; '\n' -> out;
+	return 0;
+}

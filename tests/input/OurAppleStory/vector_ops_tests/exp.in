@@ -1,0 +1,9 @@
+procedure main() returns integer{
+	var out = std_output();
+	integer vector v = [];
+	v ^ v -> out; '\n' -> out;
+	[1] ^ [1] -> out; '\n' -> out;
+	[-1,-2,-3] ^ [2,3,4] -> out; '\n' -> out;
+	[2_147_483_646] ^ [-1] -> out; '\n' -> out;
+	return 0;
+}
