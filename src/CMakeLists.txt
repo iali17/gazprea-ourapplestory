@@ -135,8 +135,8 @@ set(
 	AST/ASTNodes/TerminalNodes/GlobalRefNode.cpp
 	../include/InternalTools/ErrorBuilder.h
 	../include/AST/ASTNodes/ErrorNodes/ErrorNode.h
-	../include/AST/ASTNodes/ErrorNodes/ScalarNode.h
-	AST/ASTNodes/ErrorNodes/ScalarNode.cpp
+        ../include/AST/ASTNodes/ErrorNodes/ScalarErrorNode.h
+        AST/ASTNodes/ErrorNodes/ScalarErrorNode.cpp
 	InternalTools/ErrorBuilder.cpp
 	AST/ASTNodes/StatementNodes/PythonTupleAssNode.cpp
 	../include/AST/ASTNodes/StatementNodes/PythonTupleAssNode.h
@@ -196,7 +196,9 @@ set(
 	../include/AST/ASTNodes/StatementNodes/CastNodes/ByNode.h
 	AST/ASTNodes/StatementNodes/IntervalDeclNode.cpp
 	../include/AST/ASTNodes/StatementNodes/IntervalDeclNode.h
-	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp AST/ASTGenerator/DeclAss.cpp AST/ASTGenerator/Tuples.cpp AST/ASTGenerator/ProceduresAndFunctions.cpp AST/ASTGenerator/Vectors.cpp AST/ASTGenerator/Matrices.cpp AST/ASTGenerator/Intervals.cpp CodeGenerator/VectorOperations.cpp ../include/AST/ASTNodes/ArithNodes/ConcatenationNode.h AST/ASTNodes/ArithNodes/ConcatenationNode.cpp ../include/AST/ASTNodes/ArithNodes/DotProductNode.h AST/ASTNodes/ArithNodes/DotProductNode.cpp ../include/AST/ASTNodes/StatementNodes/FilterNode.h AST/ASTNodes/StatementNodes/FilterNode.cpp)
+
+	CodeGenerator/Intervals.cpp ../include/AST/ASTNodes/TerminalNodes/ReverseVectorNode.h AST/ASTNodes/TerminalNodes/ReverseVectorNode.cpp ../include/AST/ASTNodes/StatementNodes/GeneratorNode.h AST/ASTNodes/StatementNodes/GeneratorNode.cpp CodeGenerator/GeneratorsAndFilters.cpp AST/ASTGenerator/DeclAss.cpp AST/ASTGenerator/Tuples.cpp AST/ASTGenerator/ProceduresAndFunctions.cpp AST/ASTGenerator/Vectors.cpp AST/ASTGenerator/Matrices.cpp AST/ASTGenerator/Intervals.cpp CodeGenerator/VectorOperations.cpp ../include/AST/ASTNodes/ArithNodes/ConcatenationNode.h AST/ASTNodes/ArithNodes/ConcatenationNode.cpp ../include/AST/ASTNodes/ArithNodes/DotProductNode.h AST/ASTNodes/ArithNodes/DotProductNode.cpp ../include/AST/ASTNodes/ErrorNodes/VectorErrorNode.h AST/ASTNodes/ErrorNodes/VectorErrorNode.cpp AST/ASTNodes/ErrorNodes/ErrorNode.cpp  ../include/AST/ASTNodes/StatementNodes/FilterNode.h AST/ASTNodes/StatementNodes/FilterNode.cpp)
+
 
 # Build our executable from the source files.
 add_executable(gazc ${gazprea_src_files})

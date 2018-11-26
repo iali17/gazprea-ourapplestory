@@ -63,7 +63,7 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
     if(!it->isStructType(exprP)) {
         std::string left = "tuple(*)";
         std::string right = it->getType(exprP->getType(), exprP);
-        auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
+        auto *error = new ScalarErrorNode(left, right, node->getLine()); // print error message and abort
         eb->printError(error);
     }
 
@@ -175,7 +175,7 @@ llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
     if(it->isStructType(exprP)) {
         std::string left = dynamic_cast<ScalarCastNode *>(node)->getTypeString();
         std::string right = "tuple(*)";
-        auto *error = new ScalarNode(left, right, node->getLine()); // print error message and abort
+        auto *error = new ScalarErrorNode(left, right, node->getLine()); // print error message and abort
         eb->printError(error);
     }
 

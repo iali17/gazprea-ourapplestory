@@ -83,7 +83,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
-        // if decl is a vector type
+    // if decl is a vector type
     else if(ctx->type().size() == 1 && ctx->type(0)->vectorType()) {
         ASTNode *typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         ASTNode *size = nullptr;
@@ -92,7 +92,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, size, (int)ctx->getStart()->getLine());
     }
-        // if decl is interval
+    // if decl is interval
     else if (ctx->type().size() == 1 && (ctx->type(0)->intervalType())) {
         return (ASTNode *) new IntervalDeclNode(expr, constant, id, line);
     }

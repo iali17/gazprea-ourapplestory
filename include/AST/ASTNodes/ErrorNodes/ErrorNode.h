@@ -9,7 +9,14 @@
 
 class ErrorNode {
 public:
+    enum errorType {SCALAR_ERROR, VECTOR_ERROR, MATRIX_ERROR};
+
+    ErrorNode(errorType etype);
     virtual std::string getNode() = 0;
+
+    errorType getErrorType() const;
+private:
+    errorType eType;
 
 };
 

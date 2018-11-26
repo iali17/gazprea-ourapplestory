@@ -43,7 +43,8 @@
 #include "AST/ASTNodes/CompNodes/NEQNode.h"
 
 #include "AST/ASTNodes/ErrorNodes/ErrorNode.h"
-#include "AST/ASTNodes/ErrorNodes/ScalarNode.h"
+#include "AST/ASTNodes/ErrorNodes/ScalarErrorNode.h"
+#include "AST/ASTNodes/ErrorNodes/VectorErrorNode.h"
 
 #include "AST/ASTNodes/FuncProcNodes/CallNode.h"
 #include "AST/ASTNodes/FuncProcNodes/FunctionNode.h"
