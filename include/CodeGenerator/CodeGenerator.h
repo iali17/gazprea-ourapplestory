@@ -105,6 +105,7 @@ public:
     llvm::StructType* parseStructType(TupleType *node);
 	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
 	llvm::Value*      performArithVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);

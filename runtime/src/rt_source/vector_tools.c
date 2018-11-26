@@ -295,8 +295,11 @@ void printVector(void* v_vector){
         printVectorElement(element_pointer, type);
         printf(" ");
     }
-    element_pointer = getVectorElementPointer(vec, i);
-    printVectorElement(element_pointer, type);
+    //only print if valid
+    if(*vec->numElements > 0) {
+        element_pointer = getVectorElementPointer(vec, i);
+        printVectorElement(element_pointer, type);
+    }
 
     printf("]");
 }
