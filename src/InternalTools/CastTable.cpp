@@ -238,7 +238,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     // First case: Expr is a vector and size exist
     if (it->isVectorType(expr) && size) {
         // Checks if types are the same
-        if (expr->getType() == type) {
+        if (expr->getType() == type->getPointerTo()) {
            llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, size);

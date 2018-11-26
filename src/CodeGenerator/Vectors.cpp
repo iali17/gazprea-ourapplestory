@@ -54,18 +54,6 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     std::string stype = vectorType->getStringType();
     llvm::Type *type = it->getVectorType(stype);
     llvm::Value *size = visit(node->getSize());
-    /*
-     * ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
-    std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
-    type = it->getVectorType(stype);
-
-    // Extension size if exists
-    llvm::Value *size  = visit(dynamic_cast<VectorType *>(vnode)->getSize());
-
-    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
-    vec = it->castVectorToType(vec, type);
-
-     */
 
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     vec = it->castVectorToType(vec, type);
@@ -74,20 +62,17 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     }
 
     if (vectorNode) {
-        //TODO: this
         if (!vectorNode->getElements()->empty()) {
             llvm::Value *vecExpr = visit(node->getExpr());
             llvm::Type *vecType = it->getDeclVectorType(stype);
             llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
-            vectorNode->getElements()->size();
-
-            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, vectorNode->getElements()->size());
-            /*
-            if((vec->getType() == realVecTy->getPointerTo()) && (vecExpr->getType() == intVecTy->getPointerTo()))
+            /*if((vec->getType() == realVecTy->getPointerTo()) && (vecExpr->getType() == intVecTy->getPointerTo()))
                 vecExpr = ct->createVecFromVec(vecExpr, realTy, vecExprSize, node->getLine());
-            et->strictCopyVectorElements(vec, vecExpr, it->getConsi32(node->getLine()));
-             */
+
+            et->strictCopyVectorElements(vec, vecExpr, it->getConsi32(node->getLine()));*/
+
+            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, (int)vectorNode->getElements()->size());
         }
         // empty vector
         else  {
@@ -104,19 +89,6 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
         vec = ct->typeAssCast(vecType, regExpr, node->getLine(), size);
     }
-
-//    if(node->getStringType() == "integervector") {
-//        ptr = et->getNewVector(it->getConsi32(INTEGER));
-//    } else if(node->getStringType() == "charactervector") {
-//        ptr = et->getNewVector(it->getConsi32(CHAR));
-//    } else if(node->getStringType() == "booleanvector") {
-//        ptr = et->getNewVector(it->getConsi32(BOOLEAN));
-//    } else if(node->getStringType() == "realvector") {
-//        ptr = et->getNewVector(it->getConsi32(REAL));
-//    }
-
-//    llvm::Value *length = visit(node->getVectorType());
-//    et->initVector(ptr, length);
 
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
     return nullptr;
