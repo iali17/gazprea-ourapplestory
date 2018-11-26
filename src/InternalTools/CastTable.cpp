@@ -238,7 +238,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     // First case: Expr is a vector and size exist
     if (it->isVectorType(expr) && size) {
         // Checks if types are the same
-        if (expr->getType() == type) {
+        if (expr->getType() == type->getPointerTo()) {
            llvm::Value *vec = et->getNewVector(declType);
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, size);
@@ -337,12 +337,11 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             if (type == realVecTy) {
                 expr = createVecFromScalar(expr, realTy, size, line);
             } else {
-                // Todo: make error node for trying to implicit cast scalar integer to vector types other than real and int
                 llvm::Type *rrType = expr->getType();
                 int rType = getType(rrType);
                 rTypeString = typeAssTable[rType][rType];
 
-                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), false, line);
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), true, line);
                 eb->printError(error);
             }
 
@@ -350,13 +349,22 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
 
             return vec;
         } else {
-            // Todo: make error node for trying to implicit cast scalar to vector types other than real and int
+            llvm::Type *rrType = expr->getType();
+            int rType = getType(rrType);
+            rTypeString = typeAssTable[rType][rType];
+
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), true, line);
+            eb->printError(error);
         }
     }
     // Fourth case: Expr is a scalar and size doesn't exist
     else {
+        llvm::Type *rrType = expr->getType();
+        int rType = getType(rrType);
+        rTypeString = typeAssTable[rType][rType];
 
-        // Todo: Make error node for rest of types
+        auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
+        eb->printError(error);
     }
 }
 
