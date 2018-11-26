@@ -1,0 +1,8 @@
+procedure main() returns integer {
+	var out = std_output();
+	[.2, 2.3, 400.3, 9.0] by 2 -> out; '\n' -> out;
+	[true, false, false, true, false] by 3 -> out; '\n' -> out;	
+	[true, false, false, true, false] by 1 -> out; '\n' -> out;	
+	1..5 by 3 -> out; '\n' -> out;	
+    return 0;
+}

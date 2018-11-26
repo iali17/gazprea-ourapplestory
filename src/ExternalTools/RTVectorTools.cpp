@@ -24,6 +24,7 @@
 #define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
 #define GET_OP_RESULT_VECTOR "getOpResultVector"
 #define CONCATENATE_VECTORS  "concatenateVectors"
+#define GET_VECTOR_BY        "getVectorBy"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -116,6 +117,10 @@ void ExternalTools::registerVectorFunctions() {
     //concatenateVectors
     fTy = llvm::TypeBuilder<void* (void*, void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(CONCATENATE_VECTORS, fTy));
+
+    //getVectorBy
+    fTy = llvm::TypeBuilder<void* (void *, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_BY, fTy));
 }
 
 /**
@@ -359,4 +364,17 @@ llvm::Value *ExternalTools::concatenateVectors(llvm::Value *left, llvm::Value *r
     llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
     llvm::Value    *ret     = ir->CreateCall(getV, {v_left, v_right});
     return ir->CreatePointerCast(ret, left->getType());
+}
+
+/**
+ * Performs vector operation for 'by'
+ * @param vec
+ * @param by
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorBy(llvm::Value *vec, llvm::Value *by) {
+    llvm::Function *getV  = mod->getFunction(GET_VECTOR_BY);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, by});
+    return ir->CreatePointerCast(ret, vec->getType());
 }

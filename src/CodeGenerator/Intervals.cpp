@@ -28,14 +28,18 @@ extern llvm::Type *intervalTy;
 llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     llvm::Value * left = visit(node->getLeftBound());
     llvm::Value * right = visit(node->getRightBound());
-//    node->setLlvmType(intervalTy);
+
     return et->getNewInterval(left, right);
 }
 
 llvm::Value *CodeGenerator::visit(ByNode *node) {
     llvm::Value * interval = visit(node->getLeft());
     llvm::Value * expr = visit(node->getRight());
-//    node->setLlvmType(intVecTy);
+
+    if(it->isVectorType(interval)){
+        return et->getVectorBy(interval, expr);
+    }
+
     return ir->CreatePointerCast(et->getVectorFromInterval(interval, expr), intVecTy->getPointerTo());
 }
 

@@ -46,11 +46,6 @@ public:
     void registerScanf();
     llvm::Value *aliScanf(llvm::Value *stream, llvm::Value *scanTo, llvm::Value *type);
 
-    //test
-    void registerTest();
-    void callTest(llvm::Value *val);
-    llvm::StructType * setUpVector();
-
     //vector functions
     void registerVectorFunctions();
     llvm::Value * getNewVector(llvm::Value *ty);
@@ -70,6 +65,7 @@ public:
     llvm::Value * assignValFromPointers(llvm::Value * left, llvm::Value *right, llvm::Value *ty);
     llvm::Value * getOpResultVector(llvm::Value *left, llvm::Value *right);
     llvm::Value * concatenateVectors(llvm::Value * left,llvm::Value * right);
+    llvm::Value * getVectorBy(llvm::Value * vec, llvm::Value * by);
 
     //Interval functions
     void registerIntervalFunctions();
