@@ -94,16 +94,6 @@ antlrcpp::Any ASTGenerator::visitBrackExpr(gazprea::GazpreaParser::BrackExprCont
     return (ASTNode *) visit(ctx->expr());
 }
 
-antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
-    auto *expr  = new std::vector<ASTNode *>;
-
-    for(unsigned long i = 0; i < ctx->expr().size(); ++i){
-        expr->push_back((ASTNode *) visit(ctx->expr(i)));
-    }
-
-    return (ASTNode *) new IndexNode(expr, (int)ctx->expr().size(),(int)ctx->getStart()->getLine());
-}
-
 /**
  * Unary Expr
  *

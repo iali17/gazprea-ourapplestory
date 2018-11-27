@@ -26,7 +26,7 @@ expr
     | String                                                        #stringExpr
     | emptyVector                                                   #emptyVectorExpr
     | vector                                                        #vectorExpr
-    | Identifier '[' expr (COMMA expr)? ']'                         #indexExpr
+    | expr '[' expr (COMMA expr)? ']'                               #indexExpr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | functionCall                                                  #functionExpr

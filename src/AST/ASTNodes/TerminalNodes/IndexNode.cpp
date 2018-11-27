@@ -4,12 +4,13 @@
 
 #include <AST/ASTNodes/TerminalNodes/IndexNode.h>
 
-IndexNode::IndexNode(std::vector<ASTNode *> *exprIndex, int indexSize, int line) : ASTNode(line), indexSize(indexSize), exprIndex(exprIndex) {}
+IndexNode::IndexNode(ASTNode *LHS, std::vector<ASTNode *> *indexExpr, int line)
+    : ASTNode(line), LHS (LHS), indexExpr(indexExpr) {}
 
-std::vector<ASTNode *>* IndexNode::getExprs() {
-    return this->exprIndex;
+ASTNode *IndexNode::getLHS() const {
+    return LHS;
 }
 
-int IndexNode::getIndexSize() {
-    return this->indexSize;
+std::vector<ASTNode *> *IndexNode::getIndexExpr() const {
+    return indexExpr;
 }
