@@ -448,6 +448,38 @@ void *getVectorCopy(void *v_vector){
 }
 
 /**
+ * assigns to the destination vector from the source at the given indices
+ * @param v_vec_dest
+ * @param v_vec_idx
+ * @param v_vec_src
+ */
+void assignFromVector(void * v_vec_dest, void * v_vec_idx, void * v_vec_src){
+    //cast the voids
+    vector * dest = (vector *) v_vec_dest;
+    vector * idx  = (vector *) v_vec_idx;
+    vector * src  = (vector *) v_vec_src;
+
+    //local constants
+    int ty     = *dest->type;
+    int *idxP  = (int *) idx->elements;
+    int idxLen = *idx->numElements;
+
+    //loop vars
+    int dest_idx = 0;
+    int i        = 0;
+    void *cur_src;
+    void *cur_dest;
+
+    //copy
+    for(i = 0; i < idxLen; i++){
+        dest_idx = idxP[i];
+        cur_src  = getVectorElementPointer(src, i);
+        cur_dest = getVectorElementPointer(dest, dest_idx);
+        assignValFromPointers(cur_dest, cur_src, ty);
+    }
+}
+
+/**
  * concatenates both vectors into a new one
  * @param v_vector_left
  * @param v_vector_right

@@ -13,6 +13,7 @@ CMakeFiles/
 Makefile
 cmake_install.cmake
 runtime/CMakeFiles/
+runtime/src/rt_source/main.c
 runtime/Makefile
 runtime/cmake_install.cmake
 runtime/src/CMakeFiles/

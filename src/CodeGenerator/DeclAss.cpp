@@ -171,20 +171,23 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
-    llvm::Value *left  = visit(node->getLeft());
-    llvm::Value *right = visit(node->getRight());
+    llvm::Value *dest              = visit(((IndexNode *)node->getLeft())->getLHS());
+    std::vector<ASTNode *> *idxVec = ((IndexNode *)node->getLeft())->getIndexExpr();
+    llvm::Value *src               = visit(node->getRight());
 
-    if((left->getType() == realVecTy->getPointerTo()) && (right->getType() == intVecTy->getPointerTo())){
-        llvm::Value *size  = it->getValFromStruct(right, it->getConsi32(VEC_TYPE_INDEX));
-        right = ct->createVecFromVec(right, realTy, size, node->getLine());
+    //vector only
+    llvm::Value *idx = visit(idxVec->at(0));
+    if((dest->getType() == realVecTy->getPointerTo()) && (dest->getType() == intVecTy->getPointerTo())){
+        llvm::Value *size  = it->getValFromStruct(src, it->getConsi32(VEC_TYPE_INDEX));
+        src = ct->createVecFromVec(src, realTy, size, node->getLine());
     }
-    else if(not(right->getType()->isPointerTy())){
-        if(left->getType() == realTy && right->getType() == intTy)
-            right = ct->varCast(realTy, right, node->getLine());
-        ir->CreateStore(right, left);
+    else if(not(src->getType()->isPointerTy())){
+        if(dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
+            src = ct->varCast(realTy, src, node->getLine());
+        ir->CreateStore(src, visit(node->getLeft()));
         return nullptr;
     }
 
-    et->strictCopyVectorElements(left, right, it->getConsi32(node->getLine()));
+    et->assignFromVector(dest, idx, src);
     return nullptr;
 }

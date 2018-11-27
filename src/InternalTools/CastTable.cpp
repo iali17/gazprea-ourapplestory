@@ -510,7 +510,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     }
 
     // Type promotion between scalar and vector where rightExpr is vector
-    else if (it->isVectorType(rValueLoad) && (!it->isVectorType(lValueLoad) && it->isIntervalType(lValueLoad))) {
+    else if (it->isVectorType(rValueLoad) && (!it->isVectorType(lValueLoad))) {
         lTypeP = lValueLoad->getType();
         rTypeP = it->getVectorElementType(rValueLoad);
 

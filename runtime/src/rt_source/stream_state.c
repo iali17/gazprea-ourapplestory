@@ -3,6 +3,8 @@
 #include <sys/ioctl.h>
 #include <stropts.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int get_stream_state(void * v_stream){
     stream * s = (stream *) v_stream;

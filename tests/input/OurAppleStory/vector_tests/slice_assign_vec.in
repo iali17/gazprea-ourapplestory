@@ -1,0 +1,7 @@
+procedure main() returns integer{
+	var out = std_output();
+	integer vector v = 1..6 by 1;
+	v[[2, 5]] = [9,8];
+	v -> out; '\n' -> out;
+	return 0;
+}

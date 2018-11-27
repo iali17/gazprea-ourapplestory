@@ -66,6 +66,7 @@ public:
     llvm::Value * getOpResultVector(llvm::Value *left, llvm::Value *right);
     llvm::Value * concatenateVectors(llvm::Value * left,llvm::Value * right);
     llvm::Value * getVectorBy(llvm::Value * vec, llvm::Value * by);
+    llvm::Value * assignFromVector(llvm::Value * dest, llvm::Value * idx, llvm::Value * src);
 
     //Interval functions
     void registerIntervalFunctions();
