@@ -82,6 +82,7 @@ assignment
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
+    | expr '[' expr (COMMA expr)? ']' EQL expr SEMICOLON                    #indexAssign
     ;
 
 declaration

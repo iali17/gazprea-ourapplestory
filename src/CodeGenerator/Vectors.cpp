@@ -101,21 +101,18 @@ llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(IndexNode *node) {
-    llvm::Value *LHS;
-    llvm::Value *indexVal;
-
-    if (dynamic_cast<IDNode *>(node->getLHS())) {
-        auto idNode = (IDNode *) node->getLHS();
-        //LHS = symbolTable->resolveSymbol(idNode->getID());
-    }
+    llvm::Value *LHS = visit(node->getLHS());
 
     // indexing a vector
-    if (node->getIndexExpr()->size() == 1) {
-
+    if ((node->getIndexExpr()->size() == 1) && (it->isVectorType(LHS))) {
+        llvm::Value *idx = visit(node->getIndexExpr()->at(0));
+        return indexVector(LHS, idx);
     }
     // indexing a matrix
-    else if (node->getIndexExpr()->size() == 2) {
-
+    else if ((node->getIndexExpr()->size() == 2) && (it->isMatrixType(LHS))) {
+        llvm::Value *rowIdx = visit(node->getIndexExpr()->at(0));
+        llvm::Value *colIdx = visit(node->getIndexExpr()->at(1));
+        return indexMatrix(LHS, rowIdx, colIdx);
     }
     return nullptr;
 }
@@ -123,4 +120,21 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
 llvm::Value *CodeGenerator::visit(LengthNode *node) {
     llvm::Value *vec = visit(node->getExpr());
     return et->getVectorLength(vec);
+}
+
+llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx) {
+    //cover interval case
+    if(it->isIntervalType(idx))
+        idx = et->getVectorFromInterval(idx, it->getConsi32(1));
+
+    //general
+    if(it->isVectorType(idx)){
+        return et->getVectorSlice(vec, idx);
+    }
+    else{
+        llvm::Value *ptr = et->getVectorElementPointer(vec, idx);
+        llvm::Type  *ty  = it->getVectorElementType(vec);
+        ptr = ir->CreatePointerCast(ptr, ty->getPointerTo());
+        return ir->CreateLoad(ptr);
+    }
 }

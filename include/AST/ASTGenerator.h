@@ -95,6 +95,7 @@ private:
     antlrcpp::Any visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) override;
     antlrcpp::Any visitGenerator(gazprea::GazpreaParser::GeneratorContext *ctx) override;
     antlrcpp::Any visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVectorExprContext *ctx) override;
+    antlrcpp::Any visitIndexAssign(gazprea::GazpreaParser::IndexAssignContext *ctx) override;
     antlrcpp::Any visitFilter(gazprea::GazpreaParser::FilterContext *ctx) override;
     antlrcpp::Any visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) override;
     //Helper Functions

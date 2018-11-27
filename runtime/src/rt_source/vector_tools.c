@@ -338,7 +338,7 @@ void assignValFromPointers(void *l, void *r, int type){
  * @param r
  * @param type
  */
-void assignPointers(void *l, void *r, int type){
+void assignPointers(const void *l, const void *r, int type){
     if(type == BOOLEAN)
         *((bool *) l) = *((bool *) r);
     else if (type == CHAR)
@@ -415,12 +415,16 @@ void *getVectorSlice(void *v_vector, void *v_index){
 	int i, idx;
 	void *src_p, *dest_p;
 
+	//printVector(vec);
+
 	//copy pointers
 	for(i = 0; i < numElements; i++){
 		idx = ((int *) idx_vec->elements)[i];
-		src_p  = vec->elements + i;
-        dest_p = ret->elements + i;
-        assignPointers(&dest_p, &src_p, ty);
+		src_p  = getVectorElementPointer(vec, i);
+        dest_p = getVectorElementPointer(ret, i);
+        //printf("%d %d\n", *(int *)src_p, *(int *)dest_p);
+        //*(int *)dest_p = *(int *)src_p;
+        assignPointers(dest_p, src_p, ty);
 	}
 
 	//return

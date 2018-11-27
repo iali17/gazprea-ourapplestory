@@ -84,6 +84,9 @@ public:
         else if (dynamic_cast<TypeDefNode *>(node)) {
             ret =  visit((TypeDefNode *) node);
         }
+        else if (dynamic_cast<SliceAssignNode *>(node)) {
+            ret =  visit((SliceAssignNode *) node);
+        }
         else if (dynamic_cast<CallNode *>(node)) {
             ret =  visit((CallNode *) node);
         }
@@ -165,6 +168,9 @@ public:
         else if (dynamic_cast<VectorDeclNode *>(node)) {
             ret = visit((VectorDeclNode *) node);
         }
+        else if (dynamic_cast<IndexNode *>(node)) {
+            ret = visit((IndexNode *) node);
+        }
         else if (dynamic_cast<MatrixDeclNode *>(node)) {
             ret = visit((MatrixDeclNode *) node);
         }
@@ -238,6 +244,7 @@ public:
     llvm::Value* visit(ProcedureNode  *node) override { return nullptr;};
     llvm::Value* visit(ParamNode *node) override { return nullptr;};
     llvm::Value* visit(ReturnNode *node) override { return nullptr;};
+    llvm::Value* visit(SliceAssignNode *node) override { return nullptr;};
     llvm::Value* visit(INTNode *node) override { return nullptr;};
     llvm::Value* visit(RealNode *node) override { return nullptr;};
     llvm::Value* visit(CharNode *node) override { return nullptr;};
@@ -282,6 +289,7 @@ public:
     llvm::Value* visit(PythonTupleAssNode *node) override { return nullptr; }
     llvm::Value* visit(GlobalDeclNode *node) override { return nullptr; }
     llvm::Value* visit(VectorDeclNode *node) override { return nullptr; }
+    llvm::Value* visit(IndexNode *node) override { return nullptr; }
     llvm::Value* visit(MatrixDeclNode *node) override { return nullptr; }
     llvm::Value* visit(GlobalRefNode *node) override { return nullptr; }
     llvm::Value* visit(TupleNode *node) override { return nullptr; }
@@ -292,7 +300,6 @@ public:
     llvm::Value* visit(TupleMemberAssNode *node) override { return nullptr; }
     llvm::Value* visit(TupleInputNode *node) override { return nullptr; }
     llvm::Value* visit(FunctionNode *node) override { return nullptr; }
-    llvm::Value* visit(IndexNode *node) override { return nullptr; }
     llvm::Value* visit(IntervalNode *node) override { return nullptr; }
     llvm::Value* visit(VectorNode *node) override { return nullptr; }
     llvm::Value* visit(MatrixNode *node) override { return nullptr; }
