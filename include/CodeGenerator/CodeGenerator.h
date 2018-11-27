@@ -133,8 +133,8 @@ public:
     llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
 
     //indexing
-    llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx);
-    llvm::Value *indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx);
+    llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice);
+    llvm::Value *indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice);
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

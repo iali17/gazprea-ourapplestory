@@ -84,7 +84,7 @@ antlrcpp::Any ASTGenerator::visitIndexAssign(gazprea::GazpreaParser::IndexAssign
         expr->push_back((ASTNode *) new SubNode(cur, one, line));
     }
 
-    ASTNode * assTo = (ASTNode *) new IndexNode(LHS, expr, line);
+    ASTNode * assTo = (ASTNode *) new IndexNode(LHS, expr, line, true);
 
     return (ASTNode *) new SliceAssignNode(assTo, assFrom, line);
 }

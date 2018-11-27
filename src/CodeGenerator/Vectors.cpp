@@ -106,13 +106,13 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
     // indexing a vector
     if ((node->getIndexExpr()->size() == 1) && (it->isVectorType(LHS))) {
         llvm::Value *idx = visit(node->getIndexExpr()->at(0));
-        return indexVector(LHS, idx);
+        return indexVector(LHS, idx, node->isSlice());
     }
     // indexing a matrix
     else if ((node->getIndexExpr()->size() == 2) && (it->isMatrixType(LHS))) {
         llvm::Value *rowIdx = visit(node->getIndexExpr()->at(0));
         llvm::Value *colIdx = visit(node->getIndexExpr()->at(1));
-        return indexMatrix(LHS, rowIdx, colIdx);
+        return indexMatrix(LHS, rowIdx, colIdx, node->isSlice());
     }
     return nullptr;
 }
@@ -122,19 +122,20 @@ llvm::Value *CodeGenerator::visit(LengthNode *node) {
     return et->getVectorLength(vec);
 }
 
-llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx) {
+llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice) {
     //cover interval case
     if(it->isIntervalType(idx))
         idx = et->getVectorFromInterval(idx, it->getConsi32(1));
 
     //general
-    if(it->isVectorType(idx)){
+    if(it->isVectorType(idx))
         return et->getVectorSlice(vec, idx);
-    }
-    else{
-        llvm::Value *ptr = et->getVectorElementPointer(vec, idx);
-        llvm::Type  *ty  = it->getVectorElementType(vec);
-        ptr = ir->CreatePointerCast(ptr, ty->getPointerTo());
-        return ir->CreateLoad(ptr);
-    }
+
+    llvm::Value *ptr = et->getVectorElementPointer(vec, idx);
+    llvm::Type  *ty  = it->getVectorElementType(vec);
+    ptr = ir->CreatePointerCast(ptr, ty->getPointerTo());
+
+    if(isSlice)
+        return ptr;
+    return ir->CreateLoad(ptr);
 }
