@@ -173,10 +173,17 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
     llvm::Value *left  = visit(node->getLeft());
     llvm::Value *right = visit(node->getRight());
-    llvm::Value *size  = it->getValFromStruct(right, it->getConsi32(VEC_TYPE_INDEX));
 
-    if((left->getType() == realVecTy->getPointerTo()) && (right->getType() == intVecTy->getPointerTo()))
+    if((left->getType() == realVecTy->getPointerTo()) && (right->getType() == intVecTy->getPointerTo())){
+        llvm::Value *size  = it->getValFromStruct(right, it->getConsi32(VEC_TYPE_INDEX));
         right = ct->createVecFromVec(right, realTy, size, node->getLine());
+    }
+    else if(not(right->getType()->isPointerTy())){
+        if(left->getType() == realTy && right->getType() == intTy)
+            right = ct->varCast(realTy, right, node->getLine());
+        ir->CreateStore(right, left);
+        return nullptr;
+    }
 
     et->strictCopyVectorElements(left, right, it->getConsi32(node->getLine()));
     return nullptr;

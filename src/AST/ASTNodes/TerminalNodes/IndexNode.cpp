@@ -4,8 +4,8 @@
 
 #include <AST/ASTNodes/TerminalNodes/IndexNode.h>
 
-IndexNode::IndexNode(ASTNode *LHS, std::vector<ASTNode *> *indexExpr, int line)
-    : ASTNode(line), LHS (LHS), indexExpr(indexExpr) {}
+IndexNode::IndexNode(ASTNode *LHS, std::vector<ASTNode *> *indexExpr, int line, bool slice)
+    : ASTNode(line), LHS (LHS), indexExpr(indexExpr), slice(slice){}
 
 ASTNode *IndexNode::getLHS() const {
     return LHS;
@@ -13,4 +13,8 @@ ASTNode *IndexNode::getLHS() const {
 
 std::vector<ASTNode *> *IndexNode::getIndexExpr() const {
     return indexExpr;
+}
+
+bool IndexNode::isSlice() const {
+    return slice;
 }

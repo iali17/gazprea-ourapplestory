@@ -365,7 +365,7 @@ void copyVectorElements(void *v_dest, void *v_src){
 	int numElements = *dest->numElements;
 	void *src_p, *dest_p;
 
-	//copt values. note that we load safe from the source vector
+	//copy values. note that we load safe from the source vector
 	for(i = 0; i < numElements; i++){
 		src_p  = getVectorElementPointerSafe(src, i);
 		dest_p = getVectorElementPointer(dest,i);
@@ -415,15 +415,11 @@ void *getVectorSlice(void *v_vector, void *v_index){
 	int i, idx;
 	void *src_p, *dest_p;
 
-	//printVector(vec);
-
 	//copy pointers
 	for(i = 0; i < numElements; i++){
 		idx = ((int *) idx_vec->elements)[i];
-		src_p  = getVectorElementPointer(vec, i);
+		src_p  = getVectorElementPointer(vec, idx);
         dest_p = getVectorElementPointer(ret, i);
-        //printf("%d %d\n", *(int *)src_p, *(int *)dest_p);
-        //*(int *)dest_p = *(int *)src_p;
         assignPointers(dest_p, src_p, ty);
 	}
 
