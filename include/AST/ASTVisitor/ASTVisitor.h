@@ -49,6 +49,7 @@ public:
     virtual llvm::Value* visit(LTNode *node)                              = 0;
     virtual llvm::Value* visit(AndNode *node)                             = 0;
     virtual llvm::Value* visit(OrNode *node)                              = 0;
+    virtual llvm::Value* visit(LengthNode *node)                          = 0;
     virtual llvm::Value* visit(XOrNode *node)                             = 0;
     virtual llvm::Value* visit(NegateNode *node)                          = 0;
     virtual llvm::Value* visit(GTENode *node)                             = 0;

@@ -51,4 +51,7 @@ antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprCont
     }
 
     return (ASTNode *) new IndexNode(LHS,expr, (int)ctx->getStart()->getLine());
+antlrcpp::Any ASTGenerator::visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) {
+    ASTNode * expr = (ASTNode *) visit(ctx->expr());
+    return (ASTNode *) new LengthNode(expr, (int) ctx->getStart()->getLine());
 }
