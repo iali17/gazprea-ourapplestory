@@ -43,14 +43,16 @@ antlrcpp::Any ASTGenerator::visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVe
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
-    auto expr  = new std::vector<ASTNode *>;
+    auto expr = new std::vector<ASTNode *>;
     auto LHS = (ASTNode *) visit(ctx->expr(0));
 
-    for(unsigned long i = 1; i < ctx->expr().size(); ++i){
+    for (unsigned long i = 1; i < ctx->expr().size(); ++i) {
         expr->push_back((ASTNode *) visit(ctx->expr(i)));
     }
 
-    return (ASTNode *) new IndexNode(LHS,expr, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new IndexNode(LHS, expr, (int) ctx->getStart()->getLine());
+}
+
 antlrcpp::Any ASTGenerator::visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new LengthNode(expr, (int) ctx->getStart()->getLine());

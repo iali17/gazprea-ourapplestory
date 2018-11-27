@@ -547,13 +547,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy)
+    if(ty == boolTy || ty == boolVecTy)
         return getConsi32(BOOLEAN);
-    else if (ty == charTy)
+    else if (ty == charTy || ty == charVecTy)
         return getConsi32(CHAR);
-    else if (ty == intTy)
+    else if (ty == intTy || ty == intVecTy)
         return getConsi32(INTEGER);
-    else if (ty == realTy)
+    else if (ty == realTy || ty == realVecTy)
         return getConsi32(REAL);
 
     return nullptr;
