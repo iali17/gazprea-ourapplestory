@@ -11,7 +11,8 @@ antlrcpp::Any ASTGenerator::visitStreamDecl(gazprea::GazpreaParser::StreamDeclCo
         type = INSTREAM;
     else
         type = OUTSTREAM;
-    return (ASTNode *) new StreamDeclNode(ctx->Identifier()->getText(), type, (int)ctx->getStart()->getLine());
+    std::string id = normalizeID(ctx->Identifier()->getText());
+    return (ASTNode *) new StreamDeclNode(id, type, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclContext *ctx) {
@@ -22,7 +23,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     }
 
     bool constant = (nullptr != ctx->CONST());
-    std::string id = ctx->Identifier()->getText();
+    std::string id = normalizeID(ctx->Identifier()->getText());
     std::string ty;
     if (!ctx->type().empty()) ty = ctx->type(0)->getText();
 
@@ -75,7 +76,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     auto *expr = (ASTNode *) new NullNode(line);
 
     bool constant = (nullptr != ctx->CONST());
-    std::string id = ctx->Identifier()->getText();
+    std::string id = normalizeID(ctx->Identifier()->getText());
     std::string ty;
     if (!ctx->type().empty())  ty = ctx->type(0)->getText();
 
@@ -108,7 +109,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
 
 antlrcpp::Any ASTGenerator::visitGlobalDecl(gazprea::GazpreaParser::GlobalDeclContext *ctx) {
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
-    std::string id = ctx->Identifier()->getText();
+    std::string id = normalizeID(ctx->Identifier()->getText());
     auto *typeVec  = new std::vector<std::string>();
 
     for (unsigned long i = 0; i < ctx->type().size(); ++i) {
@@ -128,7 +129,8 @@ antlrcpp::Any ASTGenerator::visitNormalAss(gazprea::GazpreaParser::NormalAssCont
     ASTNode *expr = nullptr;
     if(ctx->expr())
         expr = (ASTNode *) visit(ctx->expr());
-    return (ASTNode *) new AssignNode(expr, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
+    std::string id = normalizeID(ctx->Identifier()->getText());
+    return (ASTNode *) new AssignNode(expr, id, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssContext *ctx) {
@@ -139,6 +141,7 @@ antlrcpp::Any ASTGenerator::visitStreamAss(gazprea::GazpreaParser::StreamAssCont
         right = (ASTNode *) new IDNode("std_output()", (int)ctx->getStart()->getLine());
     }
 
-    return (ASTNode *) new AssignNode(right, ctx->Identifier()->getText(), (int)ctx->getStart()->getLine());
+    std::string id = normalizeID(ctx->Identifier()->getText());
+    return (ASTNode *) new AssignNode(right, id, (int)ctx->getStart()->getLine());
 }
 

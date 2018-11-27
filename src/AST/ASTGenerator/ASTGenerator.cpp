@@ -121,7 +121,7 @@ antlrcpp::Any ASTGenerator::visitUnaryExpr(gazprea::GazpreaParser::UnaryExprCont
  * @return -
  */
 antlrcpp::Any ASTGenerator::visitIdentifierExpr(gazprea::GazpreaParser::IdentifierExprContext *ctx) {
-    std::string id = ctx->Identifier()->getText();
+    std::string id = normalizeID(ctx->Identifier()->getText());
     auto globalVar = globalVars->find(id);
 
     //check if global
@@ -285,7 +285,8 @@ antlrcpp::Any ASTGenerator::visitBodyBlock(gazprea::GazpreaParser::BodyBlockCont
  */
 antlrcpp::Any ASTGenerator::visitOutStream(gazprea::GazpreaParser::OutStreamContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
-    return (ASTNode *) new OutputNode(ctx->Identifier()->getText(), expr, (int)ctx->getStart()->getLine());
+    std::string id = normalizeID(ctx->Identifier()->getText());
+    return (ASTNode *) new OutputNode(id, expr, (int)ctx->getStart()->getLine());
 }
 
 /**
@@ -297,16 +298,16 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
     if(ctx->TupleIndex()){
         std::string tupleText = ctx->TupleIndex()->getText();
         std::vector<std::string> values = split(tupleText,'.');
-        std::string idName = values[0];
+        std::string idName = normalizeID(values[0]);
 
         int lineNum = (int)ctx->getStart()->getLine();
         auto idNode =  (ASTNode *) new IDNode(idName, lineNum);
         ASTNode *index = getIndexNode(values, 1,lineNum);
 
         auto LHS = (ASTNode *) new IndexTupleNode(index, dynamic_cast<IDNode*>(idNode), (int)ctx->getStart()->getLine());
-        return (ASTNode *) new TupleInputNode(ctx->Identifier().at(0)->getText(), LHS, (int)ctx->getStart()->getLine());
+        return (ASTNode *) new TupleInputNode(normalizeID(ctx->Identifier().at(0)->getText()), LHS, (int)ctx->getStart()->getLine());
     }
-    return (ASTNode *) new InputNode(ctx->Identifier().at(1)->getText(), ctx->Identifier().at(0)->getText(), (int)ctx->getStart()->getLine());
+    return (ASTNode *) new InputNode(normalizeID(ctx->Identifier().at(1)->getText()), normalizeID(ctx->Identifier().at(0)->getText()), (int)ctx->getStart()->getLine());
 }
 
 /**
@@ -317,7 +318,7 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
  */
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
-    std::string id = ctx->Identifier()->getText();
+    std::string id = normalizeID(ctx->Identifier()->getText());
 
     if(ctx->type()->tupleType()) {
         ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
@@ -571,7 +572,7 @@ antlrcpp::Any ASTGenerator::visitConcatExpr(gazprea::GazpreaParser::ConcatExprCo
 }
 
 antlrcpp::Any ASTGenerator::visitStreamState(gazprea::GazpreaParser::StreamStateContext *ctx) {
-    std::string streamName = ctx->Identifier()->getText();
+    std::string streamName = normalizeID(ctx->Identifier()->getText());
     return (ASTNode *) new StreamStateNode((int)ctx->getStart()->getLine(),streamName);
 }
 

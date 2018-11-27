@@ -101,6 +101,7 @@ private:
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
     std::vector<std::string> split(const std::string& s, char delimiter);
+    std::string normalizeID(std::string oldName);
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

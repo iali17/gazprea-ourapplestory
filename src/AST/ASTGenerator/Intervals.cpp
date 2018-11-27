@@ -22,6 +22,7 @@ antlrcpp::Any ASTGenerator::visitIntervalExpr(gazprea::GazpreaParser::IntervalEx
                 break;
             }
             else {
+                idName = normalizeID(idName);
                 leftExpr = new IDNode(idName, line);
                 break;
             }

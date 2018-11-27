@@ -31,3 +31,7 @@ std::vector<std::string> ASTGenerator::split(const std::string& s, char delimite
     return tokens;
 }
 
+std::string ASTGenerator::normalizeID(std::string oldName) {
+    return "_" + oldName;
+}
+

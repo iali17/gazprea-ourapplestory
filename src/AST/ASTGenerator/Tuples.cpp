@@ -7,7 +7,7 @@
 antlrcpp::Any ASTGenerator::visitTupleMemberAss(gazprea::GazpreaParser::TupleMemberAssContext *ctx) {
     std::string tupleText = ctx->TupleIndex()->getText();
     std::vector<std::string> values = split(tupleText,'.');
-    std::string idName = values[0];
+    std::string idName = normalizeID(values[0]);
     ASTNode *expr  = (ASTNode *) visit(ctx->expr());
 
     int lineNum = (int)ctx->getStart()->getLine();
@@ -30,7 +30,7 @@ antlrcpp::Any ASTGenerator::visitTupleTypeIdentifier(gazprea::GazpreaParser::Tup
     if (ctx->Identifier() == nullptr) {
         return (ASTNode *) new DeclNode(expr, constant, "", typeVec, expr->getType(), (int)ctx->getStart()->getLine());
     } else {
-        return (ASTNode *) new DeclNode(expr, constant, ctx->Identifier()->getText(), typeVec, expr->getType(), (int)ctx->getStart()->getLine());
+        return (ASTNode *) new DeclNode(expr, constant, normalizeID(ctx->Identifier()->getText()), typeVec, expr->getType(), (int)ctx->getStart()->getLine());
     }
 }
 
@@ -41,7 +41,7 @@ antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTu
 
     auto *IDs = new std::vector<std::string>;
     for (auto element : ctx->Identifier()) {
-        IDs->push_back(element->getText());
+        IDs->push_back(normalizeID(element->getText()));
     }
 
     return (ASTNode *) new PythonTupleAssNode(expr, *IDs, (int)ctx->getStart()->getLine());
@@ -53,7 +53,7 @@ antlrcpp::Any ASTGenerator::visitPythonTupleAss(gazprea::GazpreaParser::PythonTu
 antlrcpp::Any ASTGenerator::visitTupleIndexExpr(gazprea::GazpreaParser::TupleIndexExprContext *ctx) {
     std::string tupleText = ctx->TupleIndex()->getText();
     std::vector<std::string> values = split(tupleText,'.');
-    std::string idName = values[0];
+    std::string idName = normalizeID(values[0]);
 
     int lineNum = (int)ctx->getStart()->getLine();
     auto idNode = (ASTNode *) new IDNode(idName, lineNum);
@@ -103,5 +103,5 @@ antlrcpp::Any ASTGenerator::visitFilter(gazprea::GazpreaParser::FilterContext *c
     condNodes->push_back(notCondsNodes);
 
     return (ASTNode *) new FilterNode((int) ctx->getStart()->getLine(),
-            ctx->Identifier()->getText(), condNodes, range, notCondsNodes);
+            normalizeID(ctx->Identifier()->getText()), condNodes, range, notCondsNodes);
 }
