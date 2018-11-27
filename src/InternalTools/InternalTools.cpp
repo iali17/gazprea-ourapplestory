@@ -600,6 +600,19 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
     return nullptr;
 }
 
+
+llvm::Value *InternalTools::setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values) {
+    llvm::Value *ptr = getPtrFromStruct(mat, getConsi32(MATRIX_ELEM_INDEX));
+    llvm::Value *curRowPtr;
+
+    for(uint i = 0; i < values->size(); i++) {
+        curRowPtr = ir->CreateGEP(ptr, getConsi32(i));
+        ir->CreateStore(values->at(i), curRowPtr);
+    }
+
+    return nullptr;
+}
+
 /**
  * Either pass the element type or the vector type
  * @param mat
