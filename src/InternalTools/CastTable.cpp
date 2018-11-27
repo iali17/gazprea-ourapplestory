@@ -348,6 +348,33 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
 
             return vec;
+        } else if(it->isIntervalType(expr)) {
+            llvm::Value *vec = et->getNewVector(declType);
+            vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
+            et->initVector(vec, size);
+
+            // Creates vector from interval
+            llvm::Value *newVec = et->getVectorFromInterval(expr, it->getConsi32(1));
+            ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
+            llvm::Value *intervalSize = it->getValFromStruct(newVec, it->getConsi32(VEC_LEN_INDEX));
+
+            if(type == intVecTy) {
+                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line));
+
+                return vec;
+            } else if(type == realVecTy) {
+                newVec  = createVecFromVec(newVec, realTy, intervalSize, line);
+                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line));
+
+                return vec;
+            } else {
+                llvm::Type *rrType = it->getValFromStruct(newVec, it->getConsi32(VEC_TYPE_INDEX))->getType();
+                int rType = getType(rrType);
+                rTypeString = typeAssTable[rType][rType];
+
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), -1,line);
+                eb->printError(error);
+            }
         } else {
             llvm::Type *rrType = expr->getType();
             int rType = getType(rrType);
@@ -359,6 +386,28 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     }
     // Fourth case: Expr is a scalar and size doesn't exist
     else {
+        if(it->isIntervalType(expr)) {
+            // Creates vector from interval
+            llvm::Value *newVec = et->getVectorFromInterval(expr, it->getConsi32(1));
+            ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
+            llvm::Value *intervalSize = it->getValFromStruct(newVec, it->getConsi32(VEC_LEN_INDEX));
+
+            if(type == intVecTy) {
+                return newVec;
+            } else if(type == realVecTy) {
+                newVec  = createVecFromVec(newVec, realTy, intervalSize, line);
+
+                return newVec;
+            } else {
+                llvm::Type *rrType = it->getValFromStruct(newVec, it->getConsi32(VEC_TYPE_INDEX))->getType();
+                int rType = getType(rrType);
+                rTypeString = typeAssTable[rType][rType];
+
+                auto *error = new VectorErrorNode(lTypeString, rTypeString, (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(), false, line);
+                eb->printError(error);
+            }
+        }
+
         llvm::Type *rrType = expr->getType();
         int rType = getType(rrType);
         rTypeString = typeAssTable[rType][rType];
@@ -367,7 +416,6 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
         eb->printError(error);
     }
 }
-
 
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
@@ -471,8 +519,27 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     llvm::Value *vec;
     llvm::Value *size;
 
+
+    // Type promotion between vector and interval where leftExpr is vector and rightExpr is the interval
+    if(it->isVectorType(lValueLoad) && it->isIntervalType(rValueLoad)) {
+        // Create vector from interval
+        rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
+        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+    }
+
+    // Type promotion between vector and interval where leftExpr is interval and rightExpr is the vector
+    else if(it->isIntervalType(lValueLoad) && it->isVectorType(rValueLoad)) {
+        // Create vector from interval
+        lValueLoad = et->getVectorFromInterval(lValueLoad, it->getConsi32(1));
+        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+    }
+
     // Type promotion between scalar and vector where leftExpr is the vector
-    if (it->isVectorType(lValueLoad) && (!it->isVectorType(rValueLoad) && !it->isIntervalType(rValueLoad))) {
+    else if (it->isVectorType(lValueLoad) && !it->isVectorType(rValueLoad)) {
         lTypeP = it->getVectorElementType(lValueLoad);
         rTypeP = rValueLoad->getType();
 
@@ -510,7 +577,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     }
 
     // Type promotion between scalar and vector where rightExpr is vector
-    else if (it->isVectorType(rValueLoad) && (!it->isVectorType(lValueLoad) && it->isIntervalType(lValueLoad))) {
+    else if (it->isVectorType(rValueLoad) && !it->isVectorType(lValueLoad)) {
         lTypeP = lValueLoad->getType();
         rTypeP = it->getVectorElementType(rValueLoad);
 
@@ -547,24 +614,6 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
         }
 
 
-    }
-
-    // Type promotion between vector and interval where leftExpr is vector and rightExpr is the interval
-    else if(it->isVectorType(lValueLoad) && it->isIntervalType(rValueLoad)) {
-        // Create vector from interval
-        rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
-        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
-
-        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
-    }
-
-    // Type promotion between vector and interval where leftExpr is interval and rightExpr is the vector
-    else if(it->isIntervalType(lValueLoad) && it->isVectorType(rValueLoad)) {
-        // Create vector from interval
-        rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
-        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
-
-        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
     }
 
     // Type promotion between vector and vector
@@ -622,7 +671,7 @@ InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, ll
 
         return it->makePair(leftExpr, rightExpr);
     } else if (castType == "real") {
-        if (lTypeString == "int") {
+        if (lTypeString == "int" || rTypeString == "int") {
             leftExpr = createVecFromVec(leftExpr, realTy, size, line);
             rightExpr = createVecFromVec(rightExpr, realTy, size, line);
 
