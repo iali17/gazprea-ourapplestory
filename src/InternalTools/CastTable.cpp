@@ -472,7 +472,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     llvm::Value *size;
 
     // Type promotion between scalar and vector where leftExpr is the vector
-    if (lValueLoad->getType()->isPointerTy() && !rValueLoad->getType()->isPointerTy()) {
+    if (it->isVectorType(lValueLoad) && (!it->isVectorType(rValueLoad) && !it->isIntervalType(rValueLoad))) {
         lTypeP = it->getVectorElementType(lValueLoad);
         rTypeP = rValueLoad->getType();
 
@@ -501,8 +501,8 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
                 return it->makePair(lValueLoad, rValueLoad);
             }
         } else {
-            // Todo: make new error node for vectors
-            auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
+            // Todo: make new error node for vectors, somehow get size into error
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
             eb->printError(error);
 
             return it->makePair(lValueLoad, rValueLoad);
@@ -510,7 +510,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     }
 
     // Type promotion between scalar and vector where rightExpr is vector
-    else if (rValueLoad->getType()->isPointerTy() && !lValueLoad->getType()->isPointerTy()) {
+    else if (it->isVectorType(rValueLoad) && (!it->isVectorType(lValueLoad) && it->isIntervalType(lValueLoad))) {
         lTypeP = lValueLoad->getType();
         rTypeP = it->getVectorElementType(rValueLoad);
 
@@ -539,67 +539,106 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
                 return it->makePair(lValueLoad, rValueLoad);
             }
         } else {
-            // Todo: make new error node for vectors
-            auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
+            // Todo: make new error node for vectors, somehow get size into error
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
             eb->printError(error);
 
             return it->makePair(lValueLoad, rValueLoad);
         }
 
-    // Type promotion between vector and vector
-    } else {
-        auto cb = new CondBuilder(globalCtx, ir, mod);
 
-        lTypeP = it->getVectorElementType(lValueLoad);
-        rTypeP = it->getVectorElementType(rValueLoad);
-
-        lType = getType(lTypeP);
-        rType = getType(rTypeP);
-
-        castType = typePTable[lType][rType];
-        lTypeString = typePTable[lType][lType];
-        rTypeString = typePTable[rType][rType];
-
-        llvm::Value *lSize = it->getValFromStruct(lValueLoad, it->getConsi32(VEC_LEN_INDEX));
-        llvm::Value *rSize = it->getValFromStruct(rValueLoad, it->getConsi32(VEC_LEN_INDEX));
-
-        size = ir->CreateAlloca(intTy);
-        llvm::Value *cond = ir->CreateICmpSLT(lSize, rSize);
-        cb->beginIf(cond);
-
-        // Set size as rightExpr
-        ir->CreateStore(rSize, size);
-
-        cb->endIf();
-        cb->beginElse();
-
-        // Set size as leftExpr
-        ir->CreateStore(lSize, size);
-
-        cb->finalize();
-
-        size = ir->CreateLoad(size);
-
-        if (lTypeString == rTypeString) {
-            lValueLoad = createVecFromVec(lValueLoad, rTypeP, size, line);
-            rValueLoad = createVecFromVec(rValueLoad, rTypeP, size, line);
-
-            return it->makePair(lValueLoad, rValueLoad);
-        } else if (castType == "real") {
-            if (lTypeString == "int") {
-                lValueLoad = createVecFromVec(lValueLoad, realTy, size, line);
-                rValueLoad = createVecFromVec(rValueLoad, realTy, size, line);
-
-                return it->makePair(lValueLoad, rValueLoad);
-            } else {
-                // Todo: make new error node for vectors
-                auto *error = new ScalarErrorNode(lTypeString, rTypeString, line);
-                eb->printError(error);
-
-                return it->makePair(lValueLoad, rValueLoad);
-            }
-        }
     }
 
+    // Type promotion between vector and interval where leftExpr is vector and rightExpr is the interval
+    else if(it->isVectorType(lValueLoad) && it->isIntervalType(rValueLoad)) {
+        // Create vector from interval
+        rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
+        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+    }
+
+    // Type promotion between vector and interval where leftExpr is interval and rightExpr is the vector
+    else if(it->isIntervalType(lValueLoad) && it->isVectorType(rValueLoad)) {
+        // Create vector from interval
+        rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
+        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+    }
+
+    // Type promotion between vector and vector
+    else {
+       return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+    }
+
+}
+
+InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line) {
+    int lType;
+    int rType;
+    llvm::Type *lTypeP;
+    llvm::Type *rTypeP;
+    std::string castType;
+    std::string lTypeString;
+    std::string rTypeString;
+    llvm::Value *size;
+
+    auto cb = new CondBuilder(globalCtx, ir, mod);
+
+    lTypeP = it->getVectorElementType(leftExpr);
+    rTypeP = it->getVectorElementType(rightExpr);
+
+    lType = getType(lTypeP);
+    rType = getType(rTypeP);
+
+    castType = typePTable[lType][rType];
+    lTypeString = typePTable[lType][lType];
+    rTypeString = typePTable[rType][rType];
+
+    llvm::Value *lSize = it->getValFromStruct(leftExpr, it->getConsi32(VEC_LEN_INDEX));
+    llvm::Value *rSize = it->getValFromStruct(rightExpr, it->getConsi32(VEC_LEN_INDEX));
+
+    size = ir->CreateAlloca(intTy);
+    llvm::Value *cond = ir->CreateICmpSLT(lSize, rSize);
+    cb->beginIf(cond);
+
+    // Set size as rightExpr
+    ir->CreateStore(rSize, size);
+
+    cb->endIf();
+    cb->beginElse();
+
+    // Set size as leftExpr
+    ir->CreateStore(lSize, size);
+
+    cb->finalize();
+
+    size = ir->CreateLoad(size);
+
+    if (lTypeString == rTypeString) {
+        leftExpr = createVecFromVec(leftExpr, rTypeP, size, line);
+        rightExpr = createVecFromVec(rightExpr, rTypeP, size, line);
+
+        return it->makePair(leftExpr, rightExpr);
+    } else if (castType == "real") {
+        if (lTypeString == "int") {
+            leftExpr = createVecFromVec(leftExpr, realTy, size, line);
+            rightExpr = createVecFromVec(rightExpr, realTy, size, line);
+
+            return it->makePair(leftExpr, rightExpr);
+        } else {
+            // Todo: make new error node for vectors, somehow get size into error
+            auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
+            eb->printError(error);
+
+            return it->makePair(leftExpr, rightExpr);
+        }
+    } else {
+        auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
+        eb->printError(error);
+
+        return it->makePair(leftExpr, rightExpr);
+    }
 }
 

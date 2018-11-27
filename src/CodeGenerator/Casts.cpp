@@ -107,33 +107,52 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     vec = it->castVectorToType(vec, type);
 
-    // This is for cases such as: as<integer vector[3]>(1)
-    if(!(it->isVectorType(exprP) && it->isIntervalType(exprP))) {
-        // Todo: Add error for casting without extension (size)
-        if(!size) {
-            assert(size);
+    // This is for cases such as: as<integer vector[3]>(1) and as<integer vector>(1)
+    if(!it->isVectorType(exprP) && !it->isIntervalType(exprP)) {
+        if(size) {
+            et->initVector(vec, size);
+            vec = it->castVectorToType(vec, type);
+
+            for (unsigned long i = 0; i < llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(); i++) {
+                expr = ct->varCast(type, exprP, node->getLine());
+                values->push_back(expr);
+            }
+
+            it->setVectorValues(vec, values);
+            return vec;
+        } else {
+            std::string castType = it->getType(type, nullptr);
+            std::string exprType = it->getType(exprP->getType(), nullptr);
+
+            auto *error = new VectorErrorNode(castType, exprType, node->getLine());
+            eb->printError(error);
+        }
+    }
+
+    // Todo: Add proper error handling for this case: as<character vector>([1.0,2.0])
+    // This is for cases such as: as<integer vector>([1,2]) and as<integer vector[4]>([1,2])
+    else if(it->isVectorType(exprP)){
+
+        vec = vectorNoSizeCast(vec, exprP, type, node->getLine());
+
+        if(size) {
+            llvm::Value *newVec = et->getNewVector(it->getConstFromType(type));
+            newVec = it->castVectorToType(newVec, type);
+            et->initVector(newVec, size);
+
+            et->copyVectorElements(newVec, vec);
+
+            return newVec;
         }
 
-        et->initVector(vec, size);
-        vec = it->castVectorToType(vec, type);
-
-        for(unsigned long i = 0; i < llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue(); i++) {
-            expr = ct->varCast(type, exprP, node->getLine());
-            values->push_back(expr);
-        }
-
-        it->setVectorValues(vec, values);
         return vec;
     }
 
+    // This is for cases such as: as<integer vector>(1..3) and as<integer vector[2]>(1..3);
     else if(it->isIntervalType(exprP)) {
-        std::cout << "this is interval to vector casting\n";
-
-        return nullptr;
-    }
-
-    else {
-        vec = vectorNoSizeCast(vec, exprP, type, node->getLine());
+        // Create a integer vector by default
+        vec = et->getVectorFromInterval(exprP, it->getConsi32(1));
+        ir->CreatePointerCast(vec, intVecTy->getPointerTo());
 
         if(size) {
             llvm::Value *newVec = et->getNewVector(it->getConstFromType(type));

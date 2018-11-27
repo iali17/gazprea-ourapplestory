@@ -93,12 +93,12 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
-
+/*
     // todo - dont use getType, check left & right llvm types
     if (node->getLeft()->getType() == INTERVAL || node->getRight()->getType() == INTERVAL){
         return IntervalAdd(left, right);
     }
-
+*/
     //check for non base type cases
     if(it->isVectorType(left)){
         return performInfixVectorOp(node, left, right);
