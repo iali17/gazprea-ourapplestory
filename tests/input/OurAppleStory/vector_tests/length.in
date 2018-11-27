@@ -1,0 +1,5 @@
+procedure main() returns integer{
+	var out = std_output();
+	length([1,2,3,4,5]) -> out; '\n' -> out;
+	return 0;
+}

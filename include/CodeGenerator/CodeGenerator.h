@@ -73,6 +73,7 @@ public:
     llvm::Value* visit(AndNode            *node) override;
     llvm::Value* visit(OrNode             *node) override;
     llvm::Value* visit(XOrNode            *node) override;
+    llvm::Value* visit(LengthNode         *node) override;
     llvm::Value* visit(NegateNode         *node) override;
     llvm::Value* visit(ContinueNode       *node) override;
     llvm::Value* visit(BreakNode          *node) override;

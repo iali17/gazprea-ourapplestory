@@ -129,6 +129,9 @@ public:
         else if (dynamic_cast<XOrNode *>(node)) {
             ret =  visit((XOrNode *) node);
         }
+        else if (dynamic_cast<LengthNode *>(node)) {
+            ret =  visit((LengthNode *) node);
+        }
         else if (dynamic_cast<LTENode *>(node)) {
             ret =  visit((LTENode *) node);
         }
@@ -267,6 +270,7 @@ public:
     llvm::Value* visit(AndNode *node) override { return nullptr;};
     llvm::Value* visit(OrNode *node) override { return nullptr;};
     llvm::Value* visit(XOrNode *node) override { return nullptr;};
+    llvm::Value* visit(LengthNode *node) override { return nullptr;};
     llvm::Value* visit(NegateNode *node) override { return nullptr;};
     llvm::Value* visit(GTENode *node) override { return nullptr;};
     llvm::Value* visit(LTENode *node) override { return nullptr;};

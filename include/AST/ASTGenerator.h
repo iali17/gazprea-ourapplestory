@@ -95,6 +95,7 @@ private:
     antlrcpp::Any visitGenerator(gazprea::GazpreaParser::GeneratorContext *ctx) override;
     antlrcpp::Any visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVectorExprContext *ctx) override;
     antlrcpp::Any visitFilter(gazprea::GazpreaParser::FilterContext *ctx) override;
+    antlrcpp::Any visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) override;
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
     std::vector<std::string> split(const std::string& s, char delimiter);

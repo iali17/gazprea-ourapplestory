@@ -45,7 +45,6 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
     return vec;
 }
 
-
 llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     VectorNode *vectorNode = nullptr;
     auto *vectorType = dynamic_cast<VectorType *>(node->getVectorType());
@@ -94,7 +93,6 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     return nullptr;
 }
 
-
 llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
     llvm::Value *vecPtr = visit(node->getExpr());
     llvm::Type * ty = it->getVectorElementType(vecPtr);
@@ -102,3 +100,7 @@ llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
     return it->castVectorToType(vecPtr, ty);
 }
 
+llvm::Value *CodeGenerator::visit(LengthNode *node) {
+    llvm::Value *vec = visit(node->getExpr());
+    return et->getVectorLength(vec);
+}
