@@ -365,6 +365,7 @@ void copyVectorElements(void *v_dest, void *v_src){
 	int numElements = *dest->numElements;
 	void *src_p, *dest_p;
 
+
 	//copy values. note that we load safe from the source vector
 	for(i = 0; i < numElements; i++){
 		src_p  = getVectorElementPointerSafe(src, i);

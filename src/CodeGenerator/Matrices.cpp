@@ -59,6 +59,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     for(uint i = 0; i < vectorNodes->size(); i++){
         vectorNode = vectorNodes->at(i);
         vPtr       = visit(vectorNode);
+        vPtr       = et->getVectorCopy(vPtr);
         vectors->push_back(vPtr);
 
         //set the max num cols
@@ -89,13 +90,23 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     matrix  = et->getNewMatrix(consTy);
     et->initMatrix(matrix, numRows, numCols);
 
+    //cast matrix to proper type
+    matrix = it->castMatrixToType(matrix, vecTy);
+
+    //
+    llvm::Value *ptr = it->getPtrFromStruct(matrix, it->getConsi32(MATRIX_ELEM_INDEX));
+    llvm::Value *curRowPtr;
+    llvm::Value *loadValue;
+
     //assign all of the matrix values
     for(uint i = 0; i < vectorNodes->size(); i++){
         //TODO - write an internal tools function to assign vector values to another THAT ALSO PERFORMS IMPLICIT UPCASTING
-        it->setMatrixValues(matrix, vectors);
+        //it->setMatrixValues(matrix, vectors);
+        curRowPtr = ir->CreateGEP(matrix, it->getConsi32(i));
+        et->copyVectorElements(curRowPtr, vectors->at(i));
     }
 
-    return it->castMatrixToType(matrix, vecTy);
+    return matrix;
 }
 
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {

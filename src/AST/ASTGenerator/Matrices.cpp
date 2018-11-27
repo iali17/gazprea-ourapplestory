@@ -15,8 +15,10 @@ antlrcpp::Any ASTGenerator::visitMatrixExpr(gazprea::GazpreaParser::MatrixExprCo
 
 antlrcpp::Any ASTGenerator::visitMatrix(gazprea::GazpreaParser::MatrixContext *ctx) {
     auto *expr  = new std::vector<ASTNode *>;
+
     for(auto vector : ctx->vector()){
         expr->push_back((ASTNode *) visit(vector));
     }
+
     return (ASTNode *) new MatrixNode(expr, (int)ctx->getStart()->getLine());
 }

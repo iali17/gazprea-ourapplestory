@@ -45,8 +45,6 @@ void initMatrix(void * v_matrix,  int numRows, int numCols){
         *(mat->elements + i) = *(vector *) getEmptyVector(*mat->type);
         initVector(mat->elements + i, numCols);
     }
-
-    setNullMatrix(mat);
 }
 
 /**
@@ -180,19 +178,24 @@ void printMatrix(void *v_matrix){
     //loop vars
     int numRows = *mat->numRows;
     int curRow  = 0;
-    vector * curVec;
+    vector * curVec = mat->elements;
 
     //exit is no rows
     if(numRows <= 0) return;
 
     for(curRow = 0; curRow < numRows - 1; curRow++){
-        curVec = mat->elements + curRow;
-        printVector(curVec);
+        printVector(curVec++);
         printf("\n");
     }
+    if(numRows)
+        printVector(curVec);
 
-    curVec = mat->elements + curRow;
-    printVector(curVec);
+/*
+    if(numRows) {
+        curVec = mat->elements + curRow;
+        printVector(curVec);
+    }
+*/
 }
 
 /**
