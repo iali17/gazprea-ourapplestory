@@ -92,6 +92,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     //assign all of the matrix values
     for(uint i = 0; i < vectorNodes->size(); i++){
         //TODO - write an internal tools function to assign vector values to another THAT ALSO PERFORMS IMPLICIT UPCASTING
+        it->setMatrixValues(matrix, vectors);
     }
 
     return it->castMatrixToType(matrix, vecTy);
