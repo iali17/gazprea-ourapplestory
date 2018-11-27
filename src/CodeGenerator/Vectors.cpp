@@ -139,3 +139,31 @@ llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx, bool
         return ptr;
     return ir->CreateLoad(ptr);
 }
+
+/**
+ * There are teo main cases:
+ *  - index by integer
+ *  - index by vector
+ * In the first case we can do the store directly, otherwise we call an external function to do the assignment
+ * @param idxExpr
+ * @param dest
+ * @param idxVec
+ * @param src
+ * @return
+ */
+llvm::Value *CodeGenerator::vectorSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src){
+    llvm::Value *idx = idxVec->at(0);
+    if((dest->getType() == realVecTy->getPointerTo()) && (dest->getType() == intVecTy->getPointerTo())){
+        llvm::Value *size  = it->getValFromStruct(src, it->getConsi32(VEC_TYPE_INDEX));
+        src = ct->createVecFromVec(src, realTy, size, idxExpr->getLine());
+    }
+    else if(not(src->getType()->isPointerTy())){
+        if(dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
+            src = ct->varCast(realTy, src, idxExpr->getLine());
+        ir->CreateStore(src, visit(idxExpr));
+        return nullptr;
+    }
+
+    et->assignFromVector(dest, idx, src);
+    return nullptr;
+}

@@ -170,24 +170,28 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     return nullptr;
 }
 
+/**
+ * deals with slice assignment. we extract some data and then pass it to the appropraite function
+ * @param node
+ * @return
+ */
 llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
-    llvm::Value *dest              = visit(((IndexNode *)node->getLeft())->getLHS());
-    std::vector<ASTNode *> *idxVec = ((IndexNode *)node->getLeft())->getIndexExpr();
-    llvm::Value *src               = visit(node->getRight());
+    llvm::Value *dest                = visit(((IndexNode *)node->getLeft())->getLHS());
+    std::vector<ASTNode *> *idxNodes = ((IndexNode *)node->getLeft())->getIndexExpr();
+    llvm::Value *src                 = visit(node->getRight());
+
+    auto *idxVec = new std::vector<llvm::Value *>;
+    for(uint i = 0; i < idxNodes->size(); i++){
+        idxVec->push_back(visit(idxNodes->at(i)));
+    }
 
     //vector only
-    llvm::Value *idx = visit(idxVec->at(0));
-    if((dest->getType() == realVecTy->getPointerTo()) && (dest->getType() == intVecTy->getPointerTo())){
-        llvm::Value *size  = it->getValFromStruct(src, it->getConsi32(VEC_TYPE_INDEX));
-        src = ct->createVecFromVec(src, realTy, size, node->getLine());
-    }
-    else if(not(src->getType()->isPointerTy())){
-        if(dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
-            src = ct->varCast(realTy, src, node->getLine());
-        ir->CreateStore(src, visit(node->getLeft()));
-        return nullptr;
-    }
+    if(it->isVectorType(dest))
+        return vectorSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
 
-    et->assignFromVector(dest, idx, src);
+    //matrix
+    if(it->isMatrixType(dest))
+        return matrixSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
+
     return nullptr;
 }

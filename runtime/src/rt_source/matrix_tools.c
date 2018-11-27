@@ -327,8 +327,6 @@ void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
         row = rows[i];
         for (j = 0; j < numCols; j++) {
             col   = cols[j];
-            left  = (ret->elements +   i)->elements + j;
-            right = (mat->elements + row)->elements + col;
             left  = getVectorElementPointer(ret->elements +   i, j);
             right = getVectorElementPointer(mat->elements + row, col);
             assignPointers(&left, &right, type);

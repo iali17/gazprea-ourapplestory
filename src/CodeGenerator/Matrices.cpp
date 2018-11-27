@@ -100,3 +100,9 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {
     return nullptr;
 }
+
+
+llvm::Value *CodeGenerator::matrixSliceAssign(IndexNode *idxExpr, llvm::Value *dest, std::vector<llvm::Value *> *idxVec,
+                                              llvm::Value *src) {
+    return nullptr;
+}
