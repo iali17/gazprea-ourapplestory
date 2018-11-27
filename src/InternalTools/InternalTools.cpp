@@ -509,15 +509,15 @@ bool InternalTools::isMatrixType(llvm::Value *ptr) {
 }
 
 bool InternalTools::isDeclVectorType(llvm::Type *type) {
-    if(type == intVecTy) {
+    if(type == intVecTy || type == intVecTy->getPointerTo()) {
         return true;
-    } else if(type == realVecTy) {
+    } else if(type == realVecTy || type == realVecTy->getPointerTo()) {
         return true;
-    } else if(type == charVecTy) {
+    } else if(type == charVecTy || type == charVecTy->getPointerTo()) {
         return true;
-    } else if(type == boolVecTy) {
+    } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return true;
-    } else if(type == strTy) {
+    } else if(type == strTy || type == strTy->getPointerTo()) {
         return true;
     }
 
@@ -547,13 +547,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy || ty == boolVecTy)
+    if(ty == boolTy || ty == boolVecTy->getPointerTo())
         return getConsi32(BOOLEAN);
-    else if (ty == charTy || ty == charVecTy)
+    else if (ty == charTy || ty == charVecTy->getPointerTo())
         return getConsi32(CHAR);
-    else if (ty == intTy || ty == intVecTy)
+    else if (ty == intTy || ty == intVecTy->getPointerTo())
         return getConsi32(INTEGER);
-    else if (ty == realTy || ty == realVecTy)
+    else if (ty == realTy || ty == realVecTy->getPointerTo())
         return getConsi32(REAL);
 
     return nullptr;
@@ -665,13 +665,13 @@ std::string InternalTools::getVectorTypeString(llvm::Value *vec) {
 }
 
 llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
-    if(type == intVecTy) {
+    if(type == intVecTy || type == intVecTy->getPointerTo()) {
         return intTy;
-    } else if(type == realVecTy) {
+    } else if(type == realVecTy || type == realVecTy->getPointerTo()) {
         return realTy;
-    } else if((type == charVecTy) || (type == strTy)) {
+    } else if((type == charVecTy) || (type == strTy) || type == charVecTy->getPointerTo() || type == strTy->getPointerTo()) {
         return charTy;
-    } else if(type == boolVecTy) {
+    } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return boolTy;
     }
 
