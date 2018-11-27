@@ -35,10 +35,10 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
 
-    if (node->getTypeIds()->empty() && (node->getType() == TUPLE)) {
+    if (node->getTypeIds()->empty() && ((node->getType() == TUPLE) || it->isVectorType(val))) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
-    } else if (node->getTypeIds()->empty() && it->isStructType(val)) {
+    } else if (node->getTypeIds()->empty() && it->isTupleType(val)) {
         ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
         ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
@@ -62,6 +62,8 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
         if (type->isStructTy()) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+        } else if (type->isVectorTy()) {
+            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
         } else {
             val = ct->typeAssCast(type, val, node->getLine());
             ir->CreateStore(val, ptr);
