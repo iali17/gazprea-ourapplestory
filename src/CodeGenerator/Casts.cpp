@@ -148,6 +148,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
         return vec;
     }
 
+    // Todo: Bug with casting integer to real: as<real vector[3]>(1..2)
     // This is for cases such as: as<integer vector>(1..3) and as<integer vector[2]>(1..3);
     else if(it->isIntervalType(exprP)) {
         // Create a integer vector by default
