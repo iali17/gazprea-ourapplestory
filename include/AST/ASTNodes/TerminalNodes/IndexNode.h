@@ -9,13 +9,13 @@
 
 class IndexNode : public ASTNode {
 public:
-    explicit IndexNode(std::vector<ASTNode *>* exprIndex, int indexSize, int line);
-    std::vector<ASTNode *>* getExprs();
-    int getIndexSize();
+    IndexNode(ASTNode *LHS, std::vector<ASTNode *> *indexExpr, int line);
+    ASTNode *getLHS() const;
+    std::vector<ASTNode *> *getIndexExpr() const;
 
 protected:
-    int indexSize;
-    std::vector<ASTNode *>* exprIndex;
+    ASTNode *LHS;
+    std::vector<ASTNode *> *indexExpr;
 };
 
 #endif //GAZPREABASE_INDEXNODE_H

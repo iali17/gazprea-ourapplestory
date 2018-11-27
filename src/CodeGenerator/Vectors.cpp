@@ -100,6 +100,26 @@ llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
     return it->castVectorToType(vecPtr, ty);
 }
 
+llvm::Value *CodeGenerator::visit(IndexNode *node) {
+    llvm::Value *LHS;
+    llvm::Value *indexVal;
+
+    if (dynamic_cast<IDNode *>(node->getLHS())) {
+        auto idNode = (IDNode *) node->getLHS();
+        //LHS = symbolTable->resolveSymbol(idNode->getID());
+    }
+
+    // indexing a vector
+    if (node->getIndexExpr()->size() == 1) {
+
+    }
+    // indexing a matrix
+    else if (node->getIndexExpr()->size() == 2) {
+
+    }
+    return nullptr;
+}
+
 llvm::Value *CodeGenerator::visit(LengthNode *node) {
     llvm::Value *vec = visit(node->getExpr());
     return et->getVectorLength(vec);
