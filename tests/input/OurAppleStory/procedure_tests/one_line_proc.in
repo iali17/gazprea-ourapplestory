@@ -1,0 +1,8 @@
+procedure mySquare2(integer x) returns integer = x^2;
+procedure mySquare1(integer x) returns integer = mySquare2(x) * x;
+
+procedure main() returns integer{
+	var out = std_output();
+	mySquare1(2) -> out; '\n' -> out;
+	return 0;
+}

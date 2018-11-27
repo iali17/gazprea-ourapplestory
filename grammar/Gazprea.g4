@@ -208,15 +208,20 @@ returnCall
 
 procedure
     : PROCEDURE Identifier params returnStat? block
+    | PROCEDURE Identifier params returnStat oneLineFunction
     ;
 
 function
-    : FUNCTION Identifier params RETURNS type functionReturns
+    : FUNCTION Identifier params returnStat functionReturns
+    ;
+
+oneLineFunction
+    : EQL expr SEMICOLON
     ;
 
 functionReturns
     : block
-    | EQL expr SEMICOLON
+    | oneLineFunction
     ;
 
 tuple

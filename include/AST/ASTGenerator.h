@@ -87,6 +87,7 @@ private:
     antlrcpp::Any visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) override;
     antlrcpp::Any visitFunctionCall(gazprea::GazpreaParser::FunctionCallContext *ctx) override;
     antlrcpp::Any visitArithExpr(gazprea::GazpreaParser::ArithExprContext *ctx) override;
+    antlrcpp::Any visitOneLineFunction(gazprea::GazpreaParser::OneLineFunctionContext *ctx) override;
     antlrcpp::Any visitCompExpr(gazprea::GazpreaParser::CompExprContext *ctx) override;
     antlrcpp::Any visitMatrix(gazprea::GazpreaParser::MatrixContext *ctx) override;
     antlrcpp::Any visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) override;
