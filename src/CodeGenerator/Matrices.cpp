@@ -96,3 +96,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
 
     return it->castMatrixToType(matrix, vecTy);
 }
+
+llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx) {
+    return nullptr;
+}

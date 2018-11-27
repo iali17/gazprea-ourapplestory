@@ -38,6 +38,7 @@ public:
     llvm::Value* visit(BasicBlockNode     *node) override;
     llvm::Value* visit(ASTNode            *node) override;
     llvm::Value* visit(ProcedureNode      *node) override;
+    llvm::Value* visit(SliceAssignNode    *node) override;
     llvm::Value* visit(ReturnNode         *node) override;
     llvm::Value* visit(INTNode            *node) override;
     llvm::Value* visit(RealNode           *node) override;
@@ -87,10 +88,10 @@ public:
     llvm::Value* visit(TupleNode          *node) override;
     llvm::Value* visit(PythonTupleAssNode *node) override;
     llvm::Value* visit(IndexTupleNode     *node) override;
+    llvm::Value* visit(IndexNode          *node) override;
     llvm::Value* visit(TupleMemberAssNode *node) override;
     llvm::Value* visit(TupleInputNode     *node) override;
     llvm::Value* visit(FunctionNode       *node) override;
-    llvm::Value* visit(IndexNode          *node) override;
     llvm::Value* visit(IntervalNode       *node) override;
     llvm::Value* visit(VectorNode         *node) override;
     llvm::Value* visit(MatrixNode         *node) override;
@@ -130,6 +131,10 @@ public:
 
     // Interval operation stuff
     llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
+
+    //indexing
+    llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx);
+    llvm::Value *indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx);
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

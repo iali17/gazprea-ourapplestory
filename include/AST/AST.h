@@ -74,6 +74,7 @@
 #include "AST/ASTNodes/StatementNodes/IntervalDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/PythonTupleAssNode.h"
 #include "AST/ASTNodes/StatementNodes/ReturnNode.h"
+#include "AST/ASTNodes/StatementNodes/SliceAssignNode.h"
 #include "AST/ASTNodes/StatementNodes/TupleDeclNode.h"
 #include "AST/ASTNodes/StatementNodes/TupleMemberAssNode.h"
 

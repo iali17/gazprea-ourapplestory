@@ -43,17 +43,48 @@ antlrcpp::Any ASTGenerator::visitEmptyVectorExpr(gazprea::GazpreaParser::EmptyVe
 }
 
 antlrcpp::Any ASTGenerator::visitIndexExpr(gazprea::GazpreaParser::IndexExprContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
     auto expr = new std::vector<ASTNode *>;
     auto LHS = (ASTNode *) visit(ctx->expr(0));
+    ASTNode * one = new INTNode(1, line);
+    ASTNode * cur = nullptr;
 
     for (unsigned long i = 1; i < ctx->expr().size(); ++i) {
-        expr->push_back((ASTNode *) visit(ctx->expr(i)));
+        cur = (ASTNode *) visit(ctx->expr(i));
+
+        if(dynamic_cast<IntervalNode *>(cur)){
+            cur = (ASTNode *) new ByNode(cur, one, line);
+        }
+        expr->push_back((ASTNode *) new SubNode(cur, one, line));
     }
 
-    return (ASTNode *) new IndexNode(LHS, expr, (int) ctx->getStart()->getLine());
+    return (ASTNode *) new IndexNode(LHS, expr, line);
 }
 
 antlrcpp::Any ASTGenerator::visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) {
     ASTNode * expr = (ASTNode *) visit(ctx->expr());
     return (ASTNode *) new LengthNode(expr, (int) ctx->getStart()->getLine());
+}
+
+
+antlrcpp::Any ASTGenerator::visitIndexAssign(gazprea::GazpreaParser::IndexAssignContext *ctx) {
+    int line      = (int) ctx->getStart()->getLine();
+    auto expr     = new std::vector<ASTNode *>;
+    auto LHS      = (ASTNode *) visit(ctx->expr(0));
+    auto assFrom  = (ASTNode *) visit(ctx->expr(ctx->expr().size() - 1));
+    ASTNode * one = new INTNode(1, line);
+    ASTNode * cur = nullptr;
+
+    for (unsigned long i = 1; i < ctx->expr().size() - 1; ++i) {
+        cur = (ASTNode *) visit(ctx->expr(i));
+
+        if(dynamic_cast<IntervalNode *>(cur)){
+            cur = (ASTNode *) new ByNode(cur, one, line);
+        }
+        expr->push_back((ASTNode *) new SubNode(cur, one, line));
+    }
+
+    ASTNode * assTo = (ASTNode *) new IndexNode(LHS, expr, line);
+
+    return (ASTNode *) new SliceAssignNode(assTo, assFrom, line);
 }

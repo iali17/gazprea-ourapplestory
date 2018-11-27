@@ -82,6 +82,7 @@ assignment
     | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
+    | expr '[' expr (COMMA expr)? ']' EQL expr SEMICOLON                    #indexAssign
     ;
 
 declaration
@@ -208,15 +209,20 @@ returnCall
 
 procedure
     : PROCEDURE Identifier params returnStat? block
+    | PROCEDURE Identifier params returnStat oneLineFunction
     ;
 
 function
-    : FUNCTION Identifier params RETURNS type functionReturns
+    : FUNCTION Identifier params returnStat functionReturns
+    ;
+
+oneLineFunction
+    : EQL expr SEMICOLON
     ;
 
 functionReturns
     : block
-    | EQL expr SEMICOLON
+    | oneLineFunction
     ;
 
 tuple
