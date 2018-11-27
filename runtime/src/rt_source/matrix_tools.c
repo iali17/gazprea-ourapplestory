@@ -185,14 +185,18 @@ void printMatrix(void *v_matrix){
     //exit is no rows
     if(numRows <= 0) return;
 
+    printf("[");
+
     for(curRow = 0; curRow < numRows - 1; curRow++){
         curVec = mat->elements + curRow;
         printVector(curVec);
-        printf("\n");
+        printf(" ");
     }
 
     curVec = mat->elements + curRow;
     printVector(curVec);
+
+    printf("]");
 }
 
 /**
