@@ -278,7 +278,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     }
     // Second case: Expr is a vector and size doesn't exist
     else if (it->isVectorType(expr) && !size) {
-        if (expr->getType() == type->getPointerTo()) {
+        if (expr->getType() == type->getPointerTo() || expr->getType() == type) {
             llvm::Value *exprlSize = it->getValFromStruct(expr, it->getConsi32(VEC_LEN_INDEX));
 
             llvm::Value *vec = et->getNewVector(declType);

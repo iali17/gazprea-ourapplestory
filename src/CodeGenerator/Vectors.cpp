@@ -56,8 +56,19 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     vec = it->castVectorToType(vec, type);
+
     if (size){
         et->initVector(vec, size);
+    }
+
+    if (dynamic_cast<IdnNode *>(node->getExpr())) {
+        et->setIdentityVector(vec);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
+        return nullptr;
+    } else if (dynamic_cast<NullNode *>(node->getExpr())) {
+        et->setNullVector(vec);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
+        return nullptr;
     }
 
     if (vectorNode) {

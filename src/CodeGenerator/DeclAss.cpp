@@ -157,7 +157,8 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
             left->setPtr(ptr);
         } else if (it->isVectorType(left->getPtr())) {
-            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
+            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine(),
+                    nullptr, (int)((VectorNode *)node->getExpr())->getElements()->size());
             left->setPtr(ptr);
         } else {
             val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
