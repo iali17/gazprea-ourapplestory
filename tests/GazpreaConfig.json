@@ -21,7 +21,7 @@
       {
           "stepName": "lli",
 	  
-	  "executablePath": "/cshome/c415/415-resources/llvmi/bin/lli",
+	  "executablePath": "/home/iali/llvm-ins/bin/lli",
           "arguments": [
           "$INPUT"
         ],

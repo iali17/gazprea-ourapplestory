@@ -1,8 +1,9 @@
 procedure increment(const integer x, var integer y) { 
     var out = std_output();
-  y = x + 1;
-  x = -1;
-  x -> out;
+    integer w = x;
+  y = w + 1;
+  w = -1;
+  w -> out;
 }
 
 procedure main() returns integer { 

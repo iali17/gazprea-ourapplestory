@@ -36,3 +36,7 @@ Symbol::Symbol(const std::string &scopeName, const std::string &name, int type, 
 Symbol::Symbol(const std::string &scopeName, const std::string &name, int type, llvm::Value *ptr, bool constant)
         : scopeName(scopeName), name(name), type(type), ptr(ptr), constant(constant) {}
 
+void Symbol::setConstant(bool constant) {
+    Symbol::constant = constant;
+}
+

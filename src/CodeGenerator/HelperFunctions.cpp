@@ -94,11 +94,11 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
 
             idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
             idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
-            ptr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
+            ptr = getPtrToVar(idNode, !constant, aliasVector, idx, uniqueIden);
 
         } else if (dynamic_cast<IDNode *> (arguNode->at(i))){
             idNode = symbolTable->resolveSymbol(((IDNode *) arguNode->at(i))->getID());
-            ptr = getPtrToVar(idNode, constant, aliasVector);
+            ptr = getPtrToVar(idNode, !constant, aliasVector);
         } else if ((val->getType() == charTy) || (val->getType() == intTy) || (val->getType() == realTy)){
             ptr = ir->CreateAlloca(val->getType());
             ir->CreateStore(val, ptr);

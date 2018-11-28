@@ -17,6 +17,7 @@ procedure main() returns integer {
 }
 
 function f(integer x) returns integer {
-    x = 2;
-    return x;
+    integer w = x;
+    w = x + 2;
+    return w;
 }
