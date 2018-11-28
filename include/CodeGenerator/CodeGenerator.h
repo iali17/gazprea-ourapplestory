@@ -122,7 +122,8 @@ public:
     llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
-    llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
+    llvm::Value *generateMatrix(std::string rowLoopVar, std::string colLoopVar, llvm::Value *rowRange, llvm::Value *colRange, ASTNode *exprNode);
+    llvm::Value *generateVector(std::string loopVar, llvm::Value *range, ASTNode *exprNode);
     llvm::Value *filterVector(std::string loopVar, llvm::Value *range, ASTNode *condNode);
     InternalTools::pair castForOp(InfixNode *node);
     InternalTools::pair castForConcat(InfixNode *node);

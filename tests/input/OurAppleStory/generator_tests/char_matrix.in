@@ -1,0 +1,7 @@
+procedure main() returns integer {
+    //out
+    var out = std_output();
+    
+    [i in 1..5, j in 1..5 | as<character>(i + j + 80) ] -> out;
+    return 0;
+}
