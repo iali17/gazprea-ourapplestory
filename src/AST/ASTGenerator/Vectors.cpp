@@ -31,8 +31,8 @@ antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeCo
 antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) {
     auto *expr  = new std::vector<ASTNode *>;
 
-    for(unsigned long i = 0; i < ctx->vector()->expr().size(); ++i){
-        expr->push_back((ASTNode *) visit(ctx->vector()->expr(i)));
+    for(auto exprNode : ctx->vector()->expr()){
+        expr->push_back((ASTNode *) visit(exprNode));
     }
 
     return (ASTNode *) new VectorNode(expr, (int)ctx->getStart()->getLine());
