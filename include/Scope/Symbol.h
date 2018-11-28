@@ -26,10 +26,6 @@ protected:
     std::string name;
     int type;
     llvm::Value *ptr;
-public:
-    void setConstant(bool constant);
-
-protected:
     bool constant;
 };
 #endif //VCALCBASE_SYMBOL_H
