@@ -615,10 +615,13 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
 llvm::Value *InternalTools::setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values) {
     llvm::Value *ptr = getPtrFromStruct(mat, getConsi32(MATRIX_ELEM_INDEX));
     llvm::Value *curRowPtr;
+    llvm::Value *loadValue;
+    llvm::Value *vecCopy;
 
     for(uint i = 0; i < values->size(); i++) {
         curRowPtr = ir->CreateGEP(ptr, getConsi32(i));
-        ir->CreateStore(values->at(i), curRowPtr);
+        loadValue = ir->CreateLoad(values->at(i));
+        ir->CreateStore(loadValue, curRowPtr);
     }
 
     return nullptr;

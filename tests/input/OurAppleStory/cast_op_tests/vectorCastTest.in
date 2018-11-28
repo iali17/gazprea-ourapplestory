@@ -1,0 +1,29 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    real vector x = [1,2,3];
+    real vector y[3] = [2,3,4];
+
+    integer vector u = 1..4;
+    integer vector v[2] = 1..2;
+
+    real vector w = [1.1,2.2] + 2..3;
+
+    integer vector z = [] + 1..10;
+
+    // Implicit type promotion from integer vector to real vector
+    x -> out; '\n' -> out;
+    y -> out; '\n' -> out;
+
+    // Implicit type promotion from interval to integer vector
+    u -> out; '\n' -> out;
+    v -> out; '\n' -> out;
+
+    // Implicit type promotion from interval to real vector
+    w -> out; '\n' -> out;
+
+    // Implicit null padding with addition of larger vector
+    z -> out; '\n' -> out;
+
+    return 0;
+}

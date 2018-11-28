@@ -384,7 +384,7 @@ void copyVectorElements(void *v_dest, void *v_src){
 	//cast the voids
 	vector * dest = (vector *) v_dest;
 	vector * src  = (vector *) v_src;
-	
+
 	//loop vars
 	int i = 0;
 	int ty = *dest->type;
@@ -461,11 +461,11 @@ void *getVectorSlice(void *v_vector, void *v_index){
 void *getVectorCopy(void *v_vector){
 	//cast the void
 	vector * src = (vector *) v_vector;
-	
+
 	//init the return
 	vector * ret = (vector *) getEmptyVector(*src->type);
 	initVector(ret, *src->numElements);
-	
+
 	//copy
 	copyVectorElements(ret, src);
 
@@ -716,4 +716,5 @@ void *getVectorBy(void * v_vector, int by){
 
     //return
     return ret;
+
 }
