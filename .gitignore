@@ -14,6 +14,7 @@ Makefile
 cmake_install.cmake
 runtime/CMakeFiles/
 runtime/src/rt_source/main.c
+runtime/src/rt_source/tests
 runtime/Makefile
 runtime/cmake_install.cmake
 runtime/src/CMakeFiles/

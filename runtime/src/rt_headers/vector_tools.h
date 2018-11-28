@@ -7,6 +7,7 @@ void *getEmptyVector(int type);
 void  initVector(void * v_vector,  int numMem);
 void  setNullVector(void * v_vector);
 void  setIdentityVector(void * v_vector);
+void  destroyVector(void * v_vector);
 
 //print related
 void printVector(void* v_vector);

@@ -7,10 +7,10 @@
  * @return pointer to matrix
  */
 void *getEmptyMatrix(int type){
-    matrix * mat = (matrix *) calloc(1, sizeof(matrix *));
-    mat->type    = (int *) malloc(sizeof(int*));
-    mat->numCols = (int *) malloc(sizeof(int*));
-    mat->numRows = (int *) malloc(sizeof(int*));
+    matrix * mat = (matrix *) calloc(1, sizeof(matrix));
+    mat->type    = (int *) malloc(sizeof(int));
+    mat->numCols = (int *) malloc(sizeof(int));
+    mat->numRows = (int *) malloc(sizeof(int));
 
     *mat->type     = type;
     *mat->numCols  = -1;
@@ -38,13 +38,61 @@ void initMatrix(void * v_matrix,  int numRows, int numCols){
 
     //allocate that space
     size_t memberSize = getMemberSize(*mat->type);
-    mat->elements = (vector *) calloc((size_t) numRows, memberSize);
+    mat->elements = (vector *)  calloc((size_t) numRows, sizeof(vector));
 
     int i = 0;
     for(i = 0; i < numRows; i++){
         *(mat->elements + i) = *(vector *) getEmptyVector(*mat->type);
         initVector(mat->elements + i, numCols);
     }
+}
+
+/**
+ * destructor for matrix
+ * @param v_matrix
+ */
+void destroyMatrix(void * v_matrix){
+    if(v_matrix == NULL)
+        return;
+
+    matrix * m = (matrix *) v_matrix;
+
+    //free vectors
+    int i = 0;
+    vector * v;
+
+    for(i = *m->numRows - 1; i >= 0; i--){
+        v = m->elements + i;
+        //free type
+        if(v->type != NULL)
+            free(v->type);
+
+        //free size
+        if(v->numElements != NULL)
+            free(v->numElements);
+
+        //free elements
+        if(v->elements != NULL)
+            free(v->elements);
+    }
+
+    if(m->type != NULL)
+        free(m->type);
+
+    //free numRows
+    if(m->numRows != NULL)
+        free(m->numRows);
+
+    //free numCols
+    if(m->numCols != NULL)
+        free(m->numCols);
+
+    //free elements ptr
+    if(m->elements != NULL)
+        free(m->elements);
+
+    //free matrix
+    free(v_matrix);
 }
 
 /**

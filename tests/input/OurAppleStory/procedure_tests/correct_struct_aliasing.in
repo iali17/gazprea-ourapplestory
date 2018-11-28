@@ -30,14 +30,20 @@ procedure main() returns integer {
 }
 
 procedure increment(const real x, const real y) {
-    x = y;
+    real w = x;
+    real v = y;
+    w = v;
 }
 
 procedure dontIncrement(const integer x, const integer y) {
-    y = x;
+    integer w = x;
+    integer v = y;
+    w = v;
 }
 
 procedure kindaIncrement(var real x, integer y, const integer w) {
+    integer yy = y;
+    integer ww = w;
     x = 3.4;
-    y = w;
+    yy = ww;
 }
