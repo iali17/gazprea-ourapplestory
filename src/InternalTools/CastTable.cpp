@@ -355,7 +355,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
 
             // Creates vector from interval
             llvm::Value *newVec = et->getVectorFromInterval(expr, it->getConsi32(1));
-            ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
+            newVec = ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
             llvm::Value *intervalSize = it->getValFromStruct(newVec, it->getConsi32(VEC_LEN_INDEX));
 
             if(type == intVecTy) {
@@ -389,7 +389,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
         if(it->isIntervalType(expr)) {
             // Creates vector from interval
             llvm::Value *newVec = et->getVectorFromInterval(expr, it->getConsi32(1));
-            ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
+            newVec = ir->CreatePointerCast(newVec, intVecTy->getPointerTo());
             llvm::Value *intervalSize = it->getValFromStruct(newVec, it->getConsi32(VEC_LEN_INDEX));
 
             if(type == intVecTy) {
@@ -458,6 +458,7 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
     return vec;
 }
 
+// Todo: Think this is broken actually
 llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *elemPtr;
@@ -467,7 +468,6 @@ llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, l
 
     // Create new empty vector
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
-    vec = it->castVectorToType(vec, type);
 
     // Counter
     llvm::Value *curVecSize = it->getConsi32(0);
@@ -477,6 +477,7 @@ llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, l
 
     // Creates empty vector of cast type and size of expr
     et->initVector(vec, maxSize);
+    vec = it->castVectorToType(vec, type);
 
     wb->beginWhile();
 
@@ -524,7 +525,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     if(it->isVectorType(lValueLoad) && it->isIntervalType(rValueLoad)) {
         // Create vector from interval
         rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
-        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+        rValueLoad = ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
 
         return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
     }
@@ -533,7 +534,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     else if(it->isIntervalType(lValueLoad) && it->isVectorType(rValueLoad)) {
         // Create vector from interval
         lValueLoad = et->getVectorFromInterval(lValueLoad, it->getConsi32(1));
-        ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+        lValueLoad = ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
 
         return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
     }
