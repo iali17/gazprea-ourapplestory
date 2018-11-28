@@ -318,7 +318,8 @@ antlrcpp::Any ASTGenerator::visitInStream(gazprea::GazpreaParser::InStreamContex
  */
 antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineContext *ctx) {
     std::string type = ctx->type()->getText();
-    std::string id = normalizeID(ctx->Identifier()->getText());
+    // Doesnt make sense to normalize these cause it should cause an error
+    std::string id = (ctx->Identifier()->getText());
 
     if(ctx->type()->tupleType()) {
         ASTNode *tuple = (ASTNode *) visit(ctx->type()->tupleType());
@@ -584,7 +585,7 @@ antlrcpp::Any ASTGenerator::visitGenerator(gazprea::GazpreaParser::GeneratorCont
     unsigned int i = 0;
 
     for(i = 0; i < ctx->Identifier().size(); i++){
-        loopVars->push_back(ctx->Identifier().at(i)->getText());
+        loopVars->push_back(normalizeID(ctx->Identifier().at(i)->getText()));
         curExpr = (ASTNode *) visit(ctx->expr().at(i));
         //youll have to deal with intervals in codegen
         ranges->push_back(curExpr);

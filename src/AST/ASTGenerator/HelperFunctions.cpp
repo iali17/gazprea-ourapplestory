@@ -14,7 +14,7 @@ ASTNode *ASTGenerator::getIndexNode(std::vector<std::string> values, int num, in
         index = (ASTNode *) new INTNode(val, lineNum);
     }
     else {
-        index = (ASTNode *) new IDNode(values[num], lineNum);
+        index = (ASTNode *) new IDNode(normalizeID(values[num]), lineNum);
     }
     return index;
 }
