@@ -15,8 +15,9 @@ procedure main() returns integer {
 }
 
 procedure f(const tuple(real,real) x) returns real {
-    x.1 = 2.0;
-    return x.1;
+   	var w = x;
+    w.1 = 2.0;
+    return w.1;
 }
 
 
