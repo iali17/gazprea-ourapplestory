@@ -1,3 +1,4 @@
+
 //
 // Created by kyle on 20/11/18.
 //
@@ -92,12 +93,17 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     //assign all of the matrix values
     for(uint i = 0; i < vectorNodes->size(); i++){
         //TODO - write an internal tools function to assign vector values to another THAT ALSO PERFORMS IMPLICIT UPCASTING
-        it->setMatrixValues(matrix, vectors);
     }
 
     return it->castMatrixToType(matrix, vecTy);
 }
 
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {
+    return nullptr;
+}
+
+
+llvm::Value *CodeGenerator::matrixSliceAssign(IndexNode *idxExpr, llvm::Value *dest, std::vector<llvm::Value *> *idxVec,
+                                              llvm::Value *src) {
     return nullptr;
 }

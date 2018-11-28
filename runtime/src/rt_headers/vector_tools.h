@@ -32,7 +32,7 @@ char  *getType(int type);
 void assignValFromPointers(void *l, void *r, int type);
 void assignPointers(const void *l, const void *r, int type);
 void copyVectorElements(void *v_dest, void *v_src);
-void strictCopyVectorElements(void *v_dest, void *v_src, int line);
+void assignFromVector(void * v_vec_dest, void * v_vec_idx, void * v_vec_src);
 
 //slicing, and cloning
 void *getVectorSlice(void *v_vector, void *v_index);

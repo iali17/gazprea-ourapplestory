@@ -25,6 +25,7 @@
 #define GET_OP_RESULT_VECTOR "getOpResultVector"
 #define CONCATENATE_VECTORS  "concatenateVectors"
 #define GET_VECTOR_BY        "getVectorBy"
+#define ASSIGN_FROM_VECTOR   "assignFromVector"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -121,6 +122,10 @@ void ExternalTools::registerVectorFunctions() {
     //getVectorBy
     fTy = llvm::TypeBuilder<void* (void *, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_BY, fTy));
+
+    //assignFromVector
+    fTy = llvm::TypeBuilder<void (void *, void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASSIGN_FROM_VECTOR, fTy));
 }
 
 /**
@@ -377,4 +382,20 @@ llvm::Value *ExternalTools::getVectorBy(llvm::Value *vec, llvm::Value *by) {
     llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, by});
     return ir->CreatePointerCast(ret, vec->getType());
+}
+
+/**
+ * assigns to the destination vector from the source at the given indices
+ * @param dest
+ * @param idx
+ * @param src
+ * @return
+ */
+llvm::Value *ExternalTools::assignFromVector(llvm::Value *dest, llvm::Value *idx, llvm::Value *src) {
+    llvm::Function *getV   = mod->getFunction(ASSIGN_FROM_VECTOR);
+    llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
+    llvm::Value    *v_idx  = ir->CreatePointerCast(idx, charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
+    llvm::Value    *ret    = ir->CreateCall(getV, {v_dest, v_idx, v_src});
+    return ret;
 }
