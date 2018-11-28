@@ -155,13 +155,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
         ir->CreatePointerCast(vec, intVecTy->getPointerTo());
 
         if(size) {
-            llvm::Value *newVec = et->getNewVector(it->getConstFromType(type));
-            newVec = it->castVectorToType(newVec, type);
-            et->initVector(newVec, size);
-
-            et->copyVectorElements(newVec, vec);
-
-            return newVec;
+            return ct->createVecFromVec(vec, type, size, node->getLine());
         }
 
         return vec;
