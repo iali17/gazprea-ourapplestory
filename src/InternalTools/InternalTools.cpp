@@ -147,7 +147,7 @@ void InternalTools::setUpTypes() {
     mTypes.push_back(intTy->getPointerTo());
     mTypes.push_back(intTy->getPointerTo());
     mTypes.push_back(intTy->getPointerTo());
-    mTypes.push_back(vecTy->getPointerTo()->getPointerTo());
+    mTypes.push_back(vecTy->getPointerTo());
     matrixTy = llvm::StructType::create(*globalCtx, mTypes, "matrix");
 
     //INTEGER
@@ -572,6 +572,17 @@ llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, llvm::Value *idx
 
 llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, llvm::Value *idx) {
     llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), idx});
+    return ir->CreateLoad(ptr);
+}
+
+llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, int idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), getConsi32(idx)});
+    llvm::Value *val = ir->CreateLoad(ptr);
+    return ir->CreateLoad(val);
+}
+
+llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, int idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), getConsi32(idx)});
     return ir->CreateLoad(ptr);
 }
 

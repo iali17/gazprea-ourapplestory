@@ -228,22 +228,17 @@ void printMatrix(void *v_matrix){
     int curRow  = 0;
     vector * curVec = mat->elements;
 
-    //exit is no rows
-    if(numRows <= 0) return;
 
+    printf("[");
+    
     for(curRow = 0; curRow < numRows - 1; curRow++){
         printVector(curVec++);
-        printf("\n");
+        printf(" ");
     }
     if(numRows)
         printVector(curVec);
 
-/*
-    if(numRows) {
-        curVec = mat->elements + curRow;
-        printVector(curVec);
-    }
-*/
+    printf("]");
 }
 
 /**
