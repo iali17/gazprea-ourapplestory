@@ -61,6 +61,7 @@ public:
     llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
     llvm::Value * getVectorCopy(llvm::Value * vec);
     llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);
+    llvm::Value * getVectorElementPointerSafe(llvm::Value * vec, llvm::Value *idx);
     llvm::Value * getDotProduct(llvm::Value *leftVec, llvm::Value *rightVec);
     llvm::Value * assignValFromPointers(llvm::Value * left, llvm::Value *right, llvm::Value *ty);
     llvm::Value * getOpResultVector(llvm::Value *left, llvm::Value *right);

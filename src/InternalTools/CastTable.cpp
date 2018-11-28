@@ -458,13 +458,12 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
     return vec;
 }
 
-// Todo: Think this is broken actually
 llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *elemPtr;
     llvm::Value *elemValue;
     llvm::Value *newVecElemPtr;
-    llvm::Value *elements = it->getPtrFromStruct(exprP, it->getConsi32(VEC_ELEM_INDEX));
+    llvm::Type *exprPType = it->getVectorElementType(exprP);
 
     // Create new empty vector
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
@@ -488,12 +487,12 @@ llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, l
     wb->insertControl(cmpStatement);
 
     // This loads a pointer to the position in the vector
-    elemPtr = ir->CreateGEP(elements, curVecSize);
+    elemPtr = et->getVectorElementPointerSafe(exprP, curVecSize);
+    elemPtr = ir->CreatePointerCast(elemPtr, exprPType->getPointerTo());
     elemValue = ir->CreateLoad(elemPtr);
 
     // Casted element value
     elemValue = varCast(type, elemValue, line);
-
     newVecElemPtr = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
     newVecElemPtr = ir->CreateGEP(newVecElemPtr, curVecSize);
 
@@ -517,7 +516,6 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     std::string castType;
     std::string lTypeString;
     std::string rTypeString;
-    llvm::Value *vec;
     llvm::Value *size;
 
 

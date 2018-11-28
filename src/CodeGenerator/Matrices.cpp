@@ -98,6 +98,63 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     return it->castMatrixToType(matrix, vecTy);
 }
 
+llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
+    MatrixNode *matrixNode = nullptr;
+    auto *matrixType = dynamic_cast<MatrixType *>(node->getMatrixType());
+
+    matrixNode = dynamic_cast<MatrixNode *>(node->getExpr());
+
+  /*
+    std::string stype = vectorType->getStringType();
+    llvm::Type *type = it->getVectorType(stype);
+    llvm::Value *size = visit(node->getSize());
+
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
+    vec = it->castVectorToType(vec, type);
+
+    if (size){
+        et->initVector(vec, size);
+    }
+
+    if (dynamic_cast<IdnNode *>(node->getExpr())) {
+        et->setIdentityVector(vec);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
+        return nullptr;
+    } else if (dynamic_cast<NullNode *>(node->getExpr())) {
+        et->setNullVector(vec);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
+        return nullptr;
+    }
+
+    if (vectorNode) {
+        if (!vectorNode->getElements()->empty()) {
+            llvm::Value *vecExpr = visit(node->getExpr());
+            llvm::Type *vecType = it->getDeclVectorType(stype);
+            llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
+
+            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, (int)vectorNode->getElements()->size());
+        }
+            // empty vector
+        else  {
+            et->initVector(vec, it->getConsi32(0));
+        }
+
+    }
+        // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested
+    else if (node->getExpr()) {
+
+        llvm::Value *regExpr = visit(node->getExpr());
+        llvm::Type *vecType = it->getDeclVectorType(stype);
+
+        vec = ct->typeAssCast(vecType, regExpr, node->getLine(), size);
+    }
+
+    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);
+
+    */
+    return nullptr;
+}
+
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {
     return nullptr;
 }
