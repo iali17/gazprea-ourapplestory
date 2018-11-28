@@ -7,6 +7,7 @@ void *getEmptyMatrix(int type);
 void  initMatrix(void * v_matrix,  int numRows, int numCols);
 void  setNullMatrix(void * v_matrix);
 void  setIdentityMatrix(void * v_matrix);
+void  destroyMatrix(void * v_matrix);
 
 //indexing
 void *indexScalarVector(void * v_matrix, int scalar, void * v_vector);

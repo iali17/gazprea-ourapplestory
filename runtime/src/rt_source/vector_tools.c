@@ -6,14 +6,40 @@
  * @return
  */
 void *getEmptyVector(int type){
-    vector* ret      = (vector *) calloc(1, sizeof(vector *));
-    ret->type        = (int *) malloc(sizeof(int *));
-    ret->numElements = (int *) malloc(sizeof(int *));
+    vector* ret      = (vector *) calloc(1, sizeof(vector));
+    ret->type        = (int *) malloc(sizeof(int));
+    ret->numElements = (int *) malloc(sizeof(int));
 
     *ret->type        = type;
     *ret->numElements = -1;
     ret->elements     = NULL;
     return ret;
+}
+
+/**
+ * destructor
+ * @param v_vector
+ */
+void destroyVector(void * v_vector){
+    if(v_vector == NULL)
+        return;
+
+    vector * v = (vector *) v_vector;
+
+    //free type
+    if(v->type != NULL)
+        free(v->type);
+
+    //free size
+    if(v->numElements != NULL)
+        free(v->numElements);
+
+    //free elements
+    if(v->elements != NULL)
+        free(v->elements);
+
+    //free vector
+    free(v);
 }
 
 /**
