@@ -7,7 +7,12 @@
 #include <AST/ASTNodes/BaseNodes/BaseLoopNode.h>
 
 class InLoopNode : public BaseLoopNode {
+protected:
+    ASTNode   * domain;
+    std::string loopVar;
 public:
-    InLoopNode(ASTNode *body, ASTNode *control, int line);
+    InLoopNode(BlockNode *blockNode, ASTNode *control, int line, ASTNode *domain, const std::string &loopVar);
+    ASTNode *getDomain() const;
+    const std::string &getLoopVar() const;
 };
 #endif //GAZPREABASE_INLOOPNODE_H

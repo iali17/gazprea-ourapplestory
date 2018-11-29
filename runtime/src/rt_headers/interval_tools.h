@@ -4,3 +4,4 @@
 
 void *getNewInterval(int lower, int upper);
 void *getVectorFromInterval(void * v_interval, int by);
+void destroyInterval(void * v_interval);

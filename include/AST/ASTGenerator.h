@@ -103,6 +103,7 @@ private:
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string normalizeID(std::string oldName);
+    BlockNode *convertNodeToBlock(ASTNode * node);
 };
 
 #endif //GAZPREABASE_ASTGENERATOR_H

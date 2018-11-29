@@ -1,0 +1,10 @@
+procedure main() returns integer {
+	var out = std_output();
+
+	loop a in 1..2, b in 1..2, c in 1..2, d in 1..2, e in 1..2, f in 1..2, g in 1..2, h in 1..2, i in 1..2, j in 1..2, k in 1..2, l in 1..2, m in 1..2, n in 1..2, o in 1..2, p in 1..2, q in 1..2{
+		if(a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q == 17*2)
+			[a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q] -> out;
+	}
+	'\n' -> out;
+	return 0;
+}
