@@ -10,13 +10,15 @@
 
 class ParamNode : public ASTNode {
 public:
-    ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line, TupleTypeNode *tupleType = nullptr);
+    ParamNode(const std::string &declaredType, const std::string &varName, bool isVar, int line, TupleTypeNode *tupleType = nullptr, int gType = -1);
 
     const std::string &getDeclaredType() const;
 
     const std::string &getVarName() const;
 
     bool isIsVar() const;
+
+    int getGType() const;
 
 protected:
     std::string declaredType;
@@ -27,6 +29,7 @@ public:
 
 protected:
     TupleTypeNode *tupleType;
+    int gType;
 };
 
 #endif //GAZPREABASE_PARAMNODE_H

@@ -22,7 +22,7 @@ llvm::Value *CodeGenerator::visit(CallNode *node) {
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //create function
     llvm::Function *F = declareFuncOrProc(node->getProcedureName(), node->getRetType(), node->getParamNodes(),
-                                          node->getType(), node->getLine(), node->getTupleType());
+                                          node->getType(), node->getLine(), node->getTupleType(), node->getGType());
 
     //generate body
     generateFuncOrProcBody(F, node->getParamNodes(), node->getBlock());
@@ -44,7 +44,7 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
 llvm::Value *CodeGenerator::visit(FunctionNode *node) {
     //create function
     llvm::Function *F = declareFuncOrProc(node->getFunctionName(), node->getRetType(), node->getParamNodes(),
-            node->getType(), node->getLine(), node->getTupleType());
+            node->getType(), node->getLine(), node->getTupleType(), node->getGType());
 
     //generate body
     generateFuncOrProcBody(F, node->getParamNodes(), node->getBlock());
