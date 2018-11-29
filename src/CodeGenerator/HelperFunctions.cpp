@@ -214,7 +214,7 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
 }
 
 llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
-        *paramsList, int nodeType, int line, TupleTypeNode *tupleType) {
+        *paramsList, int nodeType, int line, TupleTypeNode *tupleType, int gType) {
     std::vector<llvm::Type *> params;
     llvm::Type               *retType;
     llvm::FunctionType       *funcTy;
@@ -236,6 +236,10 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
     } else if (tupleType) {
         GazpreaType * gazpreaType = symbolTable->resolveType(strRetType);
         retType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
+    } else if (gType == VECTOR_T) {
+        auto nameSize = split(strRetType, '[');
+        strRetType = nameSize[0];
+        retType = it->getDeclVectorType(strRetType);
     } else {
         retType = symbolTable->resolveType(strRetType)->getTypeDef();
     }
@@ -245,9 +249,9 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
      *
      * Similar process to above, we just do it for each parameter
      */
-    for (auto it = paramsList->begin(); it!= paramsList->end(); ++it) {
+    for (auto ite = paramsList->begin(); ite!= paramsList->end(); ++ite) {
         //var decl
-        auto * pNode = (ParamNode *) it.operator*();
+        auto * pNode = (ParamNode *) ite.operator*();
         typeName = (pNode)->getDeclaredType();
 
         if(pNode->getTupleType() && not(symbolTable->resolveType(typeName))){
@@ -261,14 +265,19 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             structType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
 
             params.push_back(structType->getPointerTo());
-        } else {
+        } else if (pNode->getGType() == VECTOR_T) {
+            auto nameVec = split(typeName, '[');
+            typeName = nameVec[0];
+            params.push_back(it->getDeclVectorType(typeName)->getPointerTo());
+        }
+        else {
             params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
         }
     }
 
     symbolTable->addFunctionSymbol(functionName, nodeType, paramsList);
 
-    if(tupleType){
+    if(tupleType || gType == VECTOR_T){
         funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
     } else {
         funcTy = llvm::FunctionType::get(retType, params, false);
@@ -340,3 +349,16 @@ llvm::Value *CodeGenerator::getRange(ASTNode *range) {
     }
     return rangeVecPtr;
 }
+
+// from https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
+std::vector<std::string> CodeGenerator::split(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+

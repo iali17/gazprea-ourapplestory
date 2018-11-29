@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 #include "InternalTools/InternalTools.h"
 #include "InternalTools/CondBuilder.h"
@@ -117,7 +118,8 @@ public:
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
-    llvm::Function *declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line, TupleTypeNode * tupleType = nullptr);
+    llvm::Function *declareFuncOrProc(std::string functionName, std::string strRetType,
+            std::vector<ASTNode *> *paramsList, int nodeType, int line, TupleTypeNode * tupleType = nullptr, int gType = -1);
     void generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block);
     llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
@@ -129,6 +131,7 @@ public:
     InternalTools::pair castForConcat(InfixNode *node);
     InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
+    std::vector<std::string> split(const std::string& s, char delimiter);
 
     // Interval operation stuff
     llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
