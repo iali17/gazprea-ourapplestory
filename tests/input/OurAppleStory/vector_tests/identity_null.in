@@ -1,0 +1,82 @@
+procedure main() returns integer{
+    var out = std_output();
+    integer a[2] = null;
+    integer b[2] = [2,3] + [-1, -2];
+    integer c[2] = identity;
+
+    real vector d[2];
+    real vector e[2] = null;
+    real vector f[2] = [1.0, 2.0];
+
+    character g[*] = ['b','a'];
+    character vector h = reverse(g) || ['c', 'd'];
+    character vector i[*] = reverse(h);
+
+    integer vector j = [ 1, 2, 3]; 
+    var k = j + 1;
+
+    a->out; '\n'->out;
+    b->out; '\n'->out;
+    c->out; '\n'->out;
+    d->out; '\n'->out;
+    e->out; '\n'->out;
+    f->out; '\n'->out;
+    g->out; '\n'->out;
+    h->out; '\n'->out;
+    i->out; '\n'->out;
+    j->out; '\n'->out;
+    k->out; '\n'->out;
+
+
+	a = null;
+	b = null;
+	c = null;
+	d = null;
+	e = null;
+	f = null;
+	g = null;
+	h = null;
+	i = null;
+	j = null;
+	k = null;
+
+	a->out; '\n'->out;
+    b->out; '\n'->out;
+    c->out; '\n'->out;
+    d->out; '\n'->out;
+    e->out; '\n'->out;
+    f->out; '\n'->out;
+    g->out; '\n'->out;
+    h->out; '\n'->out;
+    i->out; '\n'->out;
+    j->out; '\n'->out;
+    k->out; '\n'->out;
+
+
+	a = identity;
+	b = identity;
+	c = identity;
+	d = identity;
+	e = identity;
+	f = identity;
+	g = identity;
+	h = identity;
+	i = identity;
+	j = identity;
+	k = identity;
+
+	a->out; '\n'->out;
+    b->out; '\n'->out;
+    c->out; '\n'->out;
+    d->out; '\n'->out;
+    e->out; '\n'->out;
+    f->out; '\n'->out;
+    g->out; '\n'->out;
+    h->out; '\n'->out;
+    i->out; '\n'->out;
+    j->out; '\n'->out;
+    k->out; '\n'->out;
+
+    return 0;
+}
+//weird comment ending cause why not?
