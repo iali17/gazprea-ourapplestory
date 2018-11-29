@@ -65,6 +65,9 @@ public:
     llvm::Value *getNegation(llvm::Value *expr);
     llvm::Value *getUnarySub(llvm::Value *expr);
 
+
+    llvm::Value *castMatrixIndex(llvm::Value *slice, llvm::Value *l, llvm::Value *r, llvm::Value *mat);
+
     pair makePair(llvm::Value *left, llvm::Value *right);
 	bool setIdentity(llvm::Type * type, llvm::Value * ptr);
 	bool setNull(llvm::Type * type, llvm::Value * ptr);
@@ -78,6 +81,8 @@ public:
     std::string getType(llvm::Type * type, llvm::Value *expr);
     llvm::Value *getConstFromType(llvm::Type* ty);
     llvm::Type *getVectorElementType(llvm::Value *vec);
+	llvm::Type *getMatrixVectorType(llvm::Value *mat);
+	llvm::Type *getMatrixElementType(llvm::Value *mat);
     llvm::Value *castVectorToType(llvm::Value *vec, llvm::Type *type);
 	llvm::Value *castMatrixToType(llvm::Value *mat, llvm::Type *type);
     llvm::Value *setVectorValues(llvm::Value *vec, std::vector<llvm::Value *> *values);

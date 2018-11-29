@@ -340,3 +340,31 @@ llvm::Value *CodeGenerator::getRange(ASTNode *range) {
     }
     return rangeVecPtr;
 }
+
+llvm::Value *CodeGenerator::getSingleIntegerVector(llvm::Value *val) {
+    llvm::Value *vec = et->getNewVector(it->getConsi32(INTEGER));
+    vec = ir->CreatePointerCast(vec, intVecTy->getPointerTo());
+    et->initVector(vec, it->getConsi32(1));
+
+    llvm::Value *oldScalar = ir->CreateAlloca(intTy);
+    ir->CreateStore(val, oldScalar);
+
+    llvm::Value *ptr = it->getPtrFromStruct(vec, VEC_ELEM_INDEX);
+    ptr = ir->CreateGEP(ptr, it->getConsi32(0));
+    et->assignValFromPointers(ptr, oldScalar, it->getConsi32(INTEGER));
+    return vec;
+}
+
+void CodeGenerator::setNullVecOrMat(llvm::Value *val) {
+    if(it->isMatrixType(val))
+        et->setIdentityMatrix(val);
+    else
+        et->setIdentityVector(val);
+}
+
+void CodeGenerator::setIdentityVecOrMat(llvm::Value *val) {
+    if(it->isMatrixType(val))
+        et->setIdentityMatrix(val);
+    else
+        et->setIdentityVector(val);
+}

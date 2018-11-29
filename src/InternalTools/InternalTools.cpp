@@ -584,6 +584,19 @@ llvm::Type *InternalTools::getVectorElementType(llvm::Value *vec) {
     return ptr->getType()->getPointerElementType();
 }
 
+llvm::Type *InternalTools::getMatrixVectorType(llvm::Value *mat) {
+    llvm::Value * ptr = getPtrFromStruct(mat, MATRIX_ELEM_INDEX);
+    return ptr->getType();
+}
+
+
+llvm::Type *InternalTools::getMatrixElementType(llvm::Value *mat) {
+    llvm::Value * vecPtr = getPtrFromStruct(mat, MATRIX_ELEM_INDEX);
+    llvm::Value * elmPtr = getPtrFromStruct(vecPtr, VEC_ELEM_INDEX);
+    return elmPtr->getType()->getPointerElementType();
+}
+
+
 llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, llvm::Value *idx) {
     llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), idx});
     llvm::Value *val = ir->CreateLoad(ptr);
@@ -753,4 +766,15 @@ int InternalTools::getVectorLength(llvm::Value *vec) {
     return counter;
 }
 
-
+llvm::Value *InternalTools::castMatrixIndex(llvm::Value *slice, llvm::Value *l, llvm::Value *r, llvm::Value *mat) {
+    llvm::Type * vecTy     = getMatrixVectorType(mat);
+    llvm::Type * vecElmtTy = getMatrixElementType(mat);
+    if(l->getType()->isPointerTy() && r->getType()->isPointerTy())
+        return slice;
+    else if(l->getType()->isPointerTy() || r->getType()->isPointerTy()){
+        return ir->CreatePointerCast(slice, vecTy);
+    }
+    else{
+        return ir->CreatePointerCast(slice, vecElmtTy->getPointerTo());
+    }
+}

@@ -25,6 +25,9 @@
 #define INT_MATRIX_MULT      "getIntMatrixMultiplication"
 #define REAL_MATRIX_MULT     "getRealMatrixMultiplication"
 #define CONCATENATE_MATRICES "concatenateMatrices"
+#define ASS_SCALAR_VECTOR    "assignScalarVector"
+#define ASS_VECTOR_SCALAR    "assignVectorScalar"
+#define ASS_VECTOR_VECTOR    "assignVectorVector"
 
 extern llvm::Type *charTy;
 extern llvm::Type *intMatrixTy;
@@ -71,15 +74,15 @@ void ExternalTools::registerMatrixFunctions() {
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(PRINT_MATRIX, fTy));
 
     //sliceScalarVector
-    fTy = llvm::TypeBuilder<void* (int, void *), false>::get(*globalCtx);
+    fTy = llvm::TypeBuilder<void* (void *, int, void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(SLICE_SCALAR_VECTOR, fTy));
 
     //sliceVectorScalar
-    fTy = llvm::TypeBuilder<void* (void *, int), false>::get(*globalCtx);
+    fTy = llvm::TypeBuilder<void* (void *, void *, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(SLICE_VECTOR_SCALAR, fTy));
 
     //sliceVectorVector
-    fTy = llvm::TypeBuilder<void* (void *, void*), false>::get(*globalCtx);
+    fTy = llvm::TypeBuilder<void* (void *, void *, void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(SLICE_VECTOR_VECTOR, fTy));
 
     //getMatrixElementPointer
@@ -97,6 +100,18 @@ void ExternalTools::registerMatrixFunctions() {
     //concatenateMatrices
     fTy = llvm::TypeBuilder<void* (void *, void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(CONCATENATE_MATRICES, fTy));
+
+    //assignScalarVector
+    fTy = llvm::TypeBuilder<void (void *, int, void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASS_SCALAR_VECTOR, fTy));
+
+    //assignVectorScalar
+    fTy = llvm::TypeBuilder<void (void *, void *, int, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASS_VECTOR_SCALAR, fTy));
+
+    //assignVectorVector
+    fTy = llvm::TypeBuilder<void (void *, void *, void *, void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASS_VECTOR_VECTOR, fTy));
 }
 
 /**
@@ -199,7 +214,7 @@ llvm::Value *ExternalTools::sliceMatrix(llvm::Value *mat, llvm::Value *l, llvm::
     else if(r->getType()->isPointerTy())
         return sliceScalarVector(mat, l, r);
     else
-        return nullptr;
+        return getMatrixElementPointer(mat, l, r);
 }
 
 /**
@@ -381,4 +396,35 @@ llvm::Value *ExternalTools::concatenateMatrices(llvm::Value *left, llvm::Value *
     llvm::Value    *v_right = ir->CreatePointerCast(right, charTy->getPointerTo());
     llvm::Value    *ret     = ir->CreateCall(getM, {v_left, v_right});
     return ir->CreatePointerCast(ret, left->getType());
+}
+
+llvm::Value *
+ExternalTools::assignScalarVector(llvm::Value *matrix, llvm::Value *scalar, llvm::Value *vector, llvm::Value *src) {
+    llvm::Function *getM  = mod->getFunction(ASS_SCALAR_VECTOR);
+    llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
+    llvm::Value    *v_vec = ir->CreatePointerCast(vector, charTy->getPointerTo());
+    llvm::Value    *v_src = ir->CreatePointerCast(src, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getM, {v_mat, scalar, v_vec, v_src});
+    return ret;
+}
+
+llvm::Value *
+ExternalTools::assignVectorScalar(llvm::Value *matrix, llvm::Value *vector, llvm::Value *scalar, llvm::Value *src) {
+    llvm::Function *getM  = mod->getFunction(ASS_VECTOR_SCALAR);
+    llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
+    llvm::Value    *v_vec = ir->CreatePointerCast(vector, charTy->getPointerTo());
+    llvm::Value    *v_src = ir->CreatePointerCast(src, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getM, {v_mat, v_vec, scalar, v_src});
+    return ret;
+}
+
+llvm::Value *ExternalTools::assignVectorVector(llvm::Value *matrix, llvm::Value *vectorRow, llvm::Value *vectorCol,
+                                               llvm::Value *src) {
+    llvm::Function *getM  = mod->getFunction(ASS_VECTOR_VECTOR);
+    llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
+    llvm::Value    *v_row = ir->CreatePointerCast(vectorRow, charTy->getPointerTo());
+    llvm::Value    *v_col = ir->CreatePointerCast(vectorCol, charTy->getPointerTo());
+    llvm::Value    *v_src = ir->CreatePointerCast(src, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getM, {v_mat, v_row, v_col, v_src});
+    return ret;
 }
