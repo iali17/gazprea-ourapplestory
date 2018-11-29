@@ -260,8 +260,55 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(InLoopNode *node) {
-    //todo - hopefully we can handle the iterator (in) in it's own node
-    //                THEN WE CAN DELETE THIS CLASS
+    llvm::Value * domain = visit(node->getDomain());
+
+    //loop idx
+    llvm::Value * curIdx = it->getConsi32(0);
+    llvm::Value * curIdxPtr = ir->CreateAlloca(intTy);
+    ir->CreateStore(curIdx, curIdxPtr);
+
+    //domain variables
+    llvm::Value *domainValPtrs  = it->getPtrFromStruct(domain, VEC_ELEM_INDEX);
+    llvm::Type  *domainType     = it->getVectorElementType(domain);
+    llvm::Value *curDomainVal;
+    llvm::Value *curDomainValPtr;
+    llvm::Value *numDomainElmts = it->getValFromStruct(domain, VEC_LEN_INDEX);
+
+    //add loop var to symbol table
+    symbolTable->pushNewScope();
+    llvm::Value *curLoopVarPtr = ir->CreateAlloca(domainType);
+    symbolTable->addSymbol(node->getLoopVar(), UNDEF, true, curLoopVarPtr);
+
+    auto * wb = new WhileBuilder(globalCtx, ir, mod);
+    whileStack->push(wb);
+    wb->beginWhile();
+
+    //load idx
+    curIdx = ir->CreateLoad(curIdxPtr);
+
+    //update variable
+    curDomainValPtr = ir->CreateGEP(domainValPtrs, curIdx);
+    curDomainVal    = ir->CreateLoad(curDomainValPtr);
+    ir->CreateStore(curDomainVal, curLoopVarPtr);
+
+    wb->beginInsertControl();
+    wb->insertControl(ir->CreateICmpSLT(curIdx, numDomainElmts));
+
+    //load idx again
+    curIdx = ir->CreateLoad(curIdxPtr);
+
+    //visit the block
+    ASTNode * b = node->getBlock();
+    visit(b);
+
+    //increment idx
+    curIdx = ir->CreateAdd(curIdx, it->getConsi32(1));
+    ir->CreateStore(curIdx, curIdxPtr);
+
+    wb->endWhile();
+    whileStack->pop();
+    symbolTable->popScope();
+
     return nullptr;
 }
 

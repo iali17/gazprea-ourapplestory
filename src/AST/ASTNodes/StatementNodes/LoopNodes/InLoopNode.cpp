@@ -3,4 +3,13 @@
 //
 #include "AST/ASTNodes/StatementNodes/LoopNodes/InLoopNode.h"
 
-InLoopNode::InLoopNode(ASTNode *body, ASTNode *control, int line) : BaseLoopNode((BlockNode *) body, control, line) {}
+InLoopNode::InLoopNode(BlockNode *blockNode, ASTNode *control, int line, ASTNode *domain, const std::string &loopVar)
+        : BaseLoopNode(blockNode, control, line), domain(domain), loopVar(loopVar) {}
+
+ASTNode *InLoopNode::getDomain() const {
+    return domain;
+}
+
+const std::string &InLoopNode::getLoopVar() const {
+    return loopVar;
+}

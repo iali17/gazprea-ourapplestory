@@ -9,9 +9,9 @@
  */
 void *getNewInterval(int lower, int upper){
     //allocate space
-    interval *ret = (interval *) calloc(1, sizeof(interval *));
-    ret->lower    = (int *) malloc(sizeof(int *));
-    ret->upper    = (int *) malloc(sizeof(int *));
+    interval *ret = (interval *) calloc(1, sizeof(interval));
+    ret->lower    = (int *) malloc(sizeof(int));
+    ret->upper    = (int *) malloc(sizeof(int));
 
     //set values
     *ret->lower = lower;
@@ -45,4 +45,23 @@ void *getVectorFromInterval(void * v_interval, int by){
     *v->numElements = j;
 
     return v;
+}
+
+/**
+ *
+ * @param v_interval
+ */
+void destroyInterval(void * v_interval){
+    if(v_interval == NULL)
+        return;
+
+    interval * i = (interval *) v_interval;
+
+    if(i->lower != NULL)
+        free(i->lower);
+
+    if(i->upper != NULL)
+        free(i->upper);
+
+    free(v_interval);
 }

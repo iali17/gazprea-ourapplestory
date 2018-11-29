@@ -206,7 +206,61 @@ antlrcpp::Any ASTGenerator::visitDoLoop(gazprea::GazpreaParser::DoLoopContext *c
  * @return
  */
 antlrcpp::Any ASTGenerator::visitIteratorLoop(gazprea::GazpreaParser::IteratorLoopContext *ctx) {
-    return GazpreaBaseVisitor::visitIteratorLoop(ctx);
+    auto * domains  = new std::vector<ASTNode *>;
+    auto * loopVars = new std::vector<std::string>;
+    auto * loops    = new std::vector<InLoopNode *>;
+    int maxIdx = ctx->expr().size() - 1;
+    //auto *
+    ASTNode * curDomain;
+    std::string curLoopVar;
+    ASTNode * block;
+    int line = (int) ctx->getStart()->getLine();
+
+    //fill vectors
+    for(uint i = 0; i < ctx->expr().size(); i++){
+        //get nodes
+        curDomain  = (ASTNode *) visit(ctx->expr().at(i));
+        curLoopVar = ctx->Identifier().at(i)->getText();
+        curLoopVar = normalizeID(curLoopVar);
+
+        //modify the by
+        if(dynamic_cast<IntervalNode *>(curDomain))
+            curDomain = (ASTNode *) new ByNode(curDomain, (ASTNode *) new INTNode(1, line), line);
+
+        //push into vector
+        domains->push_back(curDomain);
+        loopVars->push_back(curLoopVar);
+    }
+
+    block = (ASTNode *) visit(ctx->block());
+    loops->push_back(new InLoopNode((BlockNode *) block, nullptr, line, domains->at(maxIdx), loopVars->at(maxIdx)));
+
+    for(int i = maxIdx - 1; i >= 0; i--){
+        BlockNode * b = convertNodeToBlock(loops->back());
+        std::string lv = loopVars->at(i);
+        loops->push_back(new InLoopNode(b, nullptr, line, domains->at(i), lv));
+    }
+
+    return (ASTNode *) loops->back();
+}
+
+/**
+ * Converts a single statement to a block
+ * @param node
+ * @return
+ */
+BlockNode *ASTGenerator::convertNodeToBlock(ASTNode *node) {
+    if(dynamic_cast<BlockNode *>(node)) return (BlockNode *) node;
+
+    auto * statements = new std::vector<ASTNode *>;
+    statements->push_back(node);
+
+    int line = node->getLine();
+    ASTNode *declBlock = new BasicBlockNode(new std::vector<ASTNode *>, line);
+    ASTNode *bodyBlock = new BasicBlockNode(statements, line);
+
+
+    return new BlockNode(declBlock, bodyBlock, line);
 }
 
 /**
