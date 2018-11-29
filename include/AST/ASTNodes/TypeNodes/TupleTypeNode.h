@@ -4,9 +4,9 @@
 #define GAZPREABASE_TUPLETYPE_H
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
-class TupleType : public ASTNode {
+class TupleTypeNode : public ASTNode {
 public:
-    explicit TupleType(std::vector<ASTNode *> * decls, int line);
+    explicit TupleTypeNode(std::vector<ASTNode *> * decls, int line);
     std::vector<ASTNode *> *getDecls() const;
 
 protected:

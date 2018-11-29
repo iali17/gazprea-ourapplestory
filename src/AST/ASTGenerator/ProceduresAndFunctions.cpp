@@ -31,10 +31,10 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
     if(ret == procedureNames->end())
         procedureNames->insert(procName);
     std::string retType = "void";
-    TupleType * tupleType = nullptr;
+    TupleTypeNode * tupleType = nullptr;
 
     if(ctx->returnStat() && ctx->returnStat()->type()->tupleType()){
-        tupleType = (TupleType *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+        tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     }
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
 
@@ -62,7 +62,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
     for (unsigned long i = 0; i < ctx->param().size(); ++i){
         bool constant = nullptr == ctx->param().at(i)->VAR();
         if (ctx->param().at(i)->type()->tupleType()) {
-            TupleType *tt = (TupleType *) ((ASTNode *) visit(ctx->param().at(i)->type()->tupleType()));
+            TupleTypeNode *tt = (TupleTypeNode *) ((ASTNode *) visit(ctx->param().at(i)->type()->tupleType()));
             paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
                                               normalizeID(ctx->param().at(i)->Identifier()->getText()), constant,
                                               (int)ctx->getStart()->getLine(), tt));
@@ -95,9 +95,9 @@ antlrcpp::Any ASTGenerator::visitReturnCall(gazprea::GazpreaParser::ReturnCallCo
  */
 antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContext *ctx) {
     inFunction = true;
-    TupleType * tupleType = nullptr;
+    TupleTypeNode * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){
-        tupleType = (TupleType *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+        tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     }
     auto ret = functionNames->find(normalizeID(ctx->Identifier()->getText()));
     if(ret == functionNames->end())
@@ -138,9 +138,9 @@ antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoCont
     if(ret == procedureNames->end())
         procedureNames->insert(procName);
     std::string retType = "void";
-    TupleType * tupleType = nullptr;
+    TupleTypeNode * tupleType = nullptr;
     if(ctx->returnStat() && ctx->returnStat()->type()->tupleType()){
-        tupleType = (TupleType *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+        tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     }
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
@@ -154,9 +154,9 @@ antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoCont
     if(ret == functionNames->end())
         functionNames->insert(normalizeID(ctx->Identifier()->getText()));
     std::string retType = ctx->returnStat()->type()->getText();
-    TupleType * tupleType = nullptr;
+    TupleTypeNode * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){
-        tupleType = (TupleType *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+        tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     }
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, normalizeID(ctx->Identifier()->getText()),

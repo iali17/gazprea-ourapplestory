@@ -165,7 +165,7 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
     }
 }
 
-llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
+llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     auto *declNodes     = node->getDecls();
     auto *members       = new std::vector<llvm::Type *>;
     auto *memberNames   = new std::unordered_map<std::string, int>;
@@ -214,7 +214,7 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
 }
 
 llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
-        *paramsList, int nodeType, int line, TupleType *tupleType) {
+        *paramsList, int nodeType, int line, TupleTypeNode *tupleType) {
     std::vector<llvm::Type *> params;
     llvm::Type               *retType;
     llvm::FunctionType       *funcTy;

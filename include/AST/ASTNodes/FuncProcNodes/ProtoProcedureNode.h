@@ -7,13 +7,13 @@
 #include <llvm/IR/Type.h>
 #include <string>
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
-#include <AST/ASTNodes/TypeNodes/TupleType.h>
+#include <AST/ASTNodes/TypeNodes/TupleTypeNode.h>
 
 class ProtoProcedureNode : public ASTNode {
 public:
 
     ProtoProcedureNode(std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                       const std::string &procedureName, int line, TupleType *tupleType = nullptr);
+                       const std::string &procedureName, int line, TupleTypeNode *tupleType = nullptr);
 
     std::vector<ASTNode *> *getParamNodes() const;
     const std::string &getRetType() const;
@@ -24,10 +24,10 @@ protected:
     std::string retType;
     std::string procedureName;
 public:
-    TupleType *getTupleType() const;
+    TupleTypeNode *getTupleType() const;
 
 protected:
-    TupleType * tupleType;
+    TupleTypeNode * tupleType;
 };
 
 #endif //GAZPREABASE_PROTOPROCEDURENODE_H

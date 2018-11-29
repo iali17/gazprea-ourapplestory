@@ -8,9 +8,9 @@
 
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 
-class MatrixType : ASTNode{
+class MatrixTypeNode : ASTNode{
 public:
-    MatrixType(ASTNode *left, ASTNode *right, int line);
+    MatrixTypeNode(ASTNode *left, ASTNode *right, int line);
     ASTNode *getLeft() const;
     ASTNode *getRight() const;
 

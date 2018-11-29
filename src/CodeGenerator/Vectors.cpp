@@ -47,7 +47,7 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 
 llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     VectorNode *vectorNode = nullptr;
-    auto *vectorType = dynamic_cast<VectorType *>(node->getVectorType());
+    auto *vectorType = dynamic_cast<VectorTypeNode *>(node->getVectorType());
 
     vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
     std::string stype = vectorType->getStringType();
