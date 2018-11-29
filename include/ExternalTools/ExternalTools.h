@@ -88,6 +88,9 @@ public:
     llvm::Value * getMatrixElementPointer(llvm::Value *mat, llvm::Value *row, llvm::Value *col);
     llvm::Value * getMatrixMultiplication(llvm::Value *leftMat, llvm::Value *rightMat);
     llvm::Value * concatenateMatrices(llvm::Value * left, llvm::Value * right);
+    llvm::Value * assignScalarVector(llvm::Value * matrix, llvm::Value * scalar, llvm::Value * vector, llvm::Value * src);
+    llvm::Value * assignVectorScalar(llvm::Value * matrix,llvm::Value * vector, llvm::Value * scalar,llvm::Value * src);
+    llvm::Value * assignVectorVector(llvm::Value * matrix, llvm::Value * vectorRow, llvm::Value * vectorCol, llvm::Value * src);
 
     //printing
     void registerPrintf();

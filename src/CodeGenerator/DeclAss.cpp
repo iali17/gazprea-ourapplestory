@@ -199,7 +199,7 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
 
     //matrix
     if(it->isMatrixType(dest))
-        return matrixSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
+        return matrixSliceAssign(node->getRight(), (IndexNode *) node->getLeft(), dest, idxVec, src);
 
     return nullptr;
 }

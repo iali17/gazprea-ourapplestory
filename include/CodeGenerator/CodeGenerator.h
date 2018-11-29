@@ -132,6 +132,9 @@ public:
     InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
     std::vector<std::string> split(const std::string& s, char delimiter);
+    llvm::Value *getSingleIntegerVector(llvm::Value *val);
+    void setNullVecOrMat(llvm::Value * val);
+    void setIdentityVecOrMat(llvm::Value * val);
 
     // Interval operation stuff
     llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
@@ -142,8 +145,9 @@ public:
 
     //slice assignment
     llvm::Value *vectorSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
-    llvm::Value *vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line);
-    llvm::Value *matrixSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *indexAssign(ASTNode *srcNode, IndexNode *idxExpr, llvm::Value *src, llvm::Value *dest, int line);
+    llvm::Value *matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

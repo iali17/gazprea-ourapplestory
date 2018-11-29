@@ -171,7 +171,7 @@ llvm::Value *CodeGenerator::vectorSliceAssign(ASTNode * srcNode, IndexNode * idx
 
     //handle index assignment
     if(not(sad->getType()->isPointerTy())) {
-        return vectorIndexAssign(srcNode, idxExpr, src, dest, idxExpr->getLine());
+        return indexAssign(srcNode, idxExpr, src, dest, idxExpr->getLine());
     }
 
     //modify vector on build in cases
@@ -184,17 +184,14 @@ llvm::Value *CodeGenerator::vectorSliceAssign(ASTNode * srcNode, IndexNode * idx
         et->setIdentityVector(src);
     }
 
-    //upcast
-    if((dest->getType() == realVecTy->getPointerTo()) && (dest->getType() == intVecTy->getPointerTo())){
-        llvm::Value *size  = it->getValFromStruct(src, it->getConsi32(VEC_TYPE_INDEX));
-        src = ct->createVecFromVec(src, realTy, size, idxExpr->getLine());
-    }
+    src = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine());
 
     et->assignFromVector(dest, idx, src);
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line){
+llvm::Value *CodeGenerator::indexAssign(ASTNode *srcNode, IndexNode *idxExpr, llvm::Value *src, llvm::Value *dest,
+                                        int line){
     if (dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
         src = ct->varCast(realTy, src, line);
 
