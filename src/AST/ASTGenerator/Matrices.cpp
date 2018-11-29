@@ -9,15 +9,15 @@ antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeCo
 
     if(ctx->extension()) {
         if(ctx->extension()->rightExtension()) {
-            return (ASTNode *) new MatrixType(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
         } else {
-            return (ASTNode *) new MatrixType(visit(ctx->extension()), nullptr, line);
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), nullptr, line);
         }
     } else {
         if(ctx->extension()->rightExtension()) {
-            return (ASTNode *) new MatrixType(nullptr, visit(ctx->extension()->rightExtension()), line);
+            return (ASTNode *) new MatrixTypeNode(nullptr, visit(ctx->extension()->rightExtension()), line);
         } else {
-            return (ASTNode *) new MatrixType(nullptr, nullptr, line);
+            return (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
         }
     }
 }

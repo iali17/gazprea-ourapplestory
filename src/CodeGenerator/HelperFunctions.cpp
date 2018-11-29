@@ -165,7 +165,7 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
     }
 }
 
-llvm::StructType *CodeGenerator::parseStructType(TupleType *node) {
+llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     auto *declNodes     = node->getDecls();
     auto *members       = new std::vector<llvm::Type *>;
     auto *memberNames   = new std::unordered_map<std::string, int>;
@@ -214,7 +214,7 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
 }
 
 llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
-        *paramsList, int nodeType, int line, TupleType *tupleType) {
+        *paramsList, int nodeType, int line, TupleTypeNode *tupleType) {
     std::vector<llvm::Type *> params;
     llvm::Type               *retType;
     llvm::FunctionType       *funcTy;
@@ -339,4 +339,32 @@ llvm::Value *CodeGenerator::getRange(ASTNode *range) {
         rangeVecPtr = et->getVectorFromInterval(rangeVecPtr, it->getConsi32(1));
     }
     return rangeVecPtr;
+}
+
+llvm::Value *CodeGenerator::getSingleIntegerVector(llvm::Value *val) {
+    llvm::Value *vec = et->getNewVector(it->getConsi32(INTEGER));
+    vec = ir->CreatePointerCast(vec, intVecTy->getPointerTo());
+    et->initVector(vec, it->getConsi32(1));
+
+    llvm::Value *oldScalar = ir->CreateAlloca(intTy);
+    ir->CreateStore(val, oldScalar);
+
+    llvm::Value *ptr = it->getPtrFromStruct(vec, VEC_ELEM_INDEX);
+    ptr = ir->CreateGEP(ptr, it->getConsi32(0));
+    et->assignValFromPointers(ptr, oldScalar, it->getConsi32(INTEGER));
+    return vec;
+}
+
+void CodeGenerator::setNullVecOrMat(llvm::Value *val) {
+    if(it->isMatrixType(val))
+        et->setIdentityMatrix(val);
+    else
+        et->setIdentityVector(val);
+}
+
+void CodeGenerator::setIdentityVecOrMat(llvm::Value *val) {
+    if(it->isMatrixType(val))
+        et->setIdentityMatrix(val);
+    else
+        et->setIdentityVector(val);
 }

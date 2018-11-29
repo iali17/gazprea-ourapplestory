@@ -8,10 +8,10 @@
 #include <AST/ASTNodes/BaseNodes/ASTNode.h>
 #include <string>
 
-class VectorType : public ASTNode{
+class VectorTypeNode : public ASTNode{
 public:
-    VectorType(ASTNode *size, int line);
-    VectorType(ASTNode *size, const std::string &stringType, int line);
+    VectorTypeNode(ASTNode *size, int line);
+    VectorTypeNode(ASTNode *size, const std::string &stringType, int line);
 
     ASTNode *getSize() const;
     const std::string &getStringType() const;

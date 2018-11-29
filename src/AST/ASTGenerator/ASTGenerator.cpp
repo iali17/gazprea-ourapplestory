@@ -519,6 +519,11 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
             left = visit(ctx->left);
         }
 
+<<<<<<< HEAD
+=======
+        return (ASTNode *) new MatrixTypeNode(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
+    }
+>>>>>>> 4361d33b2e11cdaf7c52d6404108d7480aff01c6
 
         //return (ASTNode *) new MatrixType(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
     }

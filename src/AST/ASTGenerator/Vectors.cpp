@@ -7,23 +7,23 @@
 antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) {
     if (ctx->extension() == nullptr) {
         if (ctx->getText().at(0) == 'b')
-            return (ASTNode *) new VectorType(nullptr, "booleanvector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(nullptr, "booleanvector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'i')
-            return (ASTNode *) new VectorType(nullptr, "integervector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(nullptr, "integervector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'c')
-            return (ASTNode *) new VectorType(nullptr, "charactervector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(nullptr, "charactervector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'r')
-            return (ASTNode *) new VectorType(nullptr, "realvector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(nullptr, "realvector", (int)ctx->getStart()->getLine());
 
     } else {
         if (ctx->getText().at(0) == 'b')
-            return (ASTNode *) new VectorType(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'i')
-            return (ASTNode *) new VectorType(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "integervector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'c')
-            return (ASTNode *) new VectorType(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "charactervector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'r')
-            return (ASTNode *) new VectorType(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
+            return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "realvector", (int)ctx->getStart()->getLine());
     }
     return nullptr;
 }

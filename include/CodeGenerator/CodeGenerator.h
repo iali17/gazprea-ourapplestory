@@ -82,7 +82,7 @@ public:
     llvm::Value* visit(TupleDeclNode      *node) override;
     llvm::Value* visit(VectorDeclNode     *node) override;
     llvm::Value* visit(MatrixDeclNode     *node) override;
-    llvm::Value* visit(TupleType          *node) override;
+    llvm::Value* visit(TupleTypeNode          *node) override;
     llvm::Value* visit(GlobalDeclNode     *node) override;
     llvm::Value* visit(GlobalRefNode      *node) override;
     llvm::Value* visit(TupleNode          *node) override;
@@ -107,7 +107,7 @@ public:
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
     //Helper functions
-    llvm::StructType* parseStructType(TupleType *node);
+    llvm::StructType* parseStructType(TupleTypeNode *node);
 	llvm::Value*      performTupleOp(llvm::Value * left, llvm::Value*right, int OPTYPE, int line);
 	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
@@ -117,7 +117,7 @@ public:
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
     llvm::Value *getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr);
     llvm::Value *initTuple(int INIT, llvm::StructType *tuple);
-    llvm::Function *declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line, TupleType * tupleType = nullptr);
+    llvm::Function *declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *> *paramsList, int nodeType, int line, TupleTypeNode * tupleType = nullptr);
     void generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block);
     llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
@@ -129,6 +129,9 @@ public:
     InternalTools::pair castForConcat(InfixNode *node);
     InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
+    llvm::Value *getSingleIntegerVector(llvm::Value *val);
+    void setNullVecOrMat(llvm::Value * val);
+    void setIdentityVecOrMat(llvm::Value * val);
 
     // Interval operation stuff
     llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
@@ -139,8 +142,9 @@ public:
 
     //slice assignment
     llvm::Value *vectorSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
-    llvm::Value *vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line);
-    llvm::Value *matrixSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *indexAssign(ASTNode *srcNode, IndexNode *idxExpr, llvm::Value *src, llvm::Value *dest, int line);
+    llvm::Value *matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+
 
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);

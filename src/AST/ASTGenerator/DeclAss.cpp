@@ -38,9 +38,9 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension()->rightExtension())) {
         ASTNode *typeNode;
         if (ctx->type(0)->matrixType()) {
-            typeNode = (ASTNode *) new MatrixType(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
         } else {
-            typeNode = (ASTNode *) new MatrixType(nullptr, nullptr, line);
+            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
         }
 
         return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, typeNode);
@@ -53,7 +53,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         if (ctx->type(0)->vectorType()) {
             typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         } else {
-            typeNode = (ASTNode *) new VectorType(nullptr, ctx->type(0)->getText() + "vector", line);
+            typeNode = (ASTNode *) new VectorTypeNode(nullptr, ctx->type(0)->getText() + "vector", line);
         }
 
         ASTNode *size = nullptr;
@@ -96,7 +96,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
         if (ctx->type(0)->vectorType()) {
             typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
         } else {
-            typeNode = (ASTNode *) new VectorType(nullptr, ctx->type(0)->getText() + "vector", line);
+            typeNode = (ASTNode *) new VectorTypeNode(nullptr, ctx->type(0)->getText() + "vector", line);
         }
 
         ASTNode *size = nullptr;

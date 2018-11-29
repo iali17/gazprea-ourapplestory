@@ -299,8 +299,8 @@ void *sliceScalarVector(void * v_matrix, int scalar, void * v_vector){
         cur = getVectorElementPointer(mat->elements + row, col);
 
         //get cell to assign from
-        assign_to = ret->elements + i;
-        assignPointers(&assign_to, &cur, *ret->type);
+        assign_to = getVectorElementPointer(ret, i);
+        assignPointers(assign_to, cur, *ret->type);
     }
 
     return ret;
@@ -331,8 +331,8 @@ void *sliceVectorScalar(void * v_matrix, void * v_vector, int scalar){
         cur = getVectorElementPointer(mat->elements + row, col);
 
         //get cell to assign from
-        assign_to = ret->elements + i;
-        assignPointers(&assign_to, &cur, *ret->type);
+        assign_to = getVectorElementPointer(ret, i);
+        assignPointers(assign_to, cur, *ret->type);
     }
 
     return ret;
@@ -373,11 +373,9 @@ void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
         row = rows[i];
         for (j = 0; j < numCols; j++) {
             col   = cols[j];
-            left  = (ret->elements +   i)->elements + j;
-            right = (mat->elements + row)->elements + col;
             left  = getVectorElementPointer(ret->elements +   i, j);
             right = getVectorElementPointer(mat->elements + row, col);
-            assignPointers(&left, &right, type);
+            assignPointers(left, right, type);
         }
     }
     return ret;
@@ -513,4 +511,104 @@ void *getRealMatrixMultiplication(void * v_matrix_left, void * v_matrix_right){
         }
     }
     return ret;
+}
+
+/**
+ * assigns a vector to a matrix at the given indices
+ * @param v_matrix
+ * @param scalar
+ * @param v_vector
+ * @param v_src
+ */
+void assignScalarVector(void * v_matrix, int scalar, void * v_vector, void * v_src){
+    //cast the voids
+    matrix * mat  = (matrix *) v_matrix;
+    int      row  = scalar;
+    vector * cols = (vector *) v_vector;
+    vector * src  = (vector *) v_src;
+
+    //local constants
+    int numElements = *src->numElements;
+    int ty          = *mat->type;
+
+    //loop vars
+    int i   = 0;
+    int col = 0;
+    void * cur_src, * cur_dest;
+
+    for(i = 0; i < numElements; i++){
+        col      = ((int *) cols->elements)[i];
+        cur_src  = getVectorElementPointer(src, i);
+        cur_dest = getMatrixElementPointer(mat, row, col);
+        assignValFromPointers(cur_dest, cur_src, ty);
+    }
+}
+
+/**
+ * assigns a vector to a matrix at the given indices
+ * @param v_matrix
+ * @param v_vector
+ * @param scalar
+ * @param v_src
+ */
+void assignVectorScalar(void * v_matrix, void * v_vector, int scalar, void * v_src){
+    //cast the voids
+    matrix * mat  = (matrix *) v_matrix;
+    int      col  = scalar;
+    vector * rows = (vector *) v_vector;
+    vector * src  = (vector *) v_src;
+
+    //local constants
+    int numElements = *src->numElements;
+    int ty          = *mat->type;
+
+    //loop vars
+    int i   = 0;
+    int row = 0;
+    void * cur_src, * cur_dest;
+
+    for(i = 0; i < numElements; i++){
+        row      = ((int *) rows->elements)[i];
+        cur_src  = getVectorElementPointer(src, i);
+        cur_dest = getMatrixElementPointer(mat, row, col);
+        assignValFromPointers(cur_dest, cur_src, ty);
+    }
+}
+
+/**
+ * assigns matrix to another matrix with the given indices
+ * @param v_matrix
+ * @param v_vector_row
+ * @param v_vector_col
+ * @param v_src
+ */
+void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col, void * v_src){
+    //cast the voids
+    matrix * mat = (matrix *) v_matrix;
+    matrix * src = (matrix *) v_src;
+    int * rows   = (int *) ((vector *) v_vector_row)->elements;
+    int * cols   = (int *) ((vector *) v_vector_col)->elements;
+
+    //local constants
+    int numRows = *src->numRows;
+    int numCols = *src->numCols;
+    int ty      = *mat->type;
+
+    //loop vars
+    int curCol, curRow;
+    void * src_p, * dest_p;
+    int i,j;
+
+    //loop
+    for(i = 0; i < numRows; i++){
+        for(j = 0; j < numCols; j++){
+            //get both pointers
+            curRow = rows[i];
+            curCol = cols[j];
+
+            dest_p = getMatrixElementPointer(mat, curRow, curCol);
+            src_p  = getMatrixElementPointer(src, i, j);
+            assignValFromPointers(dest_p, src_p, ty);
+        }
+    }
 }

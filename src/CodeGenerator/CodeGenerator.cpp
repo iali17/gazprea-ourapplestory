@@ -402,7 +402,7 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
 
     if(node->getTuple())
-        type = parseStructType(dynamic_cast<TupleType *>(node->getTuple()));
+        type = parseStructType(dynamic_cast<TupleTypeNode *>(node->getTuple()));
     else if(node->getCustomType() == "integer")
         type = intTy;
     else if(node->getCustomType() == "real")

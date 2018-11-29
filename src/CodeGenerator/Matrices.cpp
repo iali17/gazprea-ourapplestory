@@ -116,7 +116,7 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     MatrixNode *matrixNode = nullptr;
     llvm::Value *mat = nullptr;
 
-    auto *matrixTypeSize = (MatrixType *) node->getMatrixType();
+    auto *matrixTypeSize = (MatrixTypeNode *) node->getMatrixType();
     llvm::Type *matrixType = it->getDeclMatrixType(node->getInitType());
     llvm::Type *matrixElemType = it->getDeclScalarTypeFromMat(matrixType);
     matrixNode = dynamic_cast<MatrixNode *>(node->getExpr());
@@ -175,12 +175,44 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
 }
 
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {
-    return nullptr;
+
+    //otherwise
+    llvm::Value * slice = et->sliceMatrix(mat, rowIdx, colIdx);
+    llvm::Value * ret   = it->castMatrixIndex(slice, rowIdx, colIdx, mat);
+
+    if(not(it->isStructType(ret)) && not(isSlice))
+        ret = ir->CreateLoad(ret);
+
+    return ret;
 }
 
 
-llvm::Value *CodeGenerator::matrixSliceAssign(IndexNode *idxExpr, llvm::Value *dest, std::vector<llvm::Value *> *idxVec,
-                                              llvm::Value *src) {
-    return nullptr;
+llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src) {
+    llvm::Value * rowIdx = visit(idxExpr->getIndexExpr()->at(0));
+    llvm::Value * colIdx = visit(idxExpr->getIndexExpr()->at(1));
+
+    if(not(rowIdx->getType()->isPointerTy()) && not(colIdx->getType()->isPointerTy()))
+        return indexAssign(srcNode, idxExpr, src, dest, srcNode->getLine());
+
+    //cover null and identity cases
+    if(dynamic_cast<NullNode *>(srcNode)){
+        src = visit(idxExpr);
+        setNullVecOrMat(src);
+    }
+    else if(dynamic_cast<IdnNode *>(srcNode)){
+        src = visit(idxExpr);
+        setIdentityVecOrMat(src);
+    }
+
+    src = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine());
+
+    //make scalars vectors with one element
+    if(not(rowIdx->getType()->isPointerTy()))
+        return et->assignScalarVector(dest, rowIdx, colIdx, src);
+
+    else if(not(colIdx->getType()->isPointerTy()))
+        return et->assignVectorScalar(dest, rowIdx, colIdx, src);
+
+    return et->assignVectorVector(dest, rowIdx, colIdx, src);
 }
 
