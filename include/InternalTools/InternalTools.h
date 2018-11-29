@@ -66,7 +66,8 @@ public:
     llvm::Value *getUnarySub(llvm::Value *expr);
 
     pair makePair(llvm::Value *left, llvm::Value *right);
-    bool setNull(llvm::Type * type, llvm::Value * ptr);
+	bool setIdentity(llvm::Type * type, llvm::Value * ptr);
+	bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
 	bool isTupleType(llvm::Value *ptr);
     bool isVectorType(llvm::Value *ptr);

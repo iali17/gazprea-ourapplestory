@@ -162,19 +162,51 @@ llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx, bool
  * @param src
  * @return
  */
-llvm::Value *CodeGenerator::vectorSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src){
-    llvm::Value *idx = idxVec->at(0);
+llvm::Value *CodeGenerator::vectorSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src){
+    llvm::Value *idx     = idxVec->at(0);
+    ASTNode     *idxNode = idxExpr->getIndexExpr()->at(0);
+
+    //check if it is an index assign
+    llvm::Value * sad = visit(idxExpr->getIndexExpr()->at(0));
+
+    //handle index assignment
+    if(not(sad->getType()->isPointerTy())) {
+        return vectorIndexAssign(srcNode, idxExpr, src, dest, idxExpr->getLine());
+    }
+
+    //modify vector on build in cases
+    if (dynamic_cast<IdnNode *>(srcNode)){
+        src = visit(idxNode);
+        et->setNullVector(src);
+    }
+    else if (dynamic_cast<NullNode *>(srcNode)){
+        src = visit(idxNode);
+        et->setIdentityVector(src);
+    }
+
+    //upcast
     if((dest->getType() == realVecTy->getPointerTo()) && (dest->getType() == intVecTy->getPointerTo())){
         llvm::Value *size  = it->getValFromStruct(src, it->getConsi32(VEC_TYPE_INDEX));
         src = ct->createVecFromVec(src, realTy, size, idxExpr->getLine());
     }
-    else if(not(src->getType()->isPointerTy())){
-        if(dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
-            src = ct->varCast(realTy, src, idxExpr->getLine());
-        ir->CreateStore(src, visit(idxExpr));
-        return nullptr;
-    }
 
     et->assignFromVector(dest, idx, src);
+    return nullptr;
+}
+
+llvm::Value *CodeGenerator::vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line){
+    if (dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)
+        src = ct->varCast(realTy, src, line);
+
+    llvm::Value * sad   = visit(idxExpr);
+    llvm::Type  *destTy = sad->getType()->getPointerElementType();
+
+    //garbage
+    if (dynamic_cast<IdnNode *>(srcNode))
+        ir->CreateStore(it->getIdn(destTy), sad);
+    else if (dynamic_cast<NullNode *>(srcNode))
+        ir->CreateStore(it->getNull(destTy), sad);
+    else
+        ir->CreateStore(src, sad);
     return nullptr;
 }

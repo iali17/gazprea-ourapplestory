@@ -138,7 +138,8 @@ public:
     llvm::Value *indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice);
 
     //slice assignment
-    llvm::Value *vectorSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *vectorSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line);
     llvm::Value *matrixSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
 
     //Casting functions

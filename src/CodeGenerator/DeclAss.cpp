@@ -148,13 +148,24 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
+
+    if (it->isVectorType(left->getPtr())) {
+        if (dynamic_cast<IdnNode *>(node->getExpr())) {
+            et->setIdentityVector(ptr);
+            return nullptr;
+        } else if (dynamic_cast<NullNode *>(node->getExpr())) {
+            et->setNullVector(ptr);
+            return nullptr;
+        } else {
+            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine(),
+                                  nullptr, (int) ((VectorNode *) node->getExpr())->getElements()->size());
+            left->setPtr(ptr);
+        }
+    }
+
     if (val) {
         if (it->isTupleType(left->getPtr())) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
-            left->setPtr(ptr);
-        } else if (it->isVectorType(left->getPtr())) {
-            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine(),
-                    nullptr, (int)((VectorNode *)node->getExpr())->getElements()->size());
             left->setPtr(ptr);
         } else {
             val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
@@ -162,7 +173,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         }
 
     } else if (!(it->setNull(ptr->getType()->getPointerElementType(), ptr))){
-        std::cerr << "Unable to initialize to null at line" << node->getLine() <<". Aborting...\n";
+        std::cerr << "Unable to initialize to null at line " << node->getLine() <<". Aborting...\n";
     }
     return nullptr;
 }
@@ -184,7 +195,7 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
 
     //vector only
     if(it->isVectorType(dest))
-        return vectorSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
+        return vectorSliceAssign(node->getRight(), (IndexNode *) node->getLeft(), dest, idxVec, src);
 
     //matrix
     if(it->isMatrixType(dest))

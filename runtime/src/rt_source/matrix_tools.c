@@ -230,7 +230,7 @@ void printMatrix(void *v_matrix){
 
 
     printf("[");
-    
+
     for(curRow = 0; curRow < numRows - 1; curRow++){
         printVector(curVec++);
         printf(" ");

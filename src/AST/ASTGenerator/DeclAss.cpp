@@ -85,8 +85,15 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
     // if decl is a vector type
-    else if(ctx->type().size() == 1 && ctx->type(0)->vectorType()) {
-        ASTNode *typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
+    else if((ctx->type().size() == 1 && ctx->type(0)->vectorType())
+    || (ctx->type().size() == 1 && !ctx->type(0)->vectorType() && !ctx->type(0)->matrixType() && ctx->extension()) )  {
+        ASTNode *typeNode;
+        if (ctx->type(0)->vectorType()) {
+            typeNode = (ASTNode *) visit(ctx->type(0)->vectorType());
+        } else {
+            typeNode = (ASTNode *) new VectorType(nullptr, ctx->type(0)->getText() + "vector", line);
+        }
+
         ASTNode *size = nullptr;
         if (!ctx->extension()->isEmpty()) {
             size = visit(ctx->extension());
