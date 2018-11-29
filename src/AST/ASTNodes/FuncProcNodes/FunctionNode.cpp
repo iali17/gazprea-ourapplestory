@@ -5,7 +5,7 @@
 #include "AST/AST.h"
 
 FunctionNode::FunctionNode(BlockNode *blockNode, std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                             const std::string &functionName, int line, TupleType * tupleType)
+                             const std::string &functionName, int line, TupleTypeNode * tupleType)
                              : BaseBlockParent(blockNode, line), paramNodes(paramNodes),
                              retType(retType), functionName(functionName), tupleType(tupleType){}
 
@@ -21,6 +21,6 @@ const std::string &FunctionNode::getFunctionName() const {
     return functionName;
 }
 
-TupleType *FunctionNode::getTupleType() const {
+TupleTypeNode *FunctionNode::getTupleType() const {
     return tupleType;
 }

@@ -82,7 +82,7 @@ antlrcpp::Any ASTGenerator::visitTupleType(gazprea::GazpreaParser::TupleTypeCont
         typeIdNodes->push_back((ASTNode *) visit(typeId));
     }
 
-    return (ASTNode *) new TupleType(typeIdNodes, (int)ctx->getStart()->getLine());
+    return (ASTNode *) new TupleTypeNode(typeIdNodes, (int)ctx->getStart()->getLine());
 }
 
 antlrcpp::Any ASTGenerator::visitFilter(gazprea::GazpreaParser::FilterContext *ctx) {

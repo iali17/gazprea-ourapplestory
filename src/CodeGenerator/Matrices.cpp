@@ -112,7 +112,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
 
 llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     MatrixNode *matrixNode = nullptr;
-    auto *matrixType = dynamic_cast<MatrixType *>(node->getMatrixType());
+    auto *matrixType = dynamic_cast<MatrixTypeNode *>(node->getMatrixType());
 
     matrixNode = dynamic_cast<MatrixNode *>(node->getExpr());
 

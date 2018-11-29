@@ -119,8 +119,8 @@ set(
 	AST/ASTNodes/StatementNodes/BreakNode.cpp
 	../include/AST/ASTNodes/ArithNodes/ExpNode.h
 	AST/ASTNodes/ArithNodes/ExpNode.cpp
-	AST/ASTNodes/TypeNodes/TupleType.cpp
-	../include/AST/ASTNodes/TypeNodes/TupleType.h
+		AST/ASTNodes/TypeNodes/TupleTypeNode.cpp
+		../include/AST/ASTNodes/TypeNodes/TupleTypeNode.h
 	CodeGenerator/HelperFunctions.cpp
 	../include/Scope/FunctionSymbol.h
 	Scope/FunctionSymbol.cpp
@@ -171,16 +171,16 @@ set(
 	../include/AST/ASTNodes/TerminalNodes/MatrixNode.h
 	AST/ASTNodes/StatementNodes/MatrixDeclNode.cpp
 	../include/AST/ASTNodes/StatementNodes/MatrixDeclNode.h
-	AST/ASTNodes/TypeNodes/MatrixType.cpp
-	../include/AST/ASTNodes/TypeNodes/MatrixType.h
+        AST/ASTNodes/TypeNodes/MatrixTypeNode.cpp
+        ../include/AST/ASTNodes/TypeNodes/MatrixTypeNode.h
 	../include/AST/ASTNodes/BaseNodes/BuiltIn.h
 	AST/ASTNodes/BaseNodes/BuiltIn.cpp
 	AST/ASTNodes/BuiltInFuncNode/StreamStateNode.cpp
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
 	../include/AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h
 	ExternalTools/RTMatrixTools.cpp
-	../include/AST/ASTNodes/TypeNodes/VectorType.h
-		AST/ASTNodes/TypeNodes/VectorType.cpp
+		../include/AST/ASTNodes/TypeNodes/VectorTypeNode.h
+		AST/ASTNodes/TypeNodes/VectorTypeNode.cpp
 	CodeGenerator/Vectors.cpp
 	CodeGenerator/Matrices.cpp
 	CodeGenerator/Casts.cpp

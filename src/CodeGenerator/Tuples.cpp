@@ -104,7 +104,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
  * @param node
  * @return llvm::Value *
  */
-llvm::Value *CodeGenerator::visit(TupleType *node) {
+llvm::Value *CodeGenerator::visit(TupleTypeNode *node) {
     llvm::StructType * newStruct = parseStructType(node);
     return ir->CreateAlloca(newStruct);
 }
@@ -217,7 +217,7 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     llvm::Value *ptr;
 
     //get the struct type from the definition
-    structType = parseStructType(dynamic_cast<TupleType *>(node->getTupleTypes()));
+    structType = parseStructType(dynamic_cast<TupleTypeNode *>(node->getTupleTypes()));
 
     tupleNode = dynamic_cast<TupleNode *>(node->getExpr());
 

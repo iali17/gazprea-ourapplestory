@@ -54,7 +54,7 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
     llvm::Value *expr;
 
     auto *values = new std::vector<llvm::Value *>();
-    llvm::StructType *types = parseStructType(dynamic_cast<TupleType *>(dynamic_cast<TupleCastNode *>(node)->getTuple()));
+    llvm::StructType *types = parseStructType(dynamic_cast<TupleTypeNode *>(dynamic_cast<TupleCastNode *>(node)->getTuple()));
     llvm::Value *exprP = visit(node->getExpr());
     llvm::Value *ptr = ir->CreateAlloca(types);
 
@@ -98,11 +98,11 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     llvm::Value *exprP = visit(node->getExpr());
 
     ASTNode *vnode = dynamic_cast<VectorCastNode *>(node)->getVector();
-    std::string stype = dynamic_cast<VectorType *>(vnode)->getStringType();
+    std::string stype = dynamic_cast<VectorTypeNode *>(vnode)->getStringType();
     type = it->getVectorType(stype);
 
     // Extension size if exists
-    llvm::Value *size  = visit(dynamic_cast<VectorType *>(vnode)->getSize());
+    llvm::Value *size  = visit(dynamic_cast<VectorTypeNode *>(vnode)->getSize());
 
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     vec = it->castVectorToType(vec, type);

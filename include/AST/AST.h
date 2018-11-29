@@ -100,9 +100,9 @@
 #include "AST/ASTNodes/TerminalNodes/IntervalNode.h"
 #include "AST/ASTNodes/TerminalNodes/VectorNode.h"
 
-#include "AST/ASTNodes/TypeNodes/TupleType.h"
-#include "AST/ASTNodes/TypeNodes/MatrixType.h"
-#include "AST/ASTNodes/TypeNodes/VectorType.h"
+#include "AST/ASTNodes/TypeNodes/TupleTypeNode.h"
+#include "AST/ASTNodes/TypeNodes/MatrixTypeNode.h"
+#include "AST/ASTNodes/TypeNodes/VectorTypeNode.h"
 
 #include "AST/ASTNodes/FileNode.h"
 
