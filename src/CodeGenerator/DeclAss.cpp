@@ -184,7 +184,7 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
 
     //vector only
     if(it->isVectorType(dest))
-        return vectorSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
+        return vectorSliceAssign(node->getRight(), (IndexNode *) node->getLeft(), dest, idxVec, src);
 
     //matrix
     if(it->isMatrixType(dest))
