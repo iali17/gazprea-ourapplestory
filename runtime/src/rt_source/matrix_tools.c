@@ -32,7 +32,7 @@ void initMatrix(void * v_matrix,  int numRows, int numCols){
     //cast the matrix
     matrix * mat = (matrix *) v_matrix;
 
-    //assign dimentions
+    //assign dimensions
     *mat->numCols = numCols;
     *mat->numRows = numRows;
 

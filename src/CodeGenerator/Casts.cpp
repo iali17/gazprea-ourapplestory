@@ -154,6 +154,21 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
         vec = et->getVectorFromInterval(exprP, it->getConsi32(1));
         ir->CreatePointerCast(vec, intVecTy->getPointerTo());
 
+        if(type == charTy || type == boolTy) {
+            VectorErrorNode *error;
+            std::string castType = it->getType(type, nullptr);
+            std::string exprType = "integer interval";
+
+            if(size) {
+                int vecSize = (int)llvm::dyn_cast<llvm::ConstantInt>(size)->getSExtValue();
+                error = new VectorErrorNode(castType, exprType, vecSize, true, node->getLine());
+                eb->printError(error);
+            }
+
+            error = new VectorErrorNode(castType, exprType, node->getLine());
+            eb->printError(error);
+        }
+
         if(size) {
             return ct->createVecFromVec(vec, type, size, node->getLine());
         }

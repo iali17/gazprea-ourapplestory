@@ -1,0 +1,40 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    integer vector x[26]    = as<integer vector[26]>(97..122);
+    integer vector y[26]    = as<integer vector>(65..90);
+
+    character vector x1[26] = as<character vector[26]>(x);
+    character vector y1     = as<character vector>(y);
+
+    boolean vector w[10]    = as<boolean vector[10]>([0,1,2,3]);
+    boolean vector w1       = as<boolean vector>([1,0,1,0,1]);
+
+    real vector z[20]       = as<real vector[20]>(1..10);
+    real vector z1          = as<real vector>(1..5);
+
+    character vector c[10]  = as<character vector[10]>(x);
+    character vector c1     = as<character vector>(w1);
+
+    // Explicit cast from integer intervals to integer vectors with and without size
+    x -> out; '\n' -> out;
+    y -> out; '\n' -> out;
+
+    // Explicit cast from integer intervals to real vectors with and without size
+    z -> out; '\n' -> out;
+    z1 -> out; '\n' -> out;
+
+    // Explicit cast from integer intervals to character vectors with and without size
+    x1 -> out; '\n' -> out;
+    y1 -> out; '\n' -> out;
+
+    // Explicit cast from integer vectors to boolean vectors
+    w -> out; '\n' -> out;
+    w1 -> out; '\n' -> out;
+
+    // Explicit cast from integer vector to character vector and boolean vector to character vector
+    c -> out; '\n' -> out;
+    c1 -> out; '\n' -> out;
+
+    return 0;
+}

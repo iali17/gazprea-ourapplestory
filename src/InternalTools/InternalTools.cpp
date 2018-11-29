@@ -704,3 +704,33 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
 
     return nullptr;
 }
+
+int InternalTools::getVectorLength(llvm::Value *vec) {
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    llvm::Value *size = getValFromStruct(vec, getConsi32(VEC_LEN_INDEX));
+    int counter = 0;
+    llvm::Value *cond;
+
+    // llvm Counter
+    llvm::Value *curVecSize = getConsi32(0);
+    llvm::Value *curVecPtr = ir->CreateAlloca(intTy);
+    ir->CreateStore(curVecSize, curVecPtr);
+
+    wb->beginWhile();
+
+    curVecSize = ir->CreateLoad(curVecPtr);
+    cond= ir->CreateICmpSLT(curVecSize, size, "CompStatement");
+
+    wb->insertControl(cond);
+
+    // Increment counter
+    curVecSize = ir->CreateAdd(curVecSize, getConsi32(1));
+    ir->CreateStore(curVecSize, curVecPtr);
+    counter++;
+
+    wb->endWhile();
+
+    return counter;
+}
+
+

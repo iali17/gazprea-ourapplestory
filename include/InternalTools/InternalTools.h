@@ -16,6 +16,7 @@
 #include "llvm/Support/raw_os_ostream.h"
 #include "llvm/IR/Verifier.h"
 #include "CondBuilder.h"
+#include "WhileBuilder.h"
 #include "globals.h"
 
 class InternalTools {
@@ -84,6 +85,7 @@ public:
 	llvm::Type *getDeclScalarTypeFromVec(llvm::Type *type);
 	llvm::Type *getDeclVectorType(const std::string &typeString);
 	std::string getVectorTypeString(llvm::Value *vec);
+	int getVectorLength(llvm::Value *vec);
 
 protected:
     llvm::LLVMContext * globalCtx;

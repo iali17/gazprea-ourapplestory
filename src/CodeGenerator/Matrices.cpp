@@ -103,7 +103,7 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
         //TODO - write an internal tools function to assign vector values to another THAT ALSO PERFORMS IMPLICIT UPCASTING
 
         //it->setMatrixValues(matrix, vectors);
-        curRowPtr = ir->CreateGEP(matrix, it->getConsi32(i));
+        curRowPtr = ir->CreateGEP(ptr, it->getConsi32(i));
         et->copyVectorElements(curRowPtr, vectors->at(i));
     }
 

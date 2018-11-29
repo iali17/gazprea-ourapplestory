@@ -28,10 +28,10 @@ antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeCo
     return nullptr;
 }
 
-antlrcpp::Any ASTGenerator::visitVectorExpr(gazprea::GazpreaParser::VectorExprContext *ctx) {
+antlrcpp::Any ASTGenerator::visitVector(gazprea::GazpreaParser::VectorContext *ctx) {
     auto *expr  = new std::vector<ASTNode *>;
 
-    for(auto exprNode : ctx->vector()->expr()){
+    for(auto exprNode : ctx->expr()){
         expr->push_back((ASTNode *) visit(exprNode));
     }
 
