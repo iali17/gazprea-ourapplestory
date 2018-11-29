@@ -31,7 +31,7 @@ extern llvm::Type *intMatrixTy;
 extern llvm::Type *realMatrixTy;
 
 void ExternalTools::registerMatrixFunctions() {
-    llvm::FunctionType *fTy = llvm::TypeBuilder<void* (void), false>::get(*globalCtx);
+    llvm::FunctionType *fTy = llvm::TypeBuilder<void* (int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_EMPTY_MATRIX, fTy));
 
     //initMatrix

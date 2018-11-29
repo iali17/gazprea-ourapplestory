@@ -45,8 +45,6 @@ void initMatrix(void * v_matrix,  int numRows, int numCols){
         *(mat->elements + i) = *(vector *) getEmptyVector(*mat->type);
         initVector(mat->elements + i, numCols);
     }
-
-    setNullMatrix(mat);
 }
 
 /**
@@ -228,21 +226,17 @@ void printMatrix(void *v_matrix){
     //loop vars
     int numRows = *mat->numRows;
     int curRow  = 0;
-    vector * curVec;
+    vector * curVec = mat->elements;
 
-    //exit is no rows
-    if(numRows <= 0) return;
 
     printf("[");
 
     for(curRow = 0; curRow < numRows - 1; curRow++){
-        curVec = mat->elements + curRow;
-        printVector(curVec);
+        printVector(curVec++);
         printf(" ");
     }
-
-    curVec = mat->elements + curRow;
-    printVector(curVec);
+    if(numRows)
+        printVector(curVec);
 
     printf("]");
 }
@@ -379,6 +373,8 @@ void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
         row = rows[i];
         for (j = 0; j < numCols; j++) {
             col   = cols[j];
+            left  = (ret->elements +   i)->elements + j;
+            right = (mat->elements + row)->elements + col;
             left  = getVectorElementPointer(ret->elements +   i, j);
             right = getVectorElementPointer(mat->elements + row, col);
             assignPointers(&left, &right, type);

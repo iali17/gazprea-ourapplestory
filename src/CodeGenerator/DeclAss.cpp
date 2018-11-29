@@ -118,10 +118,6 @@ llvm::Value *CodeGenerator::visit(GlobalDeclNode *node) {
     return nullptr;
 }
 
-llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
-    return nullptr;
-}
-
 /**
  * Deals with assignments
  *
@@ -199,7 +195,7 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
 
     //vector only
     if(it->isVectorType(dest))
-        return vectorSliceAssign((IndexNode *) node->getLeft(), dest, idxVec, src);
+        return vectorSliceAssign(node->getRight(), (IndexNode *) node->getLeft(), dest, idxVec, src);
 
     //matrix
     if(it->isMatrixType(dest))

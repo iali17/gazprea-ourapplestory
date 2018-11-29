@@ -122,7 +122,8 @@ public:
     llvm::Value *callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments);
     llvm::Value *getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
             llvm::Value *idxVal = nullptr, std::string idxTrueVal = "");
-    llvm::Value *generateVector(std::string loopVar, ASTNode *range, ASTNode *exprNode);
+    llvm::Value *generateMatrix(std::string rowLoopVar, std::string colLoopVar, llvm::Value *rowRange, llvm::Value *colRange, ASTNode *exprNode);
+    llvm::Value *generateVector(std::string loopVar, llvm::Value *range, ASTNode *exprNode);
     llvm::Value *filterVector(std::string loopVar, llvm::Value *range, ASTNode *condNode);
     InternalTools::pair castForOp(InfixNode *node);
     InternalTools::pair castForConcat(InfixNode *node);
@@ -137,7 +138,8 @@ public:
     llvm::Value *indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice);
 
     //slice assignment
-    llvm::Value *vectorSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *vectorSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
+    llvm::Value *vectorIndexAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *src, llvm::Value *dest, int line);
     llvm::Value *matrixSliceAssign(IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
 
     //Casting functions

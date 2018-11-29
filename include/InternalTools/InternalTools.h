@@ -15,6 +15,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_os_ostream.h"
 #include "llvm/IR/Verifier.h"
+#include "CondBuilder.h"
 #include "globals.h"
 
 class InternalTools {
@@ -32,6 +33,8 @@ public:
 	llvm::Value *getPtrFromTuple(llvm::Value *tuplePtr, llvm::Value *idx);
 	llvm::Value *getValFromStruct(llvm::Value * sPtr, llvm::Value *idx);
 	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, llvm::Value *idx);
+	llvm::Value *getValFromStruct(llvm::Value * sPtr, int idx);
+	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, int idx);
 	llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
 	llvm::Value *initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs);
 	std::vector<llvm::Value *> *getPtrVectorFromStruct(llvm::Value *structPtr);
@@ -62,7 +65,8 @@ public:
     llvm::Value *getUnarySub(llvm::Value *expr);
 
     pair makePair(llvm::Value *left, llvm::Value *right);
-    bool setNull(llvm::Type * type, llvm::Value * ptr);
+	bool setIdentity(llvm::Type * type, llvm::Value * ptr);
+	bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
 	bool isTupleType(llvm::Value *ptr);
     bool isVectorType(llvm::Value *ptr);

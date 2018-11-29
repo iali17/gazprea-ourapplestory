@@ -19,6 +19,7 @@
 #define GET_VECTOR_SLICE     "getVectorSlice"
 #define GET_VECTOR_COPY      "getVectorCopy"
 #define VECTOR_GEP           "getVectorElementPointer"
+#define VECTOR_GEP_SAFE      "getVectorElementPointerSafe"
 #define GET_INT_DOT_PRODUCT  "getIntDotProduct"
 #define GET_REAL_DOT_PRODUCT "getRealDotProduct"
 #define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
@@ -98,6 +99,10 @@ void ExternalTools::registerVectorFunctions() {
     //getVectorElementPointer
     fTy = llvm::TypeBuilder<void* (void*, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(VECTOR_GEP, fTy));
+
+    //getVectorElementPointer
+    fTy = llvm::TypeBuilder<void* (void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(VECTOR_GEP_SAFE, fTy));
 
     //getIntDotProduct
     fTy = llvm::TypeBuilder<int (void*, void*), false>::get(*globalCtx);
@@ -284,6 +289,19 @@ llvm::Value *ExternalTools::getVectorCopy(llvm::Value *vec) {
  */
 llvm::Value *ExternalTools::getVectorElementPointer(llvm::Value *vec, llvm::Value *idx) {
     llvm::Function *getV  = mod->getFunction(VECTOR_GEP);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, idx});
+    return ret;
+}
+
+/**
+ * Returns a pointer to a given element. you will have to cast the return type. Null pads if out of bound
+ * @param vec
+ * @param idx
+ * @return
+ */
+llvm::Value *ExternalTools::getVectorElementPointerSafe(llvm::Value *vec, llvm::Value *idx) {
+    llvm::Function *getV  = mod->getFunction(VECTOR_GEP_SAFE);
     llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, idx});
     return ret;

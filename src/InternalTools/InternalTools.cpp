@@ -94,6 +94,26 @@ bool InternalTools::setNull(llvm::Type * type, llvm::Value * ptr) {
     return false;
 }
 
+bool InternalTools::setIdentity(llvm::Type * type, llvm::Value * ptr) {
+    if(type == boolTy){
+        ir->CreateStore(geti1(1), ptr);
+        return true;
+    }
+    else if (type == i8Ty){
+        ir->CreateStore(geti8(1), ptr);
+        return true;
+    }
+    else if(type == intTy){
+        ir->CreateStore(getConsi32(1), ptr);
+        return true;
+    }
+    else if(type == realTy){
+        ir->CreateStore(getReal(1), ptr);
+        return true;
+    }
+    return false;
+}
+
 InternalTools::InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod) : globalCtx(
         globalCtx), ir(ir), mod(mod) {
     setUpTypes();
@@ -147,7 +167,7 @@ void InternalTools::setUpTypes() {
     mTypes.push_back(intTy->getPointerTo());
     mTypes.push_back(intTy->getPointerTo());
     mTypes.push_back(intTy->getPointerTo());
-    mTypes.push_back(vecTy->getPointerTo()->getPointerTo());
+    mTypes.push_back(vecTy->getPointerTo());
     matrixTy = llvm::StructType::create(*globalCtx, mTypes, "matrix");
 
     //INTEGER
@@ -575,6 +595,17 @@ llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, llvm::Value *idx
     return ir->CreateLoad(ptr);
 }
 
+llvm::Value *InternalTools::getValFromStruct(llvm::Value *sPtr, int idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), getConsi32(idx)});
+    llvm::Value *val = ir->CreateLoad(ptr);
+    return ir->CreateLoad(val);
+}
+
+llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, int idx) {
+    llvm::Value *ptr = ir->CreateInBoundsGEP(sPtr, {getConsi32(0), getConsi32(idx)});
+    return ir->CreateLoad(ptr);
+}
+
 llvm::Value *InternalTools::castVectorToType(llvm::Value *vec, llvm::Type *type) {
     if(type == boolTy)
         return ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
@@ -604,10 +635,13 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
 llvm::Value *InternalTools::setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values) {
     llvm::Value *ptr = getPtrFromStruct(mat, getConsi32(MATRIX_ELEM_INDEX));
     llvm::Value *curRowPtr;
+    llvm::Value *loadValue;
+    llvm::Value *vecCopy;
 
     for(uint i = 0; i < values->size(); i++) {
         curRowPtr = ir->CreateGEP(ptr, getConsi32(i));
-        ir->CreateStore(values->at(i), curRowPtr);
+        loadValue = ir->CreateLoad(values->at(i));
+        ir->CreateStore(loadValue, curRowPtr);
     }
 
     return nullptr;
