@@ -251,10 +251,10 @@ vectorType
     ;
 
 matrixType
-    : BOOLEAN MATRIX
-    | CHARACTER MATRIX
-    | INTEGER MATRIX
-    | REAL MATRIX
+    : (BOOLEAN MATRIX) extension?
+    | (CHARACTER MATRIX) extension?
+    | (INTEGER MATRIX) extension?
+    | (REAL MATRIX) extension?
     ;
 
 tupleTypeIdentifier

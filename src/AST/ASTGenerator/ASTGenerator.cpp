@@ -505,6 +505,7 @@ antlrcpp::Any ASTGenerator::visitCompExpr(gazprea::GazpreaParser::CompExprContex
 
 antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) {
 
+    /*
     // if it is a [] of size 2
     if (ctx->rightExtension()) {
         ASTNode *left;
@@ -518,11 +519,15 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
             left = visit(ctx->left);
         }
 
-        return (ASTNode *) new MatrixType(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
-    }
 
+        //return (ASTNode *) new MatrixType(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
+    }
+    */
+  /*
     // if it is a [] of size 1
-    else if (!ctx->rightExtension()) {
+    if (!ctx->rightExtension()) {
+
+    */
         ASTNode *size;
 
         if(ctx->left == nullptr) {
@@ -535,20 +540,26 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         }
 
         return size;
+        /*
     }
 
     return nullptr;
+         */
 }
 
 antlrcpp::Any ASTGenerator::visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) {
+    ASTNode *size;
+
     if(ctx->right == nullptr)
-        return nullptr;
+        size = nullptr;
     else {
         if (ctx->right->getText() == "*") {
             return nullptr;
         }
-        return visit(ctx->right);
+        size = visit(ctx->right);
     }
+
+    return size;
 }
 
 antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprContext *ctx) {

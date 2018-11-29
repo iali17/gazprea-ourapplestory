@@ -201,6 +201,11 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
         return vecAssCast(type, expr, line, size, exprSize);
     }
 
+    // Deals with type assignment when declaration type is of matrix type
+    if(it->isDeclMatrixType(type)) {
+        //return matAssCast
+    }
+
     llvm::Type *rTypeP = expr->getType();
 
     // Position in typeTable
@@ -415,6 +420,10 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
         auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
+}
+
+llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, ASTNode *size) {
+    return nullptr;
 }
 
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {

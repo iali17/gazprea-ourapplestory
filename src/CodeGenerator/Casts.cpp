@@ -90,8 +90,6 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
  * @return
  */
 llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
-    std::cout << "THIS IS T_VECTOR CASTING" << std::endl;
-
     auto values = new std::vector<llvm::Value *>();
     llvm::Type *type;
     llvm::Value *expr;

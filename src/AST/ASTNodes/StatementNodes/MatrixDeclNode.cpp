@@ -22,7 +22,7 @@ const std::string &MatrixDeclNode::getInitType() const {
 }
 
 ASTNode *MatrixDeclNode::getMatrixType() const {
-    return matrixType;
+    return this->matrixType;
 }
 
 

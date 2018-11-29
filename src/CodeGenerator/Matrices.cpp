@@ -107,15 +107,70 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
         et->copyVectorElements(curRowPtr, vectors->at(i));
     }
 
+
+
     return matrix;
 }
 
 llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     MatrixNode *matrixNode = nullptr;
-    auto *matrixType = dynamic_cast<MatrixType *>(node->getMatrixType());
+    llvm::Value *mat = nullptr;
 
+    auto *matrixTypeSize = (MatrixType *) node->getMatrixType();
+    llvm::Type *matrixType = it->getDeclMatrixType(node->getInitType());
+    llvm::Type *matrixElemType = it->getDeclScalarTypeFromMat(matrixType);
     matrixNode = dynamic_cast<MatrixNode *>(node->getExpr());
 
+
+    // Declaration row and col
+    llvm::Value *declRowSize = visit(matrixTypeSize->getLeft());
+    llvm::Value *declColSize = visit(matrixTypeSize->getRight());
+
+    // Max row and col of exprs
+    llvm::Value *rowSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMROW_INDEX);
+    llvm::Value *colSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMCOL_INDEX);
+
+    // Get new matrix and cast to proper type
+    mat = et->getNewMatrix(it->getConstFromType(matrixElemType));
+    mat = it->castMatrixToType(mat, matrixElemType);
+
+    // Initialize matrix to given size
+    if(declRowSize && declColSize) {
+        et->initMatrix(mat, declRowSize, declColSize);
+    } else if(declRowSize && !declColSize) {
+        et->initMatrix(mat, declRowSize, colSize);
+    } else if(!declRowSize && declColSize) {
+        et->initMatrix(mat, rowSize, declColSize);
+    } else {
+        et->initMatrix(mat, rowSize, colSize);
+    }
+
+    if (dynamic_cast<IdnNode *>(node->getExpr())) {
+        et->setIdentityMatrix(mat);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
+        return nullptr;
+    } else if (dynamic_cast<NullNode *>(node->getExpr())) {
+        et->setNullVector(mat);
+        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
+        return nullptr;
+    }
+
+    // Handles cases when expr is a matrix
+    if (matrixNode) {
+        llvm::Value *matExpr = visit(node->getExpr());
+        llvm::Value *vecExprSize = it->getValFromStruct(matExpr, MATRIX_ELEM_INDEX);
+
+        //mat = ct->typeAssCast();
+    }
+
+    // Handles case when expr is not a matrix
+    else if (node->getExpr()) {
+        llvm::Value *regExpr = visit(node->getExpr());
+
+        //mat = ct->typeAssCast();
+    }
+
+    symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
     return nullptr;
 }
 

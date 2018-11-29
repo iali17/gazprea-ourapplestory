@@ -544,6 +544,20 @@ bool InternalTools::isDeclVectorType(llvm::Type *type) {
     return false;
 }
 
+bool InternalTools::isDeclMatrixType(llvm::Type *type) {
+    if(type == intMatrixTy || type == intMatrixTy->getPointerTo()) {
+        return true;
+    } else if(type == realMatrixTy || type == realMatrixTy->getPointerTo()) {
+        return true;
+    } else if(type == charMatrixTy || type == charMatrixTy->getPointerTo()) {
+        return true;
+    } else if(type == boolMatrixTy || type == boolMatrixTy->getPointerTo()) {
+        return true;
+    }
+
+    return false;
+}
+
 
 std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
     if(type == intTy)
@@ -567,13 +581,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy || ty == boolVecTy->getPointerTo())
+    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo())
         return getConsi32(BOOLEAN);
-    else if (ty == charTy || ty == charVecTy->getPointerTo())
+    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo())
         return getConsi32(CHAR);
-    else if (ty == intTy || ty == intVecTy->getPointerTo())
+    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo())
         return getConsi32(INTEGER);
-    else if (ty == realTy || ty == realVecTy->getPointerTo())
+    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo())
         return getConsi32(REAL);
 
     return nullptr;
@@ -696,6 +710,19 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
     return nullptr;
 }
 
+llvm::Type *InternalTools::getDeclMatrixType(const std::string &typeString) {
+    if(typeString == "integermatrix")
+        return intMatrixTy;
+    else if(typeString == "realmatrix")
+        return realMatrixTy;
+    else if(typeString == "booleanmatrix")
+        return boolMatrixTy;
+    else if(typeString == "charactermatrix")
+        return charMatrixTy;
+
+    return nullptr;
+}
+
 std::string InternalTools::getVectorTypeString(llvm::Value *vec) {
     std::string ret = "";
     if(vec->getType() == intVecTy->getPointerTo())
@@ -725,6 +752,21 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
     return nullptr;
 }
 
+llvm::Type *InternalTools::getDeclScalarTypeFromMat(llvm::Type *type) {
+    if(type == intMatrixTy || type == intMatrixTy->getPointerTo()) {
+        return intTy;
+    } else if(type == realMatrixTy || type == realMatrixTy->getPointerTo()) {
+        return realTy;
+    } else if(type == charMatrixTy || type == charMatrixTy->getPointerTo()) {
+        return charTy;
+    } else if(type == boolMatrixTy || type == boolMatrixTy->getPointerTo()) {
+        return boolTy;
+    }
+
+    return nullptr;
+}
+
+
 int InternalTools::getVectorLength(llvm::Value *vec) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *size = getValFromStruct(vec, getConsi32(VEC_LEN_INDEX));
@@ -752,5 +794,3 @@ int InternalTools::getVectorLength(llvm::Value *vec) {
 
     return counter;
 }
-
-

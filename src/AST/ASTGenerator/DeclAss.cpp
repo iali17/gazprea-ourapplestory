@@ -34,11 +34,16 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
     // if matrix decl then
-    else if ((ctx->type().size() == 1) && (ctx->type(0)->matrixType())) {
-        if (ctx->extension() == nullptr) {  // if extension not provided
-            return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, nullptr);
+    else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
+    || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension()->rightExtension())) {
+        ASTNode *typeNode;
+        if (ctx->type(0)->matrixType()) {
+            typeNode = (ASTNode *) new MatrixType(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+        } else {
+            typeNode = (ASTNode *) new MatrixType(nullptr, nullptr, line);
         }
-        return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, visit(ctx->extension()));
+
+        return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, typeNode);
     }
     // TODO: Parse vector type and add it as a string to vectorDeclNode
     // if vector decl then

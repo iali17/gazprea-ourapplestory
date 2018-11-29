@@ -16,6 +16,24 @@ procedure main () returns integer {
     character vector c[10]  = as<character vector[10]>(x);
     character vector c1     = as<character vector>(w1);
 
+    integer vector v[5]     = as<integer vector[5]>(w);
+    integer vector v1       = as<integer vector>(w1);
+
+    real vector r[5]        = as<real vector[5]>(v1);
+    real vector r1          = as<real vector>(v);
+
+    integer vector i[5]     = as<integer vector[5]>(x1);
+    boolean vector i2       = as<boolean vector>(y1);
+    real vector i3[7]       = as<real vector[7]>(x1);
+
+    integer vector u[10]    = as<integer vector[10]>([1.1,2.2,3.3,4.4,5.5]);
+    integer vector u1       = as<integer vector>(as<real vector[3]>(1..5));
+
+    integer vector h        = as<integer vector>([1,2,3,4,5]);
+    real vector h1          = as<real vector[5]>([1.1,2.2,3.3]);
+    boolean vector h2       = as<boolean vector[2]>([true,false,false,true]);
+    character vector h3[10] = as<character vector>(['a','b','c','d','e','f','g','h','i','j']);
+
     // Explicit cast from integer intervals to integer vectors with and without size
     x -> out; '\n' -> out;
     y -> out; '\n' -> out;
@@ -35,6 +53,29 @@ procedure main () returns integer {
     // Explicit cast from integer vector to character vector and boolean vector to character vector
     c -> out; '\n' -> out;
     c1 -> out; '\n' -> out;
+
+    // Explicit cast from boolean vectors to integer vectors
+    v -> out; '\n' -> out;
+    v1 -> out; '\n' -> out;
+
+    // Explicit cast from boolen vectors to real vectors
+    r -> out; '\n' -> out;
+    r1 -> out; '\n' -> out;
+
+    // Explicit cast from character vector to integer, boolean, and real vectors
+    i -> out; '\n' -> out;
+    i2 -> out; '\n' -> out;
+    i3 -> out; '\n' -> out;
+
+    // Explicit cast from real vectors to integer vectors
+    u -> out; '\n' -> out;
+    u1 -> out; '\n' -> out;
+
+    // Explicit cast from vector type to itself, checks null padding and truncations and with and without size
+    h -> out; '\n' -> out;
+    h1 -> out; '\n' -> out;
+    h2 -> out; '\n' -> out;
+    h3 -> out; '\n' -> out;
 
     return 0;
 }

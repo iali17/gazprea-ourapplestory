@@ -5,7 +5,21 @@
 #include <AST/ASTGenerator.h>
 
 antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) {
-    return nullptr;
+    int line = (int)ctx->getStart()->getLine();
+
+    if(ctx->extension()) {
+        if(ctx->extension()->rightExtension()) {
+            return (ASTNode *) new MatrixType(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+        } else {
+            return (ASTNode *) new MatrixType(visit(ctx->extension()), nullptr, line);
+        }
+    } else {
+        if(ctx->extension()->rightExtension()) {
+            return (ASTNode *) new MatrixType(nullptr, visit(ctx->extension()->rightExtension()), line);
+        } else {
+            return (ASTNode *) new MatrixType(nullptr, nullptr, line);
+        }
+    }
 }
 
 // this just calls visitMatrix

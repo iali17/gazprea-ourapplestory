@@ -72,28 +72,15 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     }
 
     if (vectorNode) {
-        if (!vectorNode->getElements()->empty()) {
-            llvm::Value *vecExpr = visit(node->getExpr());
-            llvm::Type *vecType = it->getDeclVectorType(stype);
-            llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
+        llvm::Value *vecExpr = visit(node->getExpr());
+        llvm::Type *vecType = it->getDeclVectorType(stype);
+        llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
-            /*if((vec->getType() == realVecTy->getPointerTo()) && (vecExpr->getType() == intVecTy->getPointerTo()))
-                vecExpr = ct->createVecFromVec(vecExpr, realTy, vecExprSize, node->getLine());
-
-            et->strictCopyVectorElements(vec, vecExpr, it->getConsi32(node->getLine()));*/
-
-            vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, (int)vectorNode->getElements()->size());
-        }
-        // empty vector
-        else  {
-            et->initVector(vec, it->getConsi32(0));
-        }
-
-
+        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, (int)vectorNode->getElements()->size());
     }
+
     // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested
     else if (node->getExpr()) {
-
         llvm::Value *regExpr = visit(node->getExpr());
         llvm::Type *vecType = it->getDeclVectorType(stype);
 

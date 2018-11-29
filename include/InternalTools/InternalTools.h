@@ -73,6 +73,7 @@ public:
     bool isVectorType(llvm::Value *ptr);
 	bool isMatrixType(llvm::Value *ptr);
     bool isDeclVectorType(llvm::Type *type);
+    bool isDeclMatrixType(llvm::Type *type);
     bool isIntervalType(llvm::Value *ptr);
     std::vector<llvm::Value *> * getValueVectorFromTuple(llvm::Value *structPtr);
     std::string getType(llvm::Type * type, llvm::Value *expr);
@@ -84,6 +85,8 @@ public:
     llvm::Value *setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values);
 	llvm::Type *getVectorType(const std::string &typeString);
 	llvm::Type *getDeclScalarTypeFromVec(llvm::Type *type);
+	llvm::Type *getDeclScalarTypeFromMat(llvm::Type *type);
+	llvm::Type *getDeclMatrixType(const std::string &typeString);
 	llvm::Type *getDeclVectorType(const std::string &typeString);
 	std::string getVectorTypeString(llvm::Value *vec);
 	int getVectorLength(llvm::Value *vec);
