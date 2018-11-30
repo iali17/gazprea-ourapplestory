@@ -660,7 +660,7 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
 
 
 llvm::Value *InternalTools::setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values) {
-    llvm::Value *ptr = getPtrFromStruct(mat, getConsi32(MATRIX_ELEM_INDEX));
+    llvm::Value *ptr = getPtrFromStruct(mat, MATRIX_ELEM_INDEX);
     llvm::Value *curRowPtr;
     llvm::Value *loadValue;
     llvm::Value *vecCopy;

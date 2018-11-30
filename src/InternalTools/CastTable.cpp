@@ -190,9 +190,7 @@ llvm::Value *CastTable::varCast(llvm::Type *type, llvm::Value *exprLoad, int lin
     return nullptr;
 }
 
-llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size, int exprSize) {
-    //auto *cb = new CondBuilder(globalCtx, ir, mod);
-
+llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size, llvm::Value *extraSize, int exprSize) {
     if(expr->getName() == "IdnNode")
         expr = it->getIdn(type);
 
@@ -203,7 +201,7 @@ llvm::Value *CastTable::typeAssCast(llvm::Type *type, llvm::Value *expr, int lin
 
     // Deals with type assignment when declaration type is of matrix type
     if(it->isDeclMatrixType(type)) {
-        //return matAssCast
+        return matAssCast(type, expr, line, size, extraSize);
     }
 
     llvm::Type *rTypeP = expr->getType();
@@ -422,7 +420,24 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
     }
 }
 
-llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, ASTNode *size) {
+llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftSize, llvm::Value *rightSize) {
+    llvm::Type *llType = it->getDeclScalarTypeFromMat(type);
+    llvm::Value *declType = it->getConstFromType(llType);
+
+    int lType = getType(llType);
+
+    std::string lTypeString = typeAssTable[lType][lType];
+    std::string rTypeString;
+
+    // Deals with casting matrix to matrix
+    if(it->isMatrixType(expr)) {
+
+    }
+    // Deals with casting scalars to matrix
+    else {
+        return createMatFromScalar(expr, type, leftSize, rightSize, line);
+    }
+
     return nullptr;
 }
 
@@ -465,6 +480,48 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
     wb->endWhile();
 
     return vec;
+}
+
+llvm::Value *CastTable::createMatFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line) {
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    auto *newMatValues = new std::vector<llvm::Value *>();
+    llvm::Type *elemType = it->getDeclScalarTypeFromMat(type);
+    llvm::Value *curVec;
+    llvm::Value *mat;
+
+    // Create new empty matrix
+    mat = et->getNewMatrix(it->getConstFromType(elemType));
+
+    // Counter
+    llvm::Value *curRowSize = it->getConsi32(0);
+    llvm::Value *curRowPtr = ir->CreateAlloca(intTy);
+
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    // Creates empty matrix to type and size given
+    et->initMatrix(mat, leftSize, rightSize);
+    mat = it->castMatrixToType(mat, elemType);
+
+    wb->beginWhile();
+
+    curRowSize = ir->CreateLoad(curRowPtr);
+    llvm::Value *cmpStatement = ir->CreateICmpSLT(curRowSize, leftSize, "CompStatement");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    curVec = createVecFromScalar(expr, elemType, rightSize, line);
+    newMatValues->push_back(curVec);
+
+    // Increment counter
+    curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    wb->endWhile();
+
+    it->setMatrixValues(mat, newMatValues);
+
+    return mat;
 }
 
 llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line) {
@@ -516,6 +573,110 @@ llvm::Value *CastTable::createVecFromVec(llvm::Value *exprP, llvm::Type *type, l
 
     return vec;
 }
+
+llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line) {
+    auto *cb = new CondBuilder(globalCtx, ir, mod);
+    auto *wb = new WhileBuilder(globalCtx, ir, mod);
+    llvm::Value *curVecElemPtr;
+    llvm::Value *curVec;
+    llvm::Value *oldVecLoaded;
+    llvm::Value *rowMaxSize;
+    llvm::Value *rowsRemaining;
+
+    auto *newMatValues = new std::vector<llvm::Value *>();
+    llvm::Value *oldMatValues = it->getPtrFromStruct(exprP, MATRIX_ELEM_INDEX);
+    llvm::Value *numRowInMat = it->getValFromStruct(exprP, MATRIX_NUMROW_INDEX);
+    llvm::Type *elemType = it->getDeclScalarTypeFromMat(type);
+
+    // Create new empty matrix
+    llvm::Value *mat = et->getNewMatrix(it->getConstFromType(type));
+
+    // Counter
+    llvm::Value *curRowSize = it->getConsi32(0);
+    llvm::Value *curRowPtr = ir->CreateAlloca(intTy);
+
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    // Creates empty matrix of cast type and given size
+    et->initMatrix(mat, leftSize, rightSize);
+    mat = it->castMatrixToType(mat, elemType);
+
+    // Check if null padding in rows are needed
+    llvm::Value *cond = ir->CreateICmpSLT(numRowInMat, leftSize);
+
+    // If the current matrix has more or equal to the number of rows set maxRowSize to row count, else, set it to matrixRowCount
+    cb->beginIf(cond, "ifCond");
+
+    rowMaxSize = numRowInMat;
+
+    cb->endIf();
+    cb->beginElse("elseCond");
+
+    rowMaxSize = leftSize;
+
+    cb->finalize();
+
+    // Begin loop to create vectors
+    wb->beginWhile();
+
+    curRowSize = ir->CreateLoad(curRowPtr);
+    llvm::Value *cmpStatement = ir->CreateICmpSLT(curRowSize, rowMaxSize, "WhileCond");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    // Get Vector at row curRowSize
+    curVecElemPtr = ir->CreateGEP(oldMatValues, curRowSize);
+    oldVecLoaded = ir->CreateLoad(curVecElemPtr);
+
+    // Calls createVecFromVec function which deals with nullpadding and truncating in the cols
+    curVec = createVecFromVec(oldVecLoaded, type, rightSize, line);
+    newMatValues->push_back(curVec);
+
+    // Increment counter
+    curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    wb->endWhile();
+
+    // If matrix needed nullpadding, continue into if statment else, skip
+    cb->beginIf(cond, "nullPadMatrix");
+
+    rowsRemaining = ir->CreateSub(leftSize, numRowInMat);
+
+    // Counter
+    curRowSize = it->getConsi32(0);
+
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    // Begin loop to create vectors
+    wb->beginWhile();
+
+    curRowSize = ir->CreateLoad(curRowPtr);
+    cmpStatement = ir->CreateICmpSLT(curRowSize, rowsRemaining, "WhileCond");
+
+    // Body
+    wb->insertControl(cmpStatement);
+
+    // Create null padded rows
+    curVec = et->getNewVector(it->getConstFromType(type));
+    curVec = et->initVector(curVec, rightSize);
+    newMatValues->push_back(curVec);
+
+    // Increment counter
+    curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
+    ir->CreateStore(curRowSize, curRowPtr);
+
+    wb->endWhile();
+
+    cb->endIf();
+    cb->finalize();
+
+    it->setMatrixValues(mat, newMatValues);
+
+    return mat;
+}
+
 
 InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
     int lType;
@@ -698,3 +859,6 @@ InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, ll
         return it->makePair(leftExpr, rightExpr);
     }
 }
+
+
+

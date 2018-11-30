@@ -107,8 +107,6 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
         et->copyVectorElements(curRowPtr, vectors->at(i));
     }
 
-
-
     return matrix;
 }
 
@@ -121,29 +119,13 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     llvm::Type *matrixElemType = it->getDeclScalarTypeFromMat(matrixType);
     matrixNode = dynamic_cast<MatrixNode *>(node->getExpr());
 
-
     // Declaration row and col
     llvm::Value *declRowSize = visit(matrixTypeSize->getLeft());
     llvm::Value *declColSize = visit(matrixTypeSize->getRight());
 
-    // Max row and col of exprs
-    llvm::Value *rowSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMROW_INDEX);
-    llvm::Value *colSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMCOL_INDEX);
-
     // Get new matrix and cast to proper type
     mat = et->getNewMatrix(it->getConstFromType(matrixElemType));
     mat = it->castMatrixToType(mat, matrixElemType);
-
-    // Initialize matrix to given size
-    if(declRowSize && declColSize) {
-        et->initMatrix(mat, declRowSize, declColSize);
-    } else if(declRowSize && !declColSize) {
-        et->initMatrix(mat, declRowSize, colSize);
-    } else if(!declRowSize && declColSize) {
-        et->initMatrix(mat, rowSize, declColSize);
-    } else {
-        et->initMatrix(mat, rowSize, colSize);
-    }
 
     if (dynamic_cast<IdnNode *>(node->getExpr())) {
         et->setIdentityMatrix(mat);
@@ -160,6 +142,21 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
         llvm::Value *matExpr = visit(node->getExpr());
         llvm::Value *vecExprSize = it->getValFromStruct(matExpr, MATRIX_ELEM_INDEX);
 
+        // Max row and col of exprs
+        llvm::Value *rowSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMROW_INDEX);
+        llvm::Value *colSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMCOL_INDEX);
+
+        // Initialize matrix to given size
+        if(declRowSize && declColSize) {
+            et->initMatrix(mat, declRowSize, declColSize);
+        } else if(declRowSize && !declColSize) {
+            et->initMatrix(mat, declRowSize, colSize);
+        } else if(!declRowSize && declColSize) {
+            et->initMatrix(mat, rowSize, declColSize);
+        } else {
+            et->initMatrix(mat, rowSize, colSize);
+        }
+
         //mat = ct->typeAssCast();
     }
 
@@ -167,7 +164,7 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     else if (node->getExpr()) {
         llvm::Value *regExpr = visit(node->getExpr());
 
-        //mat = ct->typeAssCast();
+        mat = ct->typeAssCast(matrixType, regExpr, node->getLine(), declRowSize, declColSize);
     }
 
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);

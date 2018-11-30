@@ -26,14 +26,16 @@ public:
     InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
 
-    llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr, int exprSize = -1);
+    llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr, llvm::Value *extraSize = nullptr, int exprSize = -1);
     llvm::Value *vecAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr, int exprSize = -1);
-    llvm::Value *matAssCast(llvm::Type *type, llvm::Value *expr, int line, ASTNode *size = nullptr);
+    llvm::Value *matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftsize = nullptr, llvm::Value *rightSize = nullptr);
 
     InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     InternalTools::pair vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     llvm::Value *createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line);
+    llvm::Value *createMatFromMat(llvm::Value *exprP, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line);
     llvm::Value *createVecFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *size, int line);
+    llvm::Value *createMatFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line);
 
     int getType(llvm::Type *expr);
 

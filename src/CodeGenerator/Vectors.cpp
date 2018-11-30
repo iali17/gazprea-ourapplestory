@@ -76,7 +76,7 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         llvm::Type *vecType = it->getDeclVectorType(stype);
         llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
-        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, (int)vectorNode->getElements()->size());
+        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, nullptr, (int)vectorNode->getElements()->size());
     }
 
     // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested

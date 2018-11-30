@@ -158,7 +158,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             return nullptr;
         } else {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine(),
-                                  nullptr, (int) ((VectorNode *) node->getExpr())->getElements()->size());
+                    nullptr, nullptr,(int) ((VectorNode *) node->getExpr())->getElements()->size());
             left->setPtr(ptr);
         }
     }
