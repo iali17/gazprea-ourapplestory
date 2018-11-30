@@ -36,7 +36,7 @@ private:
     antlrcpp::Any visitRowLengthExpr(gazprea::GazpreaParser::RowLengthExprContext *ctx) override;
     antlrcpp::Any visitColLengthExpr(gazprea::GazpreaParser::ColLengthExprContext *ctx) override;
     antlrcpp::Any visitReverseExpr(gazprea::GazpreaParser::ReverseExprContext *ctx) override;
-    antlrcpp::Any visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) override;
+    antlrcpp::Any visitDotProductOrMatMultExpr(gazprea::GazpreaParser::DotProductOrMatMultExprContext *ctx) override;
     antlrcpp::Any visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) override;
     antlrcpp::Any visitConcatExpr(gazprea::GazpreaParser::ConcatExprContext *ctx) override;
     antlrcpp::Any visitBrackExpr(gazprea::GazpreaParser::BrackExprContext *ctx) override;

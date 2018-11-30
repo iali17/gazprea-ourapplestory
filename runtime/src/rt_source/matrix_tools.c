@@ -423,12 +423,14 @@ void *getIntMatrixMultiplication(void * v_matrix_left, void * v_matrix_right){
     matrix * right = (matrix *) v_matrix_right;
 
     //make sure that the size is good
-    assert((*left->numRows == *right->numCols) && (*left->numCols == *right->numRows));
+    //assert((*left->numRows == *right->numCols) && (*left->numCols == *right->numRows));
 
     //get the constants
     int ty = *left->type;
-    int numResultRows = (*left->numRows < *right->numCols) ? *left->numRows : *right->numCols;
-    int numResultCols = (*left->numCols < *right->numRows) ? *left->numCols : *right->numRows;
+    //int numResultRows = *left->numRows;//(*left->numRows < *right->numCols) ? *left->numRows : *right->numCols;
+    //int numResultCols = *left->numRows;//(*left->numCols < *right->numRows) ? *left->numCols : *right->numRows;
+    int numResultRows = *left->numRows;//(*left->numRows == 1) ? 1 : *left->numRows;
+    int numResultCols = *right->numCols;//(*right->numCols == 1) ? 1 : *left->numCols;
 
     //init the return
     matrix * ret = (matrix *) getEmptyMatrix(ty);
@@ -453,11 +455,12 @@ void *getIntMatrixMultiplication(void * v_matrix_left, void * v_matrix_right){
     for(curRow = 0; curRow < numResultRows; curRow++){
         for(curCol = 0; curCol < numResultCols; curCol++){
             //get both pointers
-            rightRow   = indexVectorScalar(right, rowIndexVector, curCol);
+            rightRow   = sliceVectorScalar(right, rowIndexVector, curCol);
             leftRow    = left->elements + curRow;
 
             //perform dot product
             *dotResult = getIntDotProduct(leftRow, rightRow);
+
             dest = getVectorElementPointer(ret->elements + curRow,  + curCol);
             assignValFromPointers(dest, dotResult, ty);
         }
