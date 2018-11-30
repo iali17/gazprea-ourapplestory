@@ -135,6 +135,10 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
+
     //check for non base type cases
     if(it->isVectorType(left)){
         return performInfixVectorOp(node, left, right);
@@ -151,6 +155,10 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
+
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
 
     //check for non base type cases
     if(it->isVectorType(left)){

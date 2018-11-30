@@ -41,7 +41,7 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
     }
 
     return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
-//    // uncomment this to print the resulting vector
+//    // uncomment below and comment above to print the resulting vector
 //    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
 //    et->printVector(result);
 //    return result;
@@ -100,8 +100,6 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     llvm::Value * b = it->getValFromStruct(newLeft, INTERVAL_MAX);
     llvm::Value * c = it->getValFromStruct(newRight, INTERVAL_MIN);
     llvm::Value * d = it->getValFromStruct(newRight, INTERVAL_MAX);
-//    llvm::Value * resultLeft;
-//    llvm::Value * resultRight;
 
     if(dynamic_cast<AddNode *>(node)) {     // [e,f] = [a + c, b + d]
         return et->getNewInterval(it->getAdd(a, c), it->getAdd(b, d));
@@ -112,14 +110,121 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     }
 
     else if(dynamic_cast<MulNode *>(node)) {
+        // if a >= 0
+            // if c >= 0
+                // [e,f] = [a * c, b * d]
+            // else if d <= 0
+                // [e,f] = [b * c, a * d]
+            // else
+                // [e,f] = [b * c, b * d]
+        // else if b <= 0
+            // if c >= 0
+                // [e,f] = [a * d, b * c]
+            // else if d <= 0
+                // [e,f] = [b * d, a * c]
+            // else
+                // [e,f] = [a * d, a * c]
+        // else if c >= 0
+            // [e,f] = [a * d, b * c]
+        // else if d <= 0
+            // [e,f] = [b * c, a * c]
+        // else
+            // if a * d > b * c
+                // e = a * d
+            // else
+                // e = b * c
+            // if a * c > b * d
+                // e = a * c
+            // else
+                // e = b * d
 
+
+        auto *cb = new CondBuilder(globalCtx, ir, mod);
+        llvm::Value * resultLeft = ir->CreateAlloca(intTy);
+        llvm::Value * resultRight = ir->CreateAlloca(intTy);
+
+        ir->CreateStore(ir->CreateMul(a, c), resultLeft);
+
+        cb->beginIf(ir->CreateICmpEQ(
+                ir->CreateICmpSGE(a, it->getConsi32(0)),
+                ir->CreateICmpSGE(c, it->getConsi32(0))));
+                    ir->CreateStore(ir->CreateMul(a, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSGE(a, it->getConsi32(0)),
+                ir->CreateICmpSLE(d, it->getConsi32(0))
+                ));
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, d), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpSGE(a, it->getConsi32(0)));
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->endIf();
+
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSLE(b, it->getConsi32(0)),
+                ir->CreateICmpSGE(c, it->getConsi32(0))
+                ));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, c), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSLE(b, it->getConsi32(0)),
+                ir->CreateICmpSLE(d, it->getConsi32(0))
+                ));
+                    ir->CreateStore(ir->CreateMul(b, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpSLE(b, it->getConsi32(0)));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+
+        cb->beginElseIf(ir->CreateICmpSGE(c, it->getConsi32(0)));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpSLE(d, it->getConsi32(0)));
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSGT(ir->CreateMul(a, d), ir->CreateMul(b, c)),
+                ir->CreateICmpSGT(ir->CreateMul(a, c), ir->CreateMul(b, d))
+                ));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSGT(ir->CreateMul(a, d), ir->CreateMul(b, c)),
+                ir->CreateICmpSLT(ir->CreateMul(a, c), ir->CreateMul(b, d))
+                ));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->endIf();
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpSLT(ir->CreateMul(a, d), ir->CreateMul(b, c)),
+                ir->CreateICmpSGT(ir->CreateMul(a, c), ir->CreateMul(b, d))
+                ));
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+        cb->beginElse();
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->finalize();
+
+        return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
     }
 
     else if(dynamic_cast<DivNode *>(node)) {
 
     }
 
-    return nullptr;
+    return left;
 }
 
 
