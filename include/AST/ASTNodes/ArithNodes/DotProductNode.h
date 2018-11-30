@@ -7,6 +7,7 @@
 
 #include "AST/ASTNodes/BaseNodes/InfixNode.h"
 
+//this is currently holding both operations of **
 class DotProductNode : public InfixNode {
 public:
     DotProductNode(ASTNode *left, ASTNode *right, int line);

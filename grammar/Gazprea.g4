@@ -43,7 +43,7 @@ expr
     | <assoc=right> left=expr op=EXP right=expr                     #arithExpr
     | left=expr op=(MUL | DIV | REM) right=expr                     #arithExpr
     | left=expr op=(ADD | SUB) right=expr                           #arithExpr
-    | left=expr op=DOTPRODUCT right=expr                            #dotProductExpr
+    | left=expr op=DOTPRODUCT right=expr                            #dotProductOrMatMultExpr
     | left=expr op=BY right=expr                                    #byExpr
     | left=expr op=(LESST | MORET | LESSTE | MORETE) right=expr     #compExpr
     | left=expr op=(EEQL | NEQL) right=expr                         #compExpr

@@ -113,6 +113,7 @@ public:
 	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      performMatrixMultiplication(llvm::Value * left, llvm::Value * right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     llvm::Value*      getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
