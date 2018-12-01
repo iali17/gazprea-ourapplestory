@@ -40,11 +40,11 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
         return et->getVectorBy(interval, iterator);
     }
 
-    return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
+//    return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
 //    // uncomment below and comment above to print the resulting vector
-//    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
-//    et->printVector(result);
-//    return result;
+    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
+    et->printVector(result);
+    return result;
 }
 
 
@@ -143,8 +143,6 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
         llvm::Value * resultLeft = ir->CreateAlloca(intTy);
         llvm::Value * resultRight = ir->CreateAlloca(intTy);
 
-        ir->CreateStore(ir->CreateMul(a, c), resultLeft);
-
         cb->beginIf(ir->CreateICmpEQ(
                 ir->CreateICmpSGE(a, it->getConsi32(0)),
                 ir->CreateICmpSGE(c, it->getConsi32(0))));
@@ -158,11 +156,17 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, d), resultRight);
         cb->endIf();
-        cb->beginElseIf(ir->CreateICmpSGE(a, it->getConsi32(0)));
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLT(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0))
+                        ),
+                ir->CreateICmpSGE(a, it->getConsi32(0))
+                ));
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, d), resultRight);
         cb->endIf();
-
+//
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpSLE(b, it->getConsi32(0)),
                 ir->CreateICmpSGE(c, it->getConsi32(0))
@@ -177,20 +181,38 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
                     ir->CreateStore(ir->CreateMul(b, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, c), resultRight);
         cb->endIf();
-        cb->beginElseIf(ir->CreateICmpSLE(b, it->getConsi32(0)));
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLT(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0))
+                ),
+                ir->CreateICmpSLE(b, it->getConsi32(0))
+                ));
                     ir->CreateStore(ir->CreateMul(a, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, c), resultRight);
         cb->endIf();
-
-        cb->beginElseIf(ir->CreateICmpSGE(c, it->getConsi32(0)));
+//
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLT(a, it->getConsi32(0)),
+                        ir->CreateICmpSGT(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpSGE(c, it->getConsi32(0))
+                ));
                     ir->CreateStore(ir->CreateMul(a, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, d), resultRight);
         cb->endIf();
-        cb->beginElseIf(ir->CreateICmpSLE(d, it->getConsi32(0)));
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLT(a, it->getConsi32(0)),
+                        ir->CreateICmpSGT(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpSLE(d, it->getConsi32(0))
+                ));
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, c), resultRight);
         cb->endIf();
-
+//
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpSGT(ir->CreateMul(a, d), ir->CreateMul(b, c)),
                 ir->CreateICmpSGT(ir->CreateMul(a, c), ir->CreateMul(b, d))
@@ -215,6 +237,16 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
         cb->beginElse();
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->finalize();
+
+        // remember to flip left and right if left > right
+        cb = new CondBuilder(globalCtx, ir, mod);
+        cb->beginIf(ir->CreateICmpSGT(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight)));
+            llvm::Value * temp = ir->CreateAlloca(intTy);
+            ir->CreateStore(ir->CreateLoad(resultLeft), temp);
+            ir->CreateStore(ir->CreateLoad(resultRight), resultLeft);
+            ir->CreateStore(ir->CreateLoad(temp), resultRight);
+        cb->endIf();
         cb->finalize();
 
         return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
