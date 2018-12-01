@@ -110,109 +110,116 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     }
 
     else if(dynamic_cast<MulNode *>(node)) {
-        // if a >= 0
-            // if c >= 0
-                // [e,f] = [a * c, b * d]
-            // else if d <= 0
-                // [e,f] = [b * c, a * d]
-            // else
-                // [e,f] = [b * c, b * d]
-        // else if b <= 0
-            // if c >= 0
-                // [e,f] = [a * d, b * c]
-            // else if d <= 0
-                // [e,f] = [b * d, a * c]
-            // else
-                // [e,f] = [a * d, a * c]
-        // else if c >= 0
-            // [e,f] = [a * d, b * c]
-        // else if d <= 0
-            // [e,f] = [b * c, a * c]
-        // else
-            // if a * d > b * c
-                // e = a * d
-            // else
-                // e = b * c
-            // if a * c > b * d
-                // e = a * c
-            // else
-                // e = b * d
-
-
         auto *cb = new CondBuilder(globalCtx, ir, mod);
         llvm::Value * resultLeft = ir->CreateAlloca(intTy);
         llvm::Value * resultRight = ir->CreateAlloca(intTy);
 
-        cb->beginIf(ir->CreateICmpEQ(
-                ir->CreateICmpSGE(a, it->getConsi32(0)),
-                ir->CreateICmpSGE(c, it->getConsi32(0))));
+        // a>0, b>0, c>0, d>0 [ac,bd]
+        cb->beginIf(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpEQ(
+                                ir->CreateICmpSGT(a, it->getConsi32(0)),
+                                ir->CreateICmpSGT(b, it->getConsi32(0))
+                                ),
+                        ir->CreateICmpEQ(
+                                ir->CreateICmpSGT(c, it->getConsi32(0)),
+                                ir->CreateICmpSGT(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(a, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, d), resultRight);
         cb->endIf();
+
+        // a>0, b>0, c<0, d<0 [bc,ad]
         cb->beginElseIf(ir->CreateICmpEQ(
-                ir->CreateICmpSGE(a, it->getConsi32(0)),
-                ir->CreateICmpSLE(d, it->getConsi32(0))
-                ));
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSGT(a, it->getConsi32(0)),
+                        ir->CreateICmpSGT(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(c, it->getConsi32(0)),
+                        ir->CreateICmpSLE(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, d), resultRight);
         cb->endIf();
+
+        // a<0, b<0, c>0, d>0 [ad,bc]
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpEQ(
-                        ir->CreateICmpSLT(c, it->getConsi32(0)),
-                        ir->CreateICmpSGT(d, it->getConsi32(0))
-                        ),
-                ir->CreateICmpSGE(a, it->getConsi32(0))
-                ));
-                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
-                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
-        cb->endIf();
-//
-        cb->beginElseIf(ir->CreateICmpEQ(
-                ir->CreateICmpSLE(b, it->getConsi32(0)),
-                ir->CreateICmpSGE(c, it->getConsi32(0))
-                ));
+                        ir->CreateICmpSLE(a, it->getConsi32(0)),
+                        ir->CreateICmpSLE(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSGT(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(a, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, c), resultRight);
         cb->endIf();
+
+        // all < 0 [bd,ac]
         cb->beginElseIf(ir->CreateICmpEQ(
-                ir->CreateICmpSLE(b, it->getConsi32(0)),
-                ir->CreateICmpSLE(d, it->getConsi32(0))
-                ));
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(a, it->getConsi32(0)),
+                        ir->CreateICmpSLE(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(c, it->getConsi32(0)),
+                        ir->CreateICmpSLE(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(b, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, c), resultRight);
         cb->endIf();
+
+        // a<0, b>0, c>0, d>0 [ad,bd]
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpEQ(
-                        ir->CreateICmpSLT(c, it->getConsi32(0)),
-                        ir->CreateICmpSGT(d, it->getConsi32(0))
-                ),
-                ir->CreateICmpSLE(b, it->getConsi32(0))
-                ));
-                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
-                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
-        cb->endIf();
-//
-        cb->beginElseIf(ir->CreateICmpEQ(
-                ir->CreateICmpEQ(
-                        ir->CreateICmpSLT(a, it->getConsi32(0)),
+                        ir->CreateICmpSLE(a, it->getConsi32(0)),
                         ir->CreateICmpSGT(b, it->getConsi32(0))
                 ),
-                ir->CreateICmpSGE(c, it->getConsi32(0))
-                ));
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSGT(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(a, d), resultLeft);
                     ir->CreateStore(ir->CreateMul(b, d), resultRight);
         cb->endIf();
+
+        // a<0, b>0, c<0 d<0 [bc,ac]
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpEQ(
-                        ir->CreateICmpSLT(a, it->getConsi32(0)),
+                        ir->CreateICmpSLE(a, it->getConsi32(0)),
                         ir->CreateICmpSGT(b, it->getConsi32(0))
                 ),
-                ir->CreateICmpSLE(d, it->getConsi32(0))
-                ));
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(c, it->getConsi32(0)),
+                        ir->CreateICmpSLE(d, it->getConsi32(0)))));
                     ir->CreateStore(ir->CreateMul(b, c), resultLeft);
                     ir->CreateStore(ir->CreateMul(a, c), resultRight);
         cb->endIf();
-//
+
+        // a>0, b>0, c<0, d>0 [bc,bd]
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSGT(a, it->getConsi32(0)),
+                        ir->CreateICmpSGT(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0)))));
+                    ir->CreateStore(ir->CreateMul(b, c), resultLeft);
+                    ir->CreateStore(ir->CreateMul(b, d), resultRight);
+        cb->endIf();
+
+        // a<0, b<0, c<0, d>0 [ad,ac]
+        cb->beginElseIf(ir->CreateICmpEQ(
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(a, it->getConsi32(0)),
+                        ir->CreateICmpSLE(b, it->getConsi32(0))
+                ),
+                ir->CreateICmpEQ(
+                        ir->CreateICmpSLE(c, it->getConsi32(0)),
+                        ir->CreateICmpSGT(d, it->getConsi32(0)))));
+                    ir->CreateStore(ir->CreateMul(a, d), resultLeft);
+                    ir->CreateStore(ir->CreateMul(a, c), resultRight);
+        cb->endIf();
+
+        // min max stuff
         cb->beginElseIf(ir->CreateICmpEQ(
                 ir->CreateICmpSGT(ir->CreateMul(a, d), ir->CreateMul(b, c)),
                 ir->CreateICmpSGT(ir->CreateMul(a, c), ir->CreateMul(b, d))
