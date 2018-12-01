@@ -387,6 +387,8 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
 
     if (iter == sad->end()) {
         return retVal;
+    } else if (iter->second.first.first == -1 && iter->second.first.second == -1) {
+        return retVal;
     } else if (iter->second.first.second == -1) {
         llvm::Value *realRetVal = et->getNewVector(it->getConstFromType(func->getReturnType()));
         et->initVector(realRetVal, it->getConsi32(iter->second.first.first));
