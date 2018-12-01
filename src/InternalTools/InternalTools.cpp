@@ -581,13 +581,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo())
+    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo() || ty == boolMatrixTy)
         return getConsi32(BOOLEAN);
-    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo())
+    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo() || ty == charMatrixTy)
         return getConsi32(CHAR);
-    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo())
+    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo() || ty == intMatrixTy)
         return getConsi32(INTEGER);
-    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo())
+    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo() || ty == realMatrixTy)
         return getConsi32(REAL);
 
     return nullptr;
@@ -653,22 +653,6 @@ llvm::Value *InternalTools::setVectorValues(llvm::Value *vec, std::vector<llvm::
     for(uint i = 0; i < values->size(); i++) {
         curPosPtr = ir->CreateGEP(ptr, getConsi32(i));
         ir->CreateStore(values->at(i), curPosPtr);
-    }
-
-    return nullptr;
-}
-
-
-llvm::Value *InternalTools::setMatrixValues(llvm::Value *mat, std::vector<llvm::Value *> *values) {
-    llvm::Value *ptr = getPtrFromStruct(mat, MATRIX_ELEM_INDEX);
-    llvm::Value *curRowPtr;
-    llvm::Value *loadValue;
-    llvm::Value *vecCopy;
-
-    for(uint i = 0; i < values->size(); i++) {
-        curRowPtr = ir->CreateGEP(ptr, getConsi32(i));
-        loadValue = ir->CreateLoad(values->at(i));
-        ir->CreateStore(loadValue, curRowPtr);
     }
 
     return nullptr;
