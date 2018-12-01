@@ -431,11 +431,28 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
 
     // Deals with casting matrix to matrix
     if(it->isMatrixType(expr)) {
+        llvm::Value *exprRows = it->getValFromStruct(expr, MATRIX_NUMROW_INDEX);
+        llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
+
+        if(leftSize && rightSize) {
+            return createMatFromMat(expr, type, leftSize, rightSize, line);
+        } else if(leftSize && !rightSize) {
+            return createMatFromMat(expr, type, leftSize, exprCols, line);
+        } else if(!leftSize && rightSize) {
+            return createMatFromMat(expr, type, exprRows, rightSize, line);
+        } else {
+            return createMatFromMat(expr, type, exprRows, exprCols, line);
+        }
 
     }
     // Deals with casting scalars to matrix
     else {
-        return createMatFromScalar(expr, type, leftSize, rightSize, line);
+        if(leftSize && rightSize)
+            return createMatFromScalar(expr, type, leftSize, rightSize, line);
+        else {
+            std::cerr << "No size given, add error node later\n";
+            exit(1);
+        }
     }
 
     return nullptr;
@@ -444,6 +461,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *elemValue = varCast(type, exprP, line);
+    llvm::Value *newVecElemPtrStruct;
     llvm::Value *newVecElemPtr;
 
     // Create new empty vector
@@ -459,6 +477,9 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
     // Creates empty vector of cast type and size of expr
     et->initVector(vec, size);
 
+    // Get ptr to position in memory where element is stored
+    newVecElemPtrStruct = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
+
     wb->beginWhile();
 
     curVecSize = ir->CreateLoad(curVecPtr);
@@ -467,8 +488,7 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
     // Body
     wb->insertControl(cmpStatement);
 
-    newVecElemPtr = it->getPtrFromStruct(vec, it->getConsi32(VEC_ELEM_INDEX));
-    newVecElemPtr = ir->CreateGEP(newVecElemPtr, curVecSize);
+    newVecElemPtr = ir->CreateGEP(newVecElemPtrStruct, curVecSize);
 
     // Store casted value into new vector at current position
     ir->CreateStore(elemValue, newVecElemPtr);
@@ -484,10 +504,12 @@ llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type
 
 llvm::Value *CastTable::createMatFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
-    auto *newMatValues = new std::vector<llvm::Value *>();
     llvm::Type *elemType = it->getDeclScalarTypeFromMat(type);
     llvm::Value *curVec;
     llvm::Value *mat;
+    llvm::Value *exprVal;
+    llvm::Value *curMatPtr;
+    llvm::Value *ptr;
 
     // Create new empty matrix
     mat = et->getNewMatrix(it->getConstFromType(elemType));
@@ -498,28 +520,40 @@ llvm::Value *CastTable::createMatFromScalar(llvm::Value *expr, llvm::Type *type,
 
     ir->CreateStore(curRowSize, curRowPtr);
 
+    llvm::Value *exprP = ir->CreateAlloca(expr->getType());
+    ir->CreateStore(expr, exprP);
+
     // Creates empty matrix to type and size given
     et->initMatrix(mat, leftSize, rightSize);
     mat = it->castMatrixToType(mat, elemType);
 
+    // Ptr to current position in matrix
+    ptr = it->getPtrFromStruct(mat, it->getConsi32(MATRIX_ELEM_INDEX));
+
     wb->beginWhile();
 
     curRowSize = ir->CreateLoad(curRowPtr);
+    exprVal = ir->CreateLoad(exprP);
+
     llvm::Value *cmpStatement = ir->CreateICmpSLT(curRowSize, leftSize, "CompStatement");
 
     // Body
     wb->insertControl(cmpStatement);
 
-    curVec = createVecFromScalar(expr, elemType, rightSize, line);
-    newMatValues->push_back(curVec);
+    curVec = createVecFromScalar(exprVal, elemType, rightSize, line);
+    curVec = ir->CreateLoad(curVec);
+
+    // Store copy of vector into position of new matrix
+    curMatPtr = ir->CreateGEP(ptr, curRowSize);
+    ir->CreateStore(curVec, curMatPtr);
 
     // Increment counter
     curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
     ir->CreateStore(curRowSize, curRowPtr);
 
-    wb->endWhile();
+    ir->CreateStore(expr, exprP);
 
-    it->setMatrixValues(mat, newMatValues);
+    wb->endWhile();
 
     return mat;
 }
@@ -579,11 +613,10 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *curVecElemPtr;
     llvm::Value *curVec;
-    llvm::Value *oldVecLoaded;
-    llvm::Value *rowMaxSize;
     llvm::Value *rowsRemaining;
+    llvm::Value *ptr;
+    llvm::Value *curMatPtr;
 
-    auto *newMatValues = new std::vector<llvm::Value *>();
     llvm::Value *oldMatValues = it->getPtrFromStruct(exprP, MATRIX_ELEM_INDEX);
     llvm::Value *numRowInMat = it->getValFromStruct(exprP, MATRIX_NUMROW_INDEX);
     llvm::Type *elemType = it->getDeclScalarTypeFromMat(type);
@@ -595,27 +628,39 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
     llvm::Value *curRowSize = it->getConsi32(0);
     llvm::Value *curRowPtr = ir->CreateAlloca(intTy);
 
+    // Max row size
+    llvm::Value *rowMaxSize;
+    llvm::Value *rowMaxSizePtr = ir->CreateAlloca(intTy);
+
     ir->CreateStore(curRowSize, curRowPtr);
 
     // Creates empty matrix of cast type and given size
     et->initMatrix(mat, leftSize, rightSize);
     mat = it->castMatrixToType(mat, elemType);
 
+    ptr = it->getPtrFromStruct(mat, MATRIX_ELEM_INDEX);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Check if null padding in rows are needed
     llvm::Value *cond = ir->CreateICmpSLT(numRowInMat, leftSize);
 
     // If the current matrix has more or equal to the number of rows set maxRowSize to row count, else, set it to matrixRowCount
     cb->beginIf(cond, "ifCond");
 
-    rowMaxSize = numRowInMat;
+    ir->CreateStore(numRowInMat, rowMaxSizePtr);
 
     cb->endIf();
     cb->beginElse("elseCond");
 
-    rowMaxSize = leftSize;
+    ir->CreateStore(leftSize, rowMaxSizePtr);
 
     cb->finalize();
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Load max size
+    rowMaxSize = ir->CreateLoad(rowMaxSizePtr);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Begin loop to create vectors
     wb->beginWhile();
 
@@ -627,52 +672,70 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
 
     // Get Vector at row curRowSize
     curVecElemPtr = ir->CreateGEP(oldMatValues, curRowSize);
-    oldVecLoaded = ir->CreateLoad(curVecElemPtr);
 
     // Calls createVecFromVec function which deals with nullpadding and truncating in the cols
-    curVec = createVecFromVec(oldVecLoaded, type, rightSize, line);
-    newMatValues->push_back(curVec);
+    curVec = createVecFromVec(curVecElemPtr, elemType, rightSize, line);
+    curVec = ir->CreateLoad(curVec);
+
+    // Store copy of vector into position of new matrix
+    curMatPtr = ir->CreateGEP(ptr, curRowSize);
+    ir->CreateStore(curVec, curMatPtr);
 
     // Increment counter
     curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
     ir->CreateStore(curRowSize, curRowPtr);
 
     wb->endWhile();
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    llvm::Value *cond2 = ir->CreateICmpSLT(numRowInMat, leftSize);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // If matrix needed nullpadding, continue into if statment else, skip
-    cb->beginIf(cond, "nullPadMatrix");
+    auto *cb2 = new CondBuilder(globalCtx, ir, mod);
+
+    cb2->beginIf(cond2, "nullPadMatrix");
 
     rowsRemaining = ir->CreateSub(leftSize, numRowInMat);
 
-    // Counter
+    // Reset counter
     curRowSize = it->getConsi32(0);
-
     ir->CreateStore(curRowSize, curRowPtr);
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto *wb2 = new WhileBuilder(globalCtx, ir, mod);
+
     // Begin loop to create vectors
-    wb->beginWhile();
+    wb2->beginWhile();
 
     curRowSize = ir->CreateLoad(curRowPtr);
-    cmpStatement = ir->CreateICmpSLT(curRowSize, rowsRemaining, "WhileCond");
+    cmpStatement = ir->CreateICmpSLT(curRowSize, rowsRemaining, "NullWhileCond");
 
     // Body
-    wb->insertControl(cmpStatement);
+    wb2->insertControl(cmpStatement);
 
     // Create null padded rows
     curVec = et->getNewVector(it->getConstFromType(type));
-    curVec = et->initVector(curVec, rightSize);
-    newMatValues->push_back(curVec);
+    et->initVector(curVec, rightSize);
+    curVec = it->castVectorToType(curVec, elemType);
+    curVec = ir->CreateLoad(curVec);
+
+    llvm::Value *paddedIndex = ir->CreateAdd(curRowSize, rowsRemaining);
+
+    // Store copy of vector into position of new matrix
+    curMatPtr = ir->CreateGEP(ptr, paddedIndex);
+    ir->CreateStore(curVec, curMatPtr);
 
     // Increment counter
     curRowSize = ir->CreateAdd(curRowSize, it->getConsi32(1));
     ir->CreateStore(curRowSize, curRowPtr);
 
-    wb->endWhile();
+    wb2->endWhile();
 
-    cb->endIf();
-    cb->finalize();
+    cb2->endIf();
+    cb2->finalize();
 
-    it->setMatrixValues(mat, newMatValues);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return mat;
 }
@@ -702,7 +765,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
     else if(it->isIntervalType(lValueLoad) && it->isVectorType(rValueLoad)) {
         // Create vector from interval
         lValueLoad = et->getVectorFromInterval(lValueLoad, it->getConsi32(1));
-        lValueLoad = ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
+        lValueLoad = ir->CreatePointerCast(lValueLoad, intVecTy->getPointerTo());
 
         return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
     }
