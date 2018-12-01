@@ -113,6 +113,7 @@ public:
 	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      performMatrixMultiplication(llvm::Value * left, llvm::Value * right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     llvm::Value*      getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
@@ -137,7 +138,7 @@ public:
     void setIdentityVecOrMat(llvm::Value * val);
 
     // Interval operation stuff
-    llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
+    llvm::Value * IntervalArith(ASTNode * node, llvm::Value * left, llvm::Value * right);
 
     //indexing
     llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice);
@@ -167,6 +168,8 @@ protected:
 
     std::stack<WhileBuilder *> *whileStack;
 
+    std::map<llvm::Function *, std::pair<std::pair<int, int>, int>> * sad;
+
     InternalTools *it;
     ExternalTools *et;
 
@@ -185,6 +188,7 @@ protected:
         ct          = new CastTable(globalCtx, ir, it, et, mod, eb);
         whileStack  = new std::stack<WhileBuilder *>;
         eb          = new ErrorBuilder();
+        sad         = new std::map<llvm::Function *, std::pair<std::pair<int, int>, int>>;
     }
 
     /**

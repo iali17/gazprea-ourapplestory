@@ -410,7 +410,7 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line){
         int  srcIndex = *src->numElements;
         int  destIndex = *dest->numElements;
 
-        printf("Type error: Cannot convert between %s vector[%d] and %s vector[%d] on line %d", srcType, srcIndex, destType, destIndex, line);
+        printf("Type error: Cannot convert between %s vector[%d] and %s vector[%d] on line %d\n", srcType, srcIndex, destType, destIndex, line);
         exit(1);
     } else {
         copyVectorElements(v_dest, v_src);
@@ -598,13 +598,13 @@ int getIntDotProduct(void * v_vector_left, void * v_vector_right){
 
     //loop vars
     int i = 0;
-    int l_op, r_op;
+    int *l_op, *r_op;
 
     //perform operation
     for(i = 0; i < numElements; i++){
-        l_op = *((int *) getVectorElementPointerSafe(left,  i));
-        r_op = *((int *) getVectorElementPointerSafe(right, i));
-        ret += l_op + r_op;
+        l_op = ((int *) getVectorElementPointerSafe(left,  i));
+        r_op = ((int *) getVectorElementPointerSafe(right, i));
+        ret += *l_op * *r_op;
     }
 
     //return
@@ -636,7 +636,7 @@ float getRealDotProduct(void * v_vector_left, void * v_vector_right){
     for(i = 0; i < numElements; i++){
         l_op = *((float *) getVectorElementPointerSafe(left,  i));
         r_op = *((float *) getVectorElementPointerSafe(right, i));
-        ret += l_op + r_op;
+        ret += l_op * r_op;
     }
 
     //return

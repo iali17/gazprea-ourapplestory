@@ -111,7 +111,7 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
         ir->CreateRetVoid();
     } else {
         llvm::Value *ret = visit(node->getExpr());
-        if(it->isStructType(ret)){
+        if(it->isTupleType(ret)){
             llvm::Value * realRet = ir->CreateAlloca(ir->getCurrentFunctionReturnType()->getPointerElementType());
             realRet = it->initTuple(realRet, it->getValueVectorFromTuple(ret));
             ir->CreateRet(realRet);

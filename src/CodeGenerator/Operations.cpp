@@ -93,18 +93,16 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
-/*
-    // todo - dont use getType, check left & right llvm types
-    if (node->getLeft()->getType() == INTERVAL || node->getRight()->getType() == INTERVAL){
-        return IntervalAdd(left, right);
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
     }
-*/
+
     //check for non base type cases
     if(it->isVectorType(left)){
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        //todo
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -115,6 +113,10 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
+
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
 
     //check for non base type cases
     if(it->isVectorType(left)){
@@ -133,6 +135,10 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
+
     //check for non base type cases
     if(it->isVectorType(left)){
         return performInfixVectorOp(node, left, right);
@@ -149,6 +155,10 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
+
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
 
     //check for non base type cases
     if(it->isVectorType(left)){

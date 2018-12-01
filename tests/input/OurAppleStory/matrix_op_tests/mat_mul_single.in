@@ -1,0 +1,13 @@
+procedure main() returns integer {
+	var out = std_output();
+	var x = [i in 1..1, j in 1..1 | i * j];
+	var y = [i in 1..1, j in 1..1 | -i * j];
+	
+	x -> out; '\n' -> out;
+	y -> out; '\n' -> out;
+	
+	x**y -> out; '\n' -> out;
+	
+	return 0;
+}
+
