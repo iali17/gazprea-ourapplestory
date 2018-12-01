@@ -410,7 +410,7 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line){
         int  srcIndex = *src->numElements;
         int  destIndex = *dest->numElements;
 
-        printf("Type error: Cannot convert between %s vector[%d] and %s vector[%d] on line %d", srcType, srcIndex, destType, destIndex, line);
+        printf("Type error: Cannot convert between %s vector[%d] and %s vector[%d] on line %d\n", srcType, srcIndex, destType, destIndex, line);
         exit(1);
     } else {
         copyVectorElements(v_dest, v_src);
