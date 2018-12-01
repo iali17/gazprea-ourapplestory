@@ -598,13 +598,13 @@ int getIntDotProduct(void * v_vector_left, void * v_vector_right){
 
     //loop vars
     int i = 0;
-    int l_op, r_op;
+    int *l_op, *r_op;
 
     //perform operation
     for(i = 0; i < numElements; i++){
-        l_op = *((int *) getVectorElementPointerSafe(left,  i));
-        r_op = *((int *) getVectorElementPointerSafe(right, i));
-        ret += l_op + r_op;
+        l_op = ((int *) getVectorElementPointerSafe(left,  i));
+        r_op = ((int *) getVectorElementPointerSafe(right, i));
+        ret += *l_op * *r_op;
     }
 
     //return
@@ -636,7 +636,7 @@ float getRealDotProduct(void * v_vector_left, void * v_vector_right){
     for(i = 0; i < numElements; i++){
         l_op = *((float *) getVectorElementPointerSafe(left,  i));
         r_op = *((float *) getVectorElementPointerSafe(right, i));
-        ret += l_op + r_op;
+        ret += l_op * r_op;
     }
 
     //return

@@ -630,7 +630,7 @@ antlrcpp::Any ASTGenerator::visitReverseExpr(gazprea::GazpreaParser::ReverseExpr
     return (ASTNode *) new ReverseVectorNode(expr, (int) ctx->getStart()->getLine());
 }
 
-antlrcpp::Any ASTGenerator::visitDotProductExpr(gazprea::GazpreaParser::DotProductExprContext *ctx) {
+antlrcpp::Any ASTGenerator::visitDotProductOrMatMultExpr(gazprea::GazpreaParser::DotProductOrMatMultExprContext *ctx) {
     ASTNode *left = (ASTNode *) visit(ctx->left);
     ASTNode *right = (ASTNode *) visit(ctx->right);
     return (ASTNode *) new DotProductNode(left, right, (int) ctx->getStart()->getLine());

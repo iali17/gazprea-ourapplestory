@@ -32,9 +32,20 @@ llvm::Value *CodeGenerator::visit(DotProductNode *node) {
         return et->getDotProduct(left, right);
     }
     else {
-        //TODO - throw error
-        return nullptr;
+        return performMatrixMultiplication(left, right);
     }
+}
+
+/**
+ * performs the matrix multiplication, left and right casted already
+ * @param left
+ * @param right
+ * @return
+ */
+llvm::Value *CodeGenerator::performMatrixMultiplication(llvm::Value *left, llvm::Value *right) {
+    //return pointer type is handled by the et call
+    llvm::Value * ret = et->getMatrixMultiplication(left, right);
+    return ret;
 }
 
 /**

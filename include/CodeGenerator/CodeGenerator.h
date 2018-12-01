@@ -113,6 +113,7 @@ public:
 	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+	llvm::Value*      performMatrixMultiplication(llvm::Value * left, llvm::Value * right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     llvm::Value*      getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal);
     std::vector<llvm::Value *> getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode);
@@ -137,7 +138,7 @@ public:
     void setIdentityVecOrMat(llvm::Value * val);
 
     // Interval operation stuff
-    llvm::Value * IntervalAdd(llvm::Value * left, llvm::Value * right);
+    llvm::Value * IntervalArith(ASTNode * node, llvm::Value * left, llvm::Value * right);
 
     //indexing
     llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice);
