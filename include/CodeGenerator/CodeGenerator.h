@@ -168,6 +168,8 @@ protected:
 
     std::stack<WhileBuilder *> *whileStack;
 
+    std::map<llvm::Function *, std::pair<std::pair<int, int>, int>> * sad;
+
     InternalTools *it;
     ExternalTools *et;
 
@@ -186,6 +188,7 @@ protected:
         ct          = new CastTable(globalCtx, ir, it, et, mod, eb);
         whileStack  = new std::stack<WhileBuilder *>;
         eb          = new ErrorBuilder();
+        sad         = new std::map<llvm::Function *, std::pair<std::pair<int, int>, int>>;
     }
 
     /**

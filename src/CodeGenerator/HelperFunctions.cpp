@@ -78,6 +78,43 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             }
 
 
+        } else if (pNode->getGType() == VECTOR_T) {
+            auto nameVec = split(pNode->getDeclaredType(), '[');
+            std::string typeName = nameVec[0];
+            std::string sizeName = nameVec[1];
+            sizeName.erase(std::remove(sizeName.begin(), sizeName.end(), ']'), sizeName.end());
+            int size = std::stoi(sizeName);
+            paramType = it->getDeclVectorType(typeName);
+
+            auto argNode = dynamic_cast<VectorNode *>(arguNode->at(i));
+            if (argNode) {
+                argPtr = visit(argNode);
+                if((int)argNode->getElements()->size() != size){
+                    auto argNameVec = split(typeName, 'v');
+                    auto parNameVec = split(pNode->getDeclaredType(), 'v');
+                    auto er = new VectorErrorNode(argNameVec[0], parNameVec[0],(int)argNode->getElements()->size(), size, argNode->getLine());
+                    eb->printError(er);
+                }
+            } else {
+                auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
+                Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
+                //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
+                //       == paramType->getStructNumElements());
+                argPtr = symbol->getPtr();
+                c = symbol->isConstant();
+            }
+
+            if(argNode || constant) {
+                assert(constant);
+                newParamPtr = et->getVectorCopy(argPtr);
+                paramVector.push_back(newParamPtr);
+                continue;
+            } else if(!constant) {
+                assert(!c);
+                paramVector.push_back(argPtr);
+                continue;
+            }
+
         } else {
             paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
         }
@@ -221,7 +258,8 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
     llvm::Function           *F;
     llvm::StructType         *structType;
     std::string               typeName;
-
+    int                       sizeLeft = -1;
+    int                       sizeRight  = -1;
     /*
      * Setting Return Type
      *
@@ -238,8 +276,12 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
         retType = llvm::cast<llvm::StructType>(gazpreaType->getTypeDef());
     } else if (gType == VECTOR_T) {
         auto nameSize = split(strRetType, '[');
+        auto sizeName = nameSize[1];
+        sizeName.erase(std::remove(sizeName.begin(), sizeName.end(), ']'), sizeName.end());
+        sizeLeft = std::stoi(sizeName);
         strRetType = nameSize[0];
         retType = it->getDeclVectorType(strRetType);
+
     } else {
         retType = symbolTable->resolveType(strRetType)->getTypeDef();
     }
@@ -300,6 +342,7 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             exit(1);
         }
     }
+    sad->insert(std::pair<llvm::Function *, std::pair<std::pair<int, int>, int>>(F, std::make_pair(std::make_pair(sizeLeft, sizeRight), line)));
     return F;
 }
 
@@ -338,7 +381,21 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
     //get params
     std::vector<llvm::Value *> paramVec = getParamVec(functionSymbol->getParamsVec(), arguments);
 
-    return ir->CreateCall(func, paramVec);
+    llvm::Value * retVal = ir->CreateCall(func, paramVec);
+
+    auto iter = sad->find(func);
+
+    if (iter == sad->end()) {
+        return retVal;
+    } else if (iter->second.first.second == -1) {
+        llvm::Value *realRetVal = et->getNewVector(it->getConstFromType(func->getReturnType()));
+        et->initVector(realRetVal, it->getConsi32(iter->second.first.first));
+        //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
+        et->strictCopyVectorElements(realRetVal, retVal, it->getConsi32(iter->second.second));
+        return realRetVal;
+    }
+
+    return retVal;
 }
 
 llvm::Value *CodeGenerator::getRange(ASTNode *range) {
