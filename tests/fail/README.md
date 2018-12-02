@@ -23,14 +23,6 @@ Outcome: This test case checks python style tuple assignment between different t
 	     In this test case, the user is trying to assign to a character an integer, which is invalid so it returns
 	     the error above.
 
-Test Case: constTest.in
-Outcome: This test case checks if a user is trying to assign to a const type
-
-	     - Assertion `!var->isConstant()' failed.
-
-	     In this test case, the user is trying to assign to a const type, which is invalid so it returns
-	     the error above.
-
 Test Case: errorTupleCast.in
 Outcome: This test case checks if a user is trying to cast a tuple to another type
 
@@ -38,3 +30,10 @@ Outcome: This test case checks if a user is trying to cast a tuple to another ty
 
          In this test case, the user is trying to cast a tuple type to an integer type, which is invalid so it returns
          the error above.
+
+Test Case: errorReturningVector.in
+Outcome: This test case checks to see that they are returning the same size vector to what they expect
+         -Type error: Cannot convert from and integer vector [3] to integer vector [2] on line 1
+
+          In this test case, the user is returning a vector of a larger size than what is expected from the return
+          statement so it returns the errors above.

@@ -1,0 +1,25 @@
+procedure main() returns integer { 
+    var out = std_output();
+    integer vector x[2] = [1,2];
+    integer vector w;
+
+    x->out; '\n'->out;
+    w = x; 
+    w->out; '\n'->out;
+
+    w[2] = 4;
+    w->out; '\n'->out;
+    x->out; '\n'->out;
+
+    x[1] = 3;
+    x->out; '\n'->out;
+    w->out; '\n'->out;
+
+    x = [6,9];
+    w = [9,6];
+
+    x->out; '\n'->out;
+    w->out; '\n'->out;
+
+    return 0; 
+}
