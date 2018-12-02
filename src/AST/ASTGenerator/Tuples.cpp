@@ -105,3 +105,8 @@ antlrcpp::Any ASTGenerator::visitFilter(gazprea::GazpreaParser::FilterContext *c
     return (ASTNode *) new FilterNode((int) ctx->getStart()->getLine(),
             normalizeID(ctx->Identifier()->getText()), condNodes, range, notCondsNodes);
 }
+
+antlrcpp::Any ASTGenerator::visitFilterIndexExpr(gazprea::GazpreaParser::FilterIndexExprContext *ctx) {
+    
+    return GazpreaBaseVisitor::visitFilterIndexExpr(ctx);
+}
