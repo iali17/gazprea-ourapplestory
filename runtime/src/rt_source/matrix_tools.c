@@ -615,3 +615,35 @@ void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
         }
     }
 }
+
+/**
+ * copies a matrix
+ * @param v_matrix
+ * @return
+ */
+void *copyMatrix(void * v_matrix){
+    //cast the voids
+    matrix * mat = (matrix *) v_matrix;
+
+    //locals
+    int ty      = *mat->type;
+    int numRows = *mat->numRows;
+    int numCols = *mat->numCols;
+
+    //init the return
+    matrix * ret = (matrix *) getEmptyMatrix(ty);
+    initMatrix(ret, numRows, numCols);
+
+    //loop var
+    void * cur_dest, * cur_src;
+    int i = 0;
+
+    //loop
+    for(i = 0; i < numRows; i++){
+        cur_dest = ret->elements + i;
+        cur_src  = mat->elements + i;
+        copyVectorElements(cur_dest, cur_src);
+    }
+
+    return ret;
+}
