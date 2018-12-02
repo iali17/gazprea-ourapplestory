@@ -101,7 +101,7 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
         }
 
         ASTNode *size = nullptr;
-        if (!ctx->extension()->isEmpty()) {
+        if (ctx->extension()) {
             size = visit(ctx->extension());
         }
         return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, size, (int)ctx->getStart()->getLine());

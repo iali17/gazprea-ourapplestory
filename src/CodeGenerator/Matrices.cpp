@@ -96,13 +96,9 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     //
     llvm::Value *ptr = it->getPtrFromStruct(matrix, it->getConsi32(MATRIX_ELEM_INDEX));
     llvm::Value *curRowPtr;
-    llvm::Value *loadValue;
 
     //assign all of the matrix values
     for(uint i = 0; i < vectorNodes->size(); i++){
-        //TODO - write an internal tools function to assign vector values to another THAT ALSO PERFORMS IMPLICIT UPCASTING
-
-        //it->setMatrixValues(matrix, vectors);
         curRowPtr = ir->CreateGEP(ptr, it->getConsi32(i));
         et->copyVectorElements(curRowPtr, vectors->at(i));
     }
@@ -149,15 +145,17 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
         // Initialize matrix to given size
         if(declRowSize && declColSize) {
             et->initMatrix(mat, declRowSize, declColSize);
-        } else if(declRowSize && !declColSize) {
+            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, declColSize);
+        } else if(declRowSize) {
             et->initMatrix(mat, declRowSize, colSize);
-        } else if(!declRowSize && declColSize) {
+            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, colSize);
+        } else if(declColSize) {
             et->initMatrix(mat, rowSize, declColSize);
+            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, declColSize);
         } else {
             et->initMatrix(mat, rowSize, colSize);
+            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, colSize);
         }
-
-        //mat = ct->typeAssCast();
     }
 
     // Handles case when expr is not a matrix

@@ -1,0 +1,10 @@
+procedure what(integer vector[2] f) returns integer vector[2] {
+    return [1,2,3];
+}
+
+procedure main() returns integer { 
+    integer vector x[2] = [1,2];
+    integer vector w;
+    w = what(x);
+    return 0; 
+}
