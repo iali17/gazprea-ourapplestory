@@ -55,9 +55,9 @@ public:
     llvm::Value * getVectorLength(llvm::Value *vec);
     llvm::Value * getReverseVector(llvm::Value *fromVec);
     llvm::Value * printVector(llvm::Value *vec);
-    llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
-    llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value *src);
-    llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value *src, llvm::Value *line);
+    llvm::Value * printVectorElement(llvm::Value * vecElmPtr, llvm::Value * type);
+    llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value * src);
+    llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line);
     llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
     llvm::Value * getVectorCopy(llvm::Value * vec);
     llvm::Value * getVectorElementPointer(llvm::Value * vec, llvm::Value * idx);
@@ -91,6 +91,7 @@ public:
     llvm::Value * assignScalarVector(llvm::Value * matrix, llvm::Value * scalar, llvm::Value * vector, llvm::Value * src);
     llvm::Value * assignVectorScalar(llvm::Value * matrix,llvm::Value * vector, llvm::Value * scalar,llvm::Value * src);
     llvm::Value * assignVectorVector(llvm::Value * matrix, llvm::Value * vectorRow, llvm::Value * vectorCol, llvm::Value * src);
+    llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line);
 
     //printing
     void registerPrintf();

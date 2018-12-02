@@ -35,7 +35,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
 
-    if (node->getTypeIds()->empty() && ((node->getType() == TUPLE) || it->isVectorType(val))) {
+    if (node->getTypeIds()->empty() && ((node->getType() == TUPLE) || it->isVectorType(val) || it->isMatrixType(val))) {
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->empty() && it->isTupleType(val)) {
@@ -157,9 +157,20 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             et->setNullVector(ptr);
             return nullptr;
         } else {
-            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine(),
-                    nullptr, nullptr,(int) ((VectorNode *) node->getExpr())->getElements()->size());
-            left->setPtr(ptr);
+            et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()));
+            return nullptr;
+        }
+    }
+
+    if (it->isMatrixType(left->getPtr())) {
+        if (dynamic_cast<IdnNode *>(node->getExpr())) {
+            et->setIdentityMatrix(ptr);
+            return nullptr;
+        } else if (dynamic_cast<NullNode *>(node->getExpr())) {
+            et->setNullMatrix(ptr);
+            return nullptr;
+        } else {
+            et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()));
             return nullptr;
         }
     }

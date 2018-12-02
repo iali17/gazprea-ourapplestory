@@ -399,6 +399,12 @@ void copyVectorElements(void *v_dest, void *v_src){
 	}
 }
 
+/**
+ * Same as copyVectorElements but requires size to be the same. Otherwise throw error.
+ * @param v_dest
+ * @param v_src
+ * @param line
+ */
 void strictCopyVectorElements(void *v_dest, void *v_src, int line){
     //cast the voids
     vector * dest = (vector *) v_dest;
@@ -416,7 +422,6 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line){
         copyVectorElements(v_dest, v_src);
     }
 }
-
 
 /**
  * Returns a slice of the vector. The returned vector will share the same pointers as the argument vector

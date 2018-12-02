@@ -300,7 +300,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, exprlSize);
 
-            if (type == realVecTy) {
+            if (type == realVecTy->getPointerTo() || type == realVecTy) {
                 expr = createVecFromVec(expr, realTy, exprlSize, line);
             } else {
                 llvm::Type *rrType = it->getDeclScalarTypeFromVec(expr->getType()->getPointerElementType());
@@ -436,9 +436,9 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
 
         if(leftSize && rightSize) {
             return createMatFromMat(expr, type, leftSize, rightSize, line);
-        } else if(leftSize && !rightSize) {
+        } else if(leftSize) {
             return createMatFromMat(expr, type, leftSize, exprCols, line);
-        } else if(!leftSize && rightSize) {
+        } else if(rightSize) {
             return createMatFromMat(expr, type, exprRows, rightSize, line);
         } else {
             return createMatFromMat(expr, type, exprRows, exprCols, line);
@@ -720,7 +720,8 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
     curVec = it->castVectorToType(curVec, elemType);
     curVec = ir->CreateLoad(curVec);
 
-    llvm::Value *paddedIndex = ir->CreateAdd(curRowSize, rowsRemaining);
+    // Position in row to be padded
+    llvm::Value *paddedIndex = ir->CreateAdd(numRowInMat, curRowSize);
 
     // Store copy of vector into position of new matrix
     curMatPtr = ir->CreateGEP(ptr, paddedIndex);

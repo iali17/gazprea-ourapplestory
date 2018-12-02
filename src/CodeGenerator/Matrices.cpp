@@ -123,14 +123,27 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     mat = et->getNewMatrix(it->getConstFromType(matrixElemType));
     mat = it->castMatrixToType(mat, matrixElemType);
 
+    // Handles expr is identity or null
     if (dynamic_cast<IdnNode *>(node->getExpr())) {
-        et->setIdentityMatrix(mat);
-        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
-        return nullptr;
+        if(declRowSize && declColSize) {
+            et->initMatrix(mat, declRowSize, declColSize);
+            et->setIdentityMatrix(mat);
+            symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
+            return nullptr;
+        } else {
+            std::cerr << "Make error node for size not given \n";
+            exit(1);
+        }
     } else if (dynamic_cast<NullNode *>(node->getExpr())) {
-        et->setNullVector(mat);
-        symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
-        return nullptr;
+        if(declRowSize && declColSize) {
+            et->initMatrix(mat, declRowSize, declColSize);
+            et->setNullMatrix(mat);
+            symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), mat);
+            return nullptr;
+        } else {
+            std::cerr << "Make error node for size not given \n";
+            exit(1);
+        }
     }
 
     // Handles cases when expr is a matrix

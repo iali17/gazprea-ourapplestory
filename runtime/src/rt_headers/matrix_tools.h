@@ -35,3 +35,4 @@ void *getMatrixElementPointer(void *v_matrix, int row, int col);
 void assignScalarVector(void * v_matrix, int scalar, void * v_vector, void * v_src);
 void assignVectorScalar(void * v_matrix, void * v_vector, int scalar, void * v_src);
 void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col, void * v_src);
+void strictCopyMatrixElements(void *m_dest, void *m_src, int line);

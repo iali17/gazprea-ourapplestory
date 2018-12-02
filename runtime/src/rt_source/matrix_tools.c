@@ -615,3 +615,42 @@ void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
         }
     }
 }
+
+/**
+ * Copies the right side elements to the left side, only if size the same.
+ * @param m_dest
+ * @param m_src
+ * @param line
+ */
+void strictCopyMatrixElements(void *m_dest, void *m_src, int line){
+    //Cast the voids
+    matrix * dest = (matrix *) m_dest;
+    matrix * src  = (matrix *) m_src;
+
+    //Values
+    char *srcType = getType(*src->type);
+    char *destType = getType(*dest->type);
+
+    int srcRow = *src->numRows;
+    int destRow = *dest->numRows;
+
+    int srcCol = *src->numCols;
+    int destCol = *dest->numCols;
+
+    //Loop variables
+    int i;
+    void *v_src, *v_dest;
+
+    if(*dest->numRows != *src->numCols || *dest->numCols != *src->numCols) {
+        printf("Type error: Cannot convert between %s matrix[%d,%d] and %s matrix[%d,%d] on line %d\n", srcType, srcRow, srcCol, destType, destRow, destCol, line);
+        exit(1);
+    } else {
+        for(i = 0; i < destRow; i++) {
+            // Get vector at row i in matrix
+            v_src = src->elements + i;
+            v_dest = dest->elements + i;
+
+            strictCopyVectorElements(v_dest, v_src, line);
+        }
+    }
+}
