@@ -36,3 +36,4 @@ void assignScalarVector(void * v_matrix, int scalar, void * v_vector, void * v_s
 void assignVectorScalar(void * v_matrix, void * v_vector, int scalar, void * v_src);
 void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_col, void * v_src);
 void strictCopyMatrixElements(void *m_dest, void *m_src, int line);
+void *copyMatrix(void * v_matrix);

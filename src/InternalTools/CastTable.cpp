@@ -439,20 +439,19 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
         llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
 
         if(leftSize && rightSize) {
-            return createMatFromMat(expr, type, leftSize, rightSize, line);
+            return createMatFromMat(expr, llType, leftSize, rightSize, line);
         } else if(leftSize) {
-            return createMatFromMat(expr, type, leftSize, exprCols, line);
+            return createMatFromMat(expr, llType, leftSize, exprCols, line);
         } else if(rightSize) {
-            return createMatFromMat(expr, type, exprRows, rightSize, line);
+            return createMatFromMat(expr, llType, exprRows, rightSize, line);
         } else {
-            return createMatFromMat(expr, type, exprRows, exprCols, line);
+            return createMatFromMat(expr, llType, exprRows, exprCols, line);
         }
-
     }
     // Deals with casting scalars to matrix
     else {
         if(leftSize && rightSize)
-            return createMatFromScalar(expr, type, leftSize, rightSize, line);
+            return createMatFromScalar(expr, llType, leftSize, rightSize, line);
         else {
             std::cerr << "No size given, add error node later\n";
             exit(1);

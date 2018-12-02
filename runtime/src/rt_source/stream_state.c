@@ -28,7 +28,7 @@ void read_in(void * v_stream, void * v_dest, int type) {
     FILE *inStream = fdopen(0, "r");
 
     //make a buffer
-    char *inBuffer = (char *) calloc(3, sizeof(char *));
+    char *inBuffer = (char *) calloc(3, sizeof(char));
     memset(inBuffer, '\0', sizeof(inBuffer));
 
     //init read to null

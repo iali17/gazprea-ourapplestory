@@ -92,6 +92,7 @@ public:
     llvm::Value * assignVectorScalar(llvm::Value * matrix,llvm::Value * vector, llvm::Value * scalar,llvm::Value * src);
     llvm::Value * assignVectorVector(llvm::Value * matrix, llvm::Value * vectorRow, llvm::Value * vectorCol, llvm::Value * src);
     llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line);
+    llvm::Value * copyMatrix(llvm::Value * matrix);
 
     //printing
     void registerPrintf();

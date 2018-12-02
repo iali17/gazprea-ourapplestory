@@ -750,13 +750,13 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
 }
 
 llvm::Type *InternalTools::getDeclScalarTypeFromMat(llvm::Type *type) {
-    if(type == intMatrixTy || type == intMatrixTy->getPointerTo()) {
+    if(type == intMatrixTy || type == intMatrixTy->getPointerTo() || type == intTy) {
         return intTy;
-    } else if(type == realMatrixTy || type == realMatrixTy->getPointerTo()) {
+    } else if(type == realMatrixTy || type == realMatrixTy->getPointerTo() || type == realTy) {
         return realTy;
-    } else if(type == charMatrixTy || type == charMatrixTy->getPointerTo()) {
+    } else if(type == charMatrixTy || type == charMatrixTy->getPointerTo() || type == charTy) {
         return charTy;
-    } else if(type == boolMatrixTy || type == boolMatrixTy->getPointerTo()) {
+    } else if(type == boolMatrixTy || type == boolMatrixTy->getPointerTo() || type == boolTy) {
         return boolTy;
     }
 

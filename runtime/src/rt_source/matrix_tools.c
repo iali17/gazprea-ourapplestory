@@ -617,15 +617,16 @@ void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
 }
 
 /**
+<<<<<<< HEAD
  * Copies the right side elements to the left side, only if size the same.
  * @param m_dest
  * @param m_src
  * @param line
  */
-void strictCopyMatrixElements(void *m_dest, void *m_src, int line){
+void strictCopyMatrixElements(void *m_dest, void *m_src, int line) {
     //Cast the voids
-    matrix * dest = (matrix *) m_dest;
-    matrix * src  = (matrix *) m_src;
+    matrix *dest = (matrix *) m_dest;
+    matrix *src = (matrix *) m_src;
 
     //Values
     char *srcType = getType(*src->type);
@@ -641,11 +642,12 @@ void strictCopyMatrixElements(void *m_dest, void *m_src, int line){
     int i;
     void *v_src, *v_dest;
 
-    if(*dest->numRows != *src->numCols || *dest->numCols != *src->numCols) {
-        printf("Type error: Cannot convert between %s matrix[%d,%d] and %s matrix[%d,%d] on line %d\n", srcType, srcRow, srcCol, destType, destRow, destCol, line);
+    if (*dest->numRows != *src->numCols || *dest->numCols != *src->numCols) {
+        printf("Type error: Cannot convert between %s matrix[%d,%d] and %s matrix[%d,%d] on line %d\n", srcType, srcRow,
+               srcCol, destType, destRow, destCol, line);
         exit(1);
     } else {
-        for(i = 0; i < destRow; i++) {
+        for (i = 0; i < destRow; i++) {
             // Get vector at row i in matrix
             v_src = src->elements + i;
             v_dest = dest->elements + i;
@@ -653,4 +655,36 @@ void strictCopyMatrixElements(void *m_dest, void *m_src, int line){
             strictCopyVectorElements(v_dest, v_src, line);
         }
     }
+}
+
+/**
+ * copies a matrix
+ * @param v_matrix
+ * @return
+ */
+void *copyMatrix(void * v_matrix){
+    //cast the voids
+    matrix * mat = (matrix *) v_matrix;
+
+    //locals
+    int ty      = *mat->type;
+    int numRows = *mat->numRows;
+    int numCols = *mat->numCols;
+
+    //init the return
+    matrix * ret = (matrix *) getEmptyMatrix(ty);
+    initMatrix(ret, numRows, numCols);
+
+    //loop var
+    void * cur_dest, * cur_src;
+    int i = 0;
+
+    //loop
+    for(i = 0; i < numRows; i++){
+        cur_dest = ret->elements + i;
+        cur_src  = mat->elements + i;
+        copyVectorElements(cur_dest, cur_src);
+    }
+
+    return ret;
 }
