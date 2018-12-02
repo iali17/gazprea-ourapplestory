@@ -687,7 +687,7 @@ llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
     else if(typeString == "charactervector")
         return charTy;
     else if(typeString == "string")
-        return strTy;
+        return charTy;
 
     return nullptr;
 }
@@ -730,7 +730,7 @@ std::string InternalTools::getVectorTypeString(llvm::Value *vec) {
         ret = "booleanvector";
     else if(vec->getType() == charVecTy->getPointerTo())
         ret = "charactervector";
-    else if(vec->getType() == charVecTy->getPointerTo())
+    else if(vec->getType() == strTy->getPointerTo())
         ret = "string";
     return ret;
 }
@@ -740,7 +740,9 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
         return intTy;
     } else if(type == realVecTy || type == realVecTy->getPointerTo()) {
         return realTy;
-    } else if((type == charVecTy) || (type == strTy) || type == charVecTy->getPointerTo() || type == strTy->getPointerTo()) {
+    } else if ((type == strTy) || type == strTy->getPointerTo()) {
+        return charTy;
+    } else if((type == charVecTy) || type == charVecTy->getPointerTo()) {
         return charTy;
     } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return boolTy;

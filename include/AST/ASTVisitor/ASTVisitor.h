@@ -85,6 +85,7 @@ public:
     virtual llvm::Value* visit(DotProductNode *node)                      = 0;
     virtual llvm::Value* visit(SliceAssignNode *node)                     = 0;
     virtual llvm::Value* visit(FilterNode     *node)                      = 0;
+    virtual llvm::Value* visit(StringNode     *node)                      = 0;
 };
 
 #endif //GAZPREABASE_ASTVISITOR_H

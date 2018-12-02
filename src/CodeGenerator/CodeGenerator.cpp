@@ -22,6 +22,7 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
+extern llvm::Type *strTy;
 
 /**
  * Pushes global scope and inserts base types into symbolTable.
@@ -52,6 +53,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("vector"   , vecTy);
     symbolTable->addBaseType("matrix"   , matrixTy);
     symbolTable->addBaseType("interval" , intervalTy);
+    symbolTable->addBaseType("string"   , strTy);
 
 
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);

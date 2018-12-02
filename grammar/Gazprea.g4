@@ -363,8 +363,15 @@ Identifier: [a-zA-Z_][a-zA-Z0-9_]* ;
 
 Boolean: (TRUE | FALSE);
 
-Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
-String: '"' .*? '"' ;  //TODO: for part 2
+//Character: '\'' (~[\n]? | '\\'[0abtnr"'\\])? '\'' ;
+Character : '\'' ValidCharacters? '\'';
+String: '"' ValidCharacters* '"' ;
+
+
+ValidCharacters
+    :   ~["\\\r\n]
+    |   '\\' [0'"abnrt\\]
+    ;
 
 // skip comments
 BlockComment: '/*' (BlockComment | LineComment | .)*? '*/' -> skip ;

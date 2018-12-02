@@ -32,6 +32,8 @@
 #include "AST/ASTNodes/BaseNodes/IONode.h"
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
+#include "AST/ASTNodes/BuiltInFuncNodes/LengthNode.h"
+#include "AST/ASTNodes/BuiltInFuncNodes/ReverseVectorNode.h"
 #include "AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h"
 
 #include "AST/ASTNodes/CompNodes/EQNode.h"
@@ -86,13 +88,12 @@
 #include "AST/ASTNodes/TerminalNodes/IndexTupleNode.h"
 #include "AST/ASTNodes/TerminalNodes/InputNode.h"
 #include "AST/ASTNodes/TerminalNodes/INTNode.h"
-#include "AST/ASTNodes/TerminalNodes/LengthNode.h"
 #include "AST/ASTNodes/TerminalNodes/MatrixNode.h"
 #include "AST/ASTNodes/TerminalNodes/NullNode.h"
 #include "AST/ASTNodes/TerminalNodes/OutputNode.h"
 #include "AST/ASTNodes/TerminalNodes/RealNode.h"
-#include "AST/ASTNodes/TerminalNodes/ReverseVectorNode.h"
 #include "AST/ASTNodes/TerminalNodes/StreamDecl.h"
+#include "AST/ASTNodes/TerminalNodes/StringNode.h"
 #include "AST/ASTNodes/TerminalNodes/TupleNode.h"
 #include "AST/ASTNodes/TerminalNodes/TupleInputNode.h"
 #include "AST/ASTNodes/TerminalNodes/TypeDefNode.h"

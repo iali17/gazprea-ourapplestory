@@ -55,6 +55,7 @@ public:
     llvm::Value * getVectorLength(llvm::Value *vec);
     llvm::Value * getReverseVector(llvm::Value *fromVec);
     llvm::Value * printVector(llvm::Value *vec);
+    llvm::Value * printVectorAsString(llvm::Value *vec);
     llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
     llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value *src);
     llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value *src, llvm::Value *line);

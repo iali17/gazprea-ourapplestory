@@ -504,35 +504,6 @@ antlrcpp::Any ASTGenerator::visitCompExpr(gazprea::GazpreaParser::CompExprContex
 }
 
 antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionContext *ctx) {
-
-    /*
-    // if it is a [] of size 2
-    if (ctx->rightExtension()) {
-        ASTNode *left;
-
-        if (ctx->left == nullptr) {         // being nullptr assumes it's actually a *
-            left = nullptr;
-        } else {
-            if (ctx->left->getText() == "*") {
-                return nullptr;
-            }
-            left = visit(ctx->left);
-        }
-
-<<<<<<< HEAD
-=======
-        return (ASTNode *) new MatrixTypeNode(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
-    }
->>>>>>> 4361d33b2e11cdaf7c52d6404108d7480aff01c6
-
-        //return (ASTNode *) new MatrixType(left, visit(ctx->rightExtension()), (int) ctx->getStart()->getLine());
-    }
-    */
-  /*
-    // if it is a [] of size 1
-    if (!ctx->rightExtension()) {
-
-    */
         ASTNode *size;
 
         if(ctx->left == nullptr) {
@@ -545,11 +516,6 @@ antlrcpp::Any ASTGenerator::visitExtension(gazprea::GazpreaParser::ExtensionCont
         }
 
         return size;
-        /*
-    }
-
-    return nullptr;
-         */
 }
 
 antlrcpp::Any ASTGenerator::visitRightExtension(gazprea::GazpreaParser::RightExtensionContext *ctx) {
@@ -597,12 +563,12 @@ antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprCo
             } else if (str[i] == '\\' ) {
                 strVec->push_back((ASTNode *) new CharNode(0x5C, line));
             } else {
-                std::cerr << "Unrecognized character\nAborting....";
+                std::cerr << "Unrecognized escape character\nAborting....";
                 exit(1);
             }
         }
     }
-    return (ASTNode *) new VectorNode(strVec, line);        // todo maybe shouldnt be a vector node
+    return (ASTNode *) new StringNode(strVec, line);        // todo maybe shouldnt be a vector node
 }
 
 antlrcpp::Any ASTGenerator::visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) {
