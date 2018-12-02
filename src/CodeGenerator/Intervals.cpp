@@ -40,11 +40,11 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
         return et->getVectorBy(interval, iterator);
     }
 
-   return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
+//    return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
     // uncomment below and comment above to print the resulting vector
-//    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
-//    et->printVector(result);
-//    return result;
+    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
+    et->printVector(result);
+    return result;
 }
 
 
@@ -226,10 +226,83 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     }
 
     else if(dynamic_cast<DivNode *>(node)) {
+        auto *cb = new CondBuilder(globalCtx, ir, mod);
+        llvm::Value * resultLeft = ir->CreateAlloca(intTy);
+        llvm::Value * resultRight = ir->CreateAlloca(intTy);
 
+        // a>0, c>0, [a/d,b/c]
+        cb->beginIf(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(a, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(c, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(a, d), resultLeft);
+        ir->CreateStore(it->getDiv(b, c), resultRight);
+        cb->endIf();
+
+        // b<0, c>0, [a/c,b/d]
+        cb->beginElseIf(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(b, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(c, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(a, c), resultLeft);
+        ir->CreateStore(it->getDiv(b, d), resultRight);
+        cb->endIf();
+
+        // a>0, d<0, [b/d,a/c]
+        cb->beginElseIf(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(a, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(d, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(b, d), resultLeft);
+        ir->CreateStore(it->getDiv(a, c), resultRight);
+        cb->endIf();
+
+        // b<0, d<0, [b/c,a/d]
+        cb->beginElseIf(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(b, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(d, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(b, c), resultLeft);
+        ir->CreateStore(it->getDiv(a, d), resultRight);
+        cb->endIf();
+
+        // a<0, b>0, c>0 [a/c,b/c]
+        cb->beginElseIf(it->getAnd(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(a, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(b, it->getConsi32(0)))),
+                                   ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(c, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(a, c), resultLeft);
+        ir->CreateStore(it->getDiv(b, c), resultRight);
+        cb->endIf();
+
+        // a<0, b>0, d<0 [b/d,a/d]
+        cb->beginElseIf(it->getAnd(it->getAnd(
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(a, it->getConsi32(0))),
+                ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSGT(b, it->getConsi32(0)))),
+                                   ir->CreateICmpEQ(it->geti1(1), ir->CreateICmpSLT(d, it->getConsi32(0)))));
+        ir->CreateStore(it->getDiv(b, d), resultLeft);
+        ir->CreateStore(it->getDiv(a, d), resultRight);
+        cb->endIf();
+
+        // c<0, d>0 [-inf, +inf]
+        cb->beginElse();
+        ir->CreateStore(it->getNInf(), resultLeft);
+        ir->CreateStore(it->getInf(), resultRight);
+//        ir->CreateStore(it->getDiv(b, d), resultLeft);
+//        ir->CreateStore(it->getDiv(a, d), resultRight);
+        cb->finalize();
+
+        // remember to flip left and right if left > right
+        cb = new CondBuilder(globalCtx, ir, mod);
+        cb->beginIf(ir->CreateICmpSGT(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight)));
+            llvm::Value * temp = ir->CreateAlloca(intTy);
+            ir->CreateStore(ir->CreateLoad(resultLeft), temp);
+            ir->CreateStore(ir->CreateLoad(resultRight), resultLeft);
+            ir->CreateStore(ir->CreateLoad(temp), resultRight);
+        cb->endIf();
+        cb->finalize();
+
+        return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
     }
 
-    return left;
+    std::cerr << "invalid arithmetic operation on line: " << node->getLine() << " Aborting...";
+    exit(1);
 }
 
 

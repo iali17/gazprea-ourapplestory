@@ -804,3 +804,11 @@ llvm::Value *InternalTools::castMatrixIndex(llvm::Value *slice, llvm::Value *l, 
         return ir->CreatePointerCast(slice, vecElmtTy->getPointerTo());
     }
 }
+
+llvm::Value *InternalTools::getInf() {
+    return llvm::ConstantFP::getInfinity(intTy);
+}
+
+llvm::Value *InternalTools::getNInf() {
+    return llvm::ConstantFP::getInfinity(intTy, true);
+}
