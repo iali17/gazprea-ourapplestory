@@ -390,11 +390,12 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
     } else if (iter->second.first.first == -1 && iter->second.first.second == -1) {
         return retVal;
     } else if (iter->second.first.second == -1) {
+        // This is just to test for type errors
         llvm::Value *realRetVal = et->getNewVector(it->getConstFromType(func->getReturnType()));
         et->initVector(realRetVal, it->getConsi32(iter->second.first.first));
         //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
         et->strictCopyVectorElements(realRetVal, retVal, it->getConsi32(iter->second.second));
-        return realRetVal;
+        return retVal;
     }
 
     return retVal;
