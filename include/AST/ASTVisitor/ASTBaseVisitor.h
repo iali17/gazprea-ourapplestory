@@ -204,6 +204,9 @@ public:
         else if (dynamic_cast<VectorNode *>(node)) {
             ret = visit((VectorNode *) node);
         }
+        else if (dynamic_cast<IndexFilterNode *>(node)) {
+            ret = visit((IndexFilterNode *) node);
+        }
         else if (dynamic_cast<MatrixNode *>(node)) {
             ret = visit((MatrixNode *) node);
         }
@@ -282,6 +285,7 @@ public:
     llvm::Value* visit(XOrNode *node) override { return nullptr;};
     llvm::Value* visit(LengthNode *node) override { return nullptr;};
     llvm::Value* visit(NegateNode *node) override { return nullptr;};
+    llvm::Value* visit(IndexFilterNode *node) override { return nullptr;};
     llvm::Value* visit(GTENode *node) override { return nullptr;};
     llvm::Value* visit(LTENode *node) override { return nullptr;};
     llvm::Value* visit(ContinueNode *node) override { return nullptr;};

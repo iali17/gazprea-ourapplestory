@@ -86,6 +86,7 @@
 #include "AST/ASTNodes/TerminalNodes/IdnNode.h"
 #include "AST/ASTNodes/TerminalNodes/IDNode.h"
 #include "AST/ASTNodes/TerminalNodes/IndexTupleNode.h"
+#include "AST/ASTNodes/TerminalNodes/IndexFilterNode.h"
 #include "AST/ASTNodes/TerminalNodes/InputNode.h"
 #include "AST/ASTNodes/TerminalNodes/INTNode.h"
 #include "AST/ASTNodes/TerminalNodes/MatrixNode.h"

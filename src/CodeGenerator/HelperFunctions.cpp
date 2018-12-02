@@ -450,3 +450,8 @@ void CodeGenerator::setIdentityVecOrMat(llvm::Value *val) {
     else
         et->setIdentityVector(val);
 }
+
+llvm::Value *CodeGenerator::visit(IndexFilterNode *node) {
+    llvm::Value * tup = visit(node->getFilterNode());
+    return it->getValFromStruct(tup, node->getIndex());
+}

@@ -22,6 +22,7 @@ expr
     | Character                                                     #charExpr
     | tuple                                                         #tupleExpr
     | TupleIndex                                                    #tupleIndexExpr
+    | <assoc=right> filter Real                                     #filterIndexExpr
     | matrix                                                        #matrixExpr
     | String                                                        #stringExpr
     | emptyVector                                                   #emptyVectorExpr
@@ -51,6 +52,7 @@ expr
     | left=expr op=(OR | XOR) right=expr                            #compExpr
     | left=expr op=CONCAT right=expr                                #concatExpr
     ;
+
 
 continueStat
     : CONTINUE SEMICOLON

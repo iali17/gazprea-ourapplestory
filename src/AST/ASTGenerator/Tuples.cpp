@@ -105,3 +105,17 @@ antlrcpp::Any ASTGenerator::visitFilter(gazprea::GazpreaParser::FilterContext *c
     return (ASTNode *) new FilterNode((int) ctx->getStart()->getLine(),
             normalizeID(ctx->Identifier()->getText()), condNodes, range, notCondsNodes);
 }
+
+/**
+ * gold
+ * @param ctx
+ * @return
+ */
+antlrcpp::Any ASTGenerator::visitFilterIndexExpr(gazprea::GazpreaParser::FilterIndexExprContext *ctx) {
+    ASTNode * filter = (ASTNode *) visit(ctx->filter());
+    std::string str  = ctx->Real()->getText();
+    auto ret = split(str, '.');
+    int idx = std::stoi(ret.at(1)) - 1;
+
+    return (ASTNode *) new IndexFilterNode((int) ctx->getStart()->getLine(), filter, idx);
+}

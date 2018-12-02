@@ -48,6 +48,7 @@ public:
     virtual llvm::Value* visit(GTNode *node)                              = 0;
     virtual llvm::Value* visit(LTNode *node)                              = 0;
     virtual llvm::Value* visit(AndNode *node)                             = 0;
+    virtual llvm::Value* visit(IndexFilterNode *node)                     = 0;
     virtual llvm::Value* visit(OrNode *node)                              = 0;
     virtual llvm::Value* visit(LengthNode *node)                          = 0;
     virtual llvm::Value* visit(XOrNode *node)                             = 0;
@@ -58,7 +59,7 @@ public:
     virtual llvm::Value* visit(BreakNode *node)                           = 0;
     virtual llvm::Value* visit(ProtoProcedureNode *node)                  = 0;
     virtual llvm::Value* visit(TupleDeclNode *node)                       = 0;
-    virtual llvm::Value* visit(TupleTypeNode *node)                           = 0;
+    virtual llvm::Value* visit(TupleTypeNode *node)                       = 0;
     virtual llvm::Value* visit(PythonTupleAssNode *node)                  = 0;
     virtual llvm::Value* visit(MatrixDeclNode *node)                      = 0;
     virtual llvm::Value* visit(VectorDeclNode *node)                      = 0;
@@ -68,8 +69,8 @@ public:
     virtual llvm::Value* visit(TupleNode *node)                           = 0;
     virtual llvm::Value* visit(IndexTupleNode *node)                      = 0;
     virtual llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) = 0;
-    virtual llvm::Value* visit(MatrixTypeNode *node)                          = 0;
-    virtual llvm::Value* visit(VectorTypeNode *node)                          = 0;
+    virtual llvm::Value* visit(MatrixTypeNode *node)                      = 0;
+    virtual llvm::Value* visit(VectorTypeNode *node)                      = 0;
     virtual llvm::Value* visit(TupleMemberAssNode *node)                  = 0;
     virtual llvm::Value* visit(TupleInputNode *node)                      = 0;
     virtual llvm::Value* visit(FunctionNode *node)                        = 0;
