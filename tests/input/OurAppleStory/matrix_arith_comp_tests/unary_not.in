@@ -1,0 +1,8 @@
+procedure main() returns integer{
+	var out = std_output();
+	integer matrix x = [[]];
+	
+	not x -> out; '\n' -> out;
+	not [[true, false]] -> out; '\n' -> out;
+	return 0;
+}

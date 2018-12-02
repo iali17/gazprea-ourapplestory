@@ -114,7 +114,7 @@ public:
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performInfixMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
-    llvm::Value*      performUnaryMatrixOp(ASTNode *opNode, llvm::Value *vec);
+    llvm::Value*      performUnaryMatrixOp(ASTNode *opNode, llvm::Value *mat);
     llvm::Value*      performCompMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      getMatixRowOp(ASTNode *opNode, llvm::Value *leftVec, llvm::Value *rightVec);
     llvm::Value*      getUnaryMatrixRowOpVal(ASTNode *opNode, llvm::Value *curVec);
