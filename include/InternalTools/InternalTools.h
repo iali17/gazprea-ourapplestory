@@ -69,6 +69,8 @@ public:
 
 
     llvm::Value *castMatrixIndex(llvm::Value *slice, llvm::Value *l, llvm::Value *r, llvm::Value *mat);
+    llvm::Value *getMatrixNumRows(llvm::Value * mat);
+	llvm::Value *getMatrixNumCols(llvm::Value * mat);
 
     pair makePair(llvm::Value *left, llvm::Value *right);
 	bool setIdentity(llvm::Type * type, llvm::Value * ptr);

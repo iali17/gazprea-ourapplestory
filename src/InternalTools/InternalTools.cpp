@@ -814,3 +814,11 @@ llvm::Value *InternalTools::getInf() {
 llvm::Value *InternalTools::getNInf() {
     return llvm::ConstantFP::getInfinity(intTy, true);
 }
+
+llvm::Value *InternalTools::getMatrixNumRows(llvm::Value *mat) {
+    return getValFromStruct(mat, MATRIX_NUMROW_INDEX);
+}
+
+llvm::Value *InternalTools::getMatrixNumCols(llvm::Value *mat) {
+    return getValFromStruct(mat, MATRIX_NUMCOL_INDEX);
+}

@@ -105,6 +105,8 @@ public:
     llvm::Value* visit(ConcatenationNode  *node) override;
     llvm::Value* visit(DotProductNode     *node) override;
     llvm::Value* visit(FilterNode         *node) override;
+    llvm::Value* visit(RowsNode           *node) override;
+    llvm::Value* visit(ColsNode           *node) override;
     llvm::Value* visit(StringNode         *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
