@@ -884,7 +884,7 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
     std::string rTypeString;
 
     // Type promotion between matrix and scalar, where the leftExpr is a matrix and the rightExpr is a scalar
-    if(it->isMatrixType(leftExpr) && !it->isMatrixType(rightExpr)) {
+    if (it->isMatrixType(leftExpr) && !it->isMatrixType(rightExpr)) {
         llvm::Value *rowSize = it->getValFromStruct(leftExpr, MATRIX_NUMROW_INDEX);
         llvm::Value *colSize = it->getValFromStruct(leftExpr, MATRIX_NUMCOL_INDEX);
 
@@ -899,20 +899,15 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
         rTypeString = typePTable[rType][rType];
 
         if (lTypeString == rTypeString) {
+            leftExpr = createMatFromMat(leftExpr, lTypeP, rowSize, colSize, line);
             rightExpr = createMatFromScalar(rightExpr, rTypeP, rowSize, colSize, line);
 
             return it->makePair(leftExpr, rightExpr);
         } else if (castType == "real") {
-            if (lTypeString == "int") {
-                leftExpr = createMatFromMat(leftExpr, realTy, rowSize, colSize, line);
-                rightExpr = createMatFromScalar(rightExpr, realTy, rowSize, colSize, line);
+            leftExpr = createMatFromMat(leftExpr, realTy, rowSize, colSize, line);
+            rightExpr = createMatFromScalar(rightExpr, realTy, rowSize, colSize, line);
 
-                return it->makePair(leftExpr, rightExpr);
-            } else {
-                rightExpr = createMatFromScalar(rightExpr, realTy, rowSize, colSize, line);
-
-                return it->makePair(leftExpr, rightExpr);
-            }
+            return it->makePair(leftExpr, rightExpr);
         } else {
             // Todo: make new error node for matrix, somehow get size into error
 
@@ -920,8 +915,8 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
         }
     }
 
-    // Type promotion between matrix and scalar, where the rightExpr is a matrix and the leftExpr is a scalar
-    else if(it->isMatrixType(rightExpr) && !it->isMatrixType(leftExpr)) {
+        // Type promotion between matrix and scalar, where the rightExpr is a matrix and the leftExpr is a scalar
+    else if (it->isMatrixType(rightExpr) && !it->isMatrixType(leftExpr)) {
         llvm::Value *rowSize = it->getValFromStruct(rightExpr, MATRIX_NUMROW_INDEX);
         llvm::Value *colSize = it->getValFromStruct(rightExpr, MATRIX_NUMCOL_INDEX);
 
@@ -937,19 +932,14 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
 
         if (lTypeString == rTypeString) {
             leftExpr = createMatFromScalar(leftExpr, lTypeP, rowSize, colSize, line);
+            rightExpr = createMatFromMat(rightExpr, rTypeP, rowSize, colSize, line);
 
             return it->makePair(leftExpr, rightExpr);
         } else if (castType == "real") {
-            if (lTypeString == "int") {
-                leftExpr = createMatFromScalar(leftExpr, realTy, rowSize, colSize, line);
-                rightExpr = createMatFromMat(rightExpr, realTy, rowSize, colSize, line);
+            leftExpr = createMatFromScalar(leftExpr, realTy, rowSize, colSize, line);
+            rightExpr = createMatFromMat(rightExpr, realTy, rowSize, colSize, line);
 
-                return it->makePair(leftExpr, rightExpr);
-            } else {
-                rightExpr = createMatFromMat(rightExpr, realTy, rowSize, colSize, line);
-
-                return it->makePair(leftExpr, rightExpr);
-            }
+            return it->makePair(leftExpr, rightExpr);
         } else {
             // Todo: make new error node for matrix, somehow get size into error
 
@@ -1032,7 +1022,95 @@ InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, ll
 }
 
 InternalTools::pair CastTable::matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line) {
-    return InternalTools::pair();
+    // Type variables initialization
+    int lType;
+    int rType;
+    llvm::Type *lTypeP;
+    llvm::Type *rTypeP;
+    std::string castType;
+    std::string lTypeString;
+    std::string rTypeString;
+
+    // llvm value initialization
+    llvm::Value *maxRowSize = ir->CreateAlloca(intTy);
+    llvm::Value *maxColSize = ir->CreateAlloca(intTy);
+    llvm::Value *leftRowSize;
+    llvm::Value *rightRowSize;
+    llvm::Value *leftColSize;
+    llvm::Value *rightColSize;
+
+    // Get row and col size of each matrix
+    leftRowSize = it->getValFromStruct(leftExpr, MATRIX_NUMROW_INDEX);
+    rightRowSize = it->getValFromStruct(rightExpr, MATRIX_NUMROW_INDEX);
+    leftColSize = it->getValFromStruct(leftExpr, MATRIX_NUMCOL_INDEX);
+    rightColSize = it->getValFromStruct(rightExpr, MATRIX_NUMCOL_INDEX);
+
+    // Get type of each expr and check cast type
+    lTypeP = it->getValFromStruct(leftExpr, MATRIX_TYPE_INDEX)->getType();
+    rTypeP = it->getValFromStruct(rightExpr, MATRIX_TYPE_INDEX)->getType();
+
+    lType = getType(lTypeP);
+    rType = getType(rTypeP);
+
+    castType = typePTable[lType][rType];
+    lTypeString = typePTable[lType][lType];
+    rTypeString = typePTable[rType][rType];
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Get max row between the two matrices
+    auto *cb = new CondBuilder(globalCtx, ir, mod);
+    llvm::Value *cond = ir->CreateICmpSLT(leftRowSize, rightRowSize);
+
+    cb->beginIf(cond);
+
+    ir->CreateStore(rightRowSize, maxRowSize);
+
+    cb->endIf();
+    cb->beginElse();
+
+    ir->CreateStore(leftRowSize, maxRowSize);
+
+    cb->finalize();
+
+    maxRowSize = ir->CreateLoad(maxRowSize);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Get max col between the two matrices
+    auto *cb2 = new CondBuilder(globalCtx, ir, mod);
+    llvm::Value *cond2 = ir->CreateICmpSLT(leftColSize, rightColSize);
+
+    cb2->beginIf(cond2);
+
+    ir->CreateStore(rightColSize, maxColSize);
+
+    cb2->endIf();
+    cb2->beginElse();
+
+    ir->CreateStore(leftColSize, maxColSize);
+
+    cb2->finalize();
+
+    maxColSize = ir->CreateLoad(maxColSize);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if(lTypeString == rTypeString) {
+        leftExpr = createMatFromMat(leftExpr, lTypeP, maxRowSize, maxColSize, line);
+        rightExpr = createMatFromMat(rightExpr, rTypeP, maxRowSize, maxColSize, line);
+
+        return it->makePair(leftExpr, rightExpr);
+    } else if(castType == "real") {
+        leftExpr = createMatFromMat(leftExpr, realTy, maxRowSize, maxColSize, line);
+        rightExpr = createMatFromMat(rightExpr, realTy, maxRowSize, maxColSize, line);
+
+        return it->makePair(leftExpr, rightExpr);
+    } else {
+        //todo: make error node for different type promotion
+
+        return it->makePair(leftExpr, rightExpr);
+    }
 }
 
 

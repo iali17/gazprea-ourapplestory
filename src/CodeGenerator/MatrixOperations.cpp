@@ -33,8 +33,8 @@ llvm::Value *CodeGenerator::getUnaryMatrixRowOpVal(ASTNode *opNode, llvm::Value 
 
 llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
 //variables for the return
-    llvm::Value * retNumRows = it->getValFromStruct(left, VEC_LEN_INDEX);
-    llvm::Value * retNumCols = it->getValFromStruct(left, VEC_LEN_INDEX);
+    llvm::Value * retNumRows = it->getValFromStruct(left, MATRIX_NUMROW_INDEX);
+    llvm::Value * retNumCols = it->getValFromStruct(left, MATRIX_NUMCOL_INDEX);
     llvm::Value * ret        = et->getNewMatrix(it->getConsi32(INTEGER));
     ret = ir->CreatePointerCast(ret, matrixTy->getPointerTo());
     et->initMatrix(ret, retNumRows, retNumCols);
@@ -114,8 +114,8 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
 
 llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *mat) {
 //variables for the return
-    llvm::Value * retNumRows = it->getValFromStruct(mat, VEC_LEN_INDEX);
-    llvm::Value * retNumCols = it->getValFromStruct(mat, VEC_LEN_INDEX);
+    llvm::Value * retNumRows = it->getValFromStruct(mat, MATRIX_NUMROW_INDEX);
+    llvm::Value * retNumCols = it->getValFromStruct(mat, MATRIX_NUMCOL_INDEX);
     llvm::Value * ret        = et->getNewMatrix(it->getConsi32(INTEGER));
     ret = ir->CreatePointerCast(ret, matrixTy->getPointerTo());
     et->initMatrix(ret, retNumRows, retNumCols);
