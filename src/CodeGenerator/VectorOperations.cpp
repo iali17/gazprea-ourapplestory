@@ -23,7 +23,7 @@ extern llvm::Type *realVecTy;
  * @return
  */
 llvm::Value *CodeGenerator::visit(DotProductNode *node) {
-    InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
+    InternalTools::pair retVal = castAndPreserveSize(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 

@@ -443,7 +443,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
         llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
 
         if(leftSize && rightSize) {
-            return createMatFromMat(expr, realTy, leftSize, rightSize, line);
+            return createMatFromMat(expr, llType, leftSize, rightSize, line);
         } else if(leftSize) {
             return createMatFromMat(expr, llType, leftSize, exprCols, line);
         } else if(rightSize) {

@@ -1,6 +1,6 @@
 procedure main() returns integer{
 	var out = std_output();
-	integer matrix x = [[]];
+	boolean matrix x = [[]];
 	
 	x xor x -> out; '\n' -> out;
 	[[true, true, false, false]] xor [[true, false, true, false]] -> out; '\n' -> out;
