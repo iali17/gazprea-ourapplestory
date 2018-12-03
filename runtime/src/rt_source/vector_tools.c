@@ -410,7 +410,10 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line){
     vector * dest = (vector *) v_dest;
     vector * src  = (vector *) v_src;
 
-    if(*dest->numElements != *src->numElements) {
+    if( *dest->numElements == -1) {
+        initVector(dest, *src->numElements);
+        copyVectorElements(v_dest, v_src);
+    } else if(*dest->numElements != *src->numElements) {
         char *srcType = getType(*src->type);
         char *destType = getType(*dest->type);
         int  srcIndex = *src->numElements;

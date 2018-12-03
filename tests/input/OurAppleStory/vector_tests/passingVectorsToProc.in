@@ -12,7 +12,7 @@ procedure what(integer vector[2] f) returns integer vector[2] {
 procedure main() returns integer { 
     var out = std_output();
     integer vector x[2] = [1,2];
-    integer vector w[2];
+    integer vector w[*];
 
     x->out; '\n'->out;
     w = what(x);
