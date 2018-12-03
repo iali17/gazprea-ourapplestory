@@ -216,6 +216,10 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
+
     if(it->isTupleType(left)){
         return performTupleOp(left, right, EQ, node->getLine());
     }
@@ -238,6 +242,10 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
 llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
+
+    if (it->isIntervalType(left) || it->isIntervalType(right)){
+        return IntervalArith(node, left, right);
+    }
 
     if (it->isTupleType(left)){
         return performTupleOp(left, right, NEQ, node->getLine());
@@ -366,6 +374,10 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
 llvm::Value *CodeGenerator::visit(NegateNode *node) {
     llvm::Value * expr  = visit(node->getExpr());
     //check for non base type cases
+
+    if (it->isIntervalType(expr)) {
+        return IntervalUnary(node, expr);
+    }
 
     if(it->isVectorType(expr)){
         return performUnaryVectorOp(node, expr);
