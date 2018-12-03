@@ -33,8 +33,6 @@ private:
     antlrcpp::Any visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) override;
     antlrcpp::Any visitFilterExpr(gazprea::GazpreaParser::FilterExprContext *ctx) override;
     antlrcpp::Any visitVectorLengthExpr(gazprea::GazpreaParser::VectorLengthExprContext *ctx) override;
-    antlrcpp::Any visitRowLengthExpr(gazprea::GazpreaParser::RowLengthExprContext *ctx) override;
-    antlrcpp::Any visitColLengthExpr(gazprea::GazpreaParser::ColLengthExprContext *ctx) override;
     antlrcpp::Any visitReverseExpr(gazprea::GazpreaParser::ReverseExprContext *ctx) override;
     antlrcpp::Any visitDotProductOrMatMultExpr(gazprea::GazpreaParser::DotProductOrMatMultExprContext *ctx) override;
     antlrcpp::Any visitByExpr(gazprea::GazpreaParser::ByExprContext *ctx) override;
@@ -106,6 +104,8 @@ private:
     antlrcpp::Any visitFullLeftIndexExpr(gazprea::GazpreaParser::FullLeftIndexExprContext *ctx) override;
     antlrcpp::Any visitFullRightIndexExpr(gazprea::GazpreaParser::FullRightIndexExprContext *ctx) override;
     antlrcpp::Any visitFullIndexExpr(gazprea::GazpreaParser::FullIndexExprContext *ctx) override;
+    antlrcpp::Any visitRowLength(gazprea::GazpreaParser::RowLengthContext *ctx) override;
+    antlrcpp::Any visitColLength(gazprea::GazpreaParser::ColLengthContext *ctx) override;
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
     std::vector<std::string> split(const std::string& s, char delimiter);

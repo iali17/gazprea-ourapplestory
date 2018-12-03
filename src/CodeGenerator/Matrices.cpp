@@ -217,12 +217,12 @@ llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idx
     //make scalars vectors with one element
     if(not(rowIdx->getType()->isPointerTy())){
         size = it->getValFromStruct(colIdx, VEC_LEN_INDEX);
-        src  = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size);
+        src  = ct->typeAssCast(it->getMatrixVectorType(dest)->getPointerElementType(), src, srcNode->getLine(), size);
         return et->assignScalarVector(dest, rowIdx, colIdx, src);
     }
     else if(not(colIdx->getType()->isPointerTy())){
         size = it->getValFromStruct(rowIdx, VEC_LEN_INDEX);
-        src  = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size);
+        src  = ct->typeAssCast(it->getMatrixVectorType(dest)->getPointerElementType(), src, srcNode->getLine(), size);
         return et->assignVectorScalar(dest, rowIdx, colIdx, src);
     }
     else {
@@ -233,3 +233,12 @@ llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idx
     }
 }
 
+llvm::Value *CodeGenerator::visit(RowsNode *node) {
+    llvm::Value *mat = visit(node->getExpr());
+    return it->getMatrixNumRows(mat);
+}
+
+llvm::Value *CodeGenerator::visit(ColsNode *node) {
+    llvm::Value *mat = visit(node->getExpr());
+    return it->getMatrixNumCols(mat);
+}

@@ -33,6 +33,8 @@
 #include "AST/ASTNodes/BaseNodes/UnaryNode.h"
 
 #include "AST/ASTNodes/BuiltInFuncNodes/LengthNode.h"
+#include "AST/ASTNodes/BuiltInFuncNodes/RowsNode.h"
+#include "AST/ASTNodes/BuiltInFuncNodes/ColsNode.h"
 #include "AST/ASTNodes/BuiltInFuncNodes/ReverseVectorNode.h"
 #include "AST/ASTNodes/BuiltInFuncNodes/StreamStateNode.h"
 

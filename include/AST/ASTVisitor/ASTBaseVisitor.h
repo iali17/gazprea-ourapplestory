@@ -234,6 +234,12 @@ public:
         else if (dynamic_cast<FilterNode *>(node)) {
             ret = visit((FilterNode *) node);
         }
+        else if (dynamic_cast<RowsNode *>(node)) {
+            ret = visit((RowsNode *) node);
+        }
+        else if (dynamic_cast<ColsNode *>(node)) {
+            ret = visit((ColsNode *) node);
+        }
         else if (dynamic_cast<StringNode *>(node)) {
             ret = visit((StringNode *) node);
         }
@@ -318,6 +324,8 @@ public:
     llvm::Value* visit(ConcatenationNode *node) override { return nullptr; }
     llvm::Value* visit(DotProductNode *node) override { return nullptr; }
     llvm::Value* visit(FilterNode *node) override { return nullptr; }
+    llvm::Value* visit(RowsNode *node) override { return nullptr; }
+    llvm::Value* visit(ColsNode *node) override { return nullptr; }
     llvm::Value* visit(StringNode *node) override { return nullptr; }
 };
 
