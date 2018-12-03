@@ -1,9 +1,26 @@
 procedure main() returns integer {
 
-integer interval a = 1..2;
-integer interval b = 1 ..2;
-integer interval c = 1.. 2;
-integer interval d = 1 .. 2;
+integer interval d1 = 1..2;
+integer interval d2 = 1 ..2;
+integer interval d3 = 1.. 2;
+integer interval d4 = (-1)..2;
+integer interval d5 = (-1) ..2;
+integer interval d6 = (-1).. 2;
+integer interval d7 = (-1) .. 2;
+integer interval d8 = 1..-2;
+integer interval d9 = 1 ..-2;
+integer interval d10 = 1..-2;
+integer interval d11 = 1 ..-2;
+integer interval d12 = (-13)..-4;
+integer interval d13 = 1 + 1 .. 2 * 2;
+integer interval d14 = 1 .. 2;
+integer interval d15 = 1 .. 2;
+
+
+
+
+
+
 
 var e = 1..3;
 var f = 1 ..3;

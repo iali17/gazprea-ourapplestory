@@ -136,8 +136,9 @@ public:
     llvm::Value *generateVector(std::string loopVar, llvm::Value *range, ASTNode *exprNode);
     llvm::Value *filterVector(std::string loopVar, llvm::Value *range, ASTNode *condNode);
     InternalTools::pair castForOp(InfixNode *node);
-    InternalTools::pair castForConcat(InfixNode *node);
-    InternalTools::pair castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right);
+    InternalTools::pair castAndPreserveSize(InfixNode *node);
+    InternalTools::pair castAndPreserveSizeVector(InfixNode *node, llvm::Value *left, llvm::Value *right);
+    InternalTools::pair castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
     std::vector<std::string> split(const std::string& s, char delimiter);
     llvm::Value *getSingleIntegerVector(llvm::Value *val);

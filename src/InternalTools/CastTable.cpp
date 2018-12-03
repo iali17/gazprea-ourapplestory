@@ -60,6 +60,10 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     else if(rValueLoad->getName() == "IdnNode")
         rValueLoad = it->getIdn(lValueLoad->getType());
 
+    if (it->isIntervalType(lValueLoad) || it->isIntervalType(rValueLoad)){
+        return IntervalTypePromotion(lValueLoad, rValueLoad, line);
+    }
+
     if(it->isVectorType(lValueLoad) || it->isVectorType(rValueLoad)) {
         return vectorTypePromotion(lValueLoad, rValueLoad, line);
     }
@@ -442,6 +446,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
 
     // Deals with casting matrix to matrix
     if(it->isMatrixType(expr)) {
+
         llvm::Type *exprType = it->getMatrixElementType(expr);
 
         rType = getType(exprType);
@@ -458,6 +463,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
             et->strictCopyMatrixElements(mat, tempMat, it->getConsi32(line), it->getConsi32(true));
 
             return mat;
+
         } else {
             //todo: create error node
             std::cerr << "Casting matrix to different invalid matrix, make node later\n";
@@ -793,6 +799,40 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
     return mat;
 }
 
+InternalTools::pair CastTable::IntervalTypePromotion(llvm::Value *left, llvm::Value *right, int line) {
+
+    if ((it->isIntervalType(left) && it->isMatrixType(right)) ||
+        (it->isMatrixType(left) && it->isIntervalType(right)) ){
+        std::cerr << "Cannot implicitly convert interval to matrix on line: " << line << ". Aborting...\n";
+        exit(1);
+    } else if (left->getType() == realTy || right->getType() == realTy){
+        std::cerr << "Cannot implicitly convert real to interval on line: " << line << ". Aborting...\n";
+        exit(1);
+    }
+
+    // if left or right is vecType, then use a by to change the interval to a vector and return both vectors
+    // if left or right is intType, then cast the integer into interval
+    llvm::Value * newLeft = left;
+    llvm::Value * newRight = right;
+    if (left->getType() == intTy){
+        newLeft = et->getNewInterval(left, left);
+        assert(it->isIntervalType(newLeft));
+    } else if (right->getType() == intTy) {
+        newRight = et->getNewInterval(right, right);
+        assert(it->isIntervalType(newRight));
+    } else if (it->isVectorType(left)){
+        // todo i dont think casting interval to vector works just yetst
+        newRight = et->getVectorBy(right, it->getConsi32(1));
+        assert(it->isVectorType(newRight));
+        return vectorTypePromotion(newLeft, newRight, line);
+    } else if (it->isVectorType(right)){
+        newLeft = et->getVectorBy(left, it->getConsi32(1));
+        assert(it->isVectorType(newLeft));
+        return vectorTypePromotion(newLeft, newRight, line);
+    }
+
+    return it->makePair(newLeft, newRight);
+}
 
 InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
     int lType;

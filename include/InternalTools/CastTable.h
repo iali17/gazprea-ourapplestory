@@ -30,6 +30,7 @@ public:
     llvm::Value *vecAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr, int exprSize = -1);
     llvm::Value *matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftsize = nullptr, llvm::Value *rightSize = nullptr);
 
+    InternalTools::pair IntervalTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     InternalTools::pair vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     InternalTools::pair matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);

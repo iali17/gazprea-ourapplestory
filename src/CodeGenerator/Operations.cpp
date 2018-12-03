@@ -40,6 +40,38 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     return retVal;
 }
 
+
+InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
+    //save size
+    llvm::Value *leftRows  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+    llvm::Value *rightRows = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMROW_INDEX));
+    llvm::Value *leftCols  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *rightCols = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *leftRowsPtr  = nullptr;
+    llvm::Value *rightRowsPtr = nullptr;
+    llvm::Value *leftColsPtr  = nullptr;
+    llvm::Value *rightColsPtr = nullptr;
+
+    //promote
+    InternalTools::pair retVal;
+    retVal = ct->typePromotion(left, right, node->getLine());
+
+    //give size back
+    leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+    rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
+    leftColsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
+    rightColsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+
+    ir->CreateStore(leftRows, leftRowsPtr);
+    ir->CreateStore(leftCols, leftColsPtr);
+    ir->CreateStore(rightRows, rightRowsPtr);
+    ir->CreateStore(rightCols, rightColsPtr);
+
+    assert(retVal.left->getType() == retVal.right->getType());
+
+    return retVal;
+}
+
 /**
  * cast but keep same dim for vector concat
  * @param node
@@ -47,7 +79,7 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
  * @param right
  * @return
  */
-InternalTools::pair CodeGenerator::castForVectorConcat(InfixNode *node, llvm::Value *left, llvm::Value *right) {
+InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftSize  = it->getValFromStruct(left,  it->getConsi32(VEC_LEN_INDEX));
     llvm::Value *rightSize = it->getValFromStruct(right, it->getConsi32(VEC_LEN_INDEX));
@@ -74,16 +106,16 @@ InternalTools::pair CodeGenerator::castForVectorConcat(InfixNode *node, llvm::Va
  * @param node
  * @return
  */
-InternalTools::pair CodeGenerator::castForConcat(InfixNode *node) {
+InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
     //check for non base type cases
     if(it->isVectorType(left)){
-        return castForVectorConcat(node, left, right);
+        return castAndPreserveSizeVector(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return castAndPreserveSizeMatrix(node, left, right);
     }
     return *(new InternalTools::pair);
 }
@@ -378,8 +410,7 @@ llvm::Value *CodeGenerator::visit(NegateNode *node) {
     if (it->isIntervalType(expr)) {
         return IntervalUnary(node, expr);
     }
-
-    if(it->isVectorType(expr)){
+    else if(it->isVectorType(expr)){
         return performUnaryVectorOp(node, expr);
     }
     else if(it->isMatrixType(expr)){
@@ -452,7 +483,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
  * @return
  */
 llvm::Value *CodeGenerator::visit(ConcatenationNode *node) {
-    InternalTools::pair retVal = castForConcat(dynamic_cast<InfixNode *>(node));
+    InternalTools::pair retVal = castAndPreserveSize(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 

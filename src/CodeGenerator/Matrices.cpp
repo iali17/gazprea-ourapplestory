@@ -196,8 +196,10 @@ llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, l
 
 
 llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src) {
-    llvm::Value * rowIdx = visit(idxExpr->getIndexExpr()->at(0));
-    llvm::Value * colIdx = visit(idxExpr->getIndexExpr()->at(1));
+    llvm::Value * rowIdx    = visit(idxExpr->getIndexExpr()->at(0));
+    llvm::Value * colIdx    = visit(idxExpr->getIndexExpr()->at(1));
+    llvm::Value * size      = nullptr;
+    llvm::Value * extraSize = nullptr;
 
     if(not(rowIdx->getType()->isPointerTy()) && not(colIdx->getType()->isPointerTy()))
         return indexAssign(srcNode, idxExpr, src, dest, srcNode->getLine());
@@ -212,15 +214,22 @@ llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idx
         setIdentityVecOrMat(src);
     }
 
-    src = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine());
-
     //make scalars vectors with one element
-    if(not(rowIdx->getType()->isPointerTy()))
+    if(not(rowIdx->getType()->isPointerTy())){
+        size = it->getValFromStruct(colIdx, VEC_LEN_INDEX);
+        src  = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size);
         return et->assignScalarVector(dest, rowIdx, colIdx, src);
-
-    else if(not(colIdx->getType()->isPointerTy()))
+    }
+    else if(not(colIdx->getType()->isPointerTy())){
+        size = it->getValFromStruct(rowIdx, VEC_LEN_INDEX);
+        src  = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size);
         return et->assignVectorScalar(dest, rowIdx, colIdx, src);
-
-    return et->assignVectorVector(dest, rowIdx, colIdx, src);
+    }
+    else {
+        size      = it->getValFromStruct(rowIdx, VEC_LEN_INDEX);
+        extraSize = it->getValFromStruct(colIdx, VEC_LEN_INDEX);
+        src       = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size, extraSize);
+        return et->assignVectorVector(dest, rowIdx, colIdx, src);
+    }
 }
 

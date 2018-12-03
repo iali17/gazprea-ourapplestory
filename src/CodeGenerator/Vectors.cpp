@@ -206,7 +206,8 @@ llvm::Value *CodeGenerator::vectorSliceAssign(ASTNode * srcNode, IndexNode * idx
         et->setIdentityVector(src);
     }
 
-    src = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine());
+    llvm::Value * size = it->getValFromStruct(idx, VEC_LEN_INDEX);
+    src = ct->typeAssCast(dest->getType()->getPointerElementType(), src, srcNode->getLine(), size);
 
     et->assignFromVector(dest, idx, src);
     return nullptr;

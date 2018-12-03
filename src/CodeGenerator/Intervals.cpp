@@ -70,36 +70,12 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
 
 llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llvm::Value *right) {
 
-    if ((it->isIntervalType(left) && it->isMatrixType(right)) ||
-        (it->isMatrixType(left) && it->isIntervalType(right)) ){
-        std::cerr << "Cannot implicitly convert interval to matrix on line: " << node->getLine() << ". Aborting...";
-        exit(1);
-    }
-
-    // if left or right is vecType, then cast the interval to a vec then it's a vec arith
-    // if left or right is intType, then cast the integer into interval
-    llvm::Value * newLeft = left;
-    llvm::Value * newRight = right;
-    if (left->getType() == intTy){
-        newLeft = et->getNewInterval(left,left);
-        assert(it->isIntervalType(right));
-    } else if (right->getType() == intTy) {
-        newRight = et->getNewInterval(right, right);
-        assert(it->isIntervalType(left));
-    } else if (it->isVectorType(left)){
-        newLeft = et->getVectorBy(left, it->getConsi32(1));
-        assert(it->isIntervalType(right));
-        // go to vec arith
-    } else if (it->isVectorType(right)){
-        newRight = et->getVectorBy(right, it->getConsi32(1));
-        assert(it->isIntervalType(left));
-    }
-
+    assert(it->isIntervalType(left) && it->isIntervalType(right));
     // [a, b] +-*/ [c, d]
-    llvm::Value * a = it->getValFromStruct(newLeft, INTERVAL_MIN);
-    llvm::Value * b = it->getValFromStruct(newLeft, INTERVAL_MAX);
-    llvm::Value * c = it->getValFromStruct(newRight, INTERVAL_MIN);
-    llvm::Value * d = it->getValFromStruct(newRight, INTERVAL_MAX);
+    llvm::Value * a = it->getValFromStruct(left, INTERVAL_MIN);
+    llvm::Value * b = it->getValFromStruct(left, INTERVAL_MAX);
+    llvm::Value * c = it->getValFromStruct(right, INTERVAL_MIN);
+    llvm::Value * d = it->getValFromStruct(right, INTERVAL_MAX);
 
     if(dynamic_cast<AddNode *>(node)) {     // [e,f] = [a + c, b + d]
         return et->getNewInterval(it->getAdd(a, c), it->getAdd(b, d));
@@ -281,11 +257,10 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
         cb->endIf();
 
         // c<0, d>0 [-inf, +inf]
+        // divisor contains zero so technically this is invalid
         cb->beginElse();
-//        ir->CreateStore(it->getNInf(), resultLeft);
-//        ir->CreateStore(it->getInf(), resultRight);
-        ir->CreateStore(it->getConsi32(2147483647), resultLeft);
-        ir->CreateStore(it->getConsi32(-2147483648), resultRight);
+        ir->CreateStore(it->getConsi32(0), resultLeft);
+        ir->CreateStore(it->getConsi32(0), resultRight);
         cb->finalize();
 
         // remember to flip left and right if left > right
@@ -333,7 +308,7 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
 
         return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
     }
-    std::cerr << "invalid arithmetic operation on line: " << node->getLine() << " Aborting...";
+    std::cerr << "invalid arithmetic operation on line: " << node->getLine() << ". Aborting...";
     exit(1);
 }
 
@@ -342,9 +317,25 @@ llvm::Value *CodeGenerator::IntervalUnary(ASTNode * node, llvm::Value *right) {
     llvm::Value * b = it->getValFromStruct(right, INTERVAL_MAX);
 
     if (dynamic_cast<NegateNode *>(node)) {
-        return et->getNewInterval(it->getMul(it->getConsi32(-1), a), it->getMul(it->getConsi32(-1), b));
+        llvm::Value * resultLeft = ir->CreateAlloca(intTy);
+        llvm::Value * resultRight = ir->CreateAlloca(intTy);
+
+        ir->CreateStore(it->getMul(it->getConsi32(-1), a), resultLeft);
+        ir->CreateStore(it->getMul(it->getConsi32(-1), b), resultRight);
+
+        // remember to flip left and right if left > right
+        auto * cb = new CondBuilder(globalCtx, ir, mod);
+        cb->beginIf(ir->CreateICmpSGT(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight)));
+        llvm::Value * temp = ir->CreateAlloca(intTy);
+        ir->CreateStore(ir->CreateLoad(resultLeft), temp);
+        ir->CreateStore(ir->CreateLoad(resultRight), resultLeft);
+        ir->CreateStore(ir->CreateLoad(temp), resultRight);
+        cb->endIf();
+        cb->finalize();
+
+        return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
     }
-    std::cerr << "invalid unary operation on line: " << node->getLine() << " Aborting...";
+    std::cerr << "invalid unary operation on line: " << node->getLine() << ". Aborting...";
     exit(1);
 }
 
