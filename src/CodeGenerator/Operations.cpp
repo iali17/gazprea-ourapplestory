@@ -378,8 +378,7 @@ llvm::Value *CodeGenerator::visit(NegateNode *node) {
     if (it->isIntervalType(expr)) {
         return IntervalUnary(node, expr);
     }
-
-    if(it->isVectorType(expr)){
+    else if(it->isVectorType(expr)){
         return performUnaryVectorOp(node, expr);
     }
     else if(it->isMatrixType(expr)){
