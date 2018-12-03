@@ -28,6 +28,9 @@ expr
     | emptyVector                                                   #emptyVectorExpr
     | vector                                                        #vectorExpr
     | expr '[' expr (COMMA expr)? ']'                               #indexExpr
+    | expr '[' MUL COMMA expr ']'                                   #fullLeftIndexExpr
+    | expr '[' expr COMMA MUL ']'                                   #fullRightIndexExpr
+    | expr '[' MUL (COMMA MUL)? ']'                                 #fullIndexExpr
     | Identifier                                                    #identifierExpr
     | AS '<' type '>' '(' expr ')'                                  #castExpr
     | functionCall                                                  #functionExpr
@@ -85,6 +88,9 @@ assignment
     | Identifier EQL expr SEMICOLON                                         #normalAss
     | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
     | expr '[' expr (COMMA expr)? ']' EQL expr SEMICOLON                    #indexAssign
+    | expr '[' MUL COMMA expr ']'     EQL expr SEMICOLON                    #fullLeftIndexAssign
+    | expr '[' expr COMMA MUL ']'     EQL expr SEMICOLON                    #fullRightIndexAssign
+    | expr '[' MUL (COMMA MUL)? ']'   EQL expr SEMICOLON                    #fullIndexAssign
     ;
 
 declaration

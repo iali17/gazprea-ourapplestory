@@ -100,12 +100,19 @@ private:
     antlrcpp::Any visitFilter(gazprea::GazpreaParser::FilterContext *ctx) override;
     antlrcpp::Any visitVectorLength(gazprea::GazpreaParser::VectorLengthContext *ctx) override;
     antlrcpp::Any visitFilterIndexExpr(gazprea::GazpreaParser::FilterIndexExprContext *ctx) override;
+    antlrcpp::Any visitFullLeftIndexAssign(gazprea::GazpreaParser::FullLeftIndexAssignContext *ctx) override;
+    antlrcpp::Any visitFullRightIndexAssign(gazprea::GazpreaParser::FullRightIndexAssignContext *ctx) override;
+    antlrcpp::Any visitFullIndexAssign(gazprea::GazpreaParser::FullIndexAssignContext *ctx) override;
+    antlrcpp::Any visitFullLeftIndexExpr(gazprea::GazpreaParser::FullLeftIndexExprContext *ctx) override;
+    antlrcpp::Any visitFullRightIndexExpr(gazprea::GazpreaParser::FullRightIndexExprContext *ctx) override;
+    antlrcpp::Any visitFullIndexExpr(gazprea::GazpreaParser::FullIndexExprContext *ctx) override;
     //Helper Functions
     ASTNode *getIndexNode(std::vector<std::string>values, int num, int lineNum);
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string normalizeID(std::string oldName);
     BlockNode *convertNodeToBlock(ASTNode * node);
 };
+
 
 #endif //GAZPREABASE_ASTGENERATOR_H
 
