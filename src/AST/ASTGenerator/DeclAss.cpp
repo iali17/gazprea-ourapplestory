@@ -43,7 +43,7 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
     || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {
         ASTNode *typeNode;
-        if (ctx->type(0)->matrixType()) {
+        if (ctx->type(0)->matrixType() && ctx->extension()) {
             typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
         } else {
             typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);

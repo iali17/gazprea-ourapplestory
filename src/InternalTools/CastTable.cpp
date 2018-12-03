@@ -60,12 +60,12 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     else if(rValueLoad->getName() == "IdnNode")
         rValueLoad = it->getIdn(lValueLoad->getType());
 
-    if (it->isIntervalType(lValueLoad) || it->isIntervalType(rValueLoad)){
-        return IntervalTypePromotion(lValueLoad, rValueLoad, line);
-    }
-
     if(it->isVectorType(lValueLoad) || it->isVectorType(rValueLoad)) {
         return vectorTypePromotion(lValueLoad, rValueLoad, line);
+    }
+
+    if (it->isIntervalType(lValueLoad) || it->isIntervalType(rValueLoad)){
+        return IntervalTypePromotion(lValueLoad, rValueLoad, line);
     }
 
     if(it->isMatrixType(lValueLoad) || it->isMatrixType(rValueLoad)) {
@@ -833,6 +833,7 @@ InternalTools::pair CastTable::IntervalTypePromotion(llvm::Value *left, llvm::Va
 
     return it->makePair(newLeft, newRight);
 }
+
 
 InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
     int lType;
