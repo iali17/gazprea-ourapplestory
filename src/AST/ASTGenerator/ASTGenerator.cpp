@@ -631,3 +631,89 @@ antlrcpp::Any ASTGenerator::visitGenerator(gazprea::GazpreaParser::GeneratorCont
 
     return (ASTNode *) new GeneratorNode((int) ctx->getStart()->getLine(), loopVars, ranges, exprNode);
 }
+
+antlrcpp::Any ASTGenerator::visitFullIndexAssign(gazprea::GazpreaParser::FullIndexAssignContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
+    ASTNode * dest = visit(ctx->expr().at(0));
+    INTNode * one = new INTNode(1, line);
+    LengthNode * len = new LengthNode(dest, line);
+    IntervalNode * fullRange = new IntervalNode(one, len, line);
+    ByNode   * byNode = new ByNode(fullRange, one, line);
+    SubNode * subNode = new SubNode(byNode, one, line);
+    auto * indicies = new std::vector<ASTNode *>;
+    indicies->push_back(subNode);
+    if(ctx->MUL().size() == 2)
+        indicies->push_back(subNode);
+    IndexNode * indexNode = new IndexNode(dest, indicies, line, true);
+    return (ASTNode *) new SliceAssignNode(indexNode, visit(ctx->expr().back()), line);
+}
+
+antlrcpp::Any ASTGenerator::visitFullLeftIndexAssign(gazprea::GazpreaParser::FullLeftIndexAssignContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
+    ASTNode * dest = visit(ctx->expr().at(0));
+    ASTNode * other = visit(ctx->expr().at(1));
+    INTNode * one = new INTNode(1, line);
+    LengthNode * len = new LengthNode(dest, line);
+    IntervalNode * fullRange = new IntervalNode(one, len, line);
+    ByNode   * byNode = new ByNode(fullRange, one, line);
+    SubNode * subNode = new SubNode(byNode, one, line);
+    auto * indicies = new std::vector<ASTNode *>;
+
+    indicies->push_back(subNode);
+    indicies->push_back(new SubNode(other, one, line));
+
+    IndexNode * indexNode = new IndexNode(dest, indicies, line, true);
+    return (ASTNode *) new SliceAssignNode(indexNode, visit(ctx->expr().back()), line);
+}
+
+antlrcpp::Any ASTGenerator::visitFullRightIndexAssign(gazprea::GazpreaParser::FullRightIndexAssignContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
+    ASTNode * dest = visit(ctx->expr().at(0));
+    ASTNode * other = visit(ctx->expr().at(1));
+    INTNode * one = new INTNode(1, line);
+    LengthNode * len = new LengthNode(dest, line);
+    IntervalNode * fullRange = new IntervalNode(one, len, line);
+    ByNode   * byNode = new ByNode(fullRange, one, line);
+    SubNode * subNode = new SubNode(byNode, one, line);
+    auto * indicies = new std::vector<ASTNode *>;
+    indicies->push_back(new SubNode(other, one, line));
+    indicies->push_back(subNode);
+    IndexNode * indexNode = new IndexNode(dest, indicies, line, true);
+    return (ASTNode *) new SliceAssignNode(indexNode, visit(ctx->expr().back()), line);
+}
+
+antlrcpp::Any ASTGenerator::visitFullLeftIndexExpr(gazprea::GazpreaParser::FullLeftIndexExprContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
+    ASTNode * dest = visit(ctx->expr().at(0));
+    ASTNode * other = visit(ctx->expr().at(1));
+    INTNode * one = new INTNode(1, line);
+    LengthNode * len = new LengthNode(dest, line);
+    IntervalNode * fullRange = new IntervalNode(one, len, line);
+    ByNode   * byNode = new ByNode(fullRange, one, line);
+    SubNode * subNode = new SubNode(byNode, one, line);
+    auto * indicies = new std::vector<ASTNode *>;
+    indicies->push_back(subNode);
+    indicies->push_back(new SubNode(other, one, line));
+    IndexNode * indexNode = new IndexNode(dest, indicies, line, true);
+    return (ASTNode *) indexNode;
+}
+
+antlrcpp::Any ASTGenerator::visitFullRightIndexExpr(gazprea::GazpreaParser::FullRightIndexExprContext *ctx) {
+    int line = (int) ctx->getStart()->getLine();
+    ASTNode * dest = visit(ctx->expr().at(0));
+    ASTNode * other = visit(ctx->expr().at(1));
+    INTNode * one = new INTNode(1, line);
+    LengthNode * len = new LengthNode(dest, line);
+    IntervalNode * fullRange = new IntervalNode(one, len, line);
+    ByNode   * byNode = new ByNode(fullRange, one, line);
+    SubNode * subNode = new SubNode(byNode, one, line);
+    auto * indicies = new std::vector<ASTNode *>;
+    indicies->push_back(new SubNode(other, one, line));
+    indicies->push_back(subNode);
+    IndexNode * indexNode = new IndexNode(dest, indicies, line, true);
+    return (ASTNode *) indexNode;
+}
+
+antlrcpp::Any ASTGenerator::visitFullIndexExpr(gazprea::GazpreaParser::FullIndexExprContext *ctx) {
+    return visit(ctx->expr());
+}
