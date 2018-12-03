@@ -28,6 +28,8 @@
 #define ASS_SCALAR_VECTOR    "assignScalarVector"
 #define ASS_VECTOR_SCALAR    "assignVectorScalar"
 #define ASS_VECTOR_VECTOR    "assignVectorVector"
+#define STRICT_COPY_MATRIX   "strictCopyMatrixElements"
+#define COPY_MATRIX          "copyMatrix"
 
 extern llvm::Type *charTy;
 extern llvm::Type *intMatrixTy;
@@ -112,6 +114,14 @@ void ExternalTools::registerMatrixFunctions() {
     //assignVectorVector
     fTy = llvm::TypeBuilder<void (void *, void *, void *, void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASS_VECTOR_VECTOR, fTy));
+
+    //strictCopyMatrixElements
+    fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(STRICT_COPY_MATRIX, fTy));
+
+    //copyMatrix
+    fTy = llvm::TypeBuilder<void *(void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(COPY_MATRIX, fTy));
 }
 
 /**
@@ -426,5 +436,19 @@ llvm::Value *ExternalTools::assignVectorVector(llvm::Value *matrix, llvm::Value 
     llvm::Value    *v_col = ir->CreatePointerCast(vectorCol, charTy->getPointerTo());
     llvm::Value    *v_src = ir->CreatePointerCast(src, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getM, {v_mat, v_row, v_col, v_src});
+    return ret;
+}
+
+llvm::Value* ExternalTools::strictCopyMatrixElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line) {
+    llvm::Function *getV   = mod->getFunction(STRICT_COPY_MATRIX);
+    llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
+    llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
+    return ir->CreateCall(getV, {v_dest, v_src, line});
+}
+
+llvm::Value *ExternalTools::copyMatrix(llvm::Value *matrix) {
+    llvm::Function *getM  = mod->getFunction(COPY_MATRIX);
+    llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getM, {v_mat});
     return ret;
 }

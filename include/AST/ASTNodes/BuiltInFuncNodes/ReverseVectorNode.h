@@ -5,7 +5,7 @@
 #ifndef GAZPREABASE_REVERSEVECTORNODE_H
 #define GAZPREABASE_REVERSEVECTORNODE_H
 
-#include "../../../AST/ASTNodes/BaseNodes/UnaryNode.h"
+#include "../BaseNodes/UnaryNode.h"
 
 class ReverseVectorNode : public UnaryNode{
 public:

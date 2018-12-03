@@ -32,6 +32,9 @@ public:
 
     InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
     InternalTools::pair vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+    InternalTools::pair matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+    InternalTools::pair matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+
     llvm::Value *createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line);
     llvm::Value *createMatFromMat(llvm::Value *exprP, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line);
     llvm::Value *createVecFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *size, int line);

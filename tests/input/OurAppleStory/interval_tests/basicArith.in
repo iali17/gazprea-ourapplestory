@@ -1,5 +1,5 @@
 procedure main() returns integer {
-//var out = std_output();
+var out = std_output();
 
 var t1 = (1..2 * 3..4) by 1;
 var t2 = (1..2 * (-4)..(-3)) by 1;
@@ -17,15 +17,15 @@ var t9 = ((-2)..1 * (-4)..3) by 1;
 
 
 
-//t1 -> out; '\n' -> out;
-//t2 -> out; '\n' -> out;
-//t3 -> out; '\n' -> out;
-//t4 -> out; '\n' -> out;
-//t5 -> out; '\n' -> out;
-//t6 -> out; '\n' -> out;
-//t7 -> out; '\n' -> out;
-//t8 -> out; '\n' -> out;
-//t9 -> out; '\n' -> out;
+t1 -> out; '\n' -> out;
+t2 -> out; '\n' -> out;
+t3 -> out; '\n' -> out;
+t4 -> out; '\n' -> out;
+t5 -> out; '\n' -> out;
+t6 -> out; '\n' -> out;
+t7 -> out; '\n' -> out;
+t8 -> out; '\n' -> out;
+t9 -> out; '\n' -> out;
 
 return 0;
 }

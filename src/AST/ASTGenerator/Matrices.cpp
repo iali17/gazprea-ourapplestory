@@ -14,11 +14,11 @@ antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeCo
             return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), nullptr, line);
         }
     } else {
-        if(ctx->extension()->rightExtension()) {
-            return (ASTNode *) new MatrixTypeNode(nullptr, visit(ctx->extension()->rightExtension()), line);
-        } else {
+        //if(ctx->extension()->rightExtension()) {
+        //    return (ASTNode *) new MatrixTypeNode(nullptr, visit(ctx->extension()->rightExtension()), line);
+        //} else {
             return (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
-        }
+        //}
     }
 }
 

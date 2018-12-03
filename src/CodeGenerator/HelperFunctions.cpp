@@ -385,6 +385,7 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
 
     auto iter = sad->find(func);
 
+    //TODO: Please fix this garbage
     if (iter == sad->end()) {
         return retVal;
     } else if (iter->second.first.first == -1 && iter->second.first.second == -1) {

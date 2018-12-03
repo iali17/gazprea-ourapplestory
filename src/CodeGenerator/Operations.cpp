@@ -102,7 +102,7 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-        //todo
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -123,7 +123,7 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -144,7 +144,7 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -165,7 +165,7 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -182,7 +182,7 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -200,7 +200,7 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
 
     assert((left->getType() == intTy) || (left->getType() == realTy));
@@ -233,7 +233,7 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
         return performCompVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performCompMatrixOp(node, left, right);
     }
 
     return it->getEQ(left, right);
@@ -260,7 +260,7 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
         return performCompVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performCompMatrixOp(node, left, right);
     }
 
     return it->getNEQ(left, right);
@@ -276,7 +276,7 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getGT(left, right);
 }
@@ -291,7 +291,7 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getLT(left, right);
 }
@@ -306,7 +306,7 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getGTE(left, right);
 }
@@ -321,7 +321,7 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getLTE(left, right);
 }
@@ -336,7 +336,7 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getAnd(left, right);
 }
@@ -351,7 +351,7 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getOr(left, right);
 }
@@ -366,7 +366,7 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
         return performInfixVectorOp(node, left, right);
     }
     else if(it->isMatrixType(left)){
-
+        return performInfixMatrixOp(node, left, right);
     }
     return it->getXOr(left, right);
 }
@@ -383,7 +383,7 @@ llvm::Value *CodeGenerator::visit(NegateNode *node) {
         return performUnaryVectorOp(node, expr);
     }
     else if(it->isMatrixType(expr)){
-
+        return performUnaryMatrixOp(node, expr);
     }
     return it->getNegation(expr);
 }

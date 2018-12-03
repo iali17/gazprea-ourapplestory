@@ -83,7 +83,7 @@ public:
     llvm::Value* visit(TupleDeclNode      *node) override;
     llvm::Value* visit(VectorDeclNode     *node) override;
     llvm::Value* visit(MatrixDeclNode     *node) override;
-    llvm::Value* visit(TupleTypeNode          *node) override;
+    llvm::Value* visit(TupleTypeNode      *node) override;
     llvm::Value* visit(GlobalDeclNode     *node) override;
     llvm::Value* visit(GlobalRefNode      *node) override;
     llvm::Value* visit(TupleNode          *node) override;
@@ -105,6 +105,7 @@ public:
     llvm::Value* visit(ConcatenationNode  *node) override;
     llvm::Value* visit(DotProductNode     *node) override;
     llvm::Value* visit(FilterNode         *node) override;
+    llvm::Value* visit(StringNode         *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 
@@ -114,6 +115,11 @@ public:
 	llvm::Value*      performInfixVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
     llvm::Value*      performUnaryVectorOp(ASTNode *opNode, llvm::Value *vec);
 	llvm::Value*      performCompVectorOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+    llvm::Value*      performInfixMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+    llvm::Value*      performUnaryMatrixOp(ASTNode *opNode, llvm::Value *mat);
+    llvm::Value*      performCompMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right);
+    llvm::Value*      getMatixRowOp(ASTNode *opNode, llvm::Value *leftVec, llvm::Value *rightVec);
+    llvm::Value*      getUnaryMatrixRowOpVal(ASTNode *opNode, llvm::Value *curVec);
 	llvm::Value*      performMatrixMultiplication(llvm::Value * left, llvm::Value * right);
 	llvm::Value*      getArithOpVal(ASTNode *opNode, llvm::Value *leftElmt, llvm::Value *rightElmt);
     llvm::Value*      getUnaryOpVal(ASTNode *opNode, llvm::Value *curVal);
