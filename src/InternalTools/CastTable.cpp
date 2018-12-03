@@ -439,7 +439,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
         llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
 
         if(leftSize && rightSize) {
-            return createMatFromMat(expr, llType, leftSize, rightSize, line);
+            return createMatFromMat(expr, realTy, leftSize, rightSize, line);
         } else if(leftSize) {
             return createMatFromMat(expr, llType, leftSize, exprCols, line);
         } else if(rightSize) {
@@ -448,6 +448,23 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
             return createMatFromMat(expr, llType, exprRows, exprCols, line);
         }
     }
+
+    // Todo: change vec size once i get it
+    // Specifically used for slicing promotion
+    else if(it->isVectorType(expr)) {
+        llvm::Type *exprType = it->getVectorElementType(expr);
+
+        if(llType == exprType) {
+            return expr;
+        } else if(llType == realTy && exprType == intTy) {
+            return createVecFromVec(expr, realTy, it->getValFromStruct(expr, VEC_LEN_INDEX), line);
+        } else {
+            // Todo: Create error node
+        }
+
+        return expr;
+    }
+
     // Deals with casting scalars to matrix
     else {
         if(leftSize && rightSize)
@@ -457,8 +474,6 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
             exit(1);
         }
     }
-
-    return nullptr;
 }
 
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
