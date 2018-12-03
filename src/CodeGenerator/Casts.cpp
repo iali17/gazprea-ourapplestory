@@ -106,7 +106,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     vec = it->castVectorToType(vec, type);
 
     // This is for cases such as: as<integer vector[3]>(1) and as<integer vector>(1)
-    if(!it->isVectorType(exprP) && !it->isIntervalType(exprP)) {
+    if(!it->isStructType(exprP) && !it->isIntervalType(exprP)) {
         if(size) {
             et->initVector(vec, size);
             vec = it->castVectorToType(vec, type);
@@ -172,6 +172,10 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
         }
 
         return vec;
+    } else {
+        //todo: error
+        std::cerr << "Add error\n";
+        exit(1);
     }
 }
 
@@ -183,6 +187,24 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
  */
 llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
     std::cout << "THIS IS MATRIX CASTING\n";
+    auto values = new std::vector<llvm::Value *>();
+    llvm::Value *exprP = visit(node->getExpr());
+    ASTNode *mnode = dynamic_cast<MatrixCastNode *>(node)->getMatrix();
+    llvm::Type *type;
+    llvm::Value *expr;
+
+    // Type of matrix
+    type = exprP->getType();
+
+    // Extension size if exists
+    llvm::Value *rowSize  = visit(dynamic_cast<MatrixTypeNode *>(mnode)->getLeft());
+    llvm::Value *colSize  = visit(dynamic_cast<MatrixTypeNode *>(mnode)->getRight());
+
+    // Initialize new matrix and cast to proper type
+    llvm::Value *mat = et->getNewMatrix(it->getConstFromType(type));
+    mat = it->castMatrixToType(mat, type);
+
+
 
     return nullptr;
 }
