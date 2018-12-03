@@ -395,7 +395,7 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
         llvm::Value *realRetVal = et->getNewVector(it->getConstFromType(func->getReturnType()));
         et->initVector(realRetVal, it->getConsi32(iter->second.first.first));
         //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
-        et->strictCopyVectorElements(realRetVal, retVal, it->getConsi32(iter->second.second));
+        et->strictCopyVectorElements(realRetVal, retVal, it->getConsi32(iter->second.second), it->getConsi32(false));
         return retVal;
     }
 

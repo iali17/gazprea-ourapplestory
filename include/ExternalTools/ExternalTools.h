@@ -59,7 +59,7 @@ public:
     llvm::Value * printVectorAsString(llvm::Value *vec);
     llvm::Value * printVectorElement(llvm::Value *vecElmPtr, llvm::Value *type);
     llvm::Value * copyVectorElements(llvm::Value * dest, llvm::Value *src);
-    llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value *src, llvm::Value *line);
+    llvm::Value * strictCopyVectorElements(llvm::Value * dest, llvm::Value *src, llvm::Value *line, llvm::Value *opt);
 
     llvm::Value * getVectorSlice(llvm::Value *vec, llvm::Value *idxVec);
     llvm::Value * getVectorCopy(llvm::Value * vec);
@@ -94,7 +94,7 @@ public:
     llvm::Value * assignScalarVector(llvm::Value * matrix, llvm::Value * scalar, llvm::Value * vector, llvm::Value * src);
     llvm::Value * assignVectorScalar(llvm::Value * matrix,llvm::Value * vector, llvm::Value * scalar,llvm::Value * src);
     llvm::Value * assignVectorVector(llvm::Value * matrix, llvm::Value * vectorRow, llvm::Value * vectorCol, llvm::Value * src);
-    llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line);
+    llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line, llvm::Value * opt);
     llvm::Value * copyMatrix(llvm::Value * matrix);
 
     //printing

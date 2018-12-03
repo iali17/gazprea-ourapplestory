@@ -405,7 +405,7 @@ void copyVectorElements(void *v_dest, void *v_src){
  * @param v_src
  * @param line
  */
-void strictCopyVectorElements(void *v_dest, void *v_src, int line){
+void strictCopyVectorElements(void *v_dest, void *v_src, int line, int assTruePromoFalse){
     //cast the voids
     vector * dest = (vector *) v_dest;
     vector * src  = (vector *) v_src;
@@ -413,7 +413,7 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line){
     if( *dest->numElements == -1) {
         initVector(dest, *src->numElements);
         copyVectorElements(v_dest, v_src);
-    } else if(*dest->numElements != *src->numElements) {
+    } else if((*dest->numElements != *src->numElements && assTruePromoFalse == false) || (*dest->numElements < *src->numElements && assTruePromoFalse == true)) {
         char *srcType = getType(*src->type);
         char *destType = getType(*dest->type);
         int  srcIndex = *src->numElements;

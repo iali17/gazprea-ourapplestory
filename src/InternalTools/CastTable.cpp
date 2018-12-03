@@ -250,7 +250,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, size);
 
-            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line), it->getConsi32(true));
 
             return vec;
 
@@ -271,7 +271,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
                 eb->printError(error);
             }
 
-            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line), it->getConsi32(true));
 
             return vec;
         } else {
@@ -292,7 +292,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             vec = it->castVectorToType(vec, it->getDeclScalarTypeFromVec(type));
             et->initVector(vec, exprlSize);
 
-            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line), it->getConsi32(true));
 
             return vec;
 
@@ -315,7 +315,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
                 eb->printError(error);
             }
 
-            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line), it->getConsi32(true));
 
             return vec;
         } else {
@@ -352,7 +352,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
                 eb->printError(error);
             }
 
-            et->strictCopyVectorElements(vec, expr, it->getConsi32(line));
+            et->strictCopyVectorElements(vec, expr, it->getConsi32(line), it->getConsi32(true));
 
             return vec;
         } else if(it->isIntervalType(expr)) {
@@ -366,12 +366,12 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
             llvm::Value *intervalSize = it->getValFromStruct(newVec, it->getConsi32(VEC_LEN_INDEX));
 
             if(type == intVecTy) {
-                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line));
+                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line), it->getConsi32(true));
 
                 return vec;
             } else if(type == realVecTy) {
                 newVec  = createVecFromVec(newVec, realTy, intervalSize, line);
-                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line));
+                et->strictCopyVectorElements(vec, newVec, it->getConsi32(line), it->getConsi32(true));
 
                 return vec;
             } else {
@@ -426,27 +426,44 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
 
 llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftSize, llvm::Value *rightSize) {
     llvm::Type *llType = it->getDeclScalarTypeFromMat(type);
-    llvm::Value *declType = it->getConstFromType(llType);
+    llvm::Value *declType = it->getConstFromType(type);
 
     int lType = getType(llType);
+    int rType;
 
     std::string lTypeString = typeAssTable[lType][lType];
     std::string rTypeString;
+    std::string castType;
+
+    // Initialize matrix and cast to proper type
+    llvm::Value *tempMat;
+    llvm::Value *mat = et->getNewMatrix(declType);
+    mat = it->castMatrixToType(mat, llType);
 
     // Deals with casting matrix to matrix
     if(it->isMatrixType(expr)) {
-        llvm::Value *exprRows = it->getValFromStruct(expr, MATRIX_NUMROW_INDEX);
-        llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
+        llvm::Type *exprType = it->getMatrixElementType(expr);
 
-        if(leftSize && rightSize) {
-            return createMatFromMat(expr, realTy, leftSize, rightSize, line);
-        } else if(leftSize) {
-            return createMatFromMat(expr, llType, leftSize, exprCols, line);
-        } else if(rightSize) {
-            return createMatFromMat(expr, llType, exprRows, rightSize, line);
+        rType = getType(exprType);
+        rTypeString = typeAssTable[rType][rType];
+        castType = typeAssTable[lType][rType];
+
+        if(llType == exprType) {
+            tempMat = createMatViaSizeGiven(mat, expr, llType, leftSize, rightSize, line);
+            et->strictCopyMatrixElements(mat, tempMat, it->getConsi32(line), it->getConsi32(true));
+
+            return mat;
+        } else if(castType == "real") {
+            tempMat = createMatViaSizeGiven(mat, expr, realTy, leftSize, rightSize, line);
+            et->strictCopyMatrixElements(mat, tempMat, it->getConsi32(line), it->getConsi32(true));
+
+            return mat;
         } else {
-            return createMatFromMat(expr, llType, exprRows, exprCols, line);
+            //todo: create error node
+            std::cerr << "Casting matrix to different invalid matrix, make node later\n";
+            exit(1);
         }
+
     }
 
     // Todo: change vec size once i get it
@@ -474,6 +491,23 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
             exit(1);
         }
     }
+}
+
+llvm::Value *CastTable::createMatViaSizeGiven(llvm::Value *mat, llvm::Value *expr, llvm::Type *type, llvm::Value *rowSize, llvm::Value *colSize, int line) {
+    llvm::Value *exprRows = it->getValFromStruct(expr, MATRIX_NUMROW_INDEX);
+    llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
+
+    if(rowSize && colSize) {
+        et->initMatrix(mat, rowSize, colSize);
+    } else if(rowSize) {
+        et->initMatrix(mat, rowSize, exprCols);
+    } else if(colSize) {
+        et->initMatrix(mat, exprRows, colSize);
+    } else {
+        et->initMatrix(mat, exprRows, exprCols);
+    }
+
+    return createMatFromMat(expr, type, exprRows, exprCols, line);
 }
 
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
@@ -888,7 +922,7 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
         llvm::Value *rowSize = it->getValFromStruct(leftExpr, MATRIX_NUMROW_INDEX);
         llvm::Value *colSize = it->getValFromStruct(leftExpr, MATRIX_NUMCOL_INDEX);
 
-        lTypeP = it->getValFromStruct(leftExpr, MATRIX_TYPE_INDEX)->getType();
+        lTypeP = it->getMatrixElementType(leftExpr);
         rTypeP = rightExpr->getType();
 
         lType = getType(lTypeP);
@@ -921,7 +955,7 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
         llvm::Value *colSize = it->getValFromStruct(rightExpr, MATRIX_NUMCOL_INDEX);
 
         lTypeP = leftExpr->getType();
-        rTypeP = it->getValFromStruct(rightExpr, MATRIX_TYPE_INDEX)->getType();
+        rTypeP = it->getMatrixElementType(rightExpr);
 
         lType = getType(lTypeP);
         rType = getType(rTypeP);

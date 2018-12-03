@@ -157,7 +157,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             et->setNullVector(ptr);
             return nullptr;
         } else {
-            et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()));
+            et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
             return nullptr;
         }
     }
@@ -170,7 +170,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             et->setNullMatrix(ptr);
             return nullptr;
         } else {
-            et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()));
+            et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
             return nullptr;
         }
     }

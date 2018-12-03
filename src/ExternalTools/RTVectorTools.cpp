@@ -90,7 +90,7 @@ void ExternalTools::registerVectorFunctions() {
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(COPY_VECTOR_ELEMENTS, fTy));
 
     //strictCopyVectorElements
-    fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
+    fTy = llvm::TypeBuilder<void (void*, void*, int, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(STRICT_COPY_VECTOR, fTy));
 
     //getVectorSlice
@@ -266,11 +266,11 @@ llvm::Value *ExternalTools::copyVectorElements(llvm::Value *dest, llvm::Value *s
  * @param line
  * @return
  */
-llvm::Value *ExternalTools::strictCopyVectorElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line) {
+llvm::Value *ExternalTools::strictCopyVectorElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line, llvm::Value *opt) {
     llvm::Function *getV   = mod->getFunction(STRICT_COPY_VECTOR);
     llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
     llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
-    return ir->CreateCall(getV, {v_dest, v_src, line});
+    return ir->CreateCall(getV, {v_dest, v_src, line, opt});
 }
 
 /**

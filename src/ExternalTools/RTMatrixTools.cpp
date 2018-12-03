@@ -116,7 +116,7 @@ void ExternalTools::registerMatrixFunctions() {
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASS_VECTOR_VECTOR, fTy));
 
     //strictCopyMatrixElements
-    fTy = llvm::TypeBuilder<void (void*, void*, int), false>::get(*globalCtx);
+    fTy = llvm::TypeBuilder<void (void*, void*, int, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(STRICT_COPY_MATRIX, fTy));
 
     //copyMatrix
@@ -439,11 +439,11 @@ llvm::Value *ExternalTools::assignVectorVector(llvm::Value *matrix, llvm::Value 
     return ret;
 }
 
-llvm::Value* ExternalTools::strictCopyMatrixElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line) {
+llvm::Value* ExternalTools::strictCopyMatrixElements(llvm::Value *dest, llvm::Value *src, llvm::Value *line, llvm::Value *opt) {
     llvm::Function *getV   = mod->getFunction(STRICT_COPY_MATRIX);
     llvm::Value    *v_dest = ir->CreatePointerCast(dest, charTy->getPointerTo());
     llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
-    return ir->CreateCall(getV, {v_dest, v_src, line});
+    return ir->CreateCall(getV, {v_dest, v_src, line, opt});
 }
 
 llvm::Value *ExternalTools::copyMatrix(llvm::Value *matrix) {

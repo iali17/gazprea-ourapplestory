@@ -40,6 +40,8 @@ public:
     llvm::Value *createVecFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *size, int line);
     llvm::Value *createMatFromScalar(llvm::Value *expr, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line);
 
+    llvm::Value *createMatViaSizeGiven(llvm::Value *mat, llvm::Value *expr, llvm::Type *type, llvm::Value *rowSize, llvm::Value *colSize, int line);
+
     int getType(llvm::Type *expr);
 
 private:
