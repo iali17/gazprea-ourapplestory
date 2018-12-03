@@ -6,27 +6,28 @@
 #include <ExternalTools/ExternalTools.h>
 #include <InternalTools/CondBuilder.h>
 
-#define GET_EMPTY_VECTOR     "getEmptyVector"
-#define INIT_VECTOR          "initVector"
-#define SET_NULL_VECTOR      "setNullVector"
-#define SET_IDENTITY_VECTOR  "setIdentityVector"
-#define GET_VECTOR_LENGTH    "getVectorLength"
-#define GET_REVERSE_VECTOR   "getReverseVector"
-#define PRINT_VECTOR         "printVector"
-#define PRINT_VECTOR_ELEMENT "printVectorElement"
-#define COPY_VECTOR_ELEMENTS "copyVectorElements"
-#define STRICT_COPY_VECTOR   "strictCopyVectorElements"
-#define GET_VECTOR_SLICE     "getVectorSlice"
-#define GET_VECTOR_COPY      "getVectorCopy"
-#define VECTOR_GEP           "getVectorElementPointer"
-#define VECTOR_GEP_SAFE      "getVectorElementPointerSafe"
-#define GET_INT_DOT_PRODUCT  "getIntDotProduct"
-#define GET_REAL_DOT_PRODUCT "getRealDotProduct"
-#define ASSIGN_VAL_FROM_PTRS "assignValFromPointers"
-#define GET_OP_RESULT_VECTOR "getOpResultVector"
-#define CONCATENATE_VECTORS  "concatenateVectors"
-#define GET_VECTOR_BY        "getVectorBy"
-#define ASSIGN_FROM_VECTOR   "assignFromVector"
+#define GET_EMPTY_VECTOR       "getEmptyVector"
+#define INIT_VECTOR            "initVector"
+#define SET_NULL_VECTOR        "setNullVector"
+#define SET_IDENTITY_VECTOR    "setIdentityVector"
+#define GET_VECTOR_LENGTH      "getVectorLength"
+#define GET_REVERSE_VECTOR     "getReverseVector"
+#define PRINT_VECTOR           "printVector"
+#define PRINT_VECTOR_ELEMENT   "printVectorElement"
+#define COPY_VECTOR_ELEMENTS   "copyVectorElements"
+#define STRICT_COPY_VECTOR     "strictCopyVectorElements"
+#define GET_VECTOR_SLICE       "getVectorSlice"
+#define GET_VECTOR_COPY        "getVectorCopy"
+#define VECTOR_GEP             "getVectorElementPointer"
+#define VECTOR_GEP_SAFE        "getVectorElementPointerSafe"
+#define GET_INT_DOT_PRODUCT    "getIntDotProduct"
+#define GET_REAL_DOT_PRODUCT   "getRealDotProduct"
+#define ASSIGN_VAL_FROM_PTRS   "assignValFromPointers"
+#define GET_OP_RESULT_VECTOR   "getOpResultVector"
+#define CONCATENATE_VECTORS    "concatenateVectors"
+#define GET_VECTOR_BY          "getVectorBy"
+#define ASSIGN_FROM_VECTOR     "assignFromVector"
+#define PRINT_VECTOR_AS_STRING "printVectorAsString"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -75,6 +76,10 @@ void ExternalTools::registerVectorFunctions() {
     //printVector
     fTy = llvm::TypeBuilder<void (void*), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(PRINT_VECTOR, fTy));
+
+    //printVectorAsString
+    fTy = llvm::TypeBuilder<void (void*), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(PRINT_VECTOR_AS_STRING, fTy));
 
     //printVectorElement
     fTy = llvm::TypeBuilder<void (void*, int), false>::get(*globalCtx);
@@ -215,6 +220,19 @@ llvm::Value *ExternalTools::printVector(llvm::Value *vec) {
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
     return ret;
 }
+
+/**
+ * print all of the elements of a vector
+ * @param v_vector
+ * @return
+ */
+llvm::Value *ExternalTools::printVectorAsString(llvm::Value *vec) {
+    llvm::Function *getV  = mod->getFunction(PRINT_VECTOR_AS_STRING);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vec, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ret;
+}
+
 /**
  * Take a pointer to a vector elements and print the value
  * @param v_elm_ptr

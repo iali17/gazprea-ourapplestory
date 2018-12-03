@@ -11,6 +11,7 @@ extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *strTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
@@ -341,6 +342,9 @@ void ExternalTools::print(llvm::Value *val) {
     }
     else if(llvmType->isFloatTy()){
         printReal(val);
+    }
+    else if(llvmType == strTy->getPointerTo()) {
+       printVectorAsString(val);
     }
     else if(llvmType == boolVecTy->getPointerTo() ||
             llvmType == charVecTy->getPointerTo() ||

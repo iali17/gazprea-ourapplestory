@@ -83,7 +83,7 @@ public:
     llvm::Value* visit(TupleDeclNode      *node) override;
     llvm::Value* visit(VectorDeclNode     *node) override;
     llvm::Value* visit(MatrixDeclNode     *node) override;
-    llvm::Value* visit(TupleTypeNode          *node) override;
+    llvm::Value* visit(TupleTypeNode      *node) override;
     llvm::Value* visit(GlobalDeclNode     *node) override;
     llvm::Value* visit(GlobalRefNode      *node) override;
     llvm::Value* visit(TupleNode          *node) override;
@@ -105,6 +105,7 @@ public:
     llvm::Value* visit(ConcatenationNode  *node) override;
     llvm::Value* visit(DotProductNode     *node) override;
     llvm::Value* visit(FilterNode         *node) override;
+    llvm::Value* visit(StringNode         *node) override;
 
     llvm::Value* visit(TupleNode *node, llvm::StructType * tuple) override;
 

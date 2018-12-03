@@ -5,7 +5,7 @@
 #ifndef GAZPREABASE_LENGTHNODE_H
 #define GAZPREABASE_LENGTHNODE_H
 
-#include "AST/ASTNodes/BaseNodes/UnaryNode.h"
+#include "../BaseNodes/UnaryNode.h"
 
 class LengthNode : public UnaryNode {
 public:

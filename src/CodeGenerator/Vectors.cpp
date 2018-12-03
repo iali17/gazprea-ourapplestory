@@ -9,6 +9,7 @@ extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *strTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
@@ -45,11 +46,33 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
     return vec;
 }
 
+llvm::Value *CodeGenerator::visit(StringNode *node) {
+    auto values = new std::vector<llvm::Value *>();
+
+    for(uint i = 0; i < node->getElements()->size(); i++)
+        values->push_back(visit(node->getElements()->at(i)));
+
+    // Casting to a stringTy
+    llvm::Value *vec = et->getNewVector(it->getConstFromType(charTy));
+    et->initVector(vec, it->getConsi32(values->size()));
+
+    vec = it->castVectorToType(vec, charTy);
+    vec = ir->CreatePointerCast(vec, strTy->getPointerTo());
+    // Populate vector
+    if(!values->empty())
+        it->setVectorValues(vec, values);
+
+    return vec;
+}
+
 llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     VectorNode *vectorNode = nullptr;
+    StringNode *stringNode = nullptr;
     auto *vectorType = dynamic_cast<VectorTypeNode *>(node->getVectorType());
 
     vectorNode = dynamic_cast<VectorNode *>(node->getExpr());
+    stringNode = dynamic_cast<StringNode *>(node->getExpr());
+
     std::string stype = vectorType->getStringType();
     llvm::Type *type = it->getVectorType(stype);
     llvm::Value *size = visit(node->getSize());
@@ -71,12 +94,24 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         return nullptr;
     }
 
-    if (vectorNode) {
+    if (vectorNode || stringNode) {
         llvm::Value *vecExpr = visit(node->getExpr());
         llvm::Type *vecType = it->getDeclVectorType(stype);
-        llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
+        //llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
-        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, nullptr, (int)vectorNode->getElements()->size());
+        int exprSize;
+        if (vectorNode) {
+            exprSize = (int)vectorNode->getElements()->size();
+        } else {
+            exprSize = (int) stringNode->getElements()->size();
+        }
+
+        vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, nullptr, exprSize);
+
+        if(stringNode) {
+            vec = ir->CreatePointerCast(vec, strTy->getPointerTo());
+        }
+
     }
 
     // Handles case when expr is not a vector -> scalar, haven't tested tuple. Pretty sure segfaults if tested
