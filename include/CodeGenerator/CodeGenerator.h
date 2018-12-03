@@ -140,7 +140,6 @@ public:
 
     // Interval operation stuff
     llvm::Value * IntervalArith(ASTNode * node, llvm::Value * left, llvm::Value * right);
-    llvm::Value * IntervalUnary(ASTNode * node, llvm::Value * right);
 
     //indexing
     llvm::Value *indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice);
