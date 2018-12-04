@@ -40,6 +40,9 @@ void strictCopyVectorElements(void *v_dest, void *v_src, int line, int AssTruePr
 void *getVectorSlice(void *v_vector, void *v_index);
 void *getVectorCopy(void *v_vector);
 
+//resizing
+void resizeVector(void * v_vector, int newLength);
+
 //operations
 void *dotProduct(void * v_vector_left, void * v_vector_right);
 int   getIntDotProduct(void * v_vector_left, void * v_vector_right);

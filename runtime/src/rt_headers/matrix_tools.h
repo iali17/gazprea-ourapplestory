@@ -22,6 +22,9 @@ void *sliceVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
 //copy related
 void *getMatrixCopy(void *v_matrix);
 
+//resize
+void resizeMatrix(void * v_matrix, int newNumRows, int newNumCols);
+
 //built ins
 int  getNumRows(void *v_matrix);
 int  getNumCols(void *v_matrix);
