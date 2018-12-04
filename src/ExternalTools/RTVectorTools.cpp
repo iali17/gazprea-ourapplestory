@@ -211,7 +211,7 @@ llvm::Value *ExternalTools::getReverseVector(llvm::Value *fromVec) {
     llvm::Function *getV  = mod->getFunction(GET_REVERSE_VECTOR);
     llvm::Value    *v_vec = ir->CreatePointerCast(fromVec, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
-    return ir->CreatePointerCast(ret, vecTy->getPointerTo());
+    return ir->CreatePointerCast(ret, fromVec->getType());
 }
 
 /**
