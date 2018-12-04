@@ -60,7 +60,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             return nullptr;
         }
 
-        if (type->isStructTy()) {
+        if (it->isTupleType(ptr)) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
         } else if (type->isVectorTy()) {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
