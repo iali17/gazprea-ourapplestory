@@ -9,6 +9,7 @@ extern llvm::Type *i32Ty;
 extern llvm::Type *intTy;
 extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
+extern llvm::Type *strTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
 extern llvm::Type *vecTy;
@@ -152,14 +153,18 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     if (it->isVectorType(left->getPtr())) {
         if (dynamic_cast<IdnNode *>(node->getExpr())) {
             et->setIdentityVector(ptr);
-            return nullptr;
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
             et->setNullVector(ptr);
-            return nullptr;
         } else {
             et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
-            return nullptr;
         }
+
+        if(val && (val->getType() == strTy->getPointerTo() || ptr->getType() == strTy->getPointerTo())) {
+            ptr = ir->CreatePointerCast(ptr, strTy->getPointerTo());
+            left->setPtr(ptr);
+        }
+
+        return nullptr;
     }
 
     if (it->isMatrixType(left->getPtr())) {
