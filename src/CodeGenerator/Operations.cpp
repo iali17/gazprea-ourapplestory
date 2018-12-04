@@ -22,6 +22,7 @@ extern llvm::Type *boolMatrixTy;
 extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
+extern llvm::Type *strTy;
 
 /**
  * performs basic visit and type promotion
@@ -112,6 +113,8 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, ll
     llvm::Value *leftSizePtr  = nullptr;
     llvm::Value *rightSizePtr = nullptr;
 
+    bool toStr = (left->getType() == strTy->getPointerTo()) || (right->getType() == strTy->getPointerTo());
+
     //promote
     InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
@@ -121,6 +124,11 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, ll
     rightSizePtr = it->getPtrFromStruct(retVal.right, it->getConsi32(VEC_LEN_INDEX));
     ir->CreateStore(leftSize, leftSizePtr);
     ir->CreateStore(rightSize, rightSizePtr);
+
+    if(toStr){
+        retVal.left  = ir->CreatePointerCast(retVal.left,  strTy->getPointerTo());
+        retVal.right = ir->CreatePointerCast(retVal.right, strTy->getPointerTo());
+    }
 
     assert(retVal.left->getType() == retVal.right->getType());
 
