@@ -53,15 +53,14 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
     const std::string &id = node->getID();
 
     // if null or identity
-    if(!(dynamic_cast<IntervalNode *>(node->getExpr()))) {
-        if (dynamic_cast<NullNode *>(node->getExpr())){
-            intervalPtr = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
-        }
-        else if (dynamic_cast<IdnNode *>(node->getExpr())) {
-            intervalPtr = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
-        }
-    } else {
-        intervalPtr = visit((IntervalNode *) node->getExpr());
+    if (dynamic_cast<NullNode *>(node->getExpr())){
+        intervalPtr = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
+    }
+    else if (dynamic_cast<IdnNode *>(node->getExpr())) {
+        intervalPtr = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
+    }
+    else {
+        intervalPtr = visit(node->getExpr());
     }
     symbolTable->addSymbol(id, node->getType(), node->isConstant(), intervalPtr);
     return nullptr;

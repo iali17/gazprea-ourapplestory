@@ -1,4 +1,5 @@
 procedure main() returns integer {
+var out = std_output();
 
 integer interval d1 = 1..2;
 integer interval d2 = 1 ..2;
@@ -7,32 +8,28 @@ integer interval d4 = (-1)..2;
 integer interval d5 = (-1) ..2;
 integer interval d6 = (-1).. 2;
 integer interval d7 = (-1) .. 2;
-integer interval d8 = 1..-2;
-integer interval d9 = 1 ..-2;
-integer interval d10 = 1..-2;
-integer interval d11 = 1 ..-2;
-integer interval d12 = (-13)..-4;
+integer interval d8 = (-3)..-2;
+integer interval d9 = (-3) ..-2;
+integer interval d10 = (-3)..-2;
+integer interval d11 = (-3) ..-2;
+integer interval d12 = (-13)..-13;
 integer interval d13 = 1 + 1 .. 2 * 2;
-integer interval d14 = 1 .. 2;
-integer interval d15 = 1 .. 2;
+integer interval d14 = 1 == 1 .. 2 != 2;
 
-
-
-
-
-
-
-var e = 1..3;
-var f = 1 ..3;
-var g = 1.. 3;
-var h = 1 .. 3;
-
-var i = 1..3 by 1;
-var j = 1 ..9 by 2;
-var k = 1.. 11 by 3;
-var l = 1 .. 33 by 4;
-
-
+d1 by 1->out;'\n'->out;
+d2 by 1->out;'\n'->out;
+d3 by 1->out;'\n'->out;
+d4 by 1->out;'\n'->out;
+d5 by 1->out;'\n'->out;
+d6 by 1->out;'\n'->out;
+d7 by 1->out;'\n'->out;
+d8 by 1->out;'\n'->out;
+d9 by 1->out;'\n'->out;
+d10 by 1->out;'\n'->out;
+d11 by 1->out;'\n'->out;
+d12 by 1->out;'\n'->out;
+d13 by 1->out;'\n'->out;
+d14 by 1->out;'\n'->out;
 
 return 0;
 }
