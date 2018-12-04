@@ -94,6 +94,7 @@ public:
     llvm::Value * assignScalarVector(llvm::Value * matrix, llvm::Value * scalar, llvm::Value * vector, llvm::Value * src);
     llvm::Value * assignVectorScalar(llvm::Value * matrix,llvm::Value * vector, llvm::Value * scalar,llvm::Value * src);
     llvm::Value * assignVectorVector(llvm::Value * matrix, llvm::Value * vectorRow, llvm::Value * vectorCol, llvm::Value * src);
+    llvm::Value * copyMatrixElements(llvm::Value * dest, llvm::Value * src);
     llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line, llvm::Value * opt);
     llvm::Value * copyMatrix(llvm::Value * matrix);
 

@@ -8,7 +8,7 @@
 
 
 
-MatrixTypeNode::MatrixTypeNode(ASTNode *left, ASTNode *right, int line) : ASTNode(line), left(left), right(right) {
+MatrixTypeNode::MatrixTypeNode(ASTNode *left, ASTNode *right, int line, const std::string &stringType) : ASTNode(line), left(left), right(right), stringType(stringType)  {
 }
 
 ASTNode *MatrixTypeNode::getLeft() const {
@@ -19,8 +19,8 @@ ASTNode *MatrixTypeNode::getRight() const {
     return right;
 }
 
-
-
-
+const std::string& MatrixTypeNode::getStringType() const {
+    return this->stringType;
+}
 
 

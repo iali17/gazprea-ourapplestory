@@ -166,6 +166,7 @@ public:
     llvm::Value* tupleCasting(CastExprNode *node);
     llvm::Value* vectorCasting(CastExprNode *node);
     llvm::Value* vectorNoSizeCast(llvm::Value *vec, llvm::Value *exprP, llvm::Type *type, int line);
+    llvm::Value* matrixUndefSizeCast(llvm::Value *exprP, llvm::Type *type, llvm::Value *rowSize, llvm::Value *colSize, int line);
 
     llvm::Value* matrixCasting(CastExprNode *node);
 

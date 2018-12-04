@@ -617,10 +617,36 @@ void assignVectorVector(void * v_matrix, void * v_vector_row, void * v_vector_co
 }
 
 /**
+ * Copies the right side elements to the left side, truncates and nullpads when necessary
+ * @param m_dest
+ * @param m_src
+ */
+void copyMatrixElements(void *m_dest, void *m_src) {
+    //Cast the voids
+    matrix *dest = (matrix *) m_dest;
+    matrix *src = (matrix *) m_src;
+
+    //Loop variables
+    int i;
+    void *v_src, *v_dest;
+    int destRow = *dest->numRows;
+
+    for (i = 0; i < destRow; i++) {
+        // Get vector at row i in matrix
+        v_src = src->elements + i;
+        v_dest = dest->elements + i;
+
+        copyVectorElements(v_dest, v_src);
+    }
+}
+
+
+/**
  * Copies the right side elements to the left side, only if size the same.
  * @param m_dest
  * @param m_src
  * @param line
+ * @param assTruePromoFalse
  */
 void strictCopyMatrixElements(void *m_dest, void *m_src, int line, int assTruePromoFalse) {
     //Cast the voids
