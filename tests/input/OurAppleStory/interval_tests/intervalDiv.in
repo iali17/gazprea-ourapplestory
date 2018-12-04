@@ -1,0 +1,19 @@
+procedure main() returns integer {
+var out = std_output();
+
+var t1 = 10..20 / 3..4;
+integer interval t2 = 10..20 / (-4)..-3;
+var t3 = (-20)..-10 / 3..4;
+integer interval t4 = (-20)..-10 / (-3)..-4;
+var t5 = (-10)..20 / 3..4;
+integer interval t6 = (-10)..20 / (-3)..(-4);
+
+t1 by 1 -> out; '\n' -> out;
+t2 by 1 -> out; '\n' -> out;
+t3 by 1 -> out; '\n' -> out;
+t4 by 1 -> out; '\n' -> out;
+t5 by 1 -> out; '\n' -> out;
+t6 by 1 -> out; '\n' -> out;
+
+return 0;
+}
