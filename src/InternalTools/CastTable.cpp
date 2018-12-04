@@ -1121,8 +1121,8 @@ InternalTools::pair CastTable::matrixToMatrixPromotion(llvm::Value *leftExpr, ll
     rightColSize = it->getValFromStruct(rightExpr, MATRIX_NUMCOL_INDEX);
 
     // Get type of each expr and check cast type
-    lTypeP = it->getValFromStruct(leftExpr, MATRIX_TYPE_INDEX)->getType();
-    rTypeP = it->getValFromStruct(rightExpr, MATRIX_TYPE_INDEX)->getType();
+    lTypeP = it->getMatrixElementType(leftExpr);
+    rTypeP = it->getMatrixElementType(rightExpr);
 
     lType = getType(lTypeP);
     rType = getType(rTypeP);

@@ -43,14 +43,17 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
     || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {
         ASTNode *typeNode;
+        auto sTypeArray = split(ctx->getText(), '[');
+        auto sType = sTypeArray[0];
+
         if (!ctx->type(0)->matrixType()) {
             ty += "matrix";
         }
 
         if (ctx->extension() && ctx->extension()->rightExtension()) {
-            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line, sType);
         } else {
-            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
+            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line, sType);
         }
 
         return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, typeNode);
@@ -108,14 +111,17 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
              || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {
         ASTNode *typeNode;
+        auto sTypeArray = split(ctx->getText(), '[');
+        auto sType = sTypeArray[0];
+
         if (!ctx->type(0)->matrixType()) {
             ty += "matrix";
         }
 
         if (ctx->extension() && ctx->extension()->rightExtension()) {
-            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line, sType);
         } else {
-            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
+            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line, sType);
         }
 
         return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, typeNode);

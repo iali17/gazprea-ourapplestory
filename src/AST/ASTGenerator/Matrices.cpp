@@ -6,18 +6,20 @@
 
 antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeContext *ctx) {
     int line = (int)ctx->getStart()->getLine();
+    auto sTypeArray = split(ctx->getText(), '[');
+    auto sType = sTypeArray[0];
 
     if(ctx->extension()) {
         if(ctx->extension()->rightExtension()) {
-            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line, sType);
         } else {
-            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), nullptr, line);
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), nullptr, line, sType);
         }
     } else {
         //if(ctx->extension()->rightExtension()) {
         //    return (ASTNode *) new MatrixTypeNode(nullptr, visit(ctx->extension()->rightExtension()), line);
         //} else {
-            return (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
+            return (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line, sType);
         //}
     }
 }

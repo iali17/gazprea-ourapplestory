@@ -10,7 +10,6 @@
 
 class VectorTypeNode : public ASTNode{
 public:
-    VectorTypeNode(ASTNode *size, int line);
     VectorTypeNode(ASTNode *size, const std::string &stringType, int line);
 
     ASTNode *getSize() const;

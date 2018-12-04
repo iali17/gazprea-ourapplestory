@@ -10,13 +10,15 @@
 
 class MatrixTypeNode : ASTNode{
 public:
-    MatrixTypeNode(ASTNode *left, ASTNode *right, int line);
+    MatrixTypeNode(ASTNode *left, ASTNode *right, int line, const std::string &stringType);
     ASTNode *getLeft() const;
     ASTNode *getRight() const;
+    const std::string &getStringType() const;
 
 protected:
     ASTNode * left;
     ASTNode * right;
+    std::string stringType;
 };
 
 

@@ -43,7 +43,6 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
     llvm::Value * retTypePtr = it->getPtrFromStruct(ret, MATRIX_TYPE_INDEX);
     llvm::Type  * retType    = nullptr;
 
-
     //variables for the current loop iteration
     llvm::Value *curIdx         = nullptr;
     llvm::Value *curIdxPtr      = nullptr;
@@ -87,7 +86,7 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
     curVecPtr = getMatixRowOp(opNode, curLeftVecPtr, curRightVecPtr);
 
     //save the type
-    retType = curVecPtr->getType();
+    retType = it->getVectorElementType(curVecPtr);
 
     curVecPtr = ir->CreatePointerCast(curVecPtr, vecTy->getPointerTo());
 

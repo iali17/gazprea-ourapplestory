@@ -106,7 +106,7 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     vec = it->castVectorToType(vec, type);
 
     // This is for cases such as: as<integer vector[3]>(1) and as<integer vector>(1)
-    if(!it->isStructType(exprP) && !it->isIntervalType(exprP)) {
+    if(!it->isStructType(exprP)) {
         if(size) {
             et->initVector(vec, size);
             vec = it->castVectorToType(vec, type);
@@ -186,27 +186,37 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
  * @return
  */
 llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
-    std::cout << "THIS IS MATRIX CASTING\n";
-    auto values = new std::vector<llvm::Value *>();
     llvm::Value *exprP = visit(node->getExpr());
     ASTNode *mnode = dynamic_cast<MatrixCastNode *>(node)->getMatrix();
-    llvm::Type *type;
-    llvm::Value *expr;
 
     // Type of matrix
-    type = exprP->getType();
+    std::string sType = ((MatrixTypeNode *) mnode)->getStringType();
+    llvm::Type *type = it->getDeclScalarTypeFromMat(it->getDeclMatrixType(sType));
 
     // Extension size if exists
-    llvm::Value *rowSize  = visit(dynamic_cast<MatrixTypeNode *>(mnode)->getLeft());
-    llvm::Value *colSize  = visit(dynamic_cast<MatrixTypeNode *>(mnode)->getRight());
+    llvm::Value *rowSize  = visit(((MatrixTypeNode *) mnode)->getLeft());
+    llvm::Value *colSize  = visit(((MatrixTypeNode *) mnode)->getRight());
 
-    // Initialize new matrix and cast to proper type
-    llvm::Value *mat = et->getNewMatrix(it->getConstFromType(type));
-    mat = it->castMatrixToType(mat, type);
+    // Handles matrix to matrix casting
+    if(it->isMatrixType(exprP)) {
+        llvm::Value *mat = matrixUndefSizeCast(exprP, type, rowSize, colSize, node->getLine());
 
+        return mat;
+    } else if(!it->isStructType(exprP)) {
+        if(rowSize && colSize) {
+            llvm::Value *mat = ct->createMatFromScalar(exprP, type, rowSize, colSize, node->getLine());
 
-
-    return nullptr;
+            return mat;
+        } else {
+            // Todo: create error node
+            std::cerr << "Create error node for no size given in scalar to mat explicit cast\n";
+            exit(1);
+        }
+    } else {
+        // Todo: add error node for invalid cast
+        std::cerr << "Create error node for invalid explicit cast to matrix type\n";
+        exit(1);
+    }
 }
 
 /**
@@ -281,4 +291,20 @@ llvm::Value *CodeGenerator::vectorNoSizeCast(llvm::Value *vec, llvm::Value *expr
     wb->endWhile();
 
     return vec;
+}
+
+
+llvm::Value *CodeGenerator::matrixUndefSizeCast(llvm::Value *exprP, llvm::Type *type, llvm::Value *rowSize, llvm::Value *colSize, int line) {
+    llvm::Value *exprRows = it->getValFromStruct(exprP, MATRIX_NUMROW_INDEX);
+    llvm::Value *exprCols = it->getValFromStruct(exprP, MATRIX_NUMCOL_INDEX);
+
+    if(rowSize && colSize) {
+        return ct->createMatFromMat(exprP, type, rowSize, colSize, line);
+    } else if(rowSize) {
+        return ct->createMatFromMat(exprP, type, rowSize, exprCols, line);
+    } else if(colSize) {
+        return ct->createMatFromMat(exprP, type, exprRows, colSize, line);
+    } else {
+        return ct->createMatFromMat(exprP, type, exprRows, exprCols, line);
+    }
 }
