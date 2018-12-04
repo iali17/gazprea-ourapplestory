@@ -106,6 +106,11 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
             exprSize = (int) stringNode->getElements()->size();
         }
 
+        // they have declared an empty vector
+        if ((vecExpr->getType() == intVecTy->getPointerTo() || vecExpr->getType() == intVecTy) && (type!= intTy && type != realTy)) {
+            vecExpr = it->castVectorToType(vecExpr, type);
+        }
+
         vec = ct->typeAssCast(vecType, vecExpr, node->getLine(), size, nullptr, exprSize);
 
         if(stringNode) {
