@@ -4,8 +4,6 @@
 
 #include "AST/ASTNodes/TypeNodes/VectorTypeNode.h"
 
-VectorTypeNode::VectorTypeNode(ASTNode *size, int line) :ASTNode(line),  size(size){}
-
 VectorTypeNode::VectorTypeNode(ASTNode *size, const std::string &stringType, int line) : ASTNode(line), size(size), stringType(stringType){}
 
 ASTNode* VectorTypeNode::getSize() const {
