@@ -43,7 +43,11 @@ antlrcpp::Any ASTGenerator::visitNormalDecl(gazprea::GazpreaParser::NormalDeclCo
     else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
     || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {
         ASTNode *typeNode;
-        if (ctx->type(0)->matrixType() && ctx->extension()) {
+        if (!ctx->type(0)->matrixType()) {
+            ty += "matrix";
+        }
+
+        if (ctx->extension() && ctx->extension()->rightExtension()) {
             typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
         } else {
             typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
@@ -94,6 +98,22 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     // if decl is a tuple decl then
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
+    }
+    //if decl is a matrix type
+    else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
+             || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {
+        ASTNode *typeNode;
+        if (!ctx->type(0)->matrixType()) {
+            ty += "matrix";
+        }
+
+        if (ctx->extension() && ctx->extension()->rightExtension()) {
+            typeNode = (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line);
+        } else {
+            typeNode = (ASTNode *) new MatrixTypeNode(nullptr, nullptr, line);
+        }
+
+        return (ASTNode *) new MatrixDeclNode(expr, line, constant, id, ty, typeNode);
     }
     // if decl is a vector type
     else if((ctx->type().size() == 1 && ctx->type(0)->vectorType())
