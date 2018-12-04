@@ -102,6 +102,11 @@ antlrcpp::Any ASTGenerator::visitEmptyDecl(gazprea::GazpreaParser::EmptyDeclCont
     if ((ctx->type().size() == 1) && (ty.substr(0, 6) == "tuple(")) {
         return (ASTNode *) new TupleDeclNode(expr, constant, id, visit(ctx->type(0)), line);
     }
+    //string empty decl
+    else if (ctx->type().size() == 1 && (ty == "string")) {
+        auto typeNode = (ASTNode *) new VectorTypeNode(nullptr, ty, line);
+        return (ASTNode *) new VectorDeclNode(expr, constant, id, typeNode, nullptr, line);
+    }
     //if decl is a matrix type
     else if ((ctx->type().size() == 1 && ctx->type(0)->matrixType())
              || (ctx->type().size() == 1 && !ctx->type(0)->matrixType() && !ctx->type(0)->vectorType() && ctx->extension() && ctx->extension()->rightExtension())) {

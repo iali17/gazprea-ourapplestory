@@ -235,7 +235,7 @@ void printMatrix(void *v_matrix){
         printVector(curVec++);
         printf(" ");
     }
-    if(numRows)
+    if(numRows >= 0)
         printVector(curVec);
 
     printf("]");
@@ -667,6 +667,11 @@ void strictCopyMatrixElements(void *m_dest, void *m_src, int line, int assTruePr
     int i;
     void *v_src, *v_dest;
 
+    if(destRow == -1 && destCol == -1) {
+        initMatrix(dest,srcRow, srcCol);
+        destRow = *dest->numRows;
+        destCol = *dest->numCols;
+    }
     if (((*dest->numRows != *src->numRows || *dest->numCols != *src->numCols) && assTruePromoFalse == false) ||
             ((*dest->numRows < *src->numRows || *dest->numCols < *src->numCols) && assTruePromoFalse == true)) {
         printf("Type error: Cannot convert between %s matrix[%d,%d] and %s matrix[%d,%d] on line %d\n", srcType, srcRow,
