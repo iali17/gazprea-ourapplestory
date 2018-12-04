@@ -28,6 +28,7 @@
 #define GET_VECTOR_BY          "getVectorBy"
 #define ASSIGN_FROM_VECTOR     "assignFromVector"
 #define PRINT_VECTOR_AS_STRING "printVectorAsString"
+#define RESIZE_VECTOR          "resizeVector"
 
 extern llvm::Type *i64Ty;
 extern llvm::Type *i32Ty;
@@ -136,6 +137,10 @@ void ExternalTools::registerVectorFunctions() {
     //assignFromVector
     fTy = llvm::TypeBuilder<void (void *, void *, void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(ASSIGN_FROM_VECTOR, fTy));
+
+    //resizeVector
+    fTy = llvm::TypeBuilder<void (void *, int), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(RESIZE_VECTOR, fTy));
 }
 
 /**
@@ -433,5 +438,12 @@ llvm::Value *ExternalTools::assignFromVector(llvm::Value *dest, llvm::Value *idx
     llvm::Value    *v_idx  = ir->CreatePointerCast(idx, charTy->getPointerTo());
     llvm::Value    *v_src  = ir->CreatePointerCast(src, charTy->getPointerTo());
     llvm::Value    *ret    = ir->CreateCall(getV, {v_dest, v_idx, v_src});
+    return ret;
+}
+
+llvm::Value *ExternalTools::resizeVector(llvm::Value *vector, llvm::Value *newLength) {
+    llvm::Function *getV  = mod->getFunction(RESIZE_VECTOR);
+    llvm::Value    *v_vec = ir->CreatePointerCast(vector, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec, newLength});
     return ret;
 }

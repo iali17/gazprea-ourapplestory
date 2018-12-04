@@ -1,0 +1,8 @@
+procedure main() return integer {
+	var out = std_output();
+	var x = [i in 1..3, j in 1..2 | i*j ];
+	integer matrix y = [[]];
+	var z = x || y;
+	z -> out; '\n' -> out;
+	return 0;
+}

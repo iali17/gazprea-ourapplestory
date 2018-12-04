@@ -724,5 +724,8 @@ void *getVectorBy(void * v_vector, int by){
 
     //return
     return ret;
+}
 
+void resizeVector(void * v_vector, int newLength){
+    *((vector *) v_vector)->numElements = newLength;
 }

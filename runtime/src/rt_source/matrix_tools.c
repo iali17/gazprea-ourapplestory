@@ -395,7 +395,7 @@ void *concatenateMatrices(void * v_matrix_left, void * v_matrix_right){
     //get dim and types
     int ty      = *left->type;
     int numRows = *left->numRows;
-    int numCols = *left->numRows + *right->numCols;
+    int numCols = *left->numCols + *right->numCols;
 
     //init return
     matrix *ret = (matrix *) getEmptyMatrix(ty);
@@ -687,4 +687,26 @@ void *copyMatrix(void * v_matrix){
     }
 
     return ret;
+}
+
+void resizeMatrix(void * v_matrix, int newNumRows, int newNumCols){
+    //cast the void
+    matrix * mat = (matrix *) v_matrix;
+
+    //local constants
+    int prevNumRows = *mat->numRows;
+    int prevNumCols = *mat->numCols;
+
+    //loop vars
+    int i = 0;
+    vector * curVec;
+
+    for(i = 0; i < prevNumRows; i++){
+        curVec = mat->elements + i;
+        resizeVector(curVec, newNumCols);
+    }
+
+    //set the matrix size
+    *mat->numRows = newNumRows;
+    *mat->numCols = newNumCols;
 }
