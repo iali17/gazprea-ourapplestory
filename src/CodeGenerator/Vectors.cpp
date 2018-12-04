@@ -133,9 +133,7 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
 
 llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
     llvm::Value *vecPtr = visit(node->getExpr());
-    llvm::Type * ty = it->getVectorElementType(vecPtr);
-    vecPtr = et->getReverseVector(vecPtr);
-    return it->castVectorToType(vecPtr, ty);
+    return et->getReverseVector(vecPtr);
 }
 
 llvm::Value *CodeGenerator::visit(IndexNode *node) {
