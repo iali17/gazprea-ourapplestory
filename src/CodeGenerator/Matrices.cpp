@@ -155,6 +155,10 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
         llvm::Value *rowSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMROW_INDEX);
         llvm::Value *colSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMCOL_INDEX);
 
+        if((matExpr->getType() == intMatrixTy->getPointerTo() || matExpr->getType() == intMatrixTy) && (matrixElemType != intTy && matrixElemType != realTy)) {
+            matExpr = it->castMatrixToType(matExpr, matrixElemType);
+        }
+
         // Initialize matrix to given size
         if(declRowSize && declColSize) {
             et->initMatrix(mat, declRowSize, declColSize);

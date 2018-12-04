@@ -1,4 +1,8 @@
 procedure main() returns integer{
 	var out = std_output();
+	boolean vector x = [];
+
+	x and x -> out; '\n'->out;
+
 	[true, true, false, false] and [true, false, true, false] -> out; '\n' -> out;	return 0;
 }

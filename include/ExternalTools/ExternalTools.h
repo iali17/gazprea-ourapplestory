@@ -71,6 +71,7 @@ public:
     llvm::Value * concatenateVectors(llvm::Value * left,llvm::Value * right);
     llvm::Value * getVectorBy(llvm::Value * vec, llvm::Value * by);
     llvm::Value * assignFromVector(llvm::Value * dest, llvm::Value * idx, llvm::Value * src);
+    llvm::Value * resizeVector(llvm::Value * vector, llvm::Value * newLength);
 
     //Interval functions
     void registerIntervalFunctions();
@@ -97,6 +98,7 @@ public:
     llvm::Value * copyMatrixElements(llvm::Value * dest, llvm::Value * src);
     llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line, llvm::Value * opt);
     llvm::Value * copyMatrix(llvm::Value * matrix);
+    llvm::Value *resizeMatrix(llvm::Value *matrix, llvm::Value *newNumRows,llvm::Value *newNumCols);
 
     //printing
     void registerPrintf();

@@ -40,6 +40,29 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     return retVal;
 }
 
+InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
+    //save size
+    llvm::Value *leftCols  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *rightCols = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *leftRowsPtr  = nullptr;
+    llvm::Value *rightRowsPtr = nullptr;
+
+
+    //promote
+    InternalTools::pair retVal;
+    retVal = ct->typePromotion(left, right, node->getLine());
+
+    //give size back
+    leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+    rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
+
+    et->resizeMatrix( retVal.left,  ir->CreateLoad(leftRowsPtr),  leftCols);
+    et->resizeMatrix(retVal.right, ir->CreateLoad(rightRowsPtr), rightCols);
+
+    assert(retVal.left->getType() == retVal.right->getType());
+
+    return retVal;
+}
 
 InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
@@ -66,6 +89,9 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, ll
     ir->CreateStore(leftCols, leftColsPtr);
     ir->CreateStore(rightRows, rightRowsPtr);
     ir->CreateStore(rightCols, rightColsPtr);
+
+    et->resizeMatrix( retVal.left,  leftRows,  leftCols);
+    et->resizeMatrix(retVal.right, rightRows, rightCols);
 
     assert(retVal.left->getType() == retVal.right->getType());
 
@@ -106,13 +132,16 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, ll
  * @param node
  * @return
  */
-InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node) {
+InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node, bool colsOnly) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
     //check for non base type cases
     if(it->isVectorType(left)){
         return castAndPreserveSizeVector(node, left, right);
+    }
+    else if(colsOnly && it->isMatrixType(left)){
+        return castAndPreserveColSizeMatrix(node, left, right);
     }
     else if(it->isMatrixType(left)){
         return castAndPreserveSizeMatrix(node, left, right);
@@ -483,7 +512,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
  * @return
  */
 llvm::Value *CodeGenerator::visit(ConcatenationNode *node) {
-    InternalTools::pair retVal = castAndPreserveSize(dynamic_cast<InfixNode *>(node));
+    InternalTools::pair retVal = castAndPreserveSize(dynamic_cast<InfixNode *>(node), true);
     llvm::Value * left         = retVal.left;
     llvm::Value * right        = retVal.right;
 
