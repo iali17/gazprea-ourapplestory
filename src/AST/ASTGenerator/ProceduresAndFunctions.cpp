@@ -32,13 +32,15 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
         procedureNames->insert(procName);
     std::string retType = "void";
     TupleTypeNode * tupleType = nullptr;
-    int gType;
+    int gType = -1;
 
 
     if(ctx->returnStat() && ctx->returnStat()->type()->tupleType()){
         tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     } else if (ctx->returnStat() && ctx->returnStat()->type()->vectorType()){
         gType = VECTOR_T;
+    } else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+        gType = MATRIX;
     }
     if(ctx->returnStat()){
         retType = ctx->returnStat()->type()->getText();
@@ -65,11 +67,32 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
 antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *ctx) {
     //returns a vector or parameter nodes
     auto *paramVec = new std::vector<ASTNode *>;
+    int gType;
+    std::string declaredType;
+    bool constant;
     for (unsigned long i = 0; i < ctx->param().size(); ++i){
-        bool constant = nullptr == ctx->param().at(i)->VAR();
-        int gType = -1;
+        constant = nullptr == ctx->param().at(i)->VAR();
+        gType = -1;
+        declaredType = ctx->param().at(i)->type()->getText();
 
         if(ctx->param().at(i)->type()->vectorType()) gType = VECTOR_T;
+        else if (ctx->param().at(i)->type()->matrixType()) gType = MATRIX;
+
+        if(ctx->param().at(i)->extension() && !ctx->param().at(i)->extension()->rightExtension()) {
+            if(!ctx->param().at(i)->type()->vectorType()){
+                declaredType += "vector";
+            }
+            gType = VECTOR_T;
+            declaredType +=  ctx->param().at(i)->extension()->getText();
+        }
+        else if(ctx->param().at(i)->extension() && ctx->param().at(i)->extension()->rightExtension()) {
+            if(!ctx->param().at(i)->type()->matrixType()){
+                declaredType += "matrix";
+            }
+            gType = MATRIX;
+            declaredType +=  ctx->param().at(i)->extension()->getText();
+        }
+
 
         if (ctx->param().at(i)->type()->tupleType()) {
             TupleTypeNode *tt = (TupleTypeNode *) ((ASTNode *) visit(ctx->param().at(i)->type()->tupleType()));
@@ -77,7 +100,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
                                               normalizeID(ctx->param().at(i)->Identifier()->getText()), constant,
                                               (int)ctx->getStart()->getLine(), tt));
         } else {
-            paramVec->push_back(new ParamNode(ctx->param().at(i)->type()->getText(),
+            paramVec->push_back(new ParamNode(declaredType,
                                               normalizeID(ctx->param().at(i)->Identifier()->getText()), constant, (int)ctx->getStart()->getLine(),
                                               nullptr, gType));
         }
@@ -112,8 +135,10 @@ antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContex
 
     if(ctx->returnStat()->type()->tupleType()){
         tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
-    } else if (ctx->returnStat()->type()->vectorType()) {
+    } else if (ctx->returnStat() && ctx->returnStat()->type()->vectorType()) {
         gType = VECTOR_T;
+    }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+        gType = MATRIX;
     }
     auto ret = functionNames->find(normalizeID(ctx->Identifier()->getText()));
     if(ret == functionNames->end())
@@ -148,6 +173,7 @@ antlrcpp::Any ASTGenerator::visitFunctionReturns(gazprea::GazpreaParser::Functio
 
 antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoContext *ctx) {
     std::string procName = ctx->Identifier()->getText();
+    int gType = -1;
     if (procName != "main") procName = normalizeID(procName);
     auto ret = procedureNames->find(procName);
     if(ret == procedureNames->end())
@@ -156,26 +182,35 @@ antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoCont
     TupleTypeNode * tupleType = nullptr;
     if(ctx->returnStat() && ctx->returnStat()->type()->tupleType()){
         tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+    }else if (ctx->returnStat() &&ctx->returnStat()->type()->vectorType()) {
+        gType = VECTOR_T;
+    }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+        gType = MATRIX;
     }
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, procName,
-                                                     (int)ctx->getStart()->getLine(), tupleType);
+                                                     (int)ctx->getStart()->getLine(), tupleType, gType);
     return p;
 }
 
 antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoContext *ctx) {
     auto ret = functionNames->find(normalizeID(ctx->Identifier()->getText()));
+    int gType = -1;
     if(ret == functionNames->end())
         functionNames->insert(normalizeID(ctx->Identifier()->getText()));
     std::string retType = ctx->returnStat()->type()->getText();
     TupleTypeNode * tupleType = nullptr;
     if(ctx->returnStat()->type()->tupleType()){
         tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
+    }else if (ctx->returnStat() && ctx->returnStat()->type()->vectorType()) {
+        gType = VECTOR_T;
+    }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+        gType = MATRIX;
     }
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, normalizeID(ctx->Identifier()->getText()),
-                                                     (int)ctx->getStart()->getLine(), tupleType);
+                                                     (int)ctx->getStart()->getLine(), tupleType, gType);
     return p;
 }
 
