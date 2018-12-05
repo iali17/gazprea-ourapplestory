@@ -143,6 +143,14 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             eb ->printError(error);
         } else if (((left->getType() == INSTREAM) || (left->getType() == OUTSTREAM)) &&
                    left->getType() == right->getType()) {
+            llvm::Value *l_ptr = left->getPtr();
+            llvm::Value *r_ptr = right->getPtr();
+            assert(l_ptr->getType() == r_ptr->getType());
+            assert(l_ptr->getType()->getPointerElementType()->isStructTy());
+            llvm::Value * from = ir->CreateGEP(r_ptr, {it->getConsi32(0), it->getConsi32(STREAM_STATE_INDEX)});
+            llvm::Value * to   = ir->CreateGEP(l_ptr, {it->getConsi32(0), it->getConsi32(STREAM_STATE_INDEX)});
+            ir->CreateStore(ir->CreateLoad(from), to);
+
             return nullptr;
         }
     }
