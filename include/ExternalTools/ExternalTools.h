@@ -99,6 +99,7 @@ public:
     llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line, llvm::Value * opt);
     llvm::Value * copyMatrix(llvm::Value * matrix);
     llvm::Value * resizeMatrix(llvm::Value *matrix, llvm::Value *newNumRows,llvm::Value *newNumCols);
+    llvm::Value * getMatrixCopy(llvm::Value *matrix);
 
     //destructors
     llvm::Value * destroyMatrix(llvm::Value *matrix);

@@ -202,7 +202,8 @@ intervalType
     ;
 
 param
-    : (CONST | VAR)? type Identifier;
+    : (CONST | VAR)? type Identifier
+    | (CONST | VAR)? type Identifier extension?;
 
 params
     : '('  (param (COMMA  param)* )? ')';

@@ -89,10 +89,11 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             auto argNode = dynamic_cast<VectorNode *>(arguNode->at(i));
             if (argNode) {
                 argPtr = visit(argNode);
-                if((int)argNode->getElements()->size() != size){
+                if ((int) argNode->getElements()->size() != size) {
                     auto argNameVec = split(typeName, 'v');
                     auto parNameVec = split(pNode->getDeclaredType(), 'v');
-                    auto er = new VectorErrorNode(argNameVec[0], parNameVec[0],(int)argNode->getElements()->size(), size, argNode->getLine());
+                    auto er = new VectorErrorNode(argNameVec[0], parNameVec[0], (int) argNode->getElements()->size(),
+                                                  size, argNode->getLine());
                     eb->printError(er);
                 }
             } else {
@@ -104,16 +105,56 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                 c = symbol->isConstant();
             }
 
-            if(argNode || constant) {
+            if (argNode || constant) {
                 assert(constant);
                 newParamPtr = et->getVectorCopy(argPtr);
                 paramVector.push_back(newParamPtr);
                 continue;
-            } else if(!constant) {
+            } else if (!constant) {
                 assert(!c);
                 paramVector.push_back(argPtr);
                 continue;
             }
+
+        } else if (pNode->getGType() == MATRIX) {
+                auto nameVec = split(pNode->getDeclaredType(), '[');
+                std::string typeName = nameVec[0];
+                std::string sizeName = nameVec[1];
+                sizeName.erase(std::remove(sizeName.begin(), sizeName.end(), ']'), sizeName.end());
+                auto sizes = split(sizeName, ',');
+                int leftSize = std::stoi(sizes[0]);
+                int rightSize = std::stoi(sizes[1]);
+                paramType = it->getDeclVectorType(typeName);
+
+                auto argNode = dynamic_cast<MatrixNode *>(arguNode->at(i));
+                if (argNode) {
+                    argPtr = visit(argNode);
+                    llvm::Value *rows = et->getNumRows(argPtr);
+                    llvm::Value *cols = et->getNumCols(argPtr);
+                    if(rows != it->getConsi32(leftSize) && cols != it->getConsi32(rightSize)) {
+                        //auto er = new MatrixE
+                        //TODO: make a matrix error node
+                        exit(1);
+                    }
+                } else {
+                    auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
+                    Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
+                    //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
+                    //       == paramType->getStructNumElements());
+                    argPtr = symbol->getPtr();
+                    c = symbol->isConstant();
+                }
+
+                if(argNode || constant) {
+                    assert(constant);
+                    newParamPtr = et->getMatrixCopy(argPtr);
+                    paramVector.push_back(newParamPtr);
+                    continue;
+                } else if(!constant) {
+                    assert(!c);
+                    paramVector.push_back(argPtr);
+                    continue;
+                }
 
         } else {
             paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
@@ -281,7 +322,15 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
         sizeLeft = std::stoi(sizeName);
         strRetType = nameSize[0];
         retType = it->getDeclVectorType(strRetType);
-
+    } else if (gType == MATRIX) {
+            auto nameSize = split(strRetType, '[');
+            auto fullSize = nameSize[1];
+            fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
+            auto sizes = split(fullSize, ',');
+            sizeLeft = std::stoi(sizes[0]);
+            sizeRight = std::stoi(sizes[1]);
+            strRetType = nameSize[0];
+            retType = it->getDeclMatrixType(strRetType);
     } else {
         retType = symbolTable->resolveType(strRetType)->getTypeDef();
     }
@@ -311,6 +360,10 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             auto nameVec = split(typeName, '[');
             typeName = nameVec[0];
             params.push_back(it->getDeclVectorType(typeName)->getPointerTo());
+        } else if (pNode->getGType() == MATRIX) {
+            auto nameVec = split(typeName, '[');
+            typeName = nameVec[0];
+            params.push_back(it->getDeclMatrixType(typeName)->getPointerTo());
         }
         else {
             params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
@@ -319,7 +372,7 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
 
     symbolTable->addFunctionSymbol(functionName, nodeType, paramsList);
 
-    if(tupleType || gType == VECTOR_T){
+    if(tupleType || gType == VECTOR_T || gType == MATRIX){
         funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
     } else {
         funcTy = llvm::FunctionType::get(retType, params, false);
@@ -396,7 +449,12 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
         et->initVector(realRetVal, it->getConsi32(iter->second.first.first));
         //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
         et->strictCopyVectorElements(realRetVal, retVal, it->getConsi32(iter->second.second), it->getConsi32(false));
-        return retVal;
+    } else {
+        // This is just to test for type errors
+        llvm::Value *realRetVal = et->getNewMatrix(it->getConstFromType(func->getReturnType()));
+        et->initMatrix(realRetVal, it->getConsi32(iter->second.first.first), it->getConsi32(iter->second.first.second));    
+        //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
+        et->strictCopyMatrixElements(realRetVal, retVal, it->getConsi32(iter->second.second), it->getConsi32(0));
     }
 
     return retVal;
