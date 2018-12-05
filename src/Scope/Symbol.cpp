@@ -7,6 +7,7 @@
 Symbol::Symbol(const std::string &scopeName, const std::string &name, int type) : scopeName(scopeName), name(name),
                                                                                   type(type) {
     constant = false;
+    ptr = nullptr;
 }
 
 int Symbol::getType() const {
@@ -31,7 +32,9 @@ bool Symbol::isConstant() const {
 
 Symbol::Symbol(const std::string &scopeName, const std::string &name, int type, bool constant) : scopeName(scopeName),
                                                                                                  name(name), type(type),
-                                                                                                 constant(constant) {}
+                                                                                                 constant(constant) {
+    ptr = nullptr;
+}
 
 Symbol::Symbol(const std::string &scopeName, const std::string &name, int type, llvm::Value *ptr, bool constant)
         : scopeName(scopeName), name(name), type(type), ptr(ptr), constant(constant) {}

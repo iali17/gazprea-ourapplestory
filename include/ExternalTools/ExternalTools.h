@@ -98,7 +98,12 @@ public:
     llvm::Value * copyMatrixElements(llvm::Value * dest, llvm::Value * src);
     llvm::Value * strictCopyMatrixElements(llvm::Value * dest, llvm::Value * src, llvm::Value * line, llvm::Value * opt);
     llvm::Value * copyMatrix(llvm::Value * matrix);
-    llvm::Value *resizeMatrix(llvm::Value *matrix, llvm::Value *newNumRows,llvm::Value *newNumCols);
+    llvm::Value * resizeMatrix(llvm::Value *matrix, llvm::Value *newNumRows,llvm::Value *newNumCols);
+
+    //destructors
+    llvm::Value * destroyMatrix(llvm::Value *matrix);
+    llvm::Value * destroyVector(llvm::Value *vector);
+    llvm::Value * destroyInterval(llvm::Value *interval);
 
     //printing
     void registerPrintf();

@@ -455,3 +455,22 @@ llvm::Value *CodeGenerator::visit(IndexFilterNode *node) {
     llvm::Value * tup = visit(node->getFilterNode());
     return it->getValFromStruct(tup, node->getIndex());
 }
+
+void CodeGenerator::freeMem(std::vector<llvm::Value *> *ptrs) {
+    for (uint i = 0; i < ptrs->size(); i++) {
+        llvm::Value *ptr = ptrs->at(i);
+        if(it->isIntervalType(ptr)){
+            et->destroyInterval(ptr);
+        }
+
+        if(it->isMatrixType(ptr)){
+            et->destroyMatrix(ptr);
+        }
+
+        if(it->isVectorType(ptr)){
+            et->destroyVector(ptr);
+        }
+
+        ptrs->at(i) = nullptr;
+    }
+}

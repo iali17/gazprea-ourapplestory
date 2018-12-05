@@ -171,6 +171,8 @@ public:
 
     llvm::Value* matrixCasting(CastExprNode *node);
 
+    void freeMem(std::vector<llvm::Value *> *ptrs);
+
 protected:
     llvm::LLVMContext * globalCtx;
     llvm::IRBuilder<> * ir;
