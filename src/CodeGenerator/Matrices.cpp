@@ -34,7 +34,9 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
 
     //vector nodes and llvm pointers
     auto *vectorNodes   = node->getElements();
-    auto *vectors       = new std::vector<llvm::Value *>;
+    auto *tempVectors       = new std::vector<llvm::Value *>();
+    auto *vectors       = new std::vector<llvm::Value *>();
+    auto *vectorTypes   = new std::vector<llvm::Type *>();
     ASTNode *vectorNode = nullptr;
     llvm::Value *vPtr   = nullptr;
 
@@ -60,7 +62,8 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     for(uint i = 0; i < vectorNodes->size(); i++){
         vectorNode = vectorNodes->at(i);
         vPtr       = visit(vectorNode);
-        vectors->push_back(vPtr);
+        tempVectors->push_back(vPtr);
+        vectorTypes->push_back(it->getVectorElementType(vPtr));
 
         //set the max num cols
 
@@ -83,8 +86,14 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     //init matrix
 
     //find the type and base on the first element
-    vecTy   = it->getVectorElementType(vectors->at(0));
+    vecTy   = it->getInitVectorType(*vectorTypes);
     consTy  = it->getConstFromType(vecTy);
+
+    //Cast each vector to proper type
+    for(auto vecElem : *tempVectors) {
+        llvm::Value *vecSize = it->getValFromStruct(vecElem, VEC_LEN_INDEX);
+        vectors->push_back(ct->createVecFromVec(vecElem, vecTy, vecSize, node->getLine()));
+    }
 
     //create new matrix and initialize to the size
     matrix  = et->getNewMatrix(consTy);

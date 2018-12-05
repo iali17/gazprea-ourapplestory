@@ -1,0 +1,11 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    real matrix x = [[1,2,3],[1.1,2,3],[1]];
+    real vector y = [1,2,2.2,-1];
+
+    x -> out; '\n' -> out;
+    y -> out; '\n' -> out;
+
+    return 0;
+}
