@@ -1,8 +1,12 @@
 procedure main() returns integer {
 var out = std_output();
-string s = "asdd";
+string s = "asdd\n";
 
 s -> out;
+
+"`1234567890-=~!@#$%^&*()_+qwertyuiop[]QWERTYUIOP{}|asdfghjkl;'ASDFGHJKLzxcvbnm,./ZXCVBNM<>?" ->out;
+"\n" -> out;
+"\"\n\\\n\'"->out;
 
 return 0;
 }

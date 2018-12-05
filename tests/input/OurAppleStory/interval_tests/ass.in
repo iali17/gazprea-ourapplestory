@@ -1,0 +1,19 @@
+procedure main() returns integer {
+var out = std_output();
+
+integer interval d1 = 1..2;
+var d2 = d1;
+d1 = 12..33 + -24;
+
+d1 by 1->out;'\n'->out;
+d2 by 1->out;'\n'->out;
+
+d2 = d2 + 45;
+d2 by 1->out;'\n'->out;
+
+d2 = d1;
+d2 by 1->out;'\n'->out;
+
+
+return 0;
+}

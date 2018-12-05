@@ -163,21 +163,31 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             ptr = ir->CreatePointerCast(ptr, strTy->getPointerTo());
             left->setPtr(ptr);
         }
+        return nullptr;
+    }
 
+    if (it->isIntervalType(ptr)) {
+        if (dynamic_cast<NullNode *>(node->getExpr())){
+            left->setPtr(et->getNewInterval(it->getConsi32(0), it->getConsi32(0)));
+        }
+        else if (dynamic_cast<IdnNode *>(node->getExpr())) {
+            left->setPtr(et->getNewInterval(it->getConsi32(1), it->getConsi32(1)));
+        }
+        else {
+            left->setPtr(et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX)));
+        }
         return nullptr;
     }
 
     if (it->isMatrixType(left->getPtr())) {
         if (dynamic_cast<IdnNode *>(node->getExpr())) {
             et->setIdentityMatrix(ptr);
-            return nullptr;
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
             et->setNullMatrix(ptr);
-            return nullptr;
         } else {
             et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
-            return nullptr;
         }
+        return nullptr;
     }
 
     if (val) {
