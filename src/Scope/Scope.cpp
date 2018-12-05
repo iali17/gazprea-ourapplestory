@@ -4,6 +4,19 @@
 #include <string>
 #include <Scope/Scope.h>
 #include <iostream>
+#include "globals.h"
+
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
+extern llvm::Type *intervalTy;
 
 Scope::Scope(const std::string &name) : name(name) {
     symbols        = new std::map<std::string, Symbol*>;
@@ -96,4 +109,28 @@ GazpreaTupleType *Scope::resolveType(llvm::Type *type) {
         return nullptr;
     else
         return iter->second;
+}
+
+std::vector<llvm::Value *> *Scope::getFreeableVariables() {
+    auto * ret =  new std::vector<llvm::Value *>;
+    for(auto iter = symbols->begin(); iter != symbols->end(); iter++){
+        llvm::Value * ptr = iter->second->getPtr();
+
+        if(ptr == nullptr)
+            continue;
+
+        //if(ptr->getType())
+        //    continue;
+
+        if(not(ptr->getType()->isPointerTy()))
+            continue;
+
+        llvm::Type * ty = ptr->getType();
+
+        if((ty == matrixTy) || (ty == intMatrixTy) || (ty == realMatrixTy) || (ty == boolMatrixTy) || (ty == charMatrixTy) ||
+                (ty == vecTy) || (ty == intVecTy) || (ty == realVecTy) || (ty == boolVecTy) || (ty == charVecTy) || (ty == intervalTy)){
+            ret->push_back(ptr);
+        }
+    }
+    return ret;
 }

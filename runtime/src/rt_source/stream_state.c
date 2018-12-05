@@ -51,7 +51,7 @@ void read_in(void * v_stream, void * v_dest, int type) {
     }
 
     //debug string
-    printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(inStream), (ret > 0 && feof(inStream)),inBuffer[0], *(char *) read, type);
+    //printf("\nretVal: %d, feofVal: %d (ret > 0 && feof) = %d buffStart: %d read: %c type: %d\n", ret, feof(inStream), (ret > 0 && feof(inStream)),inBuffer[0], *(char *) read, type);
 
     //boolean only garbage
     if (type == BOOLEAN && feof(inStream) && (*(char *)read == 'T' || *(char *)read == 'F' )) {

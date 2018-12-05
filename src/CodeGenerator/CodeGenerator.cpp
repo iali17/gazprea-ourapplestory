@@ -63,7 +63,11 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
         ASTBaseVisitor::visit(node->nodes->at(i)) ;
     }
 
+    auto * freeable = symbolTable->getAllFreeableVariables();
+
     symbolTable->popScope();
+
+    freeMem(freeable);
     return nullptr;
 }
 
