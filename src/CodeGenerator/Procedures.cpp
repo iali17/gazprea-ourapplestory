@@ -63,6 +63,6 @@ llvm::Value *CodeGenerator::visit(FunctionNode *node) {
 
 llvm::Value *CodeGenerator::visit(ProtoProcedureNode * node) {
     declareFuncOrProc(node->getProcedureName(), node->getRetType(), node->getParamNodes(),
-            node->getType(), node->getLine(), node->getTupleType());
+            node->getType(), node->getLine(), node->getTupleType(), node->getGType());
     return nullptr;
 }

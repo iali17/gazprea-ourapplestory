@@ -92,6 +92,7 @@ public:
 	llvm::Value *castMatrixToType(llvm::Value *mat, llvm::Type *type);
     llvm::Value *setVectorValues(llvm::Value *vec, std::vector<llvm::Value *> *values);
 	llvm::Type *getVectorType(const std::string &typeString);
+	llvm::Type *getInitVectorType(std::vector<llvm::Type *> &types);
 	llvm::Type *getDeclScalarTypeFromVec(llvm::Type *type);
 	llvm::Type *getDeclScalarTypeFromMat(llvm::Type *type);
 	llvm::Type *getDeclMatrixType(const std::string &typeString);

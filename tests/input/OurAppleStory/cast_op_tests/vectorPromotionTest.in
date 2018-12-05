@@ -9,8 +9,6 @@ procedure main () returns integer {
 
     real vector w = [1.1,2.2] + 2..3;
 
-    integer vector z = [] + 1..10;
-
     // Implicit type promotion from integer vector to real vector
     x -> out; '\n' -> out;
     y -> out; '\n' -> out;
@@ -21,9 +19,6 @@ procedure main () returns integer {
 
     // Implicit type promotion from interval to real vector
     w -> out; '\n' -> out;
-
-    // Implicit null padding with addition of larger vector
-    z -> out; '\n' -> out;
 
     return 0;
 }

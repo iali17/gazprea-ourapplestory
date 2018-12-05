@@ -43,22 +43,35 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
 
 InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
-    llvm::Value *leftCols  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
-    llvm::Value *rightCols = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *leftCols     = nullptr;
+    llvm::Value *rightCols    = nullptr;
     llvm::Value *leftRowsPtr  = nullptr;
     llvm::Value *rightRowsPtr = nullptr;
 
+    //some bools
+    bool leftIsScalar  = not(it->isStructType(left));
+    bool rightIsScalar = not(it->isStructType(right));
+
+    if(not(leftIsScalar))
+        leftCols  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
+
+    if(not(rightIsScalar))
+        rightCols = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
 
     //promote
     InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
 
     //give size back
-    leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
-    rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
+    if(not(leftIsScalar)){
+        leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+        et->resizeMatrix( retVal.left,  ir->CreateLoad(leftRowsPtr),  leftCols);
+    }
 
-    et->resizeMatrix( retVal.left,  ir->CreateLoad(leftRowsPtr),  leftCols);
-    et->resizeMatrix(retVal.right, ir->CreateLoad(rightRowsPtr), rightCols);
+    if(not(rightIsScalar)){
+        rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
+        et->resizeMatrix(retVal.right, ir->CreateLoad(rightRowsPtr), rightCols);
+    }
 
     assert(retVal.left->getType() == retVal.right->getType());
 
@@ -67,32 +80,54 @@ InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node,
 
 InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
-    llvm::Value *leftRows  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMROW_INDEX));
-    llvm::Value *rightRows = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMROW_INDEX));
-    llvm::Value *leftCols  = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
-    llvm::Value *rightCols = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+    llvm::Value *leftRows     = nullptr;
+    llvm::Value *rightRows    = nullptr;
+    llvm::Value *leftCols     = nullptr;
+    llvm::Value *rightCols    = nullptr;
     llvm::Value *leftRowsPtr  = nullptr;
     llvm::Value *rightRowsPtr = nullptr;
     llvm::Value *leftColsPtr  = nullptr;
     llvm::Value *rightColsPtr = nullptr;
+
+    //some bools
+    bool leftIsScalar  = not(it->isStructType(left));
+    bool rightIsScalar = not(it->isStructType(right));
+
+    if(not(leftIsScalar)){
+        leftRows     = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+        leftCols     = it->getValFromStruct(left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
+    }
+
+    if(not(rightIsScalar)){
+        rightRows    = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMROW_INDEX));
+        rightCols    = it->getValFromStruct(right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+    }
 
     //promote
     InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
 
     //give size back
-    leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
-    rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
-    leftColsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
-    rightColsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMCOL_INDEX));
 
-    ir->CreateStore(leftRows, leftRowsPtr);
-    ir->CreateStore(leftCols, leftColsPtr);
-    ir->CreateStore(rightRows, rightRowsPtr);
-    ir->CreateStore(rightCols, rightColsPtr);
+    if(not(leftIsScalar)){
+        leftRowsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMROW_INDEX));
+        leftColsPtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(MATRIX_NUMCOL_INDEX));
 
-    et->resizeMatrix( retVal.left,  leftRows,  leftCols);
-    et->resizeMatrix(retVal.right, rightRows, rightCols);
+        ir->CreateStore(leftRows, leftRowsPtr);
+        ir->CreateStore(leftCols, leftColsPtr);
+
+        et->resizeMatrix( retVal.left,  leftRows,  leftCols);
+    }
+
+    if(not(rightIsScalar)){
+        rightRowsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMROW_INDEX));
+        rightColsPtr = it->getPtrFromStruct(retVal.right, it->getConsi32(MATRIX_NUMCOL_INDEX));
+
+        ir->CreateStore(rightRows, rightRowsPtr);
+        ir->CreateStore(rightCols, rightColsPtr);
+
+        et->resizeMatrix(retVal.right, rightRows, rightCols);
+    }
 
     assert(retVal.left->getType() == retVal.right->getType());
 
@@ -108,22 +143,36 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, ll
  */
 InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
-    llvm::Value *leftSize  = it->getValFromStruct(left,  it->getConsi32(VEC_LEN_INDEX));
-    llvm::Value *rightSize = it->getValFromStruct(right, it->getConsi32(VEC_LEN_INDEX));
+    llvm::Value *leftSize     = nullptr;
+    llvm::Value *rightSize    = nullptr;
     llvm::Value *leftSizePtr  = nullptr;
     llvm::Value *rightSizePtr = nullptr;
 
+    //some bools
+    bool leftIsScalar  = not(it->isStructType(left));
+    bool rightIsScalar = not(it->isStructType(right));
+
     bool toStr = (left->getType() == strTy->getPointerTo()) || (right->getType() == strTy->getPointerTo());
+
+    if(not(leftIsScalar))
+        leftSize  = it->getValFromStruct(left,  it->getConsi32(VEC_LEN_INDEX));
+
+    if(not(rightIsScalar))
+        rightSize = it->getValFromStruct(right, it->getConsi32(VEC_LEN_INDEX));
 
     //promote
     InternalTools::pair retVal;
     retVal = ct->typePromotion(left, right, node->getLine());
 
     //give size back
-    leftSizePtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(VEC_LEN_INDEX));
-    rightSizePtr = it->getPtrFromStruct(retVal.right, it->getConsi32(VEC_LEN_INDEX));
-    ir->CreateStore(leftSize, leftSizePtr);
-    ir->CreateStore(rightSize, rightSizePtr);
+    if(not(leftIsScalar)){
+        leftSizePtr  = it->getPtrFromStruct(retVal.left,  it->getConsi32(VEC_LEN_INDEX));
+        ir->CreateStore(leftSize, leftSizePtr);
+    }
+    if(not(rightIsScalar)){
+        rightSizePtr = it->getPtrFromStruct(retVal.right, it->getConsi32(VEC_LEN_INDEX));
+        ir->CreateStore(rightSize, rightSizePtr);
+    }
 
     if(toStr){
         retVal.left  = ir->CreatePointerCast(retVal.left,  strTy->getPointerTo());

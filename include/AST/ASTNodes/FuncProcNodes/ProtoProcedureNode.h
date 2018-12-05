@@ -13,21 +13,21 @@ class ProtoProcedureNode : public ASTNode {
 public:
 
     ProtoProcedureNode(std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                       const std::string &procedureName, int line, TupleTypeNode *tupleType = nullptr);
+                       const std::string &procedureName, int line, TupleTypeNode *tupleType = nullptr, int gType = -1);
 
     std::vector<ASTNode *> *getParamNodes() const;
     const std::string &getRetType() const;
     const std::string &getProcedureName() const;
+    TupleTypeNode *getTupleType() const;
+
+    int getGType() const;
 
 protected:
     std::vector<ASTNode *> *paramNodes;
     std::string retType;
     std::string procedureName;
-public:
-    TupleTypeNode *getTupleType() const;
-
-protected:
     TupleTypeNode * tupleType;
+    int gType;
 };
 
 #endif //GAZPREABASE_PROTOPROCEDURENODE_H

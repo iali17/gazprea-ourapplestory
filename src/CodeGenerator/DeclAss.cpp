@@ -61,7 +61,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             return nullptr;
         }
 
-        if (type->isStructTy()) {
+        if (it->isTupleType(ptr)) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
         } else if (type->isVectorTy()) {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
@@ -164,7 +164,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
             et->setNullVector(ptr);
         } else {
-            et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
+            et->strictCopyVectorElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(false));
         }
 
         if(val && (val->getType() == strTy->getPointerTo() || ptr->getType() == strTy->getPointerTo())) {
@@ -193,7 +193,8 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
             et->setNullMatrix(ptr);
         } else {
-            et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(true));
+            et->strictCopyMatrixElements(ptr, val, it->getConsi32(node->getLine()), it->getConsi32(false));
+            return nullptr;
         }
         return nullptr;
     }

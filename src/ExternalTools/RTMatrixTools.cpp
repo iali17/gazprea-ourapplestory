@@ -33,6 +33,7 @@
 #define COPY_MATRIX          "copyMatrix"
 #define RESIZE_MATRIX        "resizeMatrix"
 #define DESTROY_MATRIX       "destroyMatrix"
+#define GET_MATRIX_COPY      "getMatrixCopy"
 
 extern llvm::Type *charTy;
 extern llvm::Type *intMatrixTy;
@@ -137,6 +138,10 @@ void ExternalTools::registerMatrixFunctions() {
     //destroyMatrix
     fTy = llvm::TypeBuilder<void (void *), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(DESTROY_MATRIX, fTy));
+
+    //getMatrixCopy
+    fTy = llvm::TypeBuilder<void* (void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_MATRIX_COPY, fTy));
 }
 
 /**
@@ -487,4 +492,11 @@ llvm::Value *ExternalTools::destroyMatrix(llvm::Value *matrix) {
     llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getM, {v_mat});
     return ret;
+}
+
+llvm::Value *ExternalTools::getMatrixCopy(llvm::Value *matrix) {
+    llvm::Function *getM  = mod->getFunction(GET_MATRIX_COPY);
+    llvm::Value    *v_mat = ir->CreatePointerCast(matrix, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getM, {v_mat});
+    return ir->CreatePointerCast(ret, matrix->getType());
 }

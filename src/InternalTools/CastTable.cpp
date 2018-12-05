@@ -429,6 +429,7 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
 }
 
 llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftSize, llvm::Value *rightSize) {
+    llvm::Value *mat;
     llvm::Type *llType = it->getDeclScalarTypeFromMat(type);
     llvm::Value *declType = it->getConstFromType(type);
 
@@ -438,11 +439,6 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
     std::string lTypeString = typeAssTable[lType][lType];
     std::string rTypeString;
     std::string castType;
-
-    // Initialize matrix and cast to proper type
-    llvm::Value *tempMat;
-    llvm::Value *mat = et->getNewMatrix(declType);
-    mat = it->castMatrixToType(mat, llType);
 
     // Deals with casting matrix to matrix
     if(it->isMatrixType(expr)) {
@@ -454,13 +450,11 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
         castType = typeAssTable[lType][rType];
 
         if(llType == exprType) {
-            tempMat = createMatViaSizeGiven(mat, expr, llType, leftSize, rightSize, line);
-            et->strictCopyMatrixElements(mat, tempMat, it->getConsi32(line), it->getConsi32(true));
+            mat = createMatViaSizeGiven(mat, expr, llType, leftSize, rightSize, line);
 
             return mat;
         } else if(castType == "real") {
-            tempMat = createMatViaSizeGiven(mat, expr, realTy, leftSize, rightSize, line);
-            et->strictCopyMatrixElements(mat, tempMat, it->getConsi32(line), it->getConsi32(true));
+            mat = createMatViaSizeGiven(mat, expr, realTy, leftSize, rightSize, line);
 
             return mat;
 
@@ -504,16 +498,14 @@ llvm::Value *CastTable::createMatViaSizeGiven(llvm::Value *mat, llvm::Value *exp
     llvm::Value *exprCols = it->getValFromStruct(expr, MATRIX_NUMCOL_INDEX);
 
     if(rowSize && colSize) {
-        et->initMatrix(mat, rowSize, colSize);
+        return createMatFromMat(expr, type, rowSize, colSize, line);
     } else if(rowSize) {
-        et->initMatrix(mat, rowSize, exprCols);
+        return createMatFromMat(expr, type, rowSize, exprCols, line);
     } else if(colSize) {
-        et->initMatrix(mat, exprRows, colSize);
+        return createMatFromMat(expr, type, exprRows, colSize, line);
     } else {
-        et->initMatrix(mat, exprRows, exprCols);
+        return createMatFromMat(expr, type, exprRows, exprCols, line);
     }
-
-    return createMatFromMat(expr, type, exprRows, exprCols, line);
 }
 
 llvm::Value *CastTable::createVecFromScalar(llvm::Value *exprP, llvm::Type *type, llvm::Value *size, int line) {
@@ -755,6 +747,7 @@ llvm::Value * CastTable::createMatFromMat(llvm::Value *exprP, llvm::Type *type, 
     cb2->beginIf(cond2, "nullPadMatrix");
 
     rowsRemaining = ir->CreateSub(leftSize, numRowInMat);
+    rowsRemaining->setName("rowsRemain");
 
     // Reset counter
     curRowSize = it->getConsi32(0);
