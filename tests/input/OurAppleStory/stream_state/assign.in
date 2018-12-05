@@ -1,0 +1,18 @@
+procedure main() returns integer {
+    var out = std_output();
+	var in1 = std_input();
+	var in2 = std_input();
+	integer i;
+
+	stream_state(in1) -> out; '\n' -> out;
+	stream_state(in2) -> out; '\n' -> out;
+
+	i <- in2;
+	
+	in1 = in2;
+
+	stream_state(in1) -> out; '\n'-> out; 
+	stream_state(in2) -> out; '\n'-> out; 
+
+	return 0;   
+}

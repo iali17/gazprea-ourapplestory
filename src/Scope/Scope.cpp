@@ -119,8 +119,8 @@ std::vector<llvm::Value *> *Scope::getFreeableVariables() {
         if(ptr == nullptr)
             continue;
 
-        if(ptr->getType())
-            continue;
+        //if(ptr->getType())
+        //    continue;
 
         if(not(ptr->getType()->isPointerTy()))
             continue;
