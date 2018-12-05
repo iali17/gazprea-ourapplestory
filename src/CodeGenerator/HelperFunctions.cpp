@@ -452,7 +452,7 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
     } else {
         // This is just to test for type errors
         llvm::Value *realRetVal = et->getNewMatrix(it->getConstFromType(func->getReturnType()));
-        et->initMatrix(realRetVal, it->getConsi32(iter->second.first.first), it->getConsi32(iter->second.first.second));    
+        et->initMatrix(realRetVal, it->getConsi32(iter->second.first.first), it->getConsi32(iter->second.first.second));
         //realRetVal = it->castVectorToType(realRetVal,func->getReturnType());
         et->strictCopyMatrixElements(realRetVal, retVal, it->getConsi32(iter->second.second), it->getConsi32(0));
     }

@@ -5,9 +5,9 @@
 #include <AST/ASTNodes/FuncProcNodes/ProtoProcedureNode.h>
 
 ProtoProcedureNode::ProtoProcedureNode(std::vector<ASTNode *> *paramNodes, const std::string &retType,
-                                       const std::string &procedureName, int line, TupleTypeNode *tupleType)
+                                       const std::string &procedureName, int line, TupleTypeNode *tupleType, int gType)
                                        : ASTNode(line), paramNodes(paramNodes), retType(retType),
-                                       procedureName(procedureName), tupleType(tupleType) {}
+                                       procedureName(procedureName), tupleType(tupleType), gType(gType) {}
 
 std::vector<ASTNode *> *ProtoProcedureNode::getParamNodes() const {
     return paramNodes;
@@ -23,4 +23,8 @@ const std::string &ProtoProcedureNode::getProcedureName() const {
 
 TupleTypeNode *ProtoProcedureNode::getTupleType() const {
     return tupleType;
+}
+
+int ProtoProcedureNode::getGType() const {
+    return gType;
 }
