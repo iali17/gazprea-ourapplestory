@@ -25,15 +25,26 @@ extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 llvm::Value *CodeGenerator::visit(VectorNode *node) {
+    auto tempValues = new std::vector<llvm::Value *>();
     auto values = new std::vector<llvm::Value *>();
+    auto valueTypes = new std::vector<llvm::Type *>();
 
-    for(uint i = 0; i < node->getElements()->size(); i++)
-        values->push_back(visit(node->getElements()->at(i)));
+    // Get tempValues, check if need to upcast
+    for(uint i = 0; i < node->getElements()->size(); i++) {
+        valueTypes->push_back(visit(node->getElements()->at(i))->getType());
+        tempValues->push_back(visit(node->getElements()->at(i)));
+    }
 
     // Casting empty vector with proper type
     llvm::Type *type;
-    if(!values->empty()) type = values->at(0)->getType();
+    if(!tempValues->empty()) type = it->getInitVectorType(*valueTypes);
     else type = intTy;
+
+    // Cast elements to proper type
+    for(auto vecElem : *tempValues) {
+        values->push_back(ct->varCast(type, vecElem, node->getLine()));
+    }
+
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     et->initVector(vec, it->getConsi32(values->size()));
 

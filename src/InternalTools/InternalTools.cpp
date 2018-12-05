@@ -822,3 +822,38 @@ llvm::Value *InternalTools::getMatrixNumRows(llvm::Value *mat) {
 llvm::Value *InternalTools::getMatrixNumCols(llvm::Value *mat) {
     return getValFromStruct(mat, MATRIX_NUMCOL_INDEX);
 }
+
+llvm::Type *InternalTools::getInitVectorType(std::vector<llvm::Type *> &types) {
+    int boolCount = 0;
+    int charCount = 0;
+    int realCount = 0;
+    int intCount  = 0;
+
+    for(auto i : types) {
+        if(i == intTy)
+            intCount += 1;
+        else if(i == realTy)
+            realCount += 1;
+        else if(i == boolTy)
+            boolCount += 1;
+        else if(i == charTy)
+            charCount += 1;
+        else {
+            std::cerr << "Invalid element type inside vector declaration!\n";
+            exit(1);
+        }
+    }
+
+    if(boolCount && !charCount && !realCount && !intCount)
+        return boolTy;
+    else if(charCount && !boolCount && !intCount && !realCount)
+        return charTy;
+    else if(intCount && !boolCount && !charCount && !realCount)
+        return intTy;
+    else if((realCount && !intCount && !charCount && !boolCount) || (realCount && intCount && !charCount && !boolCount))
+        return realTy;
+    else {
+        std::cerr << "Not all elements have viable type promotion inside vector!\n";
+        exit(1);
+    }
+}

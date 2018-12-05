@@ -1,0 +1,74 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    integer matrix x[5,5]    = as<integer matrix[5,5]>([i in 1..5, j in 20..25 | i*j]);
+    integer matrix y[5,5]    = as<integer matrix>([i in 1..5, j in 25..30 | i*j]);
+
+    character matrix x1[5,5] = as<character matrix[5,5]>(x);
+    character matrix y1     = as<character matrix>(y);
+
+    boolean matrix w[5,5]    = as<boolean matrix[5,5]>([[1,2,0,0,1,1],[1,10,9]]);
+    boolean matrix w1       = as<boolean matrix>([[98,99],[0,97]]);
+
+    real matrix z[5,5]       = as<real matrix[5,5]>([[2,3]]);
+    real matrix z1          = as<real matrix>([[1,2],[3,4]]);
+
+    character matrix c[5,5]  = as<character matrix[5,5]>(x);
+    character matrix c1     = as<character matrix>(w1);
+
+    integer matrix v[5,5]     = as<integer matrix[5,5]>(w);
+    integer matrix v1       = as<integer matrix>(w1);
+
+    real matrix r[5,5]        = as<real matrix[5,5]>(v1);
+    real matrix r1          = as<real matrix>(v);
+
+    integer matrix i[5,5]     = as<integer matrix[5,5]>(x1);
+    boolean matrix i2       = as<boolean matrix>(y1);
+    real matrix i3[7,7]       = as<real matrix[7,7]>(x1);
+
+    integer matrix h        = as<integer matrix>([[1,2,3],[3,4]]);
+    real matrix h1          = as<real matrix[5,5]>([[1.1,2.2,3.3]]);
+    boolean matrix h2       = as<boolean matrix[2,2]>([[true,false,false,true],[true]]);
+    character matrix h3[2,2] = as<character matrix>([['a','b'],['c']]);
+
+     // Explicit cast from integer matrices to integer matrices with and without size
+     x -> out; '\n' -> out;
+     y -> out; '\n' -> out;
+
+     // Explicit cast from integer matrices to real matrices with and without size
+     z -> out; '\n' -> out;
+     z1 -> out; '\n' -> out;
+
+     // Explicit cast from integer matrices to character matrices with and without size
+     x1 -> out; '\n' -> out;
+     y1 -> out; '\n' -> out;
+
+     // Explicit cast from integer matrices to boolean matrices
+     w -> out; '\n' -> out;
+     w1 -> out; '\n' -> out;
+
+     // Explicit cast from integer matrix to character matrix and boolean matrix to character matrix
+     c -> out; '\n' -> out;
+     c1 -> out; '\n' -> out;
+
+     // Explicit cast from boolean matrices to integer matrices
+     v -> out; '\n' -> out;
+     v1 -> out; '\n' -> out;
+
+     // Explicit cast from boolean matrices to real matrices
+     r -> out; '\n' -> out;
+     r1 -> out; '\n' -> out;
+
+     // Explicit cast from character matrix to integer, boolean, and real matrices
+     i -> out; '\n' -> out;
+     i2 -> out; '\n' -> out;
+     i3 -> out; '\n' -> out;
+
+     // Explicit cast from matrix type to itself, checks null padding and truncations and with and without size
+     h -> out; '\n' -> out;
+     h1 -> out; '\n' -> out;
+     h2 -> out; '\n' -> out;
+     h3 -> out; '\n' -> out;
+
+    return 0;
+}

@@ -141,7 +141,6 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     // Handles cases when expr is a matrix
     if (matrixNode) {
         llvm::Value *matExpr = visit(node->getExpr());
-        llvm::Value *vecExprSize = it->getValFromStruct(matExpr, MATRIX_ELEM_INDEX);
 
         // Max row and col of exprs
         llvm::Value *rowSize = it->getValFromStruct(visit(node->getExpr()), MATRIX_NUMROW_INDEX);
@@ -154,17 +153,19 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
         // Initialize matrix to given size
         if(declRowSize && declColSize) {
             et->initMatrix(mat, declRowSize, declColSize);
-            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, declColSize);
+            matExpr = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, declColSize);
         } else if(declRowSize) {
             et->initMatrix(mat, declRowSize, colSize);
-            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, colSize);
+            matExpr = ct->typeAssCast(matrixType, matExpr, node->getLine(), declRowSize, colSize);
         } else if(declColSize) {
             et->initMatrix(mat, rowSize, declColSize);
-            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, declColSize);
+            matExpr = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, declColSize);
         } else {
             et->initMatrix(mat, rowSize, colSize);
-            mat = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, colSize);
+            matExpr = ct->typeAssCast(matrixType, matExpr, node->getLine(), rowSize, colSize);
         }
+
+        et->strictCopyMatrixElements(mat, matExpr, it->getConsi32(node->getLine()), it->getConsi32(true));
     }
 
     // Handles case when expr is not a matrix

@@ -1,0 +1,21 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    real matrix x = [[1,2,3],[1,2,3],[1,2,3]];
+    real matrix y[3,3] = [[2,3,4], [1,2]];
+
+    real matrix w = x + 1;
+    real matrix z = y + x;
+
+    // Implicit type promotion from integer matrix to real matrix, with nullpad if size less than declared
+    x -> out; '\n' -> out;
+    y -> out; '\n' -> out;
+
+    // Implicit type promotion from scalar integer to real matrix
+    w -> out; '\n' -> out;
+
+    // Addition of two real matrices
+    z -> out; '\n' -> out;
+
+    return 0;
+}
