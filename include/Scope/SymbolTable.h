@@ -3,10 +3,12 @@
 //
 #include "Scope.h"
 #include <stack>
+#include <unordered_set>
 
 #ifndef VCALCBASE_SYMBOLTABLE_H
 #define VCALCBASE_SYMBOLTABLE_H
 #include "AST/AST.h"
+
 
 // Pretty much taken from notes and redone for C++
 class SymbolTable {
@@ -15,6 +17,7 @@ public:
     GazpreaType      *resolveType(std::string userTypeName);
     GazpreaTupleType *resolveTupleType(llvm::Type * tupleType);
     Symbol           *resolveSymbol(std::string symbolName);
+    std::vector<llvm::Value *> *getAllFreeableVariables();
     void pushNewScope(std::string newScopeName);
     void pushNewScope();
     void addSymbol(std::string newSymbolName, int type);
@@ -33,5 +36,6 @@ protected:
     int scopeCount  = 0;
     std::stack<Scope*> *scopeStack;
     std::string getNewScopeString();
+    std::vector<Scope *> * allScopes;
 };
 #endif //VCALCBASE_SYMBOLTABLE_H

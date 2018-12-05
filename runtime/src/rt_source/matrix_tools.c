@@ -45,6 +45,7 @@ void initMatrix(void * v_matrix,  int numRows, int numCols){
         *(mat->elements + i) = *(vector *) getEmptyVector(*mat->type);
         initVector(mat->elements + i, numCols);
     }
+    v_matrix = NULL;
 }
 
 /**

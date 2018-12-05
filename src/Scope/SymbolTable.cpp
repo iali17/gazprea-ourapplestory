@@ -7,6 +7,7 @@
 
 SymbolTable::SymbolTable() {
     scopeStack = new std::stack<Scope*>;
+    allScopes  = new std::vector<Scope *>;
 }
 
 void SymbolTable::pushNewScope(std::string newScopeName) {
@@ -14,6 +15,7 @@ void SymbolTable::pushNewScope(std::string newScopeName) {
         scopeStack->push(new Scope(newScopeName));
     else
         scopeStack->push(new Scope(newScopeName, scopeStack->top()));
+    allScopes->push_back(scopeStack->top());
 }
 
 void SymbolTable::addSymbol(std::string newSymbolName, int type) {
@@ -102,4 +104,17 @@ GazpreaTupleType *SymbolTable::resolveTupleType(llvm::Type *tupleType) {
         scope = scope->getEnclosingScope();
     }
     return type;
+}
+
+std::vector<llvm::Value *> *SymbolTable::getAllFreeableVariables() {
+    auto * ret = new std::vector<llvm::Value *>;
+    std::vector<llvm::Value *> * curFreeable;
+
+
+    for(uint i = 0; i < allScopes->size(); i++){
+        curFreeable = allScopes->at(i)->getFreeableVariables();
+        ret->insert(ret->end(), curFreeable->begin(), curFreeable->end());
+    }
+
+    return ret;
 }

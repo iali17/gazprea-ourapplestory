@@ -1,0 +1,12 @@
+procedure main () returns integer {
+	var out = std_output();               // declare out
+	integer interval x = 1..5;
+	loop a in x {
+		a->out;
+	}
+	//doesnt work but the following does work
+	loop a in 1..5 {
+		a->out;
+	}
+	return 0;	
+}

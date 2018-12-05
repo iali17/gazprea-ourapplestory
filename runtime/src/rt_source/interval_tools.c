@@ -64,4 +64,5 @@ void destroyInterval(void * v_interval){
         free(i->upper);
 
     free(v_interval);
+    v_interval = NULL;
 }

@@ -63,7 +63,11 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
         ASTBaseVisitor::visit(node->nodes->at(i)) ;
     }
 
+    auto * freeable = symbolTable->getAllFreeableVariables();
+
     symbolTable->popScope();
+
+    freeMem(freeable);
     return nullptr;
 }
 
@@ -262,7 +266,7 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
 }
 
 llvm::Value *CodeGenerator::visit(InLoopNode *node) {
-    llvm::Value * domain = visit(node->getDomain());
+    llvm::Value * domain = getRange(node->getDomain());
 
     //loop idx
     llvm::Value * curIdx = it->getConsi32(0);

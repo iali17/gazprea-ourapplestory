@@ -40,6 +40,7 @@ void destroyVector(void * v_vector){
 
     //free vector
     free(v);
+    v_vector = NULL;
 }
 
 /**

@@ -7,8 +7,9 @@
 #include <ExternalTools/ExternalTools.h>
 #include <InternalTools/CondBuilder.h>
 
-#define GET_NEW_INTERVAL "getNewInterval"
+#define GET_NEW_INTERVAL         "getNewInterval"
 #define GET_VECTOR_FROM_INTERVAL "getVectorFromInterval"
+#define DESTROY_INTERVAL         "destroyInterval"
 
 extern llvm::Type *charTy;
 extern llvm::Type *intVecTy;
@@ -24,6 +25,10 @@ void ExternalTools::registerIntervalFunctions() {
     //initVector
     fTy = llvm::TypeBuilder<void* (void *, int), false>::get(*globalCtx);
     llvm::cast<llvm::Function>(mod->getOrInsertFunction(GET_VECTOR_FROM_INTERVAL, fTy));
+
+    //destroyInterval
+    fTy = llvm::TypeBuilder<void (void *), false>::get(*globalCtx);
+    llvm::cast<llvm::Function>(mod->getOrInsertFunction(DESTROY_INTERVAL, fTy));
 }
 
 /**
@@ -49,4 +54,11 @@ llvm::Value *ExternalTools::getVectorFromInterval(llvm::Value *interval, llvm::V
     llvm::Value    *v_int = ir->CreatePointerCast(interval, charTy->getPointerTo());
     llvm::Value    *ret   = ir->CreateCall(getV, {v_int, by});
     return ir->CreatePointerCast(ret, intVecTy->getPointerTo());
+}
+
+llvm::Value *ExternalTools::destroyInterval(llvm::Value *interval) {
+    llvm::Function *getV  = mod->getFunction(DESTROY_INTERVAL);
+    llvm::Value    *v_vec = ir->CreatePointerCast(interval, charTy->getPointerTo());
+    llvm::Value    *ret   = ir->CreateCall(getV, {v_vec});
+    return ret;
 }

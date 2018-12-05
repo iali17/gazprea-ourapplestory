@@ -24,6 +24,7 @@ public:
     Symbol           * resolveSymbol(std::string symbolName);
     Scope            * getEnclosingScope() const;
 
+    std::vector<llvm::Value *> * getFreeableVariables();
     void addSymbol(std::string newSymbolName, int type);
     void addSymbol(std::string newSymbolName, int type, bool constant);
     void addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr);
