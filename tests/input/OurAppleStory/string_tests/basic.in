@@ -1,21 +1,11 @@
 procedure main() returns integer {
 var out = std_output();
-string s = "asdd\n";
-
-string cats_meow = "The cat said \"Meow!\"\nThat was a good day.\n"
-
-cats_meow-> out;
-
-
-s -> out;
+string cats_meow = "The cat said \"Meow!\"\nThat was a good day.\n";
+cats_meow -> out;
 
 "`1234567890-=~!@#$%^&*()_+qwertyuiop[]QWERTYUIOP{}|asdfghjkl;'ASDFGHJKLzxcvbnm,./ZXCVBNM<>?" ->out;
 "\n" -> out;
-"\"\n\\\n\'"->out;
-
-'\n' ->out;
-
-
+"\"\n\\\n\'\n"->out;
 
 return 0;
 }

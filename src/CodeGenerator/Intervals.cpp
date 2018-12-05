@@ -41,10 +41,6 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
     }
 
     return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
-    // uncomment below and comment above to print the resulting vector
-//    auto result = ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
-//    et->printVector(result);
-//    return result;
 }
 
 
