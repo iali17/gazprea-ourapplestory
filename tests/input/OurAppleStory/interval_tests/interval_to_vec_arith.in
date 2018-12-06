@@ -1,0 +1,13 @@
+procedure main() returns integer {
+var out = std_output();
+
+integer interval x = 1..2;
+[1,2] + x -> out; '\n' -> out;
+[1,2] - x -> out; '\n' -> out;
+[1,2] * x -> out; '\n' -> out;
+[1,2] / x -> out; '\n' -> out;
+[1,2] == x -> out; '\n' -> out;
+[1,2] != x -> out; '\n' -> out;
+
+return 0;
+}
