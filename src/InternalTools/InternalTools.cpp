@@ -27,9 +27,33 @@ extern llvm::Type *streamStateTy;
 
 InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
     pair pair1;
+
     pair1.left = leftV;
     pair1.right = rightV;
+
     return pair1;
+}
+
+InternalTools::tupleGarbo InternalTools::makeGarbo(llvm::Type *type, int leftIndex, int rightIndex) {
+    tupleGarbo tupleGarbo1;
+
+    tupleGarbo1.type = type;
+    tupleGarbo1.leftIndex = leftIndex;
+    tupleGarbo1.rightIndex = rightIndex;
+
+    return tupleGarbo1;
+}
+
+// from https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
+std::vector<std::string> InternalTools::split(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
 }
 
 /**
@@ -849,3 +873,62 @@ llvm::Type *InternalTools::getInitVectorType(std::vector<llvm::Type *> &types) {
         exit(1);
     }
 }
+
+InternalTools::tupleGarbo InternalTools::parseStringExtension(const std::string &typeString) {
+    // Init variables to make struct
+    llvm::Type *type;
+    int sizeLeft = -1;
+    int sizeRight = -1;
+
+    auto nameSize = split(typeString, '[');
+
+    // Checks if extension exists
+    if(nameSize.size() > 1) {
+        auto fullSize = nameSize[1];
+        fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
+        auto sizes = split(fullSize, ',');
+
+        if(sizes.size() == 2) {
+            sizeLeft = std::stoi(sizes[0]);
+            sizeRight = std::stoi(sizes[1]);
+        } else {
+            sizeLeft = std::stoi(sizes[0]);
+        }
+    }
+
+    // Get type
+    if(nameSize[0].find("integer") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight != -1))
+            type = getDeclMatrixType(nameSize[0]);
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight == -1))
+            type = getDeclVectorType(nameSize[0]);
+        else
+            type = intTy;
+    } else if(nameSize[0].find("real") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight != -1))
+            type = getDeclMatrixType(nameSize[0]);
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight == -1))
+            type = getDeclVectorType(nameSize[0]);
+        else
+            type = realTy;
+    } else if(nameSize[0].find("boolean") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight != -1))
+            type = getDeclMatrixType(nameSize[0]);
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight == -1))
+            type = getDeclVectorType(nameSize[0]);
+        else
+            type = boolTy;
+    } else if(nameSize[0].find("character") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight != -1))
+            type = getDeclMatrixType(nameSize[0]);
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight == -1))
+            type = getDeclVectorType(nameSize[0]);
+        else
+            type = charTy;
+    } else {
+        type = nullptr;
+    }
+
+    return makeGarbo(type, sizeLeft, sizeRight);
+}
+
