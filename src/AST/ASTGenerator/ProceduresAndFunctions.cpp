@@ -41,6 +41,8 @@ antlrcpp::Any ASTGenerator::visitProcedure(gazprea::GazpreaParser::ProcedureCont
         gType = VECTOR_T;
     } else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
         gType = MATRIX;
+    }else if(ctx->returnStat() && ctx->returnStat()->type()->intervalType()) {
+        gType = INTERVAL;
     }
     if(ctx->returnStat()){
         retType = ctx->returnStat()->type()->getText();
@@ -77,6 +79,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
 
         if(ctx->param().at(i)->type()->vectorType()) gType = VECTOR_T;
         else if (ctx->param().at(i)->type()->matrixType()) gType = MATRIX;
+        else if (ctx->param().at(i)->type()->intervalType()) gType = INTERVAL;
 
         if(ctx->param().at(i)->extension() && !ctx->param().at(i)->extension()->rightExtension()) {
             if(!ctx->param().at(i)->type()->vectorType()){
@@ -84,8 +87,7 @@ antlrcpp::Any ASTGenerator::visitParams(gazprea::GazpreaParser::ParamsContext *c
             }
             gType = VECTOR_T;
             declaredType +=  ctx->param().at(i)->extension()->getText();
-        }
-        else if(ctx->param().at(i)->extension() && ctx->param().at(i)->extension()->rightExtension()) {
+        } else if(ctx->param().at(i)->extension() && ctx->param().at(i)->extension()->rightExtension()) {
             if(!ctx->param().at(i)->type()->matrixType()){
                 declaredType += "matrix";
             }
@@ -137,8 +139,10 @@ antlrcpp::Any ASTGenerator::visitFunction(gazprea::GazpreaParser::FunctionContex
         tupleType = (TupleTypeNode *) (ASTNode *) visit(ctx->returnStat()->type()->tupleType());
     } else if (ctx->returnStat() && ctx->returnStat()->type()->vectorType()) {
         gType = VECTOR_T;
-    }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+    } else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
         gType = MATRIX;
+    } else if(ctx->returnStat() && ctx->returnStat()->type()->intervalType()){
+        gType = INTERVAL;
     }
     auto ret = functionNames->find(normalizeID(ctx->Identifier()->getText()));
     if(ret == functionNames->end())
@@ -186,6 +190,8 @@ antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoCont
         gType = VECTOR_T;
     }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
         gType = MATRIX;
+    } else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+        gType = INTERVAL;
     }
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
@@ -207,6 +213,8 @@ antlrcpp::Any ASTGenerator::visitFuncProto(gazprea::GazpreaParser::FuncProtoCont
         gType = VECTOR_T;
     }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
         gType = MATRIX;
+    }else if(ctx->returnStat() && ctx->returnStat()->type()->intervalType()){
+        gType = INTERVAL;
     }
     std::vector<ASTNode *> *params = (std::vector<ASTNode *> *) visit(ctx->params());
     ASTNode * p = (ASTNode *) new ProtoProcedureNode(params, retType, normalizeID(ctx->Identifier()->getText()),

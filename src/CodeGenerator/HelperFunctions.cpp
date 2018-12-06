@@ -124,7 +124,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                 auto sizes = split(sizeName, ',');
                 int leftSize = std::stoi(sizes[0]);
                 int rightSize = std::stoi(sizes[1]);
-                paramType = it->getDeclVectorType(typeName);
+                paramType = it->getDeclMatrixType(typeName);
 
                 auto argNode = dynamic_cast<MatrixNode *>(arguNode->at(i));
                 if (argNode) {
@@ -134,6 +134,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                     if(rows != it->getConsi32(leftSize) && cols != it->getConsi32(rightSize)) {
                         //auto er = new MatrixE
                         //TODO: make a matrix error node
+                        std::cout << "Type error: Need to make a type error node\n";
                         exit(1);
                     }
                 } else {
@@ -155,6 +156,30 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                     paramVector.push_back(argPtr);
                     continue;
                 }
+        } else if (pNode->getGType() == INTERVAL) {
+            paramType = intervalTy;
+
+            auto argNode = dynamic_cast<IntervalNode *>(arguNode->at(i));
+            if (argNode) {
+                argPtr = visit(argNode);
+            } else {
+                auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
+                Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
+                //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
+                //       == paramType->getStructNumElements());
+                argPtr = symbol->getPtr();
+                c = symbol->isConstant();
+            }
+
+            if (argNode || constant) {
+                assert(constant);
+                paramVector.push_back(argPtr);
+                continue;
+            } else if (!constant) {
+                assert(!c);
+                paramVector.push_back(argPtr);
+                continue;
+            }
 
         } else {
             paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
@@ -331,6 +356,8 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             sizeRight = std::stoi(sizes[1]);
             strRetType = nameSize[0];
             retType = it->getDeclMatrixType(strRetType);
+    } else if (gType == INTERVAL){
+       retType = intervalTy;
     } else {
         retType = symbolTable->resolveType(strRetType)->getTypeDef();
     }
@@ -364,15 +391,16 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
             auto nameVec = split(typeName, '[');
             typeName = nameVec[0];
             params.push_back(it->getDeclMatrixType(typeName)->getPointerTo());
-        }
-        else {
+        } else if (pNode->getGType() == INTERVAL) {
+            params.push_back(intervalTy->getPointerTo());
+        } else {
             params.push_back(symbolTable->resolveType(typeName)->getTypeDef()->getPointerTo());
         }
     }
 
     symbolTable->addFunctionSymbol(functionName, nodeType, paramsList);
 
-    if(tupleType || gType == VECTOR_T || gType == MATRIX){
+    if(tupleType || gType != -1){
         funcTy = llvm::FunctionType::get(retType->getPointerTo(), params, false);
     } else {
         funcTy = llvm::FunctionType::get(retType, params, false);
