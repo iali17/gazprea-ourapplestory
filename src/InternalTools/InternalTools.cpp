@@ -909,30 +909,30 @@ InternalTools::tupleGarbo InternalTools::parseStringExtension(const std::string 
         type = intervalTy;
     } else if(nameSize[0].find("integer") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0] + "matrix");
+            type = intMatrixTy;
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0] + "vector");
+            type = intVecTy;
         else
             type = intTy;
     } else if(nameSize[0].find("real") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0] + "matrix");
+            type = realMatrixTy;
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0] + "vector");
+            type = realVecTy;
         else
             type = realTy;
     } else if(nameSize[0].find("boolean") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0] + "matrix");
+            type = boolMatrixTy;
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0] + "vector");
+            type = boolVecTy;
         else
             type = boolTy;
     } else if(nameSize[0].find("character") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0] + "matrix");
+            type = charMatrixTy;
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0] + "vector");
+            type = charVecTy;
         else
             type = charTy;
     } else if(nameSize[0].find("string") != std::string::npos) {

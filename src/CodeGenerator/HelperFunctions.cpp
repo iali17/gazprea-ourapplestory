@@ -279,10 +279,24 @@ llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     llvm::Type*       type;
     std::string       typeStr;
     std::string       memberID;
+    InternalTools::tupleGarbo tg;
+    auto * dims = new std::unordered_map<int, std::pair<int, int>>;
+    GazpreaType * gazpreaType;
 
     for (auto element : * declNodes) {
         typeStr = ((DeclNode *) element)->getTypeIds()->at(0);
-        type    = symbolTable->resolveType(typeStr)->getTypeDef();
+        gazpreaType = symbolTable->resolveType(typeStr);
+
+
+        if(gazpreaType == nullptr){
+            tg = it->parseStringExtension(typeStr);
+            type = tg.type->getPointerTo();
+            auto  p = std::make_pair(tg.leftIndex, tg.rightIndex);
+            dims->insert(std::make_pair(i, p));
+        } else {
+            type    = gazpreaType->getTypeDef();
+        }
+
         members->push_back(type->getPointerTo());
 
         tupleID += typeStr;
@@ -295,7 +309,7 @@ llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     }
 
     newStruct = llvm::StructType::create(*members, tupleID);
-    symbolTable->addTupleType(newStruct, memberNames, members); //this is where we add the struct to the symbol table
+    symbolTable->addTupleType(newStruct, memberNames, members, dims); //this is where we add the struct to the symbol table
     return newStruct;
 }
 

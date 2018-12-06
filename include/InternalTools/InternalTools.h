@@ -19,6 +19,7 @@
 #include "CondBuilder.h"
 #include "WhileBuilder.h"
 #include "globals.h"
+#include "../Scope/GazpreaTupleType.h"
 
 class InternalTools {
 public:
