@@ -14,8 +14,6 @@ public:
                      std::vector<llvm::Type *> *members);
     int getOffsetFromString(std::string str);
     std::vector<llvm::Type *> *getMembers() const;
-protected:
-public:
     std::unordered_map<std::string, int> *getStringRefMap() const;
 
 protected:

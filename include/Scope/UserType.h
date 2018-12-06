@@ -10,10 +10,10 @@
 
 class UserType : public GazpreaType {
 public:
-    UserType(const std::string &name, llvm::Type *typeDef);
+    UserType(const std::string &name, llvm::Type *typeDef, int dim1 = -1, int dim2 = -1);
 
     UserType(const std::string &name, llvm::Type *typeDef,
-             const std::unordered_map<std::string, llvm::Type *> &members);
+             const std::unordered_map<std::string, llvm::Type *> &members, int dim1 = -1, int dim2 = -1);
 
 protected:
     std::unordered_map<std::string, llvm::Type* > members;
