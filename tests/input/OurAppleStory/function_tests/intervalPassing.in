@@ -1,0 +1,16 @@
+function g(integer interval i) returns integer interval;
+
+procedure main() returns integer {
+var out = std_output();
+
+integer interval x = 1..2;
+integer interval result = g(x);
+result by 1 -> out; '\n'-> out;
+
+return 0;
+}
+
+function g(integer interval i) returns integer interval {
+
+return i * 3 - 2;
+}

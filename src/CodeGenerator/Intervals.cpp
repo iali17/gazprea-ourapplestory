@@ -24,7 +24,6 @@ extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 
-// todo: check this and by
 llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     llvm::Value * left = visit(node->getLeftBound());
     llvm::Value * right = visit(node->getRightBound());

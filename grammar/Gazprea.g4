@@ -11,7 +11,6 @@ termsAndConditions
     ;
 
 // TODO: check for precendence
-// todo: interval precendence is wrong
 expr
     : '(' expr ')'                                                  #brackExpr
     | Integer                                                       #integerExpr

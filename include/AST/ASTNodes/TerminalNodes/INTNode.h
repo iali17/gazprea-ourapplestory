@@ -6,7 +6,6 @@
 #define GAZPREABASE_INTNODE_H
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 
-//TODO: should the value be protected and we just have a getVal?
 class INTNode : public ASTNode {
 public:
     explicit INTNode(int value, int line);

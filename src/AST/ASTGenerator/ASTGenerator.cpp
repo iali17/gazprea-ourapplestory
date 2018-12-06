@@ -574,7 +574,7 @@ antlrcpp::Any ASTGenerator::visitStringExpr(gazprea::GazpreaParser::StringExprCo
             }
         }
     }
-    return (ASTNode *) new StringNode(strVec, line);        // todo maybe shouldnt be a vector node
+    return (ASTNode *) new StringNode(strVec, line);
 }
 
 antlrcpp::Any ASTGenerator::visitGeneratorExpr(gazprea::GazpreaParser::GeneratorExprContext *ctx) {
@@ -634,7 +634,7 @@ antlrcpp::Any ASTGenerator::visitFullIndexAssign(gazprea::GazpreaParser::FullInd
     if(ctx->MUL().size() == 1){
         int line = (int) ctx->getStart()->getLine();
         ASTNode * dest = visit(ctx->expr().at(0));
-        INTNode * one = new INTNode(1, line);
+        auto * one = new INTNode(1, line);
         LengthNode * len = new LengthNode(dest, line);
         IntervalNode * fullRange = new IntervalNode(one, len, line);
         ByNode   * byNode = new ByNode(fullRange, one, line);
