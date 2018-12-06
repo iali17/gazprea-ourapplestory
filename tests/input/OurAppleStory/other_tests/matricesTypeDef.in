@@ -1,0 +1,11 @@
+typedef integer[2,3] two_by_three_matrix;
+
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    two_by_three_matrix x = [[1,2,3],[1,2]];
+
+    x -> out; '\n' -> out;
+
+    return 0;
+}

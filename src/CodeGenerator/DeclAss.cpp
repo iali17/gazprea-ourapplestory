@@ -59,11 +59,36 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         ir->CreateStore(val, ptr);
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->size() == 1) {
-        llvm::Type *type = symbolTable->resolveType(node->getTypeIds()->at(0))->getTypeDef();
-        node->setLlvmType(type);
+        GazpreaType *gazType = symbolTable->resolveType(node->getTypeIds()->at(0));
+        bool garboCond = false;
 
+        llvm::Type *type = gazType->getTypeDef();
+        node->setLlvmType(type);
         ptr = ir->CreateAlloca(type);
-        if(val == nullptr) {
+
+        // User defined matrix type
+        if (it->isMatrixType(ptr)) {
+            garboCond = true;
+            llvm::Value *typeConst = it->getConstFromType(type);
+            ptr = et->getNewMatrix(typeConst);
+            et->initMatrix(ptr, it->getConsi32(gazType->getDim1()), it->getConsi32(gazType->getDim2()));
+            ptr = it->castMatrixToType(ptr, type->getPointerTo());
+        }
+        // User defined vector type
+        else if (it->isVectorType(ptr)) {
+            garboCond = true;
+            llvm::Value *typeConst = it->getConstFromType(type);
+            ptr = et->getNewVector(typeConst);
+            et->initVector(ptr, it->getConsi32(gazType->getDim1()));
+            ptr = it->castVectorToType(ptr, type->getPointerTo());
+        }
+        // User defined interval type
+        else if (it->isIntervalType(ptr)) {
+            garboCond = true;
+            ptr = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
+        }
+
+        if (val == nullptr && !garboCond) {
             if (!(it->setNull(type, ptr))) {
                 std::cerr << "Unable to initialize to null at line " << node->getLine() << ". Aborting...\n";
                 exit(0);
@@ -74,24 +99,20 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
         if (it->isTupleType(ptr)) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
-        } else if (type->isVectorTy()) {
+        } else if (it->isVectorType(ptr) || it->isMatrixType(ptr)) {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
         } else if (it->isIntervalType(ptr)) {
-            llvm::Value * lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
-            llvm::Value * upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
+            llvm::Value *lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
+            llvm::Value *upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
 
-            llvm::Value * newLower = it->getValFromStruct(val, INTERVAL_MIN);
-            llvm::Value * newUpper = it->getValFromStruct(val, INTERVAL_MAX);
-
-            et->print(newLower); et->printStaticStr(EOLN_STR);
-            et->print(newUpper); et->printStaticStr(EOLN_STR);
+            llvm::Value *newLower = it->getValFromStruct(val, INTERVAL_MIN);
+            llvm::Value *newUpper = it->getValFromStruct(val, INTERVAL_MAX);
 
             ir->CreateStore(newLower, lowerPtr);
             ir->CreateStore(newUpper, upperPtr);
-        }  else {
-                val = ct->typeAssCast(type, val, node->getLine());
-                ir->CreateStore(val, ptr);
-
+        } else if(not(garboCond ) ){
+            val = ct->typeAssCast(type, val, node->getLine());
+            ir->CreateStore(val, ptr);
         }
 
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());

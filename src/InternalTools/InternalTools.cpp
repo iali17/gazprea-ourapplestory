@@ -891,12 +891,12 @@ InternalTools::tupleGarbo InternalTools::parseStringExtension(const std::string 
     auto nameSize = split(typeString, '[');
 
     // Checks if extension exists
-    if(nameSize.size() > 1) {
+    if (nameSize.size() > 1) {
         auto fullSize = nameSize[1];
         fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
         auto sizes = split(fullSize, ',');
 
-        if(sizes.size() == 2) {
+        if (sizes.size() == 2) {
             sizeLeft = std::stoi(sizes[0]);
             sizeRight = std::stoi(sizes[1]);
         } else {
@@ -905,34 +905,38 @@ InternalTools::tupleGarbo InternalTools::parseStringExtension(const std::string 
     }
 
     // Get type
-    if(nameSize[0].find("integer") != std::string::npos) {
+     if(nameSize[0].find("interval") != std::string::npos) {
+        type = intervalTy;
+    } else if(nameSize[0].find("integer") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0]);
+            type = getDeclMatrixType(nameSize[0] + "matrix");
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0]);
+            type = getDeclVectorType(nameSize[0] + "vector");
         else
             type = intTy;
     } else if(nameSize[0].find("real") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0]);
+            type = getDeclMatrixType(nameSize[0] + "matrix");
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0]);
+            type = getDeclVectorType(nameSize[0] + "vector");
         else
             type = realTy;
     } else if(nameSize[0].find("boolean") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0]);
+            type = getDeclMatrixType(nameSize[0] + "matrix");
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0]);
+            type = getDeclVectorType(nameSize[0] + "vector");
         else
             type = boolTy;
     } else if(nameSize[0].find("character") != std::string::npos) {
         if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight != -1))
-            type = getDeclMatrixType(nameSize[0]);
+            type = getDeclMatrixType(nameSize[0] + "matrix");
         else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight == -1))
-            type = getDeclVectorType(nameSize[0]);
+            type = getDeclVectorType(nameSize[0] + "vector");
         else
             type = charTy;
+    } else if(nameSize[0].find("string") != std::string::npos) {
+            type = strTy;
     } else {
         type = nullptr;
     }

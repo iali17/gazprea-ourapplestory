@@ -52,8 +52,8 @@ void SymbolTable::pushNewScope() {
     pushNewScope(getNewScopeString());
 }
 
-void SymbolTable::addUserType(std::string newTypeName, llvm::Type *newType) {
-    scopeStack->top()->addUserType(newTypeName, newType);
+void SymbolTable::addUserType(std::string newTypeName, llvm::Type *newType, int leftSize, int rightSize) {
+    scopeStack->top()->addUserType(newTypeName, newType, leftSize, rightSize);
 }
 
 void SymbolTable::addBaseType(std::string baseTypeName, llvm::Type *newType) {
