@@ -1,0 +1,34 @@
+procedure addOne(integer interval i);
+procedure subTwo(integer interval i);
+procedure mulTen(integer interval i) returns integer interval;
+procedure divFour(integer interval i) returns integer interval;
+
+procedure main() returns integer {
+var out = std_output();
+
+integer interval x = 12..34;
+integer interval temp;
+
+call addOne(x);
+x -> out; '\n' -> out;
+call subTwo(x);
+x -> out; '\n' -> out;
+temp = -mulTen(x);
+temp -> out; '\n' -> out;
+temp = divFour(x);
+temp -> out; '\n' -> out;
+
+return 0;
+}
+
+procedure addOne(integer interval i){
+i = i + 1;
+}
+procedure subTwo(integer interval i){
+i = i - 2;
+}
+procedure mulTen(integer interval i) returns integer interval {
+return i * 10;
+}
+procedure divFour(integer interval i) returns integer interval{
+return i / 4;
