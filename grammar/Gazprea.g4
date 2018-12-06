@@ -143,7 +143,7 @@ streamState
     ;
 
 typeDefine
-    : TYPEDEF type Identifier SEMICOLON
+    : TYPEDEF type extension? Identifier SEMICOLON
     ;
 
 functionCall
