@@ -1,0 +1,31 @@
+typedef integer vector[3] intVec3Type;
+typedef character vector[3] charVec3Type;
+typedef real vector[3] realVec3Type;
+typedef string stringType;
+
+procedure main() returns integer {
+    var out = std_output();
+    intVec3Type t1 = [1,2,3];
+    charVec3Type t2 = ['a', 'b', 'c'];
+    realVec3Type t3 = [1.1, 2.3e-4, .3e2];
+    stringType = "some string";
+
+    // Print intType
+    t1 -> out; '\n' -> out;
+
+    // Addition
+    t1[1] + 1 -> out; '\n' -> out;
+
+    // Multiplication
+    t1[2] * 3 -> out; '\n' -> out;
+
+    // Division
+    t1[3] / 0.1 -> out; '\n' -> out;
+
+
+
+
+
+
+    return 0;
+}

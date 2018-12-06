@@ -1,0 +1,33 @@
+procedure Babylonian(real n, real guess) returns real;
+procedure SquareRoot(real n, real guess) returns real;
+
+procedure main() returns integer {
+    var out = std_output();
+	var in1 = std_input();
+	real num;
+	real guess;
+
+    num = 12345678;
+	//num <- in1; '\n'-> out;
+    guess = num / 2;
+
+	SquareRoot(num, guess) -> out; '\n'-> out;
+
+	return 0;
+}
+
+procedure SquareRoot(real n, real guess) returns real {
+    loop {
+        var temp = Babylonian(n, guess);
+        if (((guess - temp) < 1e-6) and ((guess - temp) > -1e-6)) {
+            guess = temp;
+            break;
+        }
+        guess = temp;
+    }
+    return guess;
+}
+
+procedure Babylonian(real n, real guess) returns real {
+    return 0.5 * (guess + n / guess);
+}
