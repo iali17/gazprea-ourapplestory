@@ -36,7 +36,18 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
     llvm::Value *val = visit(node->getExpr());
     llvm::Value *ptr = nullptr;
 
-    if (node->getTypeIds()->empty() && ((node->getType() == TUPLE) || it->isVectorType(val) || it->isMatrixType(val))) {
+    if(val && it->isVectorType(val)){
+        val = et->getVectorCopy(val);
+    }
+    else if(val && it->isIntervalType(val)){
+        val = et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX));
+    }
+    else if(val && it->isMatrixType(val)){
+        val = et->getMatrixCopy(val);
+    }
+
+
+    if (node->getTypeIds()->empty() && (node->getType() == TUPLE || it->isIntervalType(val) || it->isMatrixType(val) || it->isVectorType(val))){
         ptr = val;
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->empty() && it->isTupleType(val)) {
@@ -65,9 +76,22 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
             ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
         } else if (type->isVectorTy()) {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
-        } else {
-            val = ct->typeAssCast(type, val, node->getLine());
-            ir->CreateStore(val, ptr);
+        } else if (it->isIntervalType(ptr)) {
+            llvm::Value * lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
+            llvm::Value * upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
+
+            llvm::Value * newLower = it->getValFromStruct(val, INTERVAL_MIN);
+            llvm::Value * newUpper = it->getValFromStruct(val, INTERVAL_MAX);
+
+            et->print(newLower); et->printStaticStr(EOLN_STR);
+            et->print(newUpper); et->printStaticStr(EOLN_STR);
+
+            ir->CreateStore(newLower, lowerPtr);
+            ir->CreateStore(newUpper, upperPtr);
+        }  else {
+                val = ct->typeAssCast(type, val, node->getLine());
+                ir->CreateStore(val, ptr);
+
         }
 
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
@@ -182,10 +206,20 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             left->setPtr(et->getNewInterval(it->getConsi32(1), it->getConsi32(1)));
         }
         else {
-            if (it->isIntervalType(ptr)){
-                exit(1);// todo: if ptr = expr and interval isnt interval
+            if (!it->isIntervalType(val)){ // todo get the correct right type toooo
+                std::cerr << "Type error: Cannot convert between integer interval and * on line "
+                << node->getLine() << ". Aborting...\n";
+                exit(1);
             }
-            left->setPtr(et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX)));
+
+            llvm::Value * lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
+            llvm::Value * upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
+
+            llvm::Value * newLower = it->getValFromStruct(val, INTERVAL_MIN);
+            llvm::Value * newUpper = it->getValFromStruct(val, INTERVAL_MAX);
+
+            ir->CreateStore(newLower, lowerPtr);
+            ir->CreateStore(newUpper, upperPtr);
         }
         return nullptr;
     }
@@ -228,8 +262,8 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
     llvm::Value *src                 = visit(node->getRight());
 
     auto *idxVec = new std::vector<llvm::Value *>;
-    for(uint i = 0; i < idxNodes->size(); i++){
-        idxVec->push_back(visit(idxNodes->at(i)));
+    for (auto &idxNode : *idxNodes) {
+        idxVec->push_back(visit(idxNode));
     }
 
     //vector only
