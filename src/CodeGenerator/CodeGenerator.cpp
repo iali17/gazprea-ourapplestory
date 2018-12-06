@@ -419,6 +419,24 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
  */
 llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
+    std::string strRetType = node->getCustomType();
+    int sizeLeft = -1;
+    int sizeRight = -1;
+
+    auto nameSize = split(strRetType, '[');
+    // Checks if extension exists
+    if(nameSize.size() > 1) {
+        auto fullSize = nameSize[1];
+        fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
+        auto sizes = split(fullSize, ',');
+
+        if(sizes.size() == 2) {
+            sizeLeft = std::stoi(sizes[0]);
+            sizeRight = std::stoi(sizes[1]);
+        } else {
+            sizeLeft = std::stoi(sizes[0]);
+        }
+    }
 
     if(node->getTuple())
         type = parseStructType(dynamic_cast<TupleTypeNode *>(node->getTuple()));
@@ -430,10 +448,19 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = charTy;
     else if(node->getCustomType() == "boolean")
         type = boolTy;
-    else {
-        // gotta do for matrix type
-        std::cerr << "Not proper defined type on line " << node->getLine() <<". Aborting...\n";
-        exit(1);
+    else if(sizeLeft && sizeRight == -1) {
+
+
+
+
+    } else if(sizeLeft && sizeRight) {
+
+
+
+    } else {
+            // gotta do for matrix type
+            std::cerr << "Not proper defined type on line " << node->getLine() <<". Aborting...\n";
+            exit(1);
     }
 
     symbolTable->addUserType(node->getId(), type);
