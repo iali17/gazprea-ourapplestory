@@ -1,0 +1,13 @@
+procedure main() returns integer {
+var out = std_output();
+
+
+integer matrix a[2,2] = [[1,2],[3,4]];
+integer matrix b[2,2] = [[99,99],[99,99]];
+
+a=b;
+
+a->out; '\n'->out;
+
+return 0;
+}
