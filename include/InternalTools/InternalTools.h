@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include "AST/ASTNodes/BaseNodes/ASTNode.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -25,6 +26,13 @@ public:
         pair():left(nullptr),right(nullptr){};
         llvm::Value *left;
         llvm::Value *right;
+    };
+
+    struct tupleGarbo {
+    	tupleGarbo():type(nullptr), leftIndex(-1), rightIndex(-1){};
+		llvm::Type *type;
+    	int leftIndex;
+    	int rightIndex;
     };
 
     InternalTools(llvm::LLVMContext *globalCtx, llvm::IRBuilder<> *ir, llvm::Module *mod);
@@ -67,12 +75,16 @@ public:
     llvm::Value *getNegation(llvm::Value *expr);
     llvm::Value *getUnarySub(llvm::Value *expr);
 
-
     llvm::Value *castMatrixIndex(llvm::Value *slice, llvm::Value *l, llvm::Value *r, llvm::Value *mat);
     llvm::Value *getMatrixNumRows(llvm::Value * mat);
 	llvm::Value *getMatrixNumCols(llvm::Value * mat);
 
     pair makePair(llvm::Value *left, llvm::Value *right);
+    tupleGarbo makeGarbo(llvm::Type *type, int leftIndex = -1, int rightIndex = -1);
+
+	InternalTools::tupleGarbo parseStringExtension(const std::string &typeString);
+	std::vector<std::string> split(const std::string& s, char delimiter);
+
 	bool setIdentity(llvm::Type * type, llvm::Value * ptr);
 	bool setNull(llvm::Type * type, llvm::Value * ptr);
     bool isStructType(llvm::Value *ptr);
