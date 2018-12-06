@@ -182,6 +182,9 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             left->setPtr(et->getNewInterval(it->getConsi32(1), it->getConsi32(1)));
         }
         else {
+            if (it->isIntervalType(ptr)){
+                exit(1);// todo: if ptr = expr and interval isnt interval
+            }
             left->setPtr(et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX)));
         }
         return nullptr;

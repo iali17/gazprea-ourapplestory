@@ -807,14 +807,6 @@ llvm::Value *InternalTools::castMatrixIndex(llvm::Value *slice, llvm::Value *l, 
     }
 }
 
-llvm::Value *InternalTools::getInf() {
-    return llvm::ConstantFP::getInfinity(intTy);
-}
-
-llvm::Value *InternalTools::getNInf() {
-    return llvm::ConstantFP::getInfinity(intTy, true);
-}
-
 llvm::Value *InternalTools::getMatrixNumRows(llvm::Value *mat) {
     return getValFromStruct(mat, MATRIX_NUMROW_INDEX);
 }
