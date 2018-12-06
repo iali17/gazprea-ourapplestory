@@ -419,7 +419,8 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
  */
 llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
-    int sizeLeft, sizeRight;
+    int sizeLeft = -1;
+    int sizeRight = -1;
     InternalTools::tupleGarbo retVal;
     std::string strRetType = node->getCustomType();
 
@@ -439,19 +440,14 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = charTy;
     else if(node->getCustomType() == "boolean")
         type = boolTy;
-    else if(sizeLeft != -1 && sizeRight != -1) {
+    else if(sizeLeft != -1) {
         type = retVal.type;
-
-    } else if(sizeRight == -1) {
-        type = retVal.type;
-
     } else {
-            // gotta do for matrix type
             std::cerr << "Not proper defined type on line " << node->getLine() <<". Aborting...\n";
             exit(1);
     }
 
-    symbolTable->addUserType(node->getId(), type);
+    symbolTable->addUserType(node->getId(), type, sizeLeft, sizeRight);
     return nullptr;
 }
 

@@ -51,12 +51,12 @@ Symbol *Scope::resolveSymbol(std::string symbolName) {
         return iter->second;
 }
 
-void Scope::addUserType(std::string newTypeName, llvm::Type* newType) {
+void Scope::addUserType(std::string newTypeName, llvm::Type* newType, int leftSize, int rightSize) {
     if (enclosingScope != nullptr) {
         std::cerr << "GazpreaType defined in non-global context\nAborting...\n";
         exit(1);
     }
-    typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, new UserType(newTypeName, newType)));
+    typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, new UserType(newTypeName, newType, leftSize, rightSize)));
 }
 
 void Scope::addBaseType(std::string newTypeName, llvm::Type *newType) {

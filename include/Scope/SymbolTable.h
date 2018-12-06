@@ -28,7 +28,7 @@ public:
                       std::vector<llvm::Type *> *members);
     void addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
                       std::vector<llvm::Type *> *members);
-    void addUserType(std::string newTypeName, llvm::Type* newType);
+    void addUserType(std::string newTypeName, llvm::Type* newType, int leftSize = -1, int rightSize = -1);
     void addBaseType(std::string baseTypeName, llvm::Type *newType);
     void popScope();
 
