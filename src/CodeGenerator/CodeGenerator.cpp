@@ -55,6 +55,19 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("interval" , intervalTy);
     symbolTable->addBaseType("string"   , strTy);
 
+    //vectors
+    symbolTable->addBaseType("booleanvector"  , boolVecTy->getPointerTo());
+    symbolTable->addBaseType("charactervector", charVecTy->getPointerTo());
+    symbolTable->addBaseType("integervector"  , intVecTy->getPointerTo());
+    symbolTable->addBaseType("realvector"     , realVecTy->getPointerTo());
+
+    //matrices
+    symbolTable->addBaseType("booleanmatrix"  , boolMatrixTy->getPointerTo());
+    symbolTable->addBaseType("charactermatrix", charMatrixTy->getPointerTo());
+    symbolTable->addBaseType("integermatrix"  , intMatrixTy->getPointerTo());
+    symbolTable->addBaseType("realmatrix"     , realMatrixTy->getPointerTo());
+
+    symbolTable->addBaseType("integerinterval", intervalTy->getPointerTo());
 
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
