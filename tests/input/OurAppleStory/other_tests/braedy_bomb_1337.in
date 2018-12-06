@@ -1,0 +1,45 @@
+procedure main() returns integer {
+	var out = std_output();
+	integer i = 0;
+	integer vector v = 0..0;
+	integer vector r;
+	integer s = 0;
+	integer c = 0;
+	integer matrix g = [[]];
+	integer vector gg;
+
+	if (020!=4) {
+		integer i = i + 2;
+		integer vector v = [i in i..(i*(175/(i+(0-(0-14))))) | i];
+		v[10 - 1 + i + as<integer>(9==(10-1))] -> out; '\n' -> out;
+	}
+
+	r = [i in (0-2147483647)..(2*12-2147483647) | as<integer>(0==(i - ((i/2)*2)))];
+
+	loop while(c < 50){
+	  if(c < length(r) + 1){
+ 		s = s + r[c];
+	  }
+	  c = c -2 +3;
+	}
+
+	s -> out; '\n' -> out;
+
+	i = (0-2147483647);
+	i = i - 1;
+	i/2147483647 + 5 -> out; '\n' -> out;
+
+	i = (0-2147483647);
+	i = i - 1;
+	r = as<integer vector [25]>(i..i);
+	
+	(2..5 by 1 )[as<integer>(0==r[2]) + 1] -> out; '\n' -> out;
+
+	g[1, *] -> out; '\n' -> out;
+
+	gg = (114..180 by 1) / (( 4..30 by 1) || [i in 1..40 | 1]);
+	
+	r = as<integer vector[25]>(gg * (0-1) +21);
+	0-r[length([i in 1..4 & false].1) + 1] -> out; '\n' -> out;
+	return 0;
+}
