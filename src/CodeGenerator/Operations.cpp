@@ -60,7 +60,7 @@ InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node,
 
     //promote
     InternalTools::pair retVal;
-    retVal = ct->typePromotion(left, right, node->getLine());
+    retVal = ct->typePromotion(left, right, node->getLine(), 1);
 
     //give size back
     if(not(leftIsScalar)){
@@ -105,7 +105,7 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, ll
 
     //promote
     InternalTools::pair retVal;
-    retVal = ct->typePromotion(left, right, node->getLine());
+    retVal = ct->typePromotion(left, right, node->getLine(), 1);
 
     //give size back
 
@@ -162,7 +162,7 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, ll
 
     //promote
     InternalTools::pair retVal;
-    retVal = ct->typePromotion(left, right, node->getLine());
+    retVal = ct->typePromotion(left, right, node->getLine(), 1);
 
     //give size back
     if(not(leftIsScalar)){

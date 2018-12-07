@@ -23,7 +23,7 @@ class CastTable {
 public:
     CastTable(llvm::LLVMContext *globalctx, llvm::IRBuilder<> *ir, InternalTools *it, ExternalTools *et, llvm::Module *mod, ErrorBuilder *eb);
 
-    InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+    InternalTools::pair typePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt = -1);
     llvm::Value *varCast(llvm::Type *type, llvm::Value *expr, int line);
 
     llvm::Value *typeAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *size = nullptr, llvm::Value *extraSize = nullptr, int exprSize = -1);
@@ -31,10 +31,10 @@ public:
     llvm::Value *matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftsize = nullptr, llvm::Value *rightSize = nullptr);
 
     InternalTools::pair IntervalTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    InternalTools::pair vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    InternalTools::pair matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
-    InternalTools::pair matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line);
+    InternalTools::pair vectorTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line , int opt = -1);
+    InternalTools::pair vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt = -1);
+    InternalTools::pair matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt = -1);
+    InternalTools::pair matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt = -1);
 
     llvm::Value *createVecFromVec(llvm::Value *exprP, llvm::Type *type, llvm::Value *maxSize, int line);
     llvm::Value *createMatFromMat(llvm::Value *exprP, llvm::Type *type, llvm::Value *leftSize, llvm::Value *rightSize, int line);

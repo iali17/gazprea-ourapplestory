@@ -30,9 +30,9 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
     auto valueTypes = new std::vector<llvm::Type *>();
 
     // Get tempValues, check if need to upcast
-    for(uint i = 0; i < node->getElements()->size(); i++) {
-        valueTypes->push_back(visit(node->getElements()->at(i))->getType());
-        tempValues->push_back(visit(node->getElements()->at(i)));
+    for (auto &i : *node->getElements()) {
+        valueTypes->push_back(visit(i)->getType());
+        tempValues->push_back(visit(i));
     }
 
     // Casting empty vector with proper type
@@ -60,8 +60,8 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
 llvm::Value *CodeGenerator::visit(StringNode *node) {
     auto values = new std::vector<llvm::Value *>();
 
-    for(uint i = 0; i < node->getElements()->size(); i++)
-        values->push_back(visit(node->getElements()->at(i)));
+    for (auto &i : *node->getElements())
+        values->push_back(visit(i));
 
     // Casting to a stringTy
     llvm::Value *vec = et->getNewVector(it->getConstFromType(charTy));
@@ -136,6 +136,10 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         llvm::Type *vecType = it->getDeclVectorType(stype);
 
         vec = ct->typeAssCast(vecType, regExpr, node->getLine(), size);
+
+        if(stype == "string") {
+            vec = ir->CreatePointerCast(vec, strTy->getPointerTo());
+        }
     }
 
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);

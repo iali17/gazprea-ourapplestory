@@ -53,8 +53,6 @@ public:
     llvm::Value *getReal(float val);
     llvm::Value *getConsi32(int64_t val);
     llvm::Value *getConsi64(int64_t val);
-    llvm::Value *getInf();
-    llvm::Value *getNInf();
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
                              llvm::Value *arrP, llvm::Value *replaceVal);
     llvm::Value *getNull(llvm::Type *type);

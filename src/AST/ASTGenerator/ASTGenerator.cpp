@@ -374,9 +374,9 @@ antlrcpp::Any ASTGenerator::visitTypeDefine(gazprea::GazpreaParser::TypeDefineCo
     std::string type = ctx->type()->getText();
 
     // Checks if there is an extension assuming they do something like: integer[3] or integer[2,3]
-    if(ctx->extension()) {
-        type += ctx->extension()->getText();
-    }
+//    if(ctx->extension()) {
+//        type += ctx->extension()->getText();
+//    }
 
     // Doesnt make sense to normalize these cause it should cause an error
     std::string id = (ctx->Identifier()->getText());

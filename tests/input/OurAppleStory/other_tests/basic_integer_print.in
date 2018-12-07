@@ -1,6 +1,0 @@
-procedure main() returns integer {
-  integer i = 2;
-  var out = std_output();
-  i -> out;
-  return 0; 
-}

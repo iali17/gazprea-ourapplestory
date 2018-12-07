@@ -1,0 +1,40 @@
+procedure SquareRoot(real n, real guess) returns real;
+procedure AbsoluteValue(real number) returns real;
+procedure Madhava(integer k) returns real;
+
+procedure main() returns integer {
+    var out = std_output();
+    real result = 0;
+
+    loop k in 0..10 {
+        result = result + Madhava(k);
+    }
+
+    result = result * SquareRoot(12.0, 3.0);
+    result -> out; '\n' -> out;
+    return 0;
+}
+
+procedure Madhava(integer k) returns real {
+    return 1.0 / ((-3.0) ^ k * (2.0 * k + 1.0));
+}
+
+procedure SquareRoot(real n, real guess) returns real {
+    loop {
+        var temp = 0.5 * (guess + n / guess);
+        if (AbsoluteValue(guess - temp) < 1e-6) {
+            guess = temp;
+            break;
+        }
+        guess = temp;
+    }
+    return guess;
+}
+
+procedure AbsoluteValue(real number) returns real {
+    if (number > 0) {
+        return number;
+    } else {
+        return -number;
+    }
+}
