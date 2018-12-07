@@ -1,0 +1,18 @@
+
+procedure main() returns integer {
+    var out = std_output();
+    real vector[2] theArray = [1.0,1.0];
+    real result;
+    integer n = 186;
+
+
+    loop i in 3..n {
+        result = theArray[1] + theArray[2];
+        theArray[1] = theArray[2];
+        theArray[2] = result;
+    }
+
+    "Fibonacci of 186 is "->out;result -> out;'\n' -> out;
+
+return 0;
+}
