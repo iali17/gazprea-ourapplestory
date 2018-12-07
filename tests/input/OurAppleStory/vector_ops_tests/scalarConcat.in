@@ -1,0 +1,35 @@
+procedure main () returns integer {
+    var out = std_output();               // declare out
+
+    // Concat between scalar integer and integer vector
+    0 || [1,2,3]  -> out; '\n' -> out;
+
+    // Concat between scalar integer and real vector
+    1 || [1.5,2,3] -> out; '\n' -> out;
+
+    // Concat between scalar character and string
+    "string" || 's' -> out; '\n' -> out;
+
+    // Concat between scalar boolean and boolean vector
+    true || [false,true,false] -> out; '\n' -> out;
+
+    // Concat between scalar character and character vector
+    'a' || ['b','c','d'] -> out; '\n' -> out;
+
+    // Concat between scalar integer and integer vector
+    [1,2,3] || 4 -> out; '\n' -> out;
+
+    // Concat between scalar integer and real vector
+    [1.5,2,3] || 4.4 -> out; '\n' -> out;
+
+    // Concat between scalar character and string
+    'g' || "string" -> out; '\n' -> out;
+
+    // Concat between scalar boolean and boolean vector
+    [false,true,false] || true -> out; '\n' -> out;
+
+    // Concat between scalar character and character vector
+    ['b','c','d']  || 'e'-> out; '\n' -> out;
+
+    return 0;
+}

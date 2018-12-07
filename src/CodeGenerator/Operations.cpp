@@ -77,13 +77,42 @@ InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node,
 
     return retVal;
 }
-/*
+
 InternalTools::pair CodeGenerator::castAndPreserveSizeScalar(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
+    llvm::Value *leftSize     = nullptr;
+    llvm::Value *rightSize    = nullptr;
 
+    //some bools
+    bool leftIsScalar  = not(it->isStructType(left));
+    bool rightIsScalar = not(it->isStructType(right));
 
+    if(not(leftIsScalar))
+        leftSize  = it->getValFromStruct(left,  it->getConsi32(VEC_LEN_INDEX));
+
+    if(not(rightIsScalar))
+        rightSize = it->getValFromStruct(right, it->getConsi32(VEC_LEN_INDEX));
+
+    //promote
+    InternalTools::pair retVal;
+    retVal = ct->typePromotion(left, right, node->getLine(), 1);
+
+    //give size back
+    if(not(leftIsScalar)){
+        et->resizeVector(retVal.left, leftSize);
+    } else {
+        et->resizeVector(retVal.left, it->getConsi32(1));
+    }
+
+    if(not(rightIsScalar)){
+        et->resizeVector(retVal.right, rightSize);
+    } else {
+        et->resizeVector(retVal.right, it->getConsi32(1));
+    }
+
+    return retVal;
 }
-*/
+
 InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftRows     = nullptr;
@@ -199,14 +228,18 @@ InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node, bool col
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
 
+    //checks for concat between scalar and vector
+    if((it->isVectorType(left) && !it->isStructType(right)) || (it->isVectorType(right) && !it->isStructType(left))) {
+        return castAndPreserveSizeScalar(node, left, right);
+    }
     //check for non base type cases
-    if(it->isVectorType(left)){
+     else if(it->isVectorType(left) || it->isVectorType(right)){
         return castAndPreserveSizeVector(node, left, right);
     }
-    else if(colsOnly && it->isMatrixType(left)){
+    else if(colsOnly && (it->isMatrixType(left) || it->isMatrixType(right))){
         return castAndPreserveColSizeMatrix(node, left, right);
     }
-    else if(it->isMatrixType(left)){
+    else if(it->isMatrixType(left) || it->isMatrixType(right)){
         return castAndPreserveSizeMatrix(node, left, right);
     }
     return *(new InternalTools::pair);
