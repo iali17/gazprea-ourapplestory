@@ -1,4 +1,5 @@
 procedure www(var integer matrix c[3,3]) ;
+procedure www2(var integer matrix c[3,3]) ;
 
 procedure main() returns integer{
     var out = std_output();
@@ -16,8 +17,13 @@ procedure main() returns integer{
 procedure www(var integer matrix c[3,3]) {
 
     c = as<integer matrix[3,3]>(c[[1,2], *]);
+
+    call www2(c);
 }
 
+procedure www2(var integer matrix d[3,3]) {
 
+    d = as<integer matrix[3,3]>(d[[2,3], *]);
+}
 
 

@@ -1,14 +1,14 @@
 procedure main() returns integer {
 	var out = std_output();
 
-	if (0) {
+	if (false) {
 		0 -> out;
 	}
-	else if (0) {
+	else if (false) {
 		0 -> out;
 	}
-	else if (1) {
-		if (0) {
+	else if (true) {
+		if (false) {
 			0 -> out;
 		}
 		else {
