@@ -605,13 +605,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo() || ty == boolMatrixTy)
+    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo() || ty == boolMatrixTy || ty == boolVecTy)
         return getConsi32(BOOLEAN);
-    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo() || ty == charMatrixTy)
+    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo() || ty == charMatrixTy || ty == charVecTy)
         return getConsi32(CHAR);
-    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo() || ty == intMatrixTy)
+    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo() || ty == intMatrixTy || ty == intVecTy)
         return getConsi32(INTEGER);
-    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo() || ty == realMatrixTy)
+    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo() || ty == realMatrixTy || ty == realVecTy)
         return getConsi32(REAL);
 
     return nullptr;
@@ -658,13 +658,13 @@ llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, int idx) {
 }
 
 llvm::Value *InternalTools::castVectorToType(llvm::Value *vec, llvm::Type *type) {
-    if(type == boolTy)
+    if(type == boolTy || type == boolVecTy->getPointerTo() || type == boolVecTy)
         return ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
-    else if (type == charTy)
+    else if (type == charTy || type == charVecTy->getPointerTo() || type == charVecTy)
         return ir->CreatePointerCast(vec, charVecTy->getPointerTo());
-    else if (type == intTy)
+    else if (type == intTy || type == intVecTy->getPointerTo() || type == intVecTy)
         return ir->CreatePointerCast(vec, intVecTy->getPointerTo());
-    else if (type == realTy)
+    else if (type == realTy || type == realVecTy->getPointerTo() || type == realVecTy)
         return ir->CreatePointerCast(vec, realVecTy->getPointerTo());
 
     return nullptr;
