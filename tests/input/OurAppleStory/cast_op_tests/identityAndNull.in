@@ -1,0 +1,12 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    (identity + 1..2 + null) by 1-> out; '\n' ->out;
+    (null + 1..2 + identity) by 1-> out;'\n' ->out;
+    identity + [1,2] + null -> out;'\n' ->out;
+    null + [1,2] + identity -> out;'\n' ->out;
+    identity + [[1,2]] + null -> out;'\n' ->out;
+    null + [[1,2]] + identity -> out;'\n' ->out;
+
+    return 0;
+}
