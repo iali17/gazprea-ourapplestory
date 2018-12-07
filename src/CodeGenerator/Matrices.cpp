@@ -25,6 +25,7 @@ extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
 /**
+ *  Create matrix literal
  *
  * @param node
  * @return - pointer to the new matrix
@@ -115,6 +116,12 @@ llvm::Value *CodeGenerator::visit(MatrixNode *node) {
     return matrix;
 }
 
+/**
+ * Handles matrix declarations
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     MatrixNode *matrixNode = nullptr;
     llvm::Value *mat = nullptr;
@@ -188,6 +195,15 @@ llvm::Value *CodeGenerator::visit(MatrixDeclNode *node) {
     return nullptr;
 }
 
+/**
+ * Handles matrix indexing
+ *
+ * @param mat
+ * @param rowIdx
+ * @param colIdx
+ * @param isSlice
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, llvm::Value *colIdx, bool isSlice) {
 
     //otherwise
@@ -200,7 +216,16 @@ llvm::Value *CodeGenerator::indexMatrix(llvm::Value *mat, llvm::Value *rowIdx, l
     return ret;
 }
 
-
+/**
+ * Handles matrix slice assignment
+ *
+ * @param srcNode
+ * @param idxExpr
+ * @param dest
+ * @param idxVec
+ * @param src
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src) {
     llvm::Value * rowIdx    = visit(idxExpr->getIndexExpr()->at(0));
     llvm::Value * colIdx    = visit(idxExpr->getIndexExpr()->at(1));
@@ -239,11 +264,23 @@ llvm::Value *CodeGenerator::matrixSliceAssign(ASTNode * srcNode, IndexNode * idx
     }
 }
 
+/**
+ * Returns the number of rows in a matrix
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(RowsNode *node) {
     llvm::Value *mat = visit(node->getExpr());
     return it->getMatrixNumRows(mat);
 }
 
+/**
+ * Returns the number of cols in a matrix
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(ColsNode *node) {
     llvm::Value *mat = visit(node->getExpr());
     return it->getMatrixNumCols(mat);

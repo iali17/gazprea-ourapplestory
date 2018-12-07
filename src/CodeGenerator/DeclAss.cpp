@@ -209,10 +209,11 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         }
     }
 
-    llvm::Value *val = visit(node->getExpr());
+    llvm::Value *val;// = visit(node->getExpr());
     llvm::Value *ptr = left->getPtr();
 
     if (it->isVectorType(left->getPtr())) {
+        val = visit(node->getExpr());
         if (dynamic_cast<IdnNode *>(node->getExpr())) {
             et->setIdentityVector(ptr);
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
@@ -229,6 +230,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     }
 
     if (it->isIntervalType(ptr)) {
+        val = visit(node->getExpr());
         if (dynamic_cast<NullNode *>(node->getExpr())){
             left->setPtr(et->getNewInterval(it->getConsi32(0), it->getConsi32(0)));
         }
@@ -255,6 +257,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
     }
 
     if (it->isMatrixType(left->getPtr())) {
+        val = visit(node->getExpr());
         if (dynamic_cast<IdnNode *>(node->getExpr())) {
             et->setIdentityMatrix(ptr);
         } else if (dynamic_cast<NullNode *>(node->getExpr())) {
@@ -266,11 +269,27 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         return nullptr;
     }
 
-    if (val) {
-        if (it->isTupleType(left->getPtr())) {
-            ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
+    bool isTuple = it->isTupleType(left->getPtr());
+    bool isIdn   = dynamic_cast<IdnNode *>(node->getExpr());
+    bool isNull  = dynamic_cast<NullNode *>(node->getExpr());
+
+    if ((isTuple && isNull) || val) {
+        if(isTuple && isIdn){
+            ptr = initTuple(IDENTITY, llvm::cast<llvm::StructType>(ptr->getType()->getPointerElementType()));
+            left->setPtr(ptr);
+        }
+        else if(isTuple && isNull){
+            ptr = initTuple(NULLTY, llvm::cast<llvm::StructType>(ptr->getType()->getPointerElementType()));
+            left->setPtr(ptr);
+        }
+        else if (isTuple) {
+            if(dynamic_cast<TupleNode *>(node->getExpr()))
+                ptr = visit((TupleNode *) node->getExpr(), llvm::cast<llvm::StructType>(left->getPtr()->getType()->getPointerElementType()));
+            else
+                ptr = initTuple(ptr, it->getValueVectorFromTuple(visit(node->getExpr())));
             left->setPtr(ptr);
         } else {
+            val = visit(node->getExpr());
             val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
             ir->CreateStore(val, ptr);
         }

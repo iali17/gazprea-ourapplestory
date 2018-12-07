@@ -1,0 +1,38 @@
+procedure main() returns integer {
+var out = std_output();
+
+tuple(integer vector[2], real vector[2], character vector[2])
+    a = (1..2 by 1, [114e-3, 0.95e3], ['b','}']);
+tuple(integer vector[2], real vector[2], character vector[2])
+    b = ([2]||[66], as<real vector[2]>([1.1, 2.3, 4.5, 666]), as<character vector[1]>(['d', 'f', 'g']) || ['h']);
+
+a.1 -> out;'\n'->out;
+length(a.1) -> out;'\n'->out;
+a.2 -> out;'\n'->out;
+length(a.2) -> out;'\n'->out;
+a.3 -> out;'\n'->out;
+length(a.3) -> out;'\n'->out;
+
+a.1 = [33, -321];
+a.1 -> out;'\n'->out;
+
+a.2 = a.1 + a.2;
+a.2 -> out;'\n'->out;
+
+as<real vector[5]>(a.1) ->out;'\n'->out;
+a.2 = as<real vector>(a.1/4);
+a.2 -> out;'\n'->out;
+reverse(a.2) -> out;'\n'->out;
+
+a.3 || ['d'] -> out;'\n'->out;
+
+b.1 -> out;'\n'->out;
+length(a.1) -> out;'\n'->out;
+b.2 -> out;'\n'->out;
+length(a.2) -> out;'\n'->out;
+b.3 -> out;'\n'->out;
+length(a.3) -> out;'\n'->out;
+
+
+return 0;
+}

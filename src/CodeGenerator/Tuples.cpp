@@ -156,7 +156,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     //get index then get pointer to element
     ptr = symbol->getPtr();
     idx = getIndexForTuple(tupleInputNode->getIndex(), ptr);
-    ptr = it->getPtrFromTuple(ptr, idx);
+    /*ptr =*/ it->getPtrFromTuple(ptr, idx);
 
     //et->aliScanf(ptr);
     return nullptr;
@@ -172,7 +172,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
 llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
-    GazpreaTupleType *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(tuple));
+    auto *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(tuple));
     std::unordered_map<int, std::pair<int, int>> *dims = nullptr;
     llvm::Value *element = nullptr;
     int i = 0;
@@ -221,7 +221,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
                         interval = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
                     values->push_back(interval);
                 }
-
+                ++i;
                 continue;
             }
         }
@@ -320,16 +320,25 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
 llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
+    auto nodes = new std::vector<ASTNode *>;
+    if(node)
+        nodes->insert(nodes->end(), node->getElements()->begin(), node->getElements()->end());
     //auto * dims = new std::unordered_map<int, std::pair<int, int>>;
     auto *gazTy = symbolTable->resolveTupleType(tuple);
 
     for(unsigned long i = 0; i < types.size(); ++i){
         llvm::Value * element;
+        bool isNull = false;
+        bool isIdn  = false;
+        if(node) {
+            isNull = dynamic_cast<NullNode *>(nodes->at(i));
+            isIdn = dynamic_cast<IdnNode *>(nodes->at(i));
+        }
+
+
         if (not(node)){
             element = it->getNull(types[i]);
         }
-        else
-            element = visit(node->getElements()->at(i));
 
         llvm::Value * len1 = nullptr;
         llvm::Value * len2 = nullptr;
@@ -345,12 +354,56 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         if(dims != gazTy->getDims()->end() && dims->second.second >= 0)
             len2 = it->getConsi32(dims->second.second);
 
+        //sad
+        if(isIdn && (it->isDeclVectorType(types[i]->getPointerElementType()))){
+            llvm::Type  *elmtTy = it->getDeclScalarTypeFromVec(types[i]->getPointerElementType());
+            llvm::Value *consTy = it->getConstFromType(elmtTy);
+
+            element = et->getNewVector(consTy);
+            et->initVector(element, len1);
+            element = it->castVectorToType(element, elmtTy);
+            setIdentityVecOrMat(element);
+        }
+        else if(isNull && (it->isDeclVectorType(types[i]->getPointerElementType()))){
+            llvm::Type  *elmtTy = it->getDeclScalarTypeFromVec(types[i]->getPointerElementType());
+            llvm::Value *consTy = it->getConstFromType(elmtTy);
+
+            element = et->getNewVector(consTy);
+            et->initVector(element, len1);
+            element = it->castVectorToType(element, elmtTy);
+        }
+        else if(isIdn && (it->isDeclMatrixType(types[i]->getPointerElementType()))){
+            llvm::Type  *elmtTy = it->getDeclScalarTypeFromMat(types[i]->getPointerElementType());
+            llvm::Value *consTy = it->getConstFromType(elmtTy);
+
+            element = et->getNewMatrix(consTy);
+            et->initMatrix(element, len1, len2);
+            element = it->castMatrixToType(element, elmtTy);
+            setIdentityVecOrMat(element);
+        }
+        else if(isNull && (it->isDeclMatrixType(types[i]->getPointerElementType()))){
+            llvm::Type  *elmtTy = it->getDeclScalarTypeFromMat(types[i]->getPointerElementType());
+            llvm::Value *consTy = it->getConstFromType(elmtTy);
+
+            element = et->getNewMatrix(consTy);
+            et->initMatrix(element, len1, len2);
+            element = it->castMatrixToType(element, elmtTy);
+        }
+        else if(isIdn && (intervalTy->getPointerTo() == types[i]->getPointerElementType())){
+            element = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
+        }
+        else if(isNull && (intervalTy->getPointerTo() == types[i]->getPointerElementType())){
+            element = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
+        }
+        else
+            element = visit(node->getElements()->at(i));
+
         element = ct->typeAssCast(memberType, element, node->getLine(), len1, len2);
         values->push_back(element);
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
-    llvm::Value * element;
+    //llvm::Value * element;
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});

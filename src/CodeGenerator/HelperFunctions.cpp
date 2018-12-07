@@ -23,6 +23,14 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
+/**
+ * Checks if paramater and arguments are the same, if they are set parameter
+ * else error
+ *
+ * @param paramNode
+ * @param arguNode
+ * @return std::vector<llvm::Value *>
+ */
 std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *paramNode,std::vector<ASTNode *> *arguNode ) {
     std::vector<llvm::Value *> paramVector;
     std::vector<std::string> aliasVector;
@@ -42,11 +50,9 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
         llvm::Type * paramType;
         llvm::Value * argPtr;
         bool c = true;
-        //val = visit(arguNode->at(i));
         constant = pNode->isIsVar();
 
         if (pNode->getTupleType()) {
-            //paramType = parseStructType(pNode->getTupleType());
             paramType = symbolTable->resolveType(pNode->getDeclaredType())->getTypeDef();
             auto argNode = dynamic_cast<TupleNode *>(arguNode->at(i));
 
@@ -96,11 +102,24 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                                                   size, argNode->getLine());
                     eb->printError(er);
                 }
+            } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
+                auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+
+                if(dynamic_cast<INTNode *>(tupNode->getIndex())) {
+                    uniqueIden = std::to_string(((INTNode *) tupNode->getIndex())->value);
+                } else {
+                    uniqueIden = ((IDNode *) tupNode->getIndex())->getID();
+                }
+
+                idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
+                idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
+                c = idNode->isConstant();
+                argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
+                argPtr = ir->CreateLoad(argPtr);
+
             } else {
                 auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                 Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
-                //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
-                //       == paramType->getStructNumElements());
                 argPtr = symbol->getPtr();
                 c = symbol->isConstant();
             }
@@ -132,16 +151,28 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                     llvm::Value *rows = et->getNumRows(argPtr);
                     llvm::Value *cols = et->getNumCols(argPtr);
                     if(rows != it->getConsi32(leftSize) && cols != it->getConsi32(rightSize)) {
-                        //auto er = new MatrixE
                         //TODO: make a matrix error node
                         std::cout << "Type error: Need to make a type error node\n";
                         exit(1);
                     }
-                } else {
+                } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
+                    auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+
+                    if(dynamic_cast<INTNode *>(tupNode->getIndex())) {
+                        uniqueIden = std::to_string(((INTNode *) tupNode->getIndex())->value);
+                    } else {
+                        uniqueIden = ((IDNode *) tupNode->getIndex())->getID();
+                    }
+
+                    idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
+                    c = idNode->isConstant();
+                    idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
+                    argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
+                    argPtr = ir->CreateLoad(argPtr);
+
+                }else {
                     auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                     Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
-                    //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
-                    //       == paramType->getStructNumElements());
                     argPtr = symbol->getPtr();
                     c = symbol->isConstant();
                 }
@@ -162,11 +193,23 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             auto argNode = dynamic_cast<IntervalNode *>(arguNode->at(i));
             if (argNode) {
                 argPtr = visit(argNode);
+            } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
+                auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+
+                if (dynamic_cast<INTNode *>(tupNode->getIndex())) {
+                    uniqueIden = std::to_string(((INTNode *) tupNode->getIndex())->value);
+                } else {
+                    uniqueIden = ((IDNode *) tupNode->getIndex())->getID();
+                }
+
+                idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
+                idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
+                c = idNode->isConstant();
+                argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
+                argPtr = ir->CreateLoad(argPtr);
             } else {
                 auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                 Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
-                //assert(symbol->getPtr()->getType()->getPointerElementType()->getStructNumElements()
-                //       == paramType->getStructNumElements());
                 argPtr = symbol->getPtr();
                 c = symbol->isConstant();
             }
@@ -225,6 +268,16 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
     return paramVector;
 }
 
+/**
+ * Handles aliasing and get tuple members from tuples
+ *
+ * @param idNode
+ * @param constant
+ * @param aliasVector
+ * @param idxVal
+ * @param idxTrueVal
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vector<std::string> &aliasVector,
         llvm::Value *idxVal, std::string idxTrueVal) {
     llvm::Value *ptr, *val;
@@ -268,6 +321,12 @@ llvm::Value *CodeGenerator::getPtrToVar(Symbol *idNode, bool constant, std::vect
     }
 }
 
+/**
+ * Deals with string parsing and finding the tuple members
+ *
+ * @param node
+ * @return llvm::StructType *
+ */
 llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     auto *declNodes     = node->getDecls();
     auto *members       = new std::vector<llvm::Type *>;
@@ -313,6 +372,13 @@ llvm::StructType *CodeGenerator::parseStructType(TupleTypeNode *node) {
     return newStruct;
 }
 
+/**
+ * Handles getting the elem at the index position given the index number or the parameter name if applicable
+ *
+ * @param index
+ * @param tuplePtr
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tuplePtr) {
     llvm::Value *idx;
     if(dynamic_cast<IDNode *>(index)){
@@ -330,6 +396,18 @@ llvm::Value *CodeGenerator::getIndexForTuple(ASTNode *index, llvm::Value *tupleP
     return idx;
 }
 
+/**
+ * Makes the function in ir
+ *
+ * @param functionName
+ * @param strRetType
+ * @param paramsList
+ * @param nodeType
+ * @param line
+ * @param tupleType
+ * @param gType
+ * @return llvm::Function *
+ */
 llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::string strRetType, std::vector<ASTNode *>
         *paramsList, int nodeType, int line, TupleTypeNode *tupleType, int gType) {
     std::vector<llvm::Type *> params;
@@ -449,6 +527,13 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
     return F;
 }
 
+/**
+ * Creates the function and procedure block then calls lines regularly in a new scope
+ *
+ * @param F
+ * @param paramsList
+ * @param block
+ */
 void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNode *> *paramsList, ASTNode * block) {
     //new scope
     symbolTable->pushNewScope();
@@ -476,6 +561,13 @@ void CodeGenerator::generateFuncOrProcBody(llvm::Function *F, std::vector<ASTNod
     whileStack = oldWhileStack;
 }
 
+/**
+ * Handles function and procedure calls
+ *
+ * @param functionName
+ * @param arguments
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector<ASTNode *> *arguments){
     //get function
     FunctionSymbol *functionSymbol = (FunctionSymbol *) symbolTable->resolveSymbol(functionName);
@@ -488,7 +580,7 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
 
     auto iter = sad->find(func);
 
-    //TODO: Please fix this garbage
+    // Enforcing return type is the same for vector and matrices
     if (iter == sad->end()) {
         return retVal;
     } else if (iter->second.first.first == -1 && iter->second.first.second == -1) {
@@ -510,6 +602,12 @@ llvm::Value *CodeGenerator::callFuncOrProc(std::string functionName, std::vector
     return retVal;
 }
 
+/**
+ * Creates vector from an interval
+ *
+ * @param range
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::getRange(ASTNode *range) {
     //visit the range, do the implicit by if needed, point to the integer elements
     llvm::Value * rangeVecPtr = visit(range);
@@ -531,20 +629,11 @@ std::vector<std::string> CodeGenerator::split(const std::string& s, char delimit
     return tokens;
 }
 
-llvm::Value *CodeGenerator::getSingleIntegerVector(llvm::Value *val) {
-    llvm::Value *vec = et->getNewVector(it->getConsi32(INTEGER));
-    vec = ir->CreatePointerCast(vec, intVecTy->getPointerTo());
-    et->initVector(vec, it->getConsi32(1));
-
-    llvm::Value *oldScalar = ir->CreateAlloca(intTy);
-    ir->CreateStore(val, oldScalar);
-
-    llvm::Value *ptr = it->getPtrFromStruct(vec, VEC_ELEM_INDEX);
-    ptr = ir->CreateGEP(ptr, it->getConsi32(0));
-    et->assignValFromPointers(ptr, oldScalar, it->getConsi32(INTEGER));
-    return vec;
-}
-
+/**
+ * Set null of vector or matrix
+ *
+ * @param val
+ */
 void CodeGenerator::setNullVecOrMat(llvm::Value *val) {
     if(it->isMatrixType(val))
         et->setIdentityMatrix(val);
@@ -552,6 +641,11 @@ void CodeGenerator::setNullVecOrMat(llvm::Value *val) {
         et->setIdentityVector(val);
 }
 
+/**
+ * Set identity of vector or matrix
+ *
+ * @param val
+ */
 void CodeGenerator::setIdentityVecOrMat(llvm::Value *val) {
     if(it->isMatrixType(val))
         et->setIdentityMatrix(val);
@@ -559,11 +653,22 @@ void CodeGenerator::setIdentityVecOrMat(llvm::Value *val) {
         et->setIdentityVector(val);
 }
 
+/**
+ * Gets the vector inside the tuple
+ *
+ * @param node
+ * @return
+ */
 llvm::Value *CodeGenerator::visit(IndexFilterNode *node) {
     llvm::Value * tup = visit(node->getFilterNode());
     return it->getValFromStruct(tup, node->getIndex());
 }
 
+/**
+ * Frees memory when program ends
+ *
+ * @param ptrs
+ */
 void CodeGenerator::freeMem(std::vector<llvm::Value *> *ptrs) {
     for (uint i = 0; i < ptrs->size(); i++) {
         llvm::Value *ptr = ptrs->at(i);
@@ -583,6 +688,13 @@ void CodeGenerator::freeMem(std::vector<llvm::Value *> *ptrs) {
     }
 }
 
+/**
+ * Initializes a tuple
+ *
+ * @param tuplePtr
+ * @param values
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
     //fill new structure
     auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
@@ -640,8 +752,12 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
                     ir->CreateStore(ptr, structElem);
                     ir->CreateStore(mat, ptr);
                 }
-                else if(it->isIntervalType(structElem)){
-
+                else if(intervalTy->getPointerTo() == types[i]->getPointerElementType()){
+                    llvm::Value *srcLower = it->getValFromStruct(values->at(i), INTERVAL_MIN);
+                    llvm::Value *srcUpper = it->getValFromStruct(values->at(i), INTERVAL_MAX);
+                    llvm::Value *interval = et->getNewInterval(srcLower, srcUpper);
+                    ir->CreateStore(ptr, structElem);
+                    ir->CreateStore(interval, ptr);
                 }
                 continue;
             }

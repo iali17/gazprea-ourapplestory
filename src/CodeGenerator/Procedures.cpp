@@ -15,10 +15,22 @@ extern llvm::Type *vecTy;
 extern llvm::Type *matrixTy;
 extern llvm::Type *intervalTy;
 
+/**
+ * Handles calls to procedures and functions
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(CallNode *node) {
     return callFuncOrProc(node->getProcedureName(), node->getExprNodes());
 }
 
+/**
+ * Handles procedures
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     //create function
     llvm::Function *F = declareFuncOrProc(node->getProcedureName(), node->getRetType(), node->getParamNodes(),
@@ -41,6 +53,12 @@ llvm::Value *CodeGenerator::visit(ProcedureNode *node) {
     return nullptr;
 }
 
+/**
+ * Handles functions
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(FunctionNode *node) {
     //create function
     llvm::Function *F = declareFuncOrProc(node->getFunctionName(), node->getRetType(), node->getParamNodes(),
