@@ -1,7 +1,7 @@
 
 procedure main() returns integer {
     var out = std_output();
-    real vector[2] theArray = [1.0,1.0];
+    real vector theArray[2] = [1.0,1.0];
     real result;
     integer n = 186;
 
