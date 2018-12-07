@@ -1,0 +1,86 @@
+procedure modify(var integer vector x[2]);
+procedure dontModify(integer vector x[2]) returns real vector[3];
+procedure main() returns integer;
+
+function addOne(real vector x[3]) returns real vector[3];
+
+procedure makeHB(var string x);
+
+procedure main() returns integer {
+    var out = std_output();
+    integer vector a;
+    integer vector b[2];
+    real vector c[*];
+    string bel = "Hello\n";
+    string dumb = "HHH\n";
+
+    a = [9,6];
+    b = a;
+    "unmodified\n"->out;
+    a->out; '\n'->out;
+    b->out; '\n'->out;
+    call modify(a);
+    "modified\n"->out;
+    a->out; '\n'->out;
+    b->out; '\n'->out;
+    '\n'->out;
+
+    b[1] = 4;
+    b[2] = 5;
+
+    "unmodified\n"->out;
+    b->out; '\n'->out;
+    c = dontModify(b);
+    "promoted to real and changed size with b values\n"->out;
+    c->out; '\n'->out;
+    b->out; '\n'->out;
+
+
+    c = addOne(c);
+    "Add one using a function\n" ->out;
+    c->out; '\n'->out;
+    '\n'->out;
+
+    "Converting H's to B's\n"->out;
+    "Initial:\n"->out;
+    bel->out;
+    dumb->out;
+    call makeHB(dumb);
+    call makeHB(bel);
+    "\nChanged:\n"->out;
+    bel->out;
+    dumb->out;
+
+    return 0;
+
+
+}
+
+
+procedure modify(var integer vector x[2]) {
+    x[1] = 6;
+    x[2] = 9;
+}
+
+
+procedure dontModify(integer vector x[2]) returns real vector[3] {
+    var w = [x[1], x[2], 3.123213];
+    return w;
+}
+
+function addOne(real vector x[3]) returns real vector[3] {
+    return x + 1;
+
+}
+
+procedure makeHB(var string x){
+    integer index = 1;
+    var out = std_output();
+    loop i in x{
+        if (i == 'H') {
+            x[index] = 'B';
+        } 
+        index = index + 1;
+    }
+}
+

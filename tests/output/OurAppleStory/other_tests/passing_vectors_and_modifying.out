@@ -1,0 +1,23 @@
+unmodified
+[9 6]
+[9 6]
+modified
+[6 9]
+[9 6]
+
+unmodified
+[4 5]
+promoted to real and changed size with b values
+[4 5 3.12321]
+[4 5]
+Add one using a function
+[5 6 4.12321]
+
+Converting H's to B's
+Initial:
+Hello
+HHH
+
+Changed:
+Bello
+BBB
