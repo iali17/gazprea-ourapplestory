@@ -80,7 +80,7 @@ llvm::Value *CodeGenerator::tupleCasting(CastExprNode *node) {
         expr = ct->varCast(type->getPointerElementType(), expr, node->getLine());
         values->push_back(expr);
     }
-    return it->initTuple(ptr, values);
+    return initTuple(ptr, values);
 }
 
 /**

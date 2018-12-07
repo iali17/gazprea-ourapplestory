@@ -89,16 +89,16 @@ void Scope::addFunctionSymbol(std::string newSymbolName, int type, std::vector<A
 
 //for adding user types
 void Scope::addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                    std::vector<llvm::Type *> *members) {
+                    std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims) {
 
-    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType(newTypeName, newType, stringRefMap, members);
+    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType(newTypeName, newType, -1, -1, stringRefMap, members, dims);
     typeSymbols->insert(std::pair<std::string, GazpreaType*> (newTypeName, (GazpreaType *) gazpreaTupleType));
 }
 
 //for adding tuple types
 void Scope::addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                         std::vector<llvm::Type *> *members) {
-    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType("autogen", newType, stringRefMap, members);
+                         std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims) {
+    GazpreaTupleType *gazpreaTupleType = new GazpreaTupleType("autogen", newType, -1, -1,stringRefMap, members, dims);
     tupleTypes->insert(std::pair<llvm::Type *, GazpreaTupleType*> (newType, gazpreaTupleType));
 }
 

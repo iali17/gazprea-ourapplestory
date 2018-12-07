@@ -15,7 +15,8 @@ antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeCo
         else if (ctx->getText().at(0) == 'r')
             return (ASTNode *) new VectorTypeNode(nullptr, "realvector", (int)ctx->getStart()->getLine());
 
-    } else {
+    }
+    else {
         if (ctx->getText().at(0) == 'b')
             return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'i')

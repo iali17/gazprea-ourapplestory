@@ -25,9 +25,9 @@ public:
     void addSymbol(std::string newSymbolName, int type, bool isConstant, llvm::Value *ptr);
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
     void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                      std::vector<llvm::Type *> *members);
+                      std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims = nullptr);
     void addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                      std::vector<llvm::Type *> *members);
+                      std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims = nullptr);
     void addUserType(std::string newTypeName, llvm::Type* newType, int leftSize = -1, int rightSize = -1);
     void addBaseType(std::string baseTypeName, llvm::Type *newType);
     void popScope();
