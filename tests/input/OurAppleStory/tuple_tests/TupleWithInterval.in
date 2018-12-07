@@ -1,0 +1,30 @@
+procedure main() returns integer {
+var out = std_output();
+
+tuple(integer interval, integer interval) a = (1..3, 5..9);
+
+tuple (integer interval, integer interval) b = (a.2 / 2, a.1 + a.2);
+
+a.1 by 1 -> out; '\n'->out;
+a.2 by 1 -> out;'\n'->out;
+
+a.1 = (-1)..4;
+a.1 by 1 -> out;'\n'->out;
+
+a.2 = a.2 * 5;
+a.2 by 1 -> out;'\n'->out;
+
+a.1 = a.2 + 1;
+a.1 by 1 -> out;'\n'->out;
+
+a.2 = 4..5;
+a.2 by 1 -> out;'\n'->out;
+
+a.1 = 4..5;
+a.1 == a.2 -> out;'\n'->out;'\n'->out;
+
+b.1 by 1->out;'\n'->out;
+b.2 by 1->out;'\n'->out;
+
+return 0;
+}

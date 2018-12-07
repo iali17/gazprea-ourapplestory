@@ -517,12 +517,13 @@ llvm::Value *CastTable::vecAssCast(llvm::Type *type, llvm::Value *expr, int line
         auto *error = new VectorErrorNode(lTypeString, rTypeString, line);
         eb->printError(error);
     }
+    std::cout << "unknown error in cast table\n"; exit(1);
 }
 
 llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line, llvm::Value *leftSize, llvm::Value *rightSize) {
     llvm::Value *mat;
     llvm::Type *llType = it->getDeclScalarTypeFromMat(type);
-    llvm::Value *declType = it->getConstFromType(type);
+    //llvm::Value *declType = it->getConstFromType(type);
 
     int lType = getType(llType);
     int rType;
@@ -567,7 +568,7 @@ llvm::Value *CastTable::matAssCast(llvm::Type *type, llvm::Value *expr, int line
         } else if(llType == realTy && exprType == intTy) {
             return createVecFromVec(expr, realTy, it->getValFromStruct(expr, VEC_LEN_INDEX), line);
         } else {
-            // Todo: Create error node
+            std::cout << "unknown error in cast table\n";
         }
 
         return expr;

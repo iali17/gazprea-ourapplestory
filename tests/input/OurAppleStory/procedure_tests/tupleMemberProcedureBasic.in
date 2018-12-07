@@ -1,0 +1,32 @@
+procedure a1(var integer s) ;
+procedure a2(var real s) ;
+procedure a3(var character s) ;
+
+procedure main() returns integer{
+    var out = std_output();
+
+    tuple(integer, real, character) a = (1, 1.2, 'u');
+
+    call a1(a.1);
+    call a2(a.2);
+    call a3(a.3);
+
+    a.1->out; '\n'->out;
+    a.2->out; '\n'->out;
+    a.3->out; '\n'->out;
+
+    return 0;
+}
+
+procedure a1(var integer s) {
+    s = 44;
+}
+
+procedure a2(var integer s) {
+    s = 4.4;
+}
+
+procedure a3(var integer s) {
+    s = 'w';
+}
+
