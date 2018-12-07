@@ -78,13 +78,19 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
             rows = it->getValFromStruct(loaded, MATRIX_NUMROW_INDEX);
             cols = it->getValFromStruct(loaded, MATRIX_NUMCOL_INDEX);
         }
-        
+
         val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), rows, cols);
         et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
         return nullptr;
     }
-    else if(it->isIntervalType(destPtr)){
+    else if(it->isIntervalType(loaded)){
+        llvm::Value *left  = it->getValFromStruct(val, INTERVAL_MIN);
+        llvm::Value *right = it->getValFromStruct(val, INTERVAL_MAX);
+        llvm::Value *lDest = it->getPtrFromStruct(loaded, INTERVAL_MIN);
+        llvm::Value *rDest = it->getPtrFromStruct(loaded, INTERVAL_MAX);
 
+        ir->CreateStore(left,  lDest);
+        ir->CreateStore(right, rDest);
     }
 
 
@@ -172,9 +178,14 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
 
                     values->push_back(mat);
                 }
-                /*else if(it->isIntervalType(structElem)){
-
-                }*/
+                else if(intervalTy->getPointerTo() == types[i]->getPointerElementType()){
+                    llvm::Value *interval;
+                    if (INIT == IDENTITY)
+                        interval = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
+                    else
+                        interval = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
+                    values->push_back(interval);
+                }
 
                 continue;
             }
@@ -298,17 +309,8 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
 
         if(dims != gazTy->getDims()->end() && dims->second.second >= 0)
             len2 = it->getConsi32(dims->second.second);
-/*
-        if(it->getDeclScalarTypeFromVec(memberType)){
-            len1 = it->getConsi32(gazTy->getDims()->at(i).first);
-        }
-        else if(it->getDeclScalarTypeFromMat(memberType)){
-            len1 = it->getConsi32((symbolTable->resolveTupleType(tuple))->getDims()->at(i).first);
-            len2 = it->getConsi32((symbolTable->resolveTupleType(tuple))->getDims()->at(i).second);
-        }*/
 
         element = ct->typeAssCast(memberType, element, node->getLine(), len1, len2);
-        //element = ct->typeAssCast(realVecTy, element, node->getLine(), len1, len2);
         values->push_back(element);
     }
 
