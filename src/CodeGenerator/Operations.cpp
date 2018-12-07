@@ -77,7 +77,13 @@ InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node,
 
     return retVal;
 }
+/*
+InternalTools::pair CodeGenerator::castAndPreserveSizeScalar(InfixNode *node, llvm::Value *left, llvm::Value *right) {
+    //save size
 
+
+}
+*/
 InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftRows     = nullptr;

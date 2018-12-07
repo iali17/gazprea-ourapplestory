@@ -50,8 +50,8 @@ int CastTable::getType(llvm::Type *expr) {
 InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line, int opt) {
     assert(!((lValueLoad == nullptr) && (rValueLoad == nullptr)));
 
-    if(!lValueLoad){
-        if(it->isMatrixType(rValueLoad)) {
+    if(!lValueLoad) {
+        if (it->isMatrixType(rValueLoad)) {
             llvm::Type *rType = it->getMatrixElementType(rValueLoad);
             llvm::Value *rRowSize = it->getValFromStruct(rValueLoad, MATRIX_NUMROW_INDEX);
             llvm::Value *rColSize = it->getValFromStruct(rValueLoad, MATRIX_NUMCOL_INDEX);
@@ -61,7 +61,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
             lValueLoad = it->castMatrixToType(lValueLoad, rType);
 
             et->setNullMatrix(lValueLoad);
-        } else if(it->isVectorType(rValueLoad)) {
+        } else if (it->isVectorType(rValueLoad)) {
             llvm::Type *rType = it->getVectorElementType(rValueLoad);
             llvm::Value *rSize = it->getValFromStruct(rValueLoad, VEC_LEN_INDEX);
 
@@ -70,6 +70,8 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
             lValueLoad = it->castVectorToType(lValueLoad, rType);
 
             et->setNullVector(lValueLoad);
+        } else if (it->isIntervalType(rValueLoad)) {
+            lValueLoad = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
         } else
             lValueLoad = it->getNull(rValueLoad->getType());
     }
@@ -93,6 +95,8 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
             rValueLoad = it->castVectorToType(rValueLoad, lType);
 
             et->setNullVector(rValueLoad);
+        } else if(it->isIntervalType(lValueLoad)) {
+            rValueLoad = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
         } else
             rValueLoad = it->getNull(lValueLoad->getType());
     }
@@ -116,6 +120,8 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
             lValueLoad = it->castVectorToType(lValueLoad, rType);
 
             et->setIdentityVector(lValueLoad);
+        } else if(it->isIntervalType(rValueLoad)) {
+            lValueLoad = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
         } else
             lValueLoad = it->getIdn(rValueLoad->getType());
     }
@@ -139,7 +145,9 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
             rValueLoad = it->castVectorToType(rValueLoad, lType);
 
             et->setIdentityVector(rValueLoad);
-        }else
+        } else if(it->isIntervalType(lValueLoad)) {
+            rValueLoad = et->getNewInterval(it->getConsi32(1), it->getConsi32(1));
+        } else
             rValueLoad = it->getIdn(lValueLoad->getType());
     }
 
