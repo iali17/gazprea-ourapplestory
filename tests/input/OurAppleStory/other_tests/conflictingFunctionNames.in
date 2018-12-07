@@ -1,0 +1,182 @@
+function printf(integer x) returns integer;
+function free(integer x) returns integer;
+function calloc(integer x) returns integer;
+function read_in(integer x) returns integer;
+function pow(integer x) returns integer;
+function getEmptyVector(integer x) returns integer;
+function initVector(integer x) returns integer;
+function setNullVector(integer x) returns integer;
+function setIdentityVector(integer x) returns integer;
+function getVectorLength(integer x) returns integer;
+function getReverseVector(integer x) returns integer;
+function printVector(integer x) returns integer;
+function printVectorAsString(integer x) returns integer;
+function printVectorElement(integer x) returns integer;
+function copyVectorElements(integer x) returns integer;
+function strictCopyVectorElements(integer x) returns integer;
+function getVectorSlice(integer x) returns integer;
+function getVectorCopy(integer x) returns integer;
+function getVectorElementPointer(integer x) returns integer;
+function getVectorElementPointerSafe(integer x) returns integer;
+function getIntDotProduct(integer x) returns integer;
+function getRealDotProduct(integer x) returns integer;
+function assignValFromPointers(integer x) returns integer;
+function getOpResultVector(integer x) returns integer;
+function concatenateVectors(integer x) returns integer;
+function getVectorBy(integer x) returns integer;
+function assignFromVector(integer x) returns integer;
+function resizeVector(integer x) returns integer;
+function destroyVector(integer x) returns integer;
+function getNewInterval(integer x) returns integer;
+function getVectorFromInterval(integer x) returns integer;
+function destroyInterval(integer x) returns integer;
+function getEmptyMatrix(integer x) returns integer;
+function initMatrix(integer x) returns integer;
+function setNullMatrix(integer x) returns integer;
+function setIdentityMatrix(integer x) returns integer;
+function getNumCols(integer x) returns integer;
+function getNumRows(integer x) returns integer;
+function indexScalarVector(integer x) returns integer;
+function indexVectorScalar(integer x) returns integer;
+function indexVectorVector(integer x) returns integer;
+function printMatrix(integer x) returns integer;
+function sliceScalarVector(integer x) returns integer;
+function sliceVectorScalar(integer x) returns integer;
+function sliceVectorVector(integer x) returns integer;
+function getMatrixElementPointer(integer x) returns integer;
+function getIntMatrixMultiplication(integer x) returns integer;
+function getRealMatrixMultiplication(integer x) returns integer;
+function concatenateMatrices(integer x) returns integer;
+function assignScalarVector(integer x) returns integer;
+function assignVectorScalar(integer x) returns integer;
+function assignVectorVector(integer x) returns integer;
+function copyMatrixElements(integer x) returns integer;
+function strictCopyMatrixElements(integer x) returns integer;
+function copyMatrix(integer x) returns integer;
+function resizeMatrix(integer x) returns integer;
+function destroyMatrix(integer x) returns integer;
+function getMatrixCopy(integer x) returns integer;
+
+procedure main()returns integer {
+  var out = std_output();
+
+printf(11)->out;'\n'->out;
+free(11)->out;'\n'->out;
+calloc(11)->out;'\n'->out;
+read_in(11)->out;'\n'->out;
+pow(11)->out;'\n'->out;
+getEmptyVector(11)->out;'\n'->out;
+initVector(11)->out;'\n'->out;
+setNullVector(11)->out;'\n'->out;
+setIdentityVector(11)->out;'\n'->out;
+getVectorLength(11)->out;'\n'->out;
+getReverseVector(11)->out;'\n'->out;
+printVector(11)->out;'\n'->out;
+printVectorAsString(11)->out;'\n'->out;
+printVectorElement(11)->out;'\n'->out;
+copyVectorElements(11)->out;'\n'->out;
+strictCopyVectorElements(11)->out;'\n'->out;
+getVectorSlice(11)->out;'\n'->out;
+getVectorCopy(11)->out;'\n'->out;
+getVectorElementPointer(11)->out;'\n'->out;
+getVectorElementPointerSafe(11)->out;'\n'->out;
+getIntDotProduct(11)->out;'\n'->out;
+getRealDotProduct(11)->out;'\n'->out;
+assignValFromPointers(11)->out;'\n'->out;
+getOpResultVector(11)->out;'\n'->out;
+concatenateVectors(11)->out;'\n'->out;
+getVectorBy(11)->out;'\n'->out;
+assignFromVector(11)->out;'\n'->out;
+resizeVector(11)->out;'\n'->out;
+destroyVector(11)->out;'\n'->out;
+getNewInterval(11)->out;'\n'->out;
+getVectorFromInterval(11)->out;'\n'->out;
+destroyInterval(11)->out;'\n'->out;
+getEmptyMatrix(11)->out;'\n'->out;
+initMatrix(11)->out;'\n'->out;
+setNullMatrix(11)->out;'\n'->out;
+setIdentityMatrix(11)->out;'\n'->out;
+getNumCols(11)->out;'\n'->out;
+getNumRows(11)->out;'\n'->out;
+indexScalarVector(11)->out;'\n'->out;
+indexVectorScalar(11)->out;'\n'->out;
+indexVectorVector(11)->out;'\n'->out;
+printMatrix(11)->out;'\n'->out;
+sliceScalarVector(11)->out;'\n'->out;
+sliceVectorScalar(11)->out;'\n'->out;
+sliceVectorVector(11)->out;'\n'->out;
+getMatrixElementPointer(11)->out;'\n'->out;
+getIntMatrixMultiplication(11)->out;'\n'->out;
+getRealMatrixMultiplication(11)->out;'\n'->out;
+concatenateMatrices(11)->out;'\n'->out;
+assignScalarVector(11)->out;'\n'->out;
+assignVectorScalar(11)->out;'\n'->out;
+assignVectorVector(11)->out;'\n'->out;
+copyMatrixElements(11)->out;'\n'->out;
+strictCopyMatrixElements(11)->out;'\n'->out;
+copyMatrix(11)->out;'\n'->out;
+resizeMatrix(11)->out;'\n'->out;
+destroyMatrix(11)->out;'\n'->out;
+getMatrixCopy(11)->out;'\n'->out;
+
+return 0;
+}
+
+function printf(integer x) returns integer{return x + 1;}
+function free(integer x) returns integer{return x + 1;}
+function calloc(integer x) returns integer{return x + 1;}
+function read_in(integer x) returns integer{return x + 1;}
+function pow(integer x) returns integer{return x + 1;}
+function getEmptyVector(integer x) returns integer{return x + 1;}
+function initVector(integer x) returns integer{return x + 1;}
+function setNullVector(integer x) returns integer{return x + 1;}
+function setIdentityVector(integer x) returns integer{return x + 1;}
+function getVectorLength(integer x) returns integer{return x + 1;}
+function getReverseVector(integer x) returns integer{return x + 1;}
+function printVector(integer x) returns integer{return x + 1;}
+function printVectorAsString(integer x) returns integer{return x + 1;}
+function printVectorElement(integer x) returns integer{return x + 1;}
+function copyVectorElements(integer x) returns integer{return x + 1;}
+function strictCopyVectorElements(integer x) returns integer{return x + 1;}
+function getVectorSlice(integer x) returns integer{return x + 1;}
+function getVectorCopy(integer x) returns integer{return x + 1;}
+function getVectorElementPointer(integer x) returns integer{return x + 1;}
+function getVectorElementPointerSafe(integer x) returns integer{return x + 1;}
+function getIntDotProduct(integer x) returns integer{return x + 1;}
+function getRealDotProduct(integer x) returns integer{return x + 1;}
+function assignValFromPointers(integer x) returns integer{return x + 1;}
+function getOpResultVector(integer x) returns integer{return x + 1;}
+function concatenateVectors(integer x) returns integer{return x + 1;}
+function getVectorBy(integer x) returns integer{return x + 1;}
+function assignFromVector(integer x) returns integer{return x + 1;}
+function resizeVector(integer x) returns integer{return x + 1;}
+function destroyVector(integer x) returns integer{return x + 1;}
+function getNewInterval(integer x) returns integer{return x + 1;}
+function getVectorFromInterval(integer x) returns integer{return x + 1;}
+function destroyInterval(integer x) returns integer{return x + 1;}
+function getEmptyMatrix(integer x) returns integer{return x + 1;}
+function initMatrix(integer x) returns integer{return x + 1;}
+function setNullMatrix(integer x) returns integer{return x + 1;}
+function setIdentityMatrix(integer x) returns integer{return x + 1;}
+function getNumCols(integer x) returns integer{return x + 1;}
+function getNumRows(integer x) returns integer{return x + 1;}
+function indexScalarVector(integer x) returns integer{return x + 1;}
+function indexVectorScalar(integer x) returns integer{return x + 1;}
+function indexVectorVector(integer x) returns integer{return x + 1;}
+function printMatrix(integer x) returns integer{return x + 1;}
+function sliceScalarVector(integer x) returns integer{return x + 1;}
+function sliceVectorScalar(integer x) returns integer{return x + 1;}
+function sliceVectorVector(integer x) returns integer{return x + 1;}
+function getMatrixElementPointer(integer x) returns integer{return x + 1;}
+function getIntMatrixMultiplication(integer x) returns integer{return x + 1;}
+function getRealMatrixMultiplication(integer x) returns integer{return x + 1;}
+function concatenateMatrices(integer x) returns integer{return x + 1;}
+function assignScalarVector(integer x) returns integer{return x + 1;}
+function assignVectorScalar(integer x) returns integer{return x + 1;}
+function assignVectorVector(integer x) returns integer{return x + 1;}
+function copyMatrixElements(integer x) returns integer{return x + 1;}
+function strictCopyMatrixElements(integer x) returns integer{return x + 1;}
+function copyMatrix(integer x) returns integer{return x + 1;}
+function resizeMatrix(integer x) returns integer{return x + 1;}
+function destroyMatrix(integer x) returns integer{return x + 1;}
+function getMatrixCopy(integer x) returns integer{return x + 1;}
