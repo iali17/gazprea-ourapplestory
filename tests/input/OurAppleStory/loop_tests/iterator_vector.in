@@ -12,7 +12,7 @@ loop i in 11..15 {
 i -> out;
 }
 
-loop i in 18..21 by by 2 {
+loop i in 18..21 by 1 by 2 {
 i -> out;
 }
 
