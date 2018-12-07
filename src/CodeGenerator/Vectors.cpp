@@ -136,6 +136,10 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
         llvm::Type *vecType = it->getDeclVectorType(stype);
 
         vec = ct->typeAssCast(vecType, regExpr, node->getLine(), size);
+
+        if(stype == "string") {
+            vec = ir->CreatePointerCast(vec, strTy->getPointerTo());
+        }
     }
 
     symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), vec);

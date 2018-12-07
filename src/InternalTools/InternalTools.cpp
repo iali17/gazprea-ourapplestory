@@ -382,6 +382,8 @@ llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
     }
     else if(left->getType() == realTy){
         return ir->CreateFCmpUEQ(left, right, "feqtmp");
+    } else if (left->getType() == charTy){
+        return ir->CreateICmpEQ(left, right, "ceqtmp");
     }
 
     std::cerr << "Ambiguous types during arithmetic operation\n";
@@ -397,6 +399,9 @@ llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
     }
     else if(left->getType() == realTy){
         return ir->CreateFCmpUNE(left, right, "fneqtmp");
+    }
+    else if(left->getType() == charTy) {
+        return ir->CreateICmpNE(left, right, "ceqtmp");
     }
 
     std::cerr << "Ambiguous types during arithmetic operation\n";
@@ -693,13 +698,13 @@ llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
-    if(typeString == "integervector")
+    if(typeString == "integervector" || typeString == "integer")
         return intVecTy;
-    else if(typeString == "realvector")
+    else if(typeString == "realvector" || typeString == "real")
         return realVecTy;
-    else if(typeString == "booleanvector")
+    else if(typeString == "booleanvector" || typeString == "boolean")
         return boolVecTy;
-    else if(typeString == "charactervector")
+    else if(typeString == "charactervector" || typeString == "character")
         return charVecTy;
     else if(typeString == "string")
         return strTy;
@@ -708,13 +713,13 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclMatrixType(const std::string &typeString) {
-    if(typeString == "integermatrix")
+    if(typeString == "integermatrix" || typeString == "integer")
         return intMatrixTy;
-    else if(typeString == "realmatrix")
+    else if(typeString == "realmatrix" || typeString == "real")
         return realMatrixTy;
-    else if(typeString == "booleanmatrix")
+    else if(typeString == "booleanmatrix" || typeString == "boolean")
         return boolMatrixTy;
-    else if(typeString == "charactermatrix")
+    else if(typeString == "charactermatrix" || typeString == "character")
         return charMatrixTy;
 
     return nullptr;

@@ -38,6 +38,10 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
     if(val && it->isVectorType(val)){
         val = et->getVectorCopy(val);
+
+        if(val && (val->getType() == strTy->getPointerTo())) {
+            val = ir->CreatePointerCast(val, strTy->getPointerTo());
+        }
     }
     else if(val && it->isIntervalType(val)){
         val = et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX));
