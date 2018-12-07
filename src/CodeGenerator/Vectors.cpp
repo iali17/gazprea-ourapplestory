@@ -301,6 +301,6 @@ llvm::Value *CodeGenerator::indexAssign(ASTNode *srcNode, IndexNode *idxExpr, ll
         src = ct->typeAssCast(destTy, src, srcNode->getLine());
         ir->CreateStore(src, sad);
     }
-    
+
     return nullptr;
 }

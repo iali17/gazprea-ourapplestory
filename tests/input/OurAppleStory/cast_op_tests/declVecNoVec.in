@@ -1,0 +1,11 @@
+procedure main() returns integer{
+    var out = std_output();
+
+    integer vector v[*] = -1..3;
+    as<boolean[7]>(v) -> out; '\n' -> out;
+    as<character[7]>(v) -> out; '\n' -> out;
+    as<integer[7]>(v) -> out; '\n' -> out;
+    as<real[7]>(v) -> out; '\n' -> out;
+
+    return 0;
+}
