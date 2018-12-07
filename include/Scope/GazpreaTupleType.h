@@ -13,14 +13,18 @@ public:
     GazpreaTupleType(const std::string &name, llvm::Type *typeDef, std::unordered_map<std::string, int> *stringRefMap,
                      std::vector<llvm::Type *> *members);
     int getOffsetFromString(std::string str);
+
+    GazpreaTupleType(const std::string &name, llvm::Type *typeDef, int dim1, int dim2,
+                     std::unordered_map<std::string, int> *stringRefMap, std::vector<llvm::Type *> *members,
+                     std::unordered_map<int, std::pair<int, int>> *dims);
+
+    std::unordered_map<int, std::pair<int, int>> *getDims() const;
     std::vector<llvm::Type *> *getMembers() const;
-protected:
-public:
     std::unordered_map<std::string, int> *getStringRefMap() const;
 
 protected:
     std::unordered_map<std::string, int> *stringRefMap;
     std::vector<llvm::Type *>            *members;
-
+    std::unordered_map<int, std::pair<int, int>> * dims;
 };
 #endif //GAZPREABASE_TUPLESYMBOL_H

@@ -141,6 +141,7 @@ public:
     InternalTools::pair castAndPreserveSize(InfixNode *node, bool colsOnly = false);
     InternalTools::pair castAndPreserveSizeVector(InfixNode *node, llvm::Value *left, llvm::Value *right);
     InternalTools::pair castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right);
+    llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
     InternalTools::pair castAndPreserveColSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right);
     llvm::Value *getRange(ASTNode *range);
     std::vector<std::string> split(const std::string& s, char delimiter);

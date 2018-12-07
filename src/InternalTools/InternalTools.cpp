@@ -27,9 +27,33 @@ extern llvm::Type *streamStateTy;
 
 InternalTools::pair InternalTools::makePair(llvm::Value *leftV, llvm::Value *rightV) {
     pair pair1;
+
     pair1.left = leftV;
     pair1.right = rightV;
+
     return pair1;
+}
+
+InternalTools::tupleGarbo InternalTools::makeGarbo(llvm::Type *type, int leftIndex, int rightIndex) {
+    tupleGarbo tupleGarbo1;
+
+    tupleGarbo1.type = type;
+    tupleGarbo1.leftIndex = leftIndex;
+    tupleGarbo1.rightIndex = rightIndex;
+
+    return tupleGarbo1;
+}
+
+// from https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
+std::vector<std::string> InternalTools::split(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
 }
 
 /**
@@ -246,28 +270,6 @@ llvm::Value *InternalTools::getIdn(llvm::Type *type) {
         return getReal(1.0);
     else
         return nullptr;
-}
-
-llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
-    //fill new structure
-    auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
-    auto types   = structType->elements();
-    llvm::Value *element;
-    llvm::Type * nType, * oType;
-    for(unsigned long i = 0; i < values->size(); ++i){
-        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
-        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
-
-        nType = types[i]->getPointerElementType();
-        oType = values->at(i)->getType();
-        element = values->at(i);
-        if((nType != oType) && (nType == realTy)&& (oType == intTy))
-            element = ir->CreateSIToFP(element, realTy);
-
-        ir->CreateStore(element, ptr);
-        ir->CreateStore(ptr, structElem);
-    }
-    return tuplePtr ;
 }
 
 llvm::Value *InternalTools::initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs) {
@@ -586,13 +588,13 @@ std::string InternalTools::getType(llvm::Type *type, llvm::Value *expr) {
  * @return
  */
 llvm::Value *InternalTools::getConstFromType(llvm::Type *ty) {
-    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo() || ty == boolMatrixTy)
+    if(ty == boolTy || ty == boolVecTy->getPointerTo() || ty == boolMatrixTy->getPointerTo() || ty == boolMatrixTy || ty == boolVecTy)
         return getConsi32(BOOLEAN);
-    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo() || ty == charMatrixTy)
+    else if (ty == charTy || ty == charVecTy->getPointerTo() || ty == charMatrixTy->getPointerTo() || ty == charMatrixTy || ty == charVecTy)
         return getConsi32(CHAR);
-    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo() || ty == intMatrixTy)
+    else if (ty == intTy || ty == intVecTy->getPointerTo() || ty == intMatrixTy->getPointerTo() || ty == intMatrixTy || ty == intVecTy)
         return getConsi32(INTEGER);
-    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo() || ty == realMatrixTy)
+    else if (ty == realTy || ty == realVecTy->getPointerTo() || ty == realMatrixTy->getPointerTo() || ty == realMatrixTy || ty == realVecTy)
         return getConsi32(REAL);
 
     return nullptr;
@@ -639,13 +641,13 @@ llvm::Value *InternalTools::getPtrFromStruct(llvm::Value *sPtr, int idx) {
 }
 
 llvm::Value *InternalTools::castVectorToType(llvm::Value *vec, llvm::Type *type) {
-    if(type == boolTy)
+    if(type == boolTy || type == boolVecTy->getPointerTo() || type == boolVecTy)
         return ir->CreatePointerCast(vec, boolVecTy->getPointerTo());
-    else if (type == charTy)
+    else if (type == charTy || type == charVecTy->getPointerTo() || type == charVecTy)
         return ir->CreatePointerCast(vec, charVecTy->getPointerTo());
-    else if (type == intTy)
+    else if (type == intTy || type == intVecTy->getPointerTo() || type == intVecTy)
         return ir->CreatePointerCast(vec, intVecTy->getPointerTo());
-    else if (type == realTy)
+    else if (type == realTy || type == realVecTy->getPointerTo() || type == realVecTy)
         return ir->CreatePointerCast(vec, realVecTy->getPointerTo());
 
     return nullptr;
@@ -747,7 +749,7 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
         return realTy;
     } else if ((type == strTy) || type == strTy->getPointerTo()) {
         return charTy;
-    } else if((type == charVecTy) || type == charVecTy->getPointerTo()) {
+    } else if((type == charVecTy) || type == charVecTy->getPointerTo() || (type == strTy->getPointerTo())) {
         return charTy;
     } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return boolTy;
@@ -862,3 +864,66 @@ llvm::Type *InternalTools::getInitVectorType(std::vector<llvm::Type *> &types) {
         exit(1);
     }
 }
+
+InternalTools::tupleGarbo InternalTools::parseStringExtension(const std::string &typeString) {
+    // Init variables to make struct
+    llvm::Type *type;
+    int sizeLeft = -1;
+    int sizeRight = -1;
+
+    auto nameSize = split(typeString, '[');
+
+    // Checks if extension exists
+    if (nameSize.size() > 1) {
+        auto fullSize = nameSize[1];
+        fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
+        auto sizes = split(fullSize, ',');
+
+        if (sizes.size() == 2) {
+            sizeLeft = std::stoi(sizes[0]);
+            sizeRight = std::stoi(sizes[1]);
+        } else {
+            sizeLeft = std::stoi(sizes[0]);
+        }
+    }
+
+    // Get type
+     if(nameSize[0].find("interval") != std::string::npos) {
+        type = intervalTy;
+    } else if(nameSize[0].find("integer") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight != -1))
+            type = intMatrixTy;
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "integer" && sizeLeft != -1 && sizeRight == -1))
+            type = intVecTy;
+        else
+            type = intTy;
+    } else if(nameSize[0].find("real") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight != -1))
+            type = realMatrixTy;
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "real" && sizeLeft != -1 && sizeRight == -1))
+            type = realVecTy;
+        else
+            type = realTy;
+    } else if(nameSize[0].find("boolean") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight != -1))
+            type = boolMatrixTy;
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "boolean" && sizeLeft != -1 && sizeRight == -1))
+            type = boolVecTy;
+        else
+            type = boolTy;
+    } else if(nameSize[0].find("character") != std::string::npos) {
+        if(getDeclMatrixType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight != -1))
+            type = charMatrixTy;
+        else if(getDeclVectorType(nameSize[0]) || (nameSize[0] == "character" && sizeLeft != -1 && sizeRight == -1))
+            type = charVecTy;
+        else
+            type = charTy;
+    } else if(nameSize[0].find("string") != std::string::npos) {
+            type = strTy;
+    } else {
+        type = nullptr;
+    }
+
+    return makeGarbo(type, sizeLeft, sizeRight);
+}
+

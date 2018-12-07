@@ -54,7 +54,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("matrix"   , matrixTy);
     symbolTable->addBaseType("interval" , intervalTy);
     symbolTable->addBaseType("string"   , strTy);
-
+/*
     //vectors
     symbolTable->addBaseType("booleanvector"  , boolVecTy->getPointerTo());
     symbolTable->addBaseType("charactervector", charVecTy->getPointerTo());
@@ -68,6 +68,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("realmatrix"     , realMatrixTy->getPointerTo());
 
     symbolTable->addBaseType("integerinterval", intervalTy->getPointerTo());
+    */
 
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
@@ -132,7 +133,7 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
         llvm::Value *ret = visit(node->getExpr());
         if(it->isTupleType(ret)){
             llvm::Value * realRet = ir->CreateAlloca(ir->getCurrentFunctionReturnType()->getPointerElementType());
-            realRet = it->initTuple(realRet, it->getValueVectorFromTuple(ret));
+            realRet = initTuple(realRet, it->getValueVectorFromTuple(ret));
             ir->CreateRet(realRet);
         } else {
             ir->CreateRet(ret);
@@ -419,23 +420,15 @@ llvm::Value *CodeGenerator::visit(OutputNode *node) {
  */
 llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
     llvm::Type *type;
-    std::string strRetType = node->getCustomType();
     int sizeLeft = -1;
     int sizeRight = -1;
+    InternalTools::tupleGarbo retVal;
+    std::string strRetType = node->getCustomType();
 
-    auto nameSize = split(strRetType, '[');
-    // Checks if extension exists
-    if(nameSize.size() > 1) {
-        auto fullSize = nameSize[1];
-        fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
-        auto sizes = split(fullSize, ',');
-
-        if(sizes.size() == 2) {
-            sizeLeft = std::stoi(sizes[0]);
-            sizeRight = std::stoi(sizes[1]);
-        } else {
-            sizeLeft = std::stoi(sizes[0]);
-        }
+    if(!node->getTuple()) {
+        retVal = it->parseStringExtension(strRetType);
+        sizeLeft = retVal.leftIndex;
+        sizeRight = retVal.rightIndex;
     }
 
     if(node->getTuple())
@@ -448,22 +441,14 @@ llvm::Value *CodeGenerator::visit(TypeDefNode *node) {
         type = charTy;
     else if(node->getCustomType() == "boolean")
         type = boolTy;
-    else if(sizeLeft && sizeRight == -1) {
-
-
-
-
-    } else if(sizeLeft && sizeRight) {
-
-
-
+    else if(sizeLeft != -1) {
+        type = retVal.type;
     } else {
-            // gotta do for matrix type
             std::cerr << "Not proper defined type on line " << node->getLine() <<". Aborting...\n";
             exit(1);
     }
 
-    symbolTable->addUserType(node->getId(), type);
+    symbolTable->addUserType(node->getId(), type, sizeLeft, sizeRight);
     return nullptr;
 }
 

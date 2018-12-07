@@ -28,12 +28,12 @@ public:
     void addSymbol(std::string newSymbolName, int type);
     void addSymbol(std::string newSymbolName, int type, bool constant);
     void addSymbol(std::string newSymbolName, int type, bool constant, llvm::Value *ptr);
-    void addUserType(std::string newTypeName, llvm::Type* newType);
+    void addUserType(std::string newTypeName, llvm::Type* newType, int leftSize = -1, int rightSize = -1);
     void addBaseType(std::string newTypeName, llvm::Type* newType);
     void addTupleType(std::string newTypeName, llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                      std::vector<llvm::Type *> *members);
+                      std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims);
     void addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                      std::vector<llvm::Type *> *members);
+                          std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims);
     void addFunctionSymbol(std::string newSymbolName, int type, std::vector<ASTNode *> *paramsVec);
 protected:
     std::string name;
