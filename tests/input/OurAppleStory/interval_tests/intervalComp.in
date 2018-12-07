@@ -2,22 +2,22 @@ procedure main() returns integer {
 var out = std_output();
 
 var t1 = 1 == 1..1;
-integer interval t2 = 0 == 1..1;
+boolean t2 = 0 == 1..1;
 var t3 = 1 != 1..1;
-integer interval t4 = 0 != 1..1;
+boolean t4 = 0 != 1..1;
 var t5 = 1..1 == 1..1;
-integer interval t6 = 0..0 == 1..1;
+boolean t6 = 0..0 == 1..1;
 var t7 = 1..1 != 1..1;
-integer interval t8 = 0..0 != 1..1;
+boolean t8 = 0..0 != 1..1;
 
-t1 by 1 -> out; '\n' -> out;
-t2 by 1 -> out; '\n' -> out;
-t3 by 1 -> out; '\n' -> out;
-t4 by 1 -> out; '\n' -> out;
-t5 by 1 -> out; '\n' -> out;
-t6 by 1 -> out; '\n' -> out;
-t7 by 1 -> out; '\n' -> out;
-t8 by 1 -> out; '\n' -> out;
+t1 -> out; '\n' -> out;
+t2 -> out; '\n' -> out;
+t3 -> out; '\n' -> out;
+t4 -> out; '\n' -> out;
+t5 -> out; '\n' -> out;
+t6 -> out; '\n' -> out;
+t7 -> out; '\n' -> out;
+t8 -> out; '\n' -> out;
 
 return 0;
 }

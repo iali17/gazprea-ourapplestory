@@ -1,0 +1,49 @@
+procedure QuickSort(var integer vector[20] v, integer lo, integer hi);
+procedure Partition(var integer vector[20] v, integer lo, integer hi) returns integer;
+
+procedure main() returns integer {
+    var out = std_output();
+    integer vector v[20] = [-43,778,1,4,7876,321,4567,88,11,2,3,4,-2,-321,3,1,-3213,1,55,55];
+
+    v->out; '\n' -> out;
+
+    call QuickSort(v, 1, 20);
+
+    v->out;'\n' -> out;
+
+    return 0;
+}
+
+procedure QuickSort(var integer vector[20] v, integer lo, integer hi) {
+    integer p;
+    if (lo < hi) {
+        p = Partition(v, lo, hi);
+        call QuickSort(v, lo, p);
+        call QuickSort(v, p + 1, hi);
+    }
+}
+
+procedure Partition(var integer vector[20] v, integer lo, integer hi) returns integer{
+    integer pivot = v[lo];
+    integer i = lo - 1;
+    integer j = hi + 1;
+    integer temp;
+
+    loop {
+        i = i + 1;
+        loop while (v[i] < pivot) {
+            i = i + 1;
+        }
+        j = j - 1;
+        loop while (v[j] > pivot) {
+            j = j - 1;
+        }
+        if (i >= j) {
+            break;
+        }
+        temp = v[i];
+        v[i] = v[j];
+        v[j] = temp;
+    }
+    return j;
+}
