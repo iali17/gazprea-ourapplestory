@@ -41,6 +41,14 @@ InternalTools::pair CodeGenerator::castForOp(InfixNode *node) {
     return retVal;
 }
 
+/**
+ * Preserves size of matrix and scalar concatenations
+ *
+ * @param node
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftCols     = nullptr;
@@ -78,6 +86,14 @@ InternalTools::pair CodeGenerator::castAndPreserveColSizeMatrix(InfixNode *node,
     return retVal;
 }
 
+/**
+ * Preserve size of vector with scalar concatenations
+ *
+ * @param node
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 InternalTools::pair CodeGenerator::castAndPreserveSizeScalar(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftSize     = nullptr;
@@ -113,6 +129,14 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeScalar(InfixNode *node, ll
     return retVal;
 }
 
+/**
+ * Preserve size of matrix to matrix concatenations
+ *
+ * @param node
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
     llvm::Value *leftRows     = nullptr;
@@ -174,7 +198,7 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeMatrix(InfixNode *node, ll
  * @param node
  * @param left
  * @param right
- * @return
+ * @return llvm::Value *
  */
 InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, llvm::Value *left, llvm::Value *right) {
     //save size
@@ -222,7 +246,7 @@ InternalTools::pair CodeGenerator::castAndPreserveSizeVector(InfixNode *node, ll
 /**
  * performs basic visit and type promotion but keeps the same dim
  * @param node
- * @return
+ * @return llvm::Value *
  */
 InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node, bool colsOnly) {
     llvm::Value * left  = visit(node->getLeft());
@@ -245,6 +269,12 @@ InternalTools::pair CodeGenerator::castAndPreserveSize(InfixNode *node, bool col
     return *(new InternalTools::pair);
 }
 
+/**
+ * Handles addition
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(AddNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -266,6 +296,12 @@ llvm::Value *CodeGenerator::visit(AddNode *node) {
     return it->getAdd(left, right);
  }
 
+ /**
+  * Handles subtraction
+  *
+  * @param node
+  * @return llvm::Value *
+  */
 llvm::Value *CodeGenerator::visit(SubNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -287,6 +323,12 @@ llvm::Value *CodeGenerator::visit(SubNode *node) {
     return it->getSub(left, right);
 }
 
+/**
+ * Handles multiplication
+ *
+ * @param node
+ * @return llvm::value *
+ */
 llvm::Value *CodeGenerator::visit(MulNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -308,6 +350,12 @@ llvm::Value *CodeGenerator::visit(MulNode *node) {
     return it->getMul(left, right);
 }
 
+/**
+ * Handles division
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(DivNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -329,6 +377,12 @@ llvm::Value *CodeGenerator::visit(DivNode *node) {
     return it->getDiv(left, right);
 }
 
+/**
+ * Handles remainder
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(RemNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -346,7 +400,12 @@ llvm::Value *CodeGenerator::visit(RemNode *node) {
     return it->getRem(left, right);
 }
 
-//TODO - split
+/**
+ * Handles exponentials
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(ExpNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -369,6 +428,12 @@ llvm::Value *CodeGenerator::visit(ExpNode *node) {
     return nullptr;
 }
 
+/**
+ * Handles equal comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(EQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
@@ -396,6 +461,12 @@ llvm::Value *CodeGenerator::visit(EQNode *node) {
     return it->getEQ(left, right);
 }
 
+/**
+ * Handles not equal comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(NEQNode *node) {
     llvm::Value * left  = visit(node->getLeft());
     llvm::Value * right = visit(node->getRight());
@@ -423,6 +494,12 @@ llvm::Value *CodeGenerator::visit(NEQNode *node) {
     return it->getNEQ(left, right);
 }
 
+/**
+ * Handles greater than comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(GTNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -438,6 +515,12 @@ llvm::Value *CodeGenerator::visit(GTNode *node) {
     return it->getGT(left, right);
 }
 
+/**
+ * Handles less than comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(LTNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -453,6 +536,12 @@ llvm::Value *CodeGenerator::visit(LTNode *node) {
     return it->getLT(left, right);
 }
 
+/**
+ * Handles greater than or equal comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(GTENode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -468,6 +557,12 @@ llvm::Value *CodeGenerator::visit(GTENode *node) {
     return it->getGTE(left, right);
 }
 
+/**
+ * Handles less than or equal comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(LTENode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -483,6 +578,12 @@ llvm::Value *CodeGenerator::visit(LTENode *node) {
     return it->getLTE(left, right);
 }
 
+/**
+ * Handles and comparisons
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(AndNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -498,6 +599,12 @@ llvm::Value *CodeGenerator::visit(AndNode *node) {
     return it->getAnd(left, right);
 }
 
+/**
+ * Handles or comparisions
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(OrNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -513,6 +620,12 @@ llvm::Value *CodeGenerator::visit(OrNode *node) {
     return it->getOr(left, right);
 }
 
+/**
+ * Handles bitwise xor
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(XOrNode *node) {
     InternalTools::pair retVal = castForOp(dynamic_cast<InfixNode *>(node));
     llvm::Value * left         = retVal.left;
@@ -528,6 +641,12 @@ llvm::Value *CodeGenerator::visit(XOrNode *node) {
     return it->getXOr(left, right);
 }
 
+/**
+ * Handles negation
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(NegateNode *node) {
     llvm::Value * expr  = visit(node->getExpr());
     //check for non base type cases
@@ -549,7 +668,7 @@ llvm::Value *CodeGenerator::visit(NegateNode *node) {
  * @param left
  * @param right
  * @param OPTYPE
- * @return
+ * @return llvm::Value *
  */
 llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * right, int OPTYPE, int line){
 	llvm::Type *tmpType;
@@ -605,7 +724,7 @@ llvm::Value *CodeGenerator::performTupleOp(llvm::Value *left, llvm::Value * righ
 /**
  * Concatenates things
  * @param node
- * @return
+ * @return llvm::Value *
  */
 llvm::Value *CodeGenerator::visit(ConcatenationNode *node) {
     InternalTools::pair retVal = castAndPreserveSize(dynamic_cast<InfixNode *>(node), true);

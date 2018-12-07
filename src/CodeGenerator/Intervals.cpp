@@ -31,6 +31,13 @@ llvm::Value *CodeGenerator::visit(IntervalNode *node) {
     return et->getNewInterval(left, right);
 }
 
+
+/**
+ * Creates vector from interval
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(ByNode *node) {
     llvm::Value * interval = visit(node->getLeft());
     llvm::Value * iterator = visit(node->getRight());
@@ -42,7 +49,12 @@ llvm::Value *CodeGenerator::visit(ByNode *node) {
     return ir->CreatePointerCast(et->getVectorFromInterval(interval, iterator), intVecTy->getPointerTo());
 }
 
-
+/**
+ * Handles interval declarations
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
     llvm::Value * intervalPtr;
     const std::string &id = node->getID();
@@ -61,7 +73,14 @@ llvm::Value *CodeGenerator::visit(IntervalDeclNode *node) {
     return nullptr;
 }
 
-
+/**
+ * Handles interval arithmetic
+ *
+ * @param node
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llvm::Value *right) {
 
     assert(it->isIntervalType(left) && it->isIntervalType(right));
@@ -280,6 +299,13 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     exit(1);
 }
 
+/**
+ * Handles interval unary operations
+ *
+ * @param node
+ * @param right
+ * @return
+ */
 llvm::Value *CodeGenerator::IntervalUnary(ASTNode * node, llvm::Value *right) {
     llvm::Value * a = it->getValFromStruct(right, INTERVAL_MIN);
     llvm::Value * b = it->getValFromStruct(right, INTERVAL_MAX);
