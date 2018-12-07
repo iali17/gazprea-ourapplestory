@@ -47,7 +47,7 @@ int CastTable::getType(llvm::Type *expr) {
 }
 
 // This function is to check cast promotion without the use of the keyword: as
-InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
+InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line, int opt) {
     assert(!((lValueLoad == nullptr) && (rValueLoad == nullptr)));
 
     if(!lValueLoad)
@@ -61,7 +61,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
         rValueLoad = it->getIdn(lValueLoad->getType());
 
     if(it->isVectorType(lValueLoad) || it->isVectorType(rValueLoad)) {
-        return vectorTypePromotion(lValueLoad, rValueLoad, line);
+        return vectorTypePromotion(lValueLoad, rValueLoad, line, opt);
     }
 
     if (it->isIntervalType(lValueLoad) || it->isIntervalType(rValueLoad)){
@@ -69,7 +69,7 @@ InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Valu
     }
 
     if(it->isMatrixType(lValueLoad) || it->isMatrixType(rValueLoad)) {
-        return matrixTypePromotion(lValueLoad, rValueLoad, line);
+        return matrixTypePromotion(lValueLoad, rValueLoad, line, opt);
     }
 
     // Gazprea type of left and right expr
@@ -828,7 +828,7 @@ InternalTools::pair CastTable::IntervalTypePromotion(llvm::Value *left, llvm::Va
 }
 
 
-InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line) {
+InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line, int opt) {
     int lType;
     int rType;
     llvm::Type *lTypeP;
@@ -845,7 +845,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
         rValueLoad = et->getVectorFromInterval(rValueLoad, it->getConsi32(1));
         rValueLoad = ir->CreatePointerCast(rValueLoad, intVecTy->getPointerTo());
 
-        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line, opt);
     }
 
     // Type promotion between vector and interval where leftExpr is interval and rightExpr is the vector
@@ -854,7 +854,7 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
         lValueLoad = et->getVectorFromInterval(lValueLoad, it->getConsi32(1));
         lValueLoad = ir->CreatePointerCast(lValueLoad, intVecTy->getPointerTo());
 
-        return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+        return vectorToVectorPromotion(lValueLoad, rValueLoad, line, opt);
     }
 
     // Type promotion between scalar and vector where leftExpr is the vector
@@ -937,12 +937,12 @@ InternalTools::pair CastTable::vectorTypePromotion(llvm::Value *lValueLoad, llvm
 
     // Type promotion between vector and vector
     else {
-       return vectorToVectorPromotion(lValueLoad, rValueLoad, line);
+       return vectorToVectorPromotion(lValueLoad, rValueLoad, line, opt);
     }
 
 }
 
-InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line) {
+InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt) {
     int lType;
     int rType;
     llvm::Type *lTypeP;
@@ -1017,11 +1017,11 @@ InternalTools::pair CastTable::matrixTypePromotion(llvm::Value *leftExpr, llvm::
 
     // Type promotion between two matrices
     else {
-        return matrixToMatrixPromotion(leftExpr, rightExpr, line);
+        return matrixToMatrixPromotion(leftExpr, rightExpr, line, opt);
     }
 }
 
-InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line) {
+InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt) {
     int lType;
     int rType;
     llvm::Type *lTypeP;
@@ -1030,6 +1030,14 @@ InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, ll
     std::string lTypeString;
     std::string rTypeString;
     llvm::Value *size;
+
+    if(opt == -1) {
+        // makes a copy to check size
+        llvm::Value *leftExprCopy = et->getVectorCopy(leftExpr);
+        llvm::Value *rightExprCopy = et->getVectorCopy(rightExpr);
+
+        et->strictCopyVectorElements(leftExprCopy, rightExprCopy, it->getConsi32(line), it->getConsi32(false));
+    }
 
     auto cb = new CondBuilder(globalCtx, ir, mod);
 
@@ -1089,7 +1097,7 @@ InternalTools::pair CastTable::vectorToVectorPromotion(llvm::Value *leftExpr, ll
     }
 }
 
-InternalTools::pair CastTable::matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line) {
+InternalTools::pair CastTable::matrixToMatrixPromotion(llvm::Value *leftExpr, llvm::Value *rightExpr, int line, int opt) {
     // Type variables initialization
     int lType;
     int rType;
@@ -1098,6 +1106,14 @@ InternalTools::pair CastTable::matrixToMatrixPromotion(llvm::Value *leftExpr, ll
     std::string castType;
     std::string lTypeString;
     std::string rTypeString;
+
+    if(opt == -1) {
+        // Makes copys to check if size are different
+        llvm::Value *leftExprCopy = et->getMatrixCopy(leftExpr);
+        llvm::Value *rightExprCopy = et->getMatrixCopy(rightExpr);
+
+        et->strictCopyMatrixElements(leftExprCopy, rightExprCopy, it->getConsi32(line), it->getConsi32(false));
+    }
 
     // llvm value initialization
     llvm::Value *maxRowSize = ir->CreateAlloca(intTy);
