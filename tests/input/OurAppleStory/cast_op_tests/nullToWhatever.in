@@ -4,14 +4,12 @@ procedure main() returns integer{
     var out = std_output();
 
     integer vector a1[2] = as<integer vector[2]>(null);
-    //integer vector a2[2] = as<real vector[2]>(null);
-    //integer vector a3[2] = as<character vector[2]>(null);
-    //string a4 = as<string>(null);
+    integer vector a2[2] = as<real vector[2]>(null);
+    integer vector a3[2] = as<character vector[2]>(null);
 
-    //a1->out;'\n'->out;
-    //a2->out;'\n'->out;
-    //a3->out;'\n'->out;
-    //a4->out;'\n'->out;
+    a1->out;'\n'->out;
+    a2->out;'\n'->out;
+    a3->out;'\n'->out;
 
 
 

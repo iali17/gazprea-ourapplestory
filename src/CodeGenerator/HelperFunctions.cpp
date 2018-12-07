@@ -193,6 +193,20 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             auto argNode = dynamic_cast<IntervalNode *>(arguNode->at(i));
             if (argNode) {
                 argPtr = visit(argNode);
+            } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
+                auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
+
+                if (dynamic_cast<INTNode *>(tupNode->getIndex())) {
+                    uniqueIden = std::to_string(((INTNode *) tupNode->getIndex())->value);
+                } else {
+                    uniqueIden = ((IDNode *) tupNode->getIndex())->getID();
+                }
+
+                idNode = symbolTable->resolveSymbol(tupNode->getIdNode()->getID());
+                idx = getIndexForTuple(tupNode->getIndex(), idNode->getPtr());
+                c = idNode->isConstant();
+                argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
+                argPtr = ir->CreateLoad(argPtr);
             } else {
                 auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                 Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
