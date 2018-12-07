@@ -1,7 +1,7 @@
-typedef integer vector[3] intVec3Type;
+typedef integer[3] intVec3Type;
 typedef character vector[3] charVec3Type;
-typedef real vector[3] realVec3Type;
-typedef string stringType;
+typedef real [3] realVec3Type;
+typedef string[26] stringType;
 
 procedure main() returns integer {
     var out = std_output();
@@ -23,7 +23,7 @@ procedure main() returns integer {
     t3 -> out; '\n' -> out;
 
     t4 -> out; '\n' -> out;
-    t4 = "segmentation fault jk\n"
+    t4 = "segmentation fault jk    \n"
     t4 -> out; '\n' -> out;
 
     return 0;

@@ -7,7 +7,7 @@ procedure main() returns integer {
 	real num;
 	real guess;
 
-    num = 12345678;
+    num = 12345678;                         // uncomment the input for your own sqrt
 	//num <- in1; '\n'-> out;
     guess = num / 2;
 
