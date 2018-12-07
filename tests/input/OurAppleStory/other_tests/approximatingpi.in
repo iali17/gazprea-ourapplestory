@@ -1,20 +1,22 @@
 procedure SquareRoot(real n, real guess) returns real;
 procedure AbsoluteValue(real number) returns real;
-
+procedure Madhava(integer k) returns real;
 
 procedure main() returns integer {
     var out = std_output();
-	var in1 = std_input();
-	real num;
-	real guess;
+    real result = 0;
 
-    num = 12345678;                         // uncomment the input for your own sqrt
-	//num <- in1; '\n'-> out;
-    guess = num / 2;
+    loop k in 0..10 {
+        result = result + Madhava(k);
+    }
 
-	SquareRoot(num, guess) -> out; '\n'-> out;
+    result = result * SquareRoot(12.0, 3.0);
+    result -> out; '\n' -> out;
+    return 0;
+}
 
-	return 0;
+procedure Madhava(integer k) returns real {
+    return 1.0 / ((-3.0) ^ k * (2.0 * k + 1.0));
 }
 
 procedure SquareRoot(real n, real guess) returns real {

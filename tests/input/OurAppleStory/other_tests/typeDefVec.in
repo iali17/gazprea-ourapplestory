@@ -1,14 +1,13 @@
 typedef integer[3] intVec3Type;
 typedef character vector[3] charVec3Type;
-typedef real [3] realVec3Type;
-typedef string[26] stringType;
+typedef real[3] realVec3Type;
 
 procedure main() returns integer {
     var out = std_output();
     intVec3Type t1 = [1,2,3];
     charVec3Type t2 = ['a','b','c'];
-    realVec3Type t3 = [1.2, 3.4e-5, .1e2];
-    stringType t4 = "this will be over written\n"
+    realVec3Type t3 = [1.2, 3.4e-5, 2];
+
 
     t1 -> out; '\n' -> out;
     t1[2] = t1[3] + 14;
@@ -22,9 +21,6 @@ procedure main() returns integer {
     t3[2] = t1[1] + 3.3;
     t3 -> out; '\n' -> out;
 
-    t4 -> out; '\n' -> out;
-    t4 = "segmentation fault jk    \n"
-    t4 -> out; '\n' -> out;
 
     return 0;
 }
