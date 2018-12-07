@@ -700,9 +700,9 @@ llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
-    if(typeString == "integervector" || typeString == "integer")
+    if(typeString == "integervector" )
         return intVecTy;
-    else if(typeString == "realvector" || typeString == "real")
+    else if(typeString == "realvector")
         return realVecTy;
     else if(typeString == "booleanvector" || typeString == "boolean")
         return boolVecTy;
@@ -715,13 +715,13 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclMatrixType(const std::string &typeString) {
-    if(typeString == "integermatrix" || typeString == "integer")
+    if(typeString == "integermatrix" )
         return intMatrixTy;
-    else if(typeString == "realmatrix" || typeString == "real")
+    else if(typeString == "realmatrix")
         return realMatrixTy;
-    else if(typeString == "booleanmatrix" || typeString == "boolean")
+    else if(typeString == "booleanmatrix")
         return boolMatrixTy;
-    else if(typeString == "charactermatrix" || typeString == "character")
+    else if(typeString == "charactermatrix")
         return charMatrixTy;
 
     return nullptr;
