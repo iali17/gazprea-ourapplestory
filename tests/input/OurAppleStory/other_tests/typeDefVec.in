@@ -6,26 +6,25 @@ typedef string stringType;
 procedure main() returns integer {
     var out = std_output();
     intVec3Type t1 = [1,2,3];
-    charVec3Type t2 = ['a', 'b', 'c'];
-    realVec3Type t3 = [1.1, 2.3e-4, .3e2];
-    stringType = "some string";
+    charVec3Type t2 = ['a','b','c'];
+    realVec3Type t3 = [1.2, 3.4e-5, .1e2];
+    stringType t4 = "this will be over written\n"
 
-    // Print intType
+    t1 -> out; '\n' -> out;
+    t1[2] = t1[3] + 14;
     t1 -> out; '\n' -> out;
 
-    // Addition
-    t1[1] + 1 -> out; '\n' -> out;
+    t2 -> out; '\n' -> out;
+    t2[2] = 'n';
+    t2 -> out; '\n' -> out;
 
-    // Multiplication
-    t1[2] * 3 -> out; '\n' -> out;
+    t3 -> out; '\n' -> out;
+    t3[2] = t1[1] + 3.3;
+    t3 -> out; '\n' -> out;
 
-    // Division
-    t1[3] / 0.1 -> out; '\n' -> out;
-
-
-
-
-
+    t4 -> out; '\n' -> out;
+    t4 = "segmentation fault jk\n"
+    t4 -> out; '\n' -> out;
 
     return 0;
 }
