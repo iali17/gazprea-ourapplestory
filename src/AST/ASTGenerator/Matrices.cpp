@@ -10,10 +10,16 @@ antlrcpp::Any ASTGenerator::visitMatrixType(gazprea::GazpreaParser::MatrixTypeCo
     auto sType = sTypeArray[0];
 
     if(ctx->extension()) {
-        if(ctx->extension()->rightExtension()) {
+        if(ctx->extension()->rightExtension() && ctx->explicitMatrixExtension() == nullptr) {
             return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), visit(ctx->extension()->rightExtension()), line, sType);
         } else {
             return (ASTNode *) new MatrixTypeNode(visit(ctx->extension()), nullptr, line, sType);
+        }
+    } else if(ctx->explicitMatrixExtension()) {
+        if(ctx->explicitMatrixExtension()->rightExtension()) {
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->explicitMatrixExtension()->left), visit(ctx->explicitMatrixExtension()->rightExtension()->right), line, sType);
+        } else {
+            return (ASTNode *) new MatrixTypeNode(visit(ctx->explicitMatrixExtension()->left), nullptr, line, sType);
         }
     } else {
         //if(ctx->extension()->rightExtension()) {

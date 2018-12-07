@@ -201,6 +201,8 @@ llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
 
     // Type of matrix
     std::string sType = ((MatrixTypeNode *) mnode)->getStringType();
+    auto typeNames = split(sType, 'm');
+    sType = typeNames[0] + "matrix";
     llvm::Type *type = it->getDeclScalarTypeFromMat(it->getDeclMatrixType(sType));
 
     // Extension size if exists
