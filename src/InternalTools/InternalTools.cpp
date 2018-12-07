@@ -704,9 +704,9 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
         return intVecTy;
     else if(typeString == "realvector")
         return realVecTy;
-    else if(typeString == "booleanvector" || typeString == "boolean")
+    else if(typeString == "booleanvector")
         return boolVecTy;
-    else if(typeString == "charactervector" || typeString == "character")
+    else if(typeString == "charactervector")
         return charVecTy;
     else if(typeString == "string")
         return strTy;
