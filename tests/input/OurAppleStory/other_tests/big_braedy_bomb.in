@@ -1,7 +1,7 @@
 typedef character intege;
 
-//THIS IS AN INSIDE JOKE PLS NO DOCK MARKS :eyes: :mom:
 /*/_/_***/
+//THIS IS AN INSIDE JOKE PLS NO DOCK MARKS :eyes: :mom:
 procedure oldMom() returns integer vector[6] {
     integer vector Bb[6];
     integer i = 0;
@@ -12,7 +12,7 @@ procedure oldMom() returns integer vector[6] {
 	integer matrix g = [[]];
 	integer vector gg;
 
-	if (020!=4) {
+	if (0__20_!=4) {
 		integer i = i + 2;
 		integer vector v = [i in i..(i*(175/(i+(0-(0-14))))) | i];
 		Bb[1] = v[10 - 1 + i + as<integer>(9==(10-1))];
@@ -63,6 +63,15 @@ procedure printf() {
     return;
 }
 
+
+procedure addNN(integer x ) returns integer {
+	return x + 99;
+}
+
+procedure addN(integer x) returns integer {
+	return x + 9;
+}
+
 procedure main() returns integer {
     character b;
     character r;
@@ -75,22 +84,58 @@ procedure main() returns integer {
     
     integer vector[*] xd;
 	integer wow;
+	integer tooMany;
 	string yourName = "LETS GET THIS BREAD(Y)";
 	character matrix huhu[2,3]= null;
+	integer matrix uhuh[2,3] = identity;
+	integer vector work[*];
+	integer vector dork[*];
     character x[26] = as<character vector>(97..122 by 1);
 
     xd = oldMom();
 	b = x[xd[1]+1];
-	call scanf(b);
 	
 	x[as<integer>(yourName[rows(huhu)])] = as<character>( as<integer>(yourName[7])+32 );
 	r = x[as<integer>(yourName[rows(huhu)])];
-	call scanf(r);
 
 	xd = reverse(xd);
-	wow = length(xd) + rows(huhu)*2 + (44-45+3);
+	wow = as<integer>(0*identity + 1 + (1 - null + -identity)/(null + 1.0) + (1-null)/(identity + 0) - identity);
+	wow = wow + length(xd) + rows(huhu)*2 + (44*identity-45*identity+2*identity);
 	a = x[wow];
+
+	huhu = as<character matrix>([[5,4,-133333],[4,3, 5*5]]);
+
+	uhuh = as<integer matrix>(huhu);
+
+
+	wow = uhuh[1,*][1];
+	work = uhuh[*,1];
+	uhuh[*,1][2] = 14;
+	wow = wow + work[2];
+	wow = wow + uhuh[*,1][2];
+	tooMany = uhuh[*,3][2];
+	tooMany = tooMany / work[1];
+	wow = wow + tooMany;
+	e = x[wow + identity];
+
+
+	xd = reverse(xd);
+	wow = xd[1] - xd[1+identity+null];
+	dork = uhuh[1, *];
+	dork = [wow, wow, wow];
+	dork = [addNN(dork[1]), addN(dork[3]), dork[2]];
+	wow = dork[1] + dork[2] + dork[3];
+	wow = wow - as<integer>(x[1]);
+
+	d = x[wow + identity];
+	y = x[wow];
+
+	call scanf(b);
+	call scanf(r);
 	call scanf(a);
+	call scanf(e);
+	call scanf(d);
+	call scanf(y);
     
     return 0;
 }
