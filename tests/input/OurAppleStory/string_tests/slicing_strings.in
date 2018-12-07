@@ -1,0 +1,14 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    var x = "abcdefghijklmnopqrstuvwxyz\n";
+
+    x->out;
+
+    x[1] = 'z';
+    x[26] = 'a';
+
+    x->out;
+
+    return 0;
+}
