@@ -127,6 +127,9 @@ CodeGenerator::CodeGenerator(char *outFile) : outFile(outFile) {
  * @return nullptr
  */
 llvm::Value *CodeGenerator::visit(ReturnNode *node) {
+    if(ir->GetInsertBlock()->getParent()->getBasicBlockList().back().getTerminator())
+        return nullptr;
+
     if (node->getExpr() == nullptr) {
         ir->CreateRetVoid();
     } else {
