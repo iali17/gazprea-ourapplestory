@@ -23,6 +23,13 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
+/**
+ *
+ * @param opNode
+ * @param leftVec
+ * @param rightVec
+ * @return
+ */
 llvm::Value *CodeGenerator::getMatixRowOp(ASTNode *opNode, llvm::Value *leftVec, llvm::Value *rightVec) {
     return performInfixVectorOp(opNode, leftVec, rightVec);
 }
@@ -31,6 +38,14 @@ llvm::Value *CodeGenerator::getUnaryMatrixRowOpVal(ASTNode *opNode, llvm::Value 
     return performUnaryVectorOp(opNode, curVec);
 }
 
+/**
+ * Deals with matrix arithmetic operations
+ *
+ * @param opNode
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
 //variables for the return
     llvm::Value * retNumRows = it->getValFromStruct(left, MATRIX_NUMROW_INDEX);
@@ -111,6 +126,13 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
     return ret;
 }
 
+/**
+ * Handles unary matrix operations
+ *
+ * @param opNode
+ * @param mat
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *mat) {
 //variables for the return
     llvm::Value * retNumRows = it->getValFromStruct(mat, MATRIX_NUMROW_INDEX);
@@ -188,6 +210,14 @@ llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *m
     return ret;
 }
 
+/**
+ * Handles matrix comparison operations
+ *
+ * @param opNode
+ * @param left
+ * @param right
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::performCompMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
     //variables for the return
     llvm::Value *ret;//     = it->geti1(1);

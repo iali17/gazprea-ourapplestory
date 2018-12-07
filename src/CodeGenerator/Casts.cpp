@@ -102,6 +102,16 @@ llvm::Value* CodeGenerator::vectorCasting(CastExprNode *node) {
     // Extension size if exists
     llvm::Value *size  = visit(dynamic_cast<VectorTypeNode *>(vnode)->getSize());
 
+    // Checks if expr is null
+    if(!exprP) {
+        exprP = et->getNewVector(it->getConstFromType(type));
+        exprP = it->castVectorToType(exprP, type);
+
+        assert(size);
+
+        et->initVector(exprP, size);
+    }
+
     llvm::Value *vec = et->getNewVector(it->getConstFromType(type));
     vec = it->castVectorToType(vec, type);
 
@@ -197,6 +207,16 @@ llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
     llvm::Value *rowSize  = visit(((MatrixTypeNode *) mnode)->getLeft());
     llvm::Value *colSize  = visit(((MatrixTypeNode *) mnode)->getRight());
 
+    // Checks if expr is null
+    if(!exprP) {
+        exprP = et->getNewMatrix(it->getConstFromType(type));
+        exprP = it->castMatrixToType(exprP, type);
+
+        assert(rowSize || colSize);
+
+        et->initMatrix(exprP, rowSize, colSize);
+    }
+
     // Handles matrix to matrix casting
     if(it->isMatrixType(exprP)) {
         llvm::Value *mat = matrixUndefSizeCast(exprP, type, rowSize, colSize, node->getLine());
@@ -220,6 +240,7 @@ llvm::Value* CodeGenerator::matrixCasting(CastExprNode *node) {
 }
 
 /**
+ * Deals with Scalar casting
  *
  * @param node
  * @return
@@ -228,6 +249,13 @@ llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
     llvm::Type *type;
     llvm::Value *expr;
     llvm::Value *exprP = visit(node->getExpr());
+    GazpreaType *gazpreaType = symbolTable->resolveType(dynamic_cast<ScalarCastNode *>(node)->getTypeString());
+    type = gazpreaType->getTypeDef();
+
+    // Checks if null
+    if(!exprP) {
+        exprP = it->getNull(type);
+    }
 
     // Casting error when casting tuple to scalar
     if(it->isStructType(exprP)) {
@@ -237,13 +265,18 @@ llvm::Value* CodeGenerator::scalarCasting(CastExprNode *node) {
         eb->printError(error);
     }
 
-    expr = visit(node->getExpr());
-    GazpreaType *gazpreaType = symbolTable->resolveType(dynamic_cast<ScalarCastNode *>(node)->getTypeString());
-    type = gazpreaType->getTypeDef();
-
-    return ct->varCast(type, expr, node->getLine());
+    return ct->varCast(type, exprP, node->getLine());
 }
 
+/**
+ * Deals with vector casting when declaration doesn't give it a size
+ *
+ * @param vec
+ * @param exprP
+ * @param type
+ * @param line
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::vectorNoSizeCast(llvm::Value *vec, llvm::Value *exprP, llvm::Type *type, int line) {
     auto *wb = new WhileBuilder(globalCtx, ir, mod);
     llvm::Value *elemPtr;
@@ -293,7 +326,16 @@ llvm::Value *CodeGenerator::vectorNoSizeCast(llvm::Value *vec, llvm::Value *expr
     return vec;
 }
 
-
+/**
+ * Deals with matrix casting for given size declarations
+ *
+ * @param exprP
+ * @param type
+ * @param rowSize
+ * @param colSize
+ * @param line
+ * @return
+ */
 llvm::Value *CodeGenerator::matrixUndefSizeCast(llvm::Value *exprP, llvm::Type *type, llvm::Value *rowSize, llvm::Value *colSize, int line) {
     llvm::Value *exprRows = it->getValFromStruct(exprP, MATRIX_NUMROW_INDEX);
     llvm::Value *exprCols = it->getValFromStruct(exprP, MATRIX_NUMCOL_INDEX);

@@ -163,7 +163,6 @@ public:
     llvm::Value *indexAssign(ASTNode *srcNode, IndexNode *idxExpr, llvm::Value *src, llvm::Value *dest, int line);
     llvm::Value *matrixSliceAssign(ASTNode * srcNode, IndexNode * idxExpr, llvm::Value *dest, std::vector<llvm::Value *> * idxVec, llvm::Value *src);
 
-
     //Casting functions
     llvm::Value* scalarCasting(CastExprNode *node);
     llvm::Value* tupleCasting(CastExprNode *node);

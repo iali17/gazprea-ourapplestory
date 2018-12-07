@@ -24,6 +24,12 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
+/**
+ * Handles vector literals
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(VectorNode *node) {
     auto tempValues = new std::vector<llvm::Value *>();
     auto values = new std::vector<llvm::Value *>();
@@ -57,6 +63,12 @@ llvm::Value *CodeGenerator::visit(VectorNode *node) {
     return vec;
 }
 
+/**
+ * Handles string literals
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(StringNode *node) {
     auto values = new std::vector<llvm::Value *>();
 
@@ -76,6 +88,12 @@ llvm::Value *CodeGenerator::visit(StringNode *node) {
     return vec;
 }
 
+/**
+ * Handles vector declarations
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     VectorNode *vectorNode = nullptr;
     StringNode *stringNode = nullptr;
@@ -108,7 +126,6 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     if (vectorNode || stringNode) {
         llvm::Value *vecExpr = visit(node->getExpr());
         llvm::Type *vecType = it->getDeclVectorType(stype);
-        //llvm::Value *vecExprSize = it->getValFromStruct(vecExpr, it->getConsi32(VEC_LEN_INDEX));
 
         int exprSize;
         if (vectorNode) {
@@ -146,11 +163,23 @@ llvm::Value *CodeGenerator::visit(VectorDeclNode *node) {
     return nullptr;
 }
 
+/**
+ * Reverse vector built in function
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(ReverseVectorNode *node) {
     llvm::Value *vecPtr = visit(node->getExpr());
     return et->getReverseVector(vecPtr);
 }
 
+/**
+ * Handles vector or matrix indexing
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(IndexNode *node) {
     llvm::Value *LHS = visit(node->getLHS());
 
@@ -168,11 +197,25 @@ llvm::Value *CodeGenerator::visit(IndexNode *node) {
     return nullptr;
 }
 
+/**
+ * Length of vector built in function
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(LengthNode *node) {
     llvm::Value *vec = visit(node->getExpr());
     return et->getVectorLength(vec);
 }
 
+/**
+ * Handles indexing vectors
+ *
+ * @param vec
+ * @param idx
+ * @param isSlice
+ * @return
+ */
 llvm::Value *CodeGenerator::indexVector(llvm::Value *vec, llvm::Value *idx, bool isSlice) {
     //cover interval case
     if(it->isIntervalType(idx))
@@ -231,6 +274,16 @@ llvm::Value *CodeGenerator::vectorSliceAssign(ASTNode * srcNode, IndexNode * idx
     return nullptr;
 }
 
+/**
+ * Handles vector index assignments
+ *
+ * @param srcNode
+ * @param idxExpr
+ * @param src
+ * @param dest
+ * @param line
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::indexAssign(ASTNode *srcNode, IndexNode *idxExpr, llvm::Value *src, llvm::Value *dest,
                                         int line){
     if (dest->getType() == realVecTy->getPointerTo() && src->getType() == intTy)

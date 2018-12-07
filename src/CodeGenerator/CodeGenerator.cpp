@@ -282,6 +282,12 @@ llvm::Value *CodeGenerator::visit(DoLoopNode *node) {
     return nullptr;
 }
 
+/**
+ * Creates iterator loop statements
+ *
+ * @param node
+ * @return nullptr
+ */
 llvm::Value *CodeGenerator::visit(InLoopNode *node) {
     llvm::Value * domain = getRange(node->getDomain());
 
@@ -498,6 +504,12 @@ llvm::Value *CodeGenerator::visit(GlobalRefNode *node) {
     return global->getInitializer();
 }
 
+/**
+ * Returns the stream state
+ *
+ * @param node
+ * @return llvm::Value *
+ */
 llvm::Value *CodeGenerator::visit(StreamStateNode *node) {
     llvm::Value *ptr = symbolTable->resolveSymbol(node->getID())->getPtr();
     llvm::Value *ret = ir->CreateInBoundsGEP(ptr, {it->getConsi32(0), it->getConsi32(1)});

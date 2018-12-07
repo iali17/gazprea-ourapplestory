@@ -24,6 +24,14 @@ extern llvm::Type *realVecTy;
 extern llvm::Type *realMatrixTy;
 extern llvm::Type *intervalTy;
 
+/**
+ * Generates a vector
+ *
+ * @param loopVar
+ * @param range
+ * @param exprNode
+ * @return
+ */
 llvm::Value *CodeGenerator::generateVector(std::string loopVar, llvm::Value *range, ASTNode *exprNode) {
 //variables for the return
     llvm::Value *retVec          = nullptr;
