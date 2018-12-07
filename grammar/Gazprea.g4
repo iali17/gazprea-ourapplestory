@@ -82,14 +82,14 @@ statement
     ;
 
 assignment
-    : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                     #streamAss
-    | Identifier (COMMA Identifier)+ EQL expr SEMICOLON                     #pythonTupleAss
-    | Identifier EQL expr SEMICOLON                                         #normalAss
-    | TupleIndex EQL expr SEMICOLON                                         #tupleMemberAss
-    | expr '[' expr (COMMA expr)? ']' EQL expr SEMICOLON                    #indexAssign
-    | expr '[' MUL COMMA expr ']'     EQL expr SEMICOLON                    #fullLeftIndexAssign
-    | expr '[' expr COMMA MUL ']'     EQL expr SEMICOLON                    #fullRightIndexAssign
-    | expr '[' MUL (COMMA MUL)? ']'   EQL expr SEMICOLON                    #fullIndexAssign
+    : Identifier EQL (STD_INPUT | STD_OUTPUT) SEMICOLON                                            #streamAss
+    | (Identifier | TupleIndex) (COMMA (Identifier | TupleIndex))+ EQL expr SEMICOLON              #pythonTupleAss
+    | Identifier EQL expr SEMICOLON                                                                #normalAss
+    | TupleIndex EQL expr SEMICOLON                                                                #tupleMemberAss
+    | expr '[' expr (COMMA expr)? ']' EQL expr SEMICOLON                                           #indexAssign
+    | expr '[' MUL COMMA expr ']'     EQL expr SEMICOLON                                           #fullLeftIndexAssign
+    | expr '[' expr COMMA MUL ']'     EQL expr SEMICOLON                                           #fullRightIndexAssign
+    | expr '[' MUL (COMMA MUL)? ']'   EQL expr SEMICOLON                                           #fullIndexAssign
     ;
 
 declaration
