@@ -708,8 +708,12 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
                     ir->CreateStore(ptr, structElem);
                     ir->CreateStore(mat, ptr);
                 }
-                else if(it->isIntervalType(structElem)){
-
+                else if(intervalTy->getPointerTo() == types[i]->getPointerElementType()){
+                    llvm::Value *srcLower = it->getValFromStruct(values->at(i), INTERVAL_MIN);
+                    llvm::Value *srcUpper = it->getValFromStruct(values->at(i), INTERVAL_MAX);
+                    llvm::Value *interval = et->getNewInterval(srcLower, srcUpper);
+                    ir->CreateStore(ptr, structElem);
+                    ir->CreateStore(interval, ptr);
                 }
                 continue;
             }
