@@ -221,7 +221,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
                         interval = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
                     values->push_back(interval);
                 }
-
+                ++i;
                 continue;
             }
         }
