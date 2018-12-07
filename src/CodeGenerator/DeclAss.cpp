@@ -38,6 +38,10 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
     if(val && it->isVectorType(val)){
         val = et->getVectorCopy(val);
+
+        if(val && (val->getType() == strTy->getPointerTo())) {
+            val = ir->CreatePointerCast(val, strTy->getPointerTo());
+        }
     }
     else if(val && it->isIntervalType(val)){
         val = et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX));
@@ -52,7 +56,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->empty() && it->isTupleType(val)) {
         ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
-        ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+        ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     } else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
@@ -99,7 +103,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         }
 
         if (it->isTupleType(ptr)) {
-            ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+            ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
         } else if (it->isVectorType(ptr)) {
             llvm::Value *tempVal = ct->typeAssCast(gazType->getTypeDef(), val, node->getLine(), it->getConsi32(gazType->getDim1()));
             et->strictCopyVectorElements(ptr, tempVal, it->getConsi32(node->getLine()), it->getConsi32(true));
@@ -232,7 +236,11 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
             left->setPtr(et->getNewInterval(it->getConsi32(1), it->getConsi32(1)));
         }
         else {
-            //llvm::Value * newInterval = et->getNewInterval(it->getValFromStruct(val, INTERVAL_MIN), it->getValFromStruct(val, INTERVAL_MAX));
+            if (!it->isIntervalType(val)){ // todo get the correct right type toooo
+                std::cerr << "Type error: Cannot convert between integer interval and * on line "
+                << node->getLine() << ". Aborting...\n";
+                exit(1);
+            }
 
             llvm::Value * lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
             llvm::Value * upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
@@ -260,7 +268,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 
     if (val) {
         if (it->isTupleType(left->getPtr())) {
-            ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+            ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
             left->setPtr(ptr);
         } else {
             val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());
@@ -284,8 +292,8 @@ llvm::Value *CodeGenerator::visit(SliceAssignNode *node) {
     llvm::Value *src                 = visit(node->getRight());
 
     auto *idxVec = new std::vector<llvm::Value *>;
-    for(uint i = 0; i < idxNodes->size(); i++){
-        idxVec->push_back(visit(idxNodes->at(i)));
+    for (auto &idxNode : *idxNodes) {
+        idxVec->push_back(visit(idxNode));
     }
 
     //vector only

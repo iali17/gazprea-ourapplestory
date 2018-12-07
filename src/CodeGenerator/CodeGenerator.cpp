@@ -54,7 +54,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("matrix"   , matrixTy);
     symbolTable->addBaseType("interval" , intervalTy);
     symbolTable->addBaseType("string"   , strTy);
-
+/*
     //vectors
     symbolTable->addBaseType("booleanvector"  , boolVecTy->getPointerTo());
     symbolTable->addBaseType("charactervector", charVecTy->getPointerTo());
@@ -68,6 +68,7 @@ llvm::Value *CodeGenerator::visit(FileNode *node) {
     symbolTable->addBaseType("realmatrix"     , realMatrixTy->getPointerTo());
 
     symbolTable->addBaseType("integerinterval", intervalTy->getPointerTo());
+    */
 
     symbolTable->addSymbol("std_input()" , INSTREAM,  false);
     symbolTable->addSymbol("std_output()", OUTSTREAM, false);
@@ -132,7 +133,7 @@ llvm::Value *CodeGenerator::visit(ReturnNode *node) {
         llvm::Value *ret = visit(node->getExpr());
         if(it->isTupleType(ret)){
             llvm::Value * realRet = ir->CreateAlloca(ir->getCurrentFunctionReturnType()->getPointerElementType());
-            realRet = it->initTuple(realRet, it->getValueVectorFromTuple(ret));
+            realRet = initTuple(realRet, it->getValueVectorFromTuple(ret));
             ir->CreateRet(realRet);
         } else {
             ir->CreateRet(ret);

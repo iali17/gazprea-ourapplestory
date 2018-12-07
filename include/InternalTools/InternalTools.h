@@ -19,6 +19,7 @@
 #include "CondBuilder.h"
 #include "WhileBuilder.h"
 #include "globals.h"
+#include "../Scope/GazpreaTupleType.h"
 
 class InternalTools {
 public:
@@ -44,7 +45,7 @@ public:
 	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, llvm::Value *idx);
 	llvm::Value *getValFromStruct(llvm::Value * sPtr, int idx);
 	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, int idx);
-	llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
+	//llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
 	llvm::Value *initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs);
 	std::vector<llvm::Value *> *getPtrVectorFromStruct(llvm::Value *structPtr);
 	llvm::Value *geti1(int64_t val);
@@ -52,8 +53,6 @@ public:
     llvm::Value *getReal(float val);
     llvm::Value *getConsi32(int64_t val);
     llvm::Value *getConsi64(int64_t val);
-    llvm::Value *getInf();
-    llvm::Value *getNInf();
     llvm::Value *safeReplace(llvm::Value *safePtr, llvm::Value *cond, llvm::Value *idx,
                              llvm::Value *arrP, llvm::Value *replaceVal);
     llvm::Value *getNull(llvm::Type *type);

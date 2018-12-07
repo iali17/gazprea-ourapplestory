@@ -190,7 +190,7 @@ antlrcpp::Any ASTGenerator::visitProcProto(gazprea::GazpreaParser::ProcProtoCont
         gType = VECTOR_T;
     }else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
         gType = MATRIX;
-    } else if(ctx->returnStat() && ctx->returnStat()->type()->matrixType()){
+    } else if(ctx->returnStat() && ctx->returnStat()->type()->intervalType()){
         gType = INTERVAL;
     }
     if(ctx->returnStat()) retType = ctx->returnStat()->type()->getText();

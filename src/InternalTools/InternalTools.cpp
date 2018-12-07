@@ -272,28 +272,6 @@ llvm::Value *InternalTools::getIdn(llvm::Type *type) {
         return nullptr;
 }
 
-llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
-    //fill new structure
-    auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
-    auto types   = structType->elements();
-    llvm::Value *element;
-    llvm::Type * nType, * oType;
-    for(unsigned long i = 0; i < values->size(); ++i){
-        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
-        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
-
-        nType = types[i]->getPointerElementType();
-        oType = values->at(i)->getType();
-        element = values->at(i);
-        if((nType != oType) && (nType == realTy)&& (oType == intTy))
-            element = ir->CreateSIToFP(element, realTy);
-
-        ir->CreateStore(element, ptr);
-        ir->CreateStore(ptr, structElem);
-    }
-    return tuplePtr ;
-}
-
 llvm::Value *InternalTools::initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs) {
     for(unsigned long i = 0; i < ptrs->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
@@ -406,6 +384,8 @@ llvm::Value *InternalTools::getEQ(llvm::Value *left, llvm::Value *right) {
     }
     else if(left->getType() == realTy){
         return ir->CreateFCmpUEQ(left, right, "feqtmp");
+    } else if (left->getType() == charTy){
+        return ir->CreateICmpEQ(left, right, "ceqtmp");
     }
 
     std::cerr << "Ambiguous types during arithmetic operation\n";
@@ -421,6 +401,9 @@ llvm::Value *InternalTools::getNEQ(llvm::Value *left, llvm::Value *right) {
     }
     else if(left->getType() == realTy){
         return ir->CreateFCmpUNE(left, right, "fneqtmp");
+    }
+    else if(left->getType() == charTy) {
+        return ir->CreateICmpNE(left, right, "ceqtmp");
     }
 
     std::cerr << "Ambiguous types during arithmetic operation\n";
@@ -717,7 +700,7 @@ llvm::Type *InternalTools::getVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
-    if(typeString == "integervector")
+    if(typeString == "integervector" )
         return intVecTy;
     else if(typeString == "realvector")
         return realVecTy;
@@ -732,7 +715,7 @@ llvm::Type *InternalTools::getDeclVectorType(const std::string &typeString) {
 }
 
 llvm::Type *InternalTools::getDeclMatrixType(const std::string &typeString) {
-    if(typeString == "integermatrix")
+    if(typeString == "integermatrix" )
         return intMatrixTy;
     else if(typeString == "realmatrix")
         return realMatrixTy;
@@ -766,7 +749,7 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
         return realTy;
     } else if ((type == strTy) || type == strTy->getPointerTo()) {
         return charTy;
-    } else if((type == charVecTy) || type == charVecTy->getPointerTo()) {
+    } else if((type == charVecTy) || type == charVecTy->getPointerTo() || (type == strTy->getPointerTo())) {
         return charTy;
     } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return boolTy;
@@ -829,14 +812,6 @@ llvm::Value *InternalTools::castMatrixIndex(llvm::Value *slice, llvm::Value *l, 
     else{
         return ir->CreatePointerCast(slice, vecElmtTy->getPointerTo());
     }
-}
-
-llvm::Value *InternalTools::getInf() {
-    return llvm::ConstantFP::getInfinity(intTy);
-}
-
-llvm::Value *InternalTools::getNInf() {
-    return llvm::ConstantFP::getInfinity(intTy, true);
 }
 
 llvm::Value *InternalTools::getMatrixNumRows(llvm::Value *mat) {

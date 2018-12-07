@@ -127,6 +127,14 @@ extension
     : '[' (left=expr | MUL) rightExtension? ']'
     ;
 
+explicitVectorExtension
+    : '[' (left=expr | MUL) ']'
+    ;
+
+explicitMatrixExtension
+    : '[' (left=expr | MUL) rightExtension ']'
+    ;
+
 rightExtension
     : COMMA (right=expr | MUL)
     ;
@@ -142,7 +150,7 @@ streamState
     ;
 
 typeDefine
-    : TYPEDEF type extension? Identifier SEMICOLON
+    : TYPEDEF type Identifier SEMICOLON
     ;
 
 functionCall
@@ -256,6 +264,7 @@ vectorType
     | (CHARACTER VECTOR) extension?
     | (INTEGER VECTOR) extension?
     | (REAL VECTOR) extension?
+    | (BOOLEAN | CHARACTER | INTEGER | REAL) explicitVectorExtension
     ;
 
 matrixType
@@ -263,6 +272,7 @@ matrixType
     | (CHARACTER MATRIX) extension?
     | (INTEGER MATRIX) extension?
     | (REAL MATRIX) extension?
+    | (BOOLEAN | CHARACTER | INTEGER | REAL) explicitMatrixExtension
     ;
 
 tupleTypeIdentifier

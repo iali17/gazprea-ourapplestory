@@ -83,13 +83,13 @@ void SymbolTable::addFunctionSymbol(std::string newSymbolName, int type, std::ve
 }
 
 void SymbolTable::addTupleType(std::string newTypeName, llvm::Type *newType,
-                               std::unordered_map<std::string, int> *stringRefMap, std::vector<llvm::Type *> *members) {
-    scopeStack->top()->addTupleType(newTypeName, newType, stringRefMap, members);
+                               std::unordered_map<std::string, int> *stringRefMap, std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims) {
+    scopeStack->top()->addTupleType(newTypeName, newType, stringRefMap, members, dims);
 }
 
 void SymbolTable::addTupleType(llvm::Type *newType, std::unordered_map<std::string, int> *stringRefMap,
-                               std::vector<llvm::Type *> *members) {
-    scopeStack->top()->addTupleType(newType, stringRefMap, members);
+                               std::vector<llvm::Type *> *members, std::unordered_map<int, std::pair<int, int>> *dims) {
+    scopeStack->top()->addTupleType(newType, stringRefMap, members, dims);
 }
 
 GazpreaTupleType *SymbolTable::resolveTupleType(llvm::Type *tupleType) {

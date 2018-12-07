@@ -1,0 +1,38 @@
+procedure SquareRoot(real n, real guess) returns real;
+procedure AbsoluteValue(real number) returns real;
+
+
+procedure main() returns integer {
+    var out = std_output();
+	var in1 = std_input();
+	real num;
+	real guess;
+
+    num = 12345678;                         // uncomment the input for your own sqrt
+	//num <- in1; '\n'-> out;
+    guess = num / 2;
+
+	SquareRoot(num, guess) -> out; '\n'-> out;
+
+	return 0;
+}
+
+procedure SquareRoot(real n, real guess) returns real {
+    loop {
+        var temp = 0.5 * (guess + n / guess);
+        if (AbsoluteValue(guess - temp) < 1e-6) {
+            guess = temp;
+            break;
+        }
+        guess = temp;
+    }
+    return guess;
+}
+
+procedure AbsoluteValue(real number) returns real {
+    if (number > 0) {
+        return number;
+    } else {
+        return -number;
+    }
+}

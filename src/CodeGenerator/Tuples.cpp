@@ -95,7 +95,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
-    return it->initTuple(tuplePtr, values);
+    return initTuple(tuplePtr, values);
 }
 
 /**
@@ -231,7 +231,7 @@ llvm::Value *CodeGenerator::visit(TupleDeclNode *node) {
     else if (not(tupleNode) && (dynamic_cast<IDNode *>(node->getExpr()) || dynamic_cast<CastExprNode *>(node->getExpr()))){
         llvm::Value * tuplePtr = visit(node->getExpr());
         ptr = ir->CreateAlloca(structType);
-        ptr = it->initTuple(ptr, it->getValueVectorFromTuple(tuplePtr));
+        ptr = initTuple(ptr, it->getValueVectorFromTuple(tuplePtr));
     }
     else {
         ptr = visit(tupleNode, structType);

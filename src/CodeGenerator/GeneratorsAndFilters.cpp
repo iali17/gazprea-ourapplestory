@@ -422,6 +422,6 @@ llvm::Value *CodeGenerator::visit(FilterNode *node) {
 
     //make tuple
     llvm::Value *ret = ir->CreateAlloca(structTy);
-    it->initTuple(ret, results);
+    initTuple(ret, results);
     return ret;
 }

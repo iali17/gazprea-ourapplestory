@@ -1,0 +1,21 @@
+procedure Factorial(real i) returns real;
+
+procedure main() returns integer {
+    var out = std_output();
+    real result = 0;
+
+    loop k in 0..10 {
+        result = result + 1.0 / Factorial(as<real>(k));
+    }
+    result -> out; '\n' -> out;
+
+    return 0;
+}
+
+procedure Factorial(real i) returns real {
+    if (i <= 0) {
+        return 1.0;
+    }
+    return i * Factorial(i - 1);
+}
+
