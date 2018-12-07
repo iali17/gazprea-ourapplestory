@@ -298,6 +298,7 @@ llvm::Value *CodeGenerator::indexAssign(ASTNode *srcNode, IndexNode *idxExpr, ll
     else if (dynamic_cast<NullNode *>(srcNode))
         ir->CreateStore(it->getNull(destTy), sad);
     else
+        src = ct->typeAssCast(destTy, src, srcNode->getLine());
         ir->CreateStore(src, sad);
     return nullptr;
 }
