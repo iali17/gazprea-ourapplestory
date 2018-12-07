@@ -93,15 +93,16 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             paramType = it->getDeclVectorType(typeName);
 
             auto argNode = dynamic_cast<VectorNode *>(arguNode->at(i));
+            argPtr = visit(arguNode->at(i));
+
             if (argNode) {
                 argPtr = visit(argNode);
-                if ((int) argNode->getElements()->size() != size) {
-                    auto argNameVec = split(typeName, 'v');
-                    auto parNameVec = split(pNode->getDeclaredType(), 'v');
-                    auto er = new VectorErrorNode(argNameVec[0], parNameVec[0], (int) argNode->getElements()->size(),
-                                                  size, argNode->getLine());
-                    eb->printError(er);
-                }
+
+                llvm::Value *vec = nullptr;
+                vec = et->getNewVector(it->getConstFromType(argPtr->getType()));
+                et->initVector(vec,it->getConsi32(size));
+                et->strictCopyVectorElements(vec, argPtr, it->getConsi32(pNode->getLine()), it->getConsi32(0));
+
             } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
                 auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
 
@@ -117,11 +118,16 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                 argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
                 argPtr = ir->CreateLoad(argPtr);
 
-            } else {
+            } else if(dynamic_cast<IDNode *>(arguNode->at(i))) {
                 auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                 Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
                 argPtr = symbol->getPtr();
                 c = symbol->isConstant();
+            } else {
+                llvm::Value *vec = nullptr;
+                vec = et->getNewVector(it->getConstFromType(argPtr->getType()));
+                et->initVector(vec,it->getConsi32(size));
+                et->strictCopyVectorElements(vec, argPtr, it->getConsi32(pNode->getLine()), it->getConsi32(0));
             }
 
             if (argNode || constant) {
@@ -146,15 +152,14 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                 paramType = it->getDeclMatrixType(typeName);
 
                 auto argNode = dynamic_cast<MatrixNode *>(arguNode->at(i));
+                argPtr = visit(arguNode->at(i));
                 if (argNode) {
                     argPtr = visit(argNode);
-                    llvm::Value *rows = et->getNumRows(argPtr);
-                    llvm::Value *cols = et->getNumCols(argPtr);
-                    if(rows != it->getConsi32(leftSize) && cols != it->getConsi32(rightSize)) {
-                        //TODO: make a matrix error node
-                        std::cout << "Type error: Need to make a type error node\n";
-                        exit(1);
-                    }
+                    llvm::Value *mat = nullptr;
+                    mat = et->getNewMatrix(it->getConstFromType(argPtr->getType()));
+                    et->initMatrix(mat,it->getConsi32(leftSize),it->getConsi32(rightSize));
+                    et->strictCopyMatrixElements(mat, argPtr, it->getConsi32(pNode->getLine()), it->getConsi32(0));
+
                 } else if (dynamic_cast<IndexTupleNode *>(arguNode->at(i))) {
                     auto tupNode = dynamic_cast<IndexTupleNode *>(arguNode->at(i));
 
@@ -170,11 +175,16 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
                     argPtr = getPtrToVar(idNode, constant, aliasVector, idx, uniqueIden);
                     argPtr = ir->CreateLoad(argPtr);
 
-                }else {
+                } else if(dynamic_cast<IDNode *>(arguNode->at(i))) {
                     auto dumb = dynamic_cast<IDNode *>(arguNode->at(i));
                     Symbol *symbol = symbolTable->resolveSymbol(dumb->getID());
                     argPtr = symbol->getPtr();
                     c = symbol->isConstant();
+                } else {
+                    llvm::Value *mat = nullptr;
+                    mat = et->getNewMatrix(it->getConstFromType(argPtr->getType()));
+                    et->initMatrix(mat, it->getConsi32(leftSize), it->getConsi32(rightSize));
+                    et->strictCopyMatrixElements(mat, argPtr, it->getConsi32(pNode->getLine()), it->getConsi32(0));
                 }
 
                 if(argNode || constant) {
