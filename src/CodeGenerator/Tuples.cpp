@@ -49,24 +49,40 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     Symbol *symbol         = symbolTable->resolveSymbol(symbolName);
     llvm::Value *ptr       = symbol->getPtr();
     llvm::Value *idx       = getIndexForTuple(node->getLHS()->getIndex(), ptr);
+    bool isIdn             = dynamic_cast<IdnNode *>(node->getExpr());
+    bool isNull            = dynamic_cast<NullNode *>(node->getExpr());
     llvm::Value *val       = visit(node->getExpr());
     llvm::Value *destPtr   = it->getPtrFromTuple(ptr,idx);
     llvm::Value *loaded    = ir->CreateLoad(destPtr);
+    bool isVector          = it->isVectorType(loaded);
+    bool isMatrix          = it->isMatrixType(loaded);
+    llvm::Type *destTy     = destPtr->getType()->getPointerElementType();
 
 
-    if(it->isVectorType(loaded)){
+    //deal with null and idn
+    if(isIdn && (isMatrix || isVector)){
+        setIdentityVecOrMat(loaded);
+        return nullptr;
+    }
+    else if (isNull && (isMatrix || isVector)){
+        setNullVecOrMat(loaded);
+        return nullptr;
+    }
+
+    if(isVector){
         llvm::Value * len;
         if(it->isVectorType(val))
             len = it->getValFromStruct(val, VEC_LEN_INDEX);
         else
             len = it->getValFromStruct(loaded, VEC_LEN_INDEX);
 
+
         val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), len);
         et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
 
         return nullptr;
     }
-    else if(it->isMatrixType(loaded)){
+    else if(isMatrix){
         llvm::Value *rows;
         llvm::Value *cols;
 
@@ -84,19 +100,38 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
         return nullptr;
     }
     else if(it->isIntervalType(loaded)){
-        llvm::Value *left  = it->getValFromStruct(val, INTERVAL_MIN);
-        llvm::Value *right = it->getValFromStruct(val, INTERVAL_MAX);
+        llvm::Value *left;
+        llvm::Value *right;
+        if(isIdn){
+            left  = it->getConsi32(1);
+            right = it->getConsi32(1);
+        }
+        else if(isNull){
+            left  = it->getConsi32(0);
+            right = it->getConsi32(0);
+        }
+        else{
+            left  = it->getValFromStruct(val, INTERVAL_MIN);
+            right = it->getValFromStruct(val, INTERVAL_MAX);
+        }
+
         llvm::Value *lDest = it->getPtrFromStruct(loaded, INTERVAL_MIN);
         llvm::Value *rDest = it->getPtrFromStruct(loaded, INTERVAL_MAX);
 
         ir->CreateStore(left,  lDest);
         ir->CreateStore(right, rDest);
+        return nullptr;
     }
-
-
-    val = ct->typeAssCast(destPtr->getType()->getPointerElementType(), val, node->getLine());
-    ir->CreateStore(val, destPtr);
-    return nullptr;
+    else if(isNull){
+        it->setNull(destTy, destPtr);
+    }
+    else if(isIdn){
+        it->setIdentity(destTy, destPtr);
+    }
+    else{
+        val = ct->typeAssCast(destTy, val, node->getLine());
+        ir->CreateStore(val, destPtr);
+    }
 }
 
 /**
@@ -186,7 +221,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
                         interval = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
                     values->push_back(interval);
                 }
-
+                ++i;
                 continue;
             }
         }

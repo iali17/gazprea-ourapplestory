@@ -266,8 +266,20 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
         return nullptr;
     }
 
-    if (val) {
-        if (it->isTupleType(left->getPtr())) {
+    bool isTuple = it->isTupleType(left->getPtr());
+    bool isIdn   = dynamic_cast<IdnNode *>(node->getExpr());
+    bool isNull  = dynamic_cast<NullNode *>(node->getExpr());
+
+    if ((isTuple && isNull) || val) {
+        if(isTuple && isIdn){
+            ptr = initTuple(IDENTITY, llvm::cast<llvm::StructType>(ptr->getType()->getPointerElementType()));
+            left->setPtr(ptr);
+        }
+        else if(isTuple && isNull){
+            ptr = initTuple(NULLTY, llvm::cast<llvm::StructType>(ptr->getType()->getPointerElementType()));
+            left->setPtr(ptr);
+        }
+        else if (isTuple) {
             ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
             left->setPtr(ptr);
         } else {
