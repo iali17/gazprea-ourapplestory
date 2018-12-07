@@ -63,6 +63,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         bool garboCond = false;
 
         llvm::Type *type = gazType->getTypeDef();
+
         node->setLlvmType(type);
         ptr = ir->CreateAlloca(type);
 
@@ -99,8 +100,12 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
 
         if (it->isTupleType(ptr)) {
             ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
-        } else if (it->isVectorType(ptr) || it->isMatrixType(ptr)) {
-            ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
+        } else if (it->isVectorType(ptr)) {
+            llvm::Value *tempVal = ct->typeAssCast(gazType->getTypeDef(), val, node->getLine(), it->getConsi32(gazType->getDim1()));
+            et->strictCopyVectorElements(ptr, tempVal, it->getConsi32(node->getLine()), it->getConsi32(true));
+        } else if (it->isMatrixType(ptr)) {
+            llvm::Value *tempVal =  ct->typeAssCast(gazType->getTypeDef(), val, node->getLine(), it->getConsi32(gazType->getDim1()), it->getConsi32(gazType->getDim2()));
+            et->strictCopyMatrixElements(ptr, tempVal, it->getConsi32(node->getLine()), it->getConsi32(true));
         } else if (it->isIntervalType(ptr)) {
             llvm::Value *lowerPtr = it->getPtrFromStruct(ptr, INTERVAL_MIN);
             llvm::Value *upperPtr = it->getPtrFromStruct(ptr, INTERVAL_MAX);
