@@ -50,8 +50,46 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     llvm::Value *ptr       = symbol->getPtr();
     llvm::Value *idx       = getIndexForTuple(node->getLHS()->getIndex(), ptr);
     llvm::Value *val       = visit(node->getExpr());
+    llvm::Value *destPtr   = it->getPtrFromTuple(ptr,idx);
+    llvm::Value *loaded    = ir->CreateLoad(destPtr);
 
-    ir->CreateStore(val, it->getPtrFromTuple(ptr,idx));
+
+    if(it->isVectorType(loaded)){
+        llvm::Value * len;
+        if(it->isVectorType(val))
+            len = it->getValFromStruct(val, VEC_LEN_INDEX);
+        else
+            len = it->getValFromStruct(loaded, VEC_LEN_INDEX);
+
+        val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), len);
+        et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
+
+        return nullptr;
+    }
+    else if(it->isMatrixType(loaded)){
+        llvm::Value *rows;
+        llvm::Value *cols;
+
+        if(it->isMatrixType(val)){
+            rows = it->getValFromStruct(val, MATRIX_NUMROW_INDEX);
+            cols = it->getValFromStruct(val, MATRIX_NUMCOL_INDEX);
+        }
+        else{
+            rows = it->getValFromStruct(loaded, MATRIX_NUMROW_INDEX);
+            cols = it->getValFromStruct(loaded, MATRIX_NUMCOL_INDEX);
+        }
+        
+        val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), rows, cols);
+        et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
+        return nullptr;
+    }
+    else if(it->isIntervalType(destPtr)){
+
+    }
+
+
+    val = ct->typeAssCast(destPtr->getType()->getPointerElementType(), val, node->getLine());
+    ir->CreateStore(val, destPtr);
     return nullptr;
 }
 
@@ -275,6 +313,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
+    llvm::Value * element;
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
