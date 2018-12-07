@@ -46,8 +46,8 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
     //variables for the current loop iteration
     llvm::Value *curIdx         = nullptr;
     llvm::Value *curIdxPtr      = nullptr;
-    llvm::Value *curLeftVec     = nullptr;
-    llvm::Value *curRightVec    = nullptr;
+    //llvm::Value *curLeftVec     = nullptr;
+    //llvm::Value *curRightVec    = nullptr;
     llvm::Value *curVec         = nullptr;
     llvm::Value *curVecPtr      = nullptr;
     llvm::Value *curLeftVecPtr  = nullptr;
@@ -57,7 +57,7 @@ llvm::Value *CodeGenerator::performInfixMatrixOp(ASTNode *opNode, llvm::Value *l
     llvm::Value *cond           = nullptr;
 
     //loop var
-    llvm::Value *curLoopVar = nullptr;
+    //llvm::Value *curLoopVar = nullptr;
 
     //init loop index
     curIdxPtr = ir->CreateAlloca(intTy);
@@ -127,7 +127,7 @@ llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *m
     //variables for the current loop iteration
     llvm::Value *curIdx       = nullptr;
     llvm::Value *curIdxPtr    = nullptr;
-    llvm::Value *curMaVec     = nullptr;
+    //llvm::Value *curMaVec     = nullptr;
     llvm::Value *curVec       = nullptr;
     llvm::Value *curVecPtr    = nullptr;
     llvm::Value *curMatVecPtr = nullptr;
@@ -135,7 +135,7 @@ llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *m
     llvm::Value *cond         = nullptr;
 
     //loop var
-    llvm::Value *curLoopVar = nullptr;
+    //llvm::Value *curLoopVar = nullptr;
 
     //init loop index
     curIdxPtr = ir->CreateAlloca(intTy);
@@ -190,7 +190,7 @@ llvm::Value *CodeGenerator::performUnaryMatrixOp(ASTNode *opNode, llvm::Value *m
 
 llvm::Value *CodeGenerator::performCompMatrixOp(ASTNode *opNode, llvm::Value *left, llvm::Value *right) {
     //variables for the return
-    llvm::Value *ret     = it->geti1(1);
+    llvm::Value *ret;//     = it->geti1(1);
     llvm::Value *retPtr  = ir->CreateAlloca(boolTy);
     llvm::Value *numRows = it->getValFromStruct(left, MATRIX_NUMROW_INDEX);
 
@@ -205,7 +205,7 @@ llvm::Value *CodeGenerator::performCompMatrixOp(ASTNode *opNode, llvm::Value *le
     llvm::Value *cond           = nullptr;
 
     //loop var
-    llvm::Value *curLoopVar = nullptr;
+    //llvm::Value *curLoopVar = nullptr;
 
     //init loop index
     curIdxPtr = ir->CreateAlloca(intTy);

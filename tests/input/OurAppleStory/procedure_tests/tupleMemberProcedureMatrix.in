@@ -1,0 +1,22 @@
+procedure www(var integer matrix c[3,3]) ;
+
+procedure main() returns integer{
+    var out = std_output();
+
+    integer matrix a[3,3] = [[1,2,3],[3,4,4],[5,6,6]];
+    tuple(integer matrix[3,3], integer) b = (a, 0);
+
+    call www(b.1);
+
+    b.1->out; '\n'->out;
+
+    return 0;
+}
+
+procedure www(var integer matrix c[3,3]) {
+    c = [[8,8,8],[8,8,8],[8,8,8]];
+}
+
+
+
+

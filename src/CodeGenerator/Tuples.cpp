@@ -156,7 +156,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
     //get index then get pointer to element
     ptr = symbol->getPtr();
     idx = getIndexForTuple(tupleInputNode->getIndex(), ptr);
-    ptr = it->getPtrFromTuple(ptr, idx);
+    /*ptr =*/ it->getPtrFromTuple(ptr, idx);
 
     //et->aliScanf(ptr);
     return nullptr;
@@ -172,7 +172,7 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
 llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
-    GazpreaTupleType *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(tuple));
+    auto *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(tuple));
     std::unordered_map<int, std::pair<int, int>> *dims = nullptr;
     llvm::Value *element = nullptr;
     int i = 0;
@@ -350,7 +350,7 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
-    llvm::Value * element;
+    //llvm::Value * element;
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
