@@ -1,0 +1,12 @@
+procedure bar(integer[2] k){
+	var out = std_output();
+	k -> out; '\n' -> out;
+}
+
+procedure main() returns integer {
+	call bar(
+		as<integer vector[2]>([i in 1..2 & i == 1].2)
+	); 
+    return 0;
+}
+
