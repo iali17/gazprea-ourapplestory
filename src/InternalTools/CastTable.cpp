@@ -50,15 +50,98 @@ int CastTable::getType(llvm::Type *expr) {
 InternalTools::pair CastTable::typePromotion(llvm::Value *lValueLoad, llvm::Value *rValueLoad, int line, int opt) {
     assert(!((lValueLoad == nullptr) && (rValueLoad == nullptr)));
 
-    if(!lValueLoad)
-        lValueLoad = it->getNull(rValueLoad->getType());
-    else if(!rValueLoad)
-        rValueLoad = it->getNull(lValueLoad->getType());
+    if(!lValueLoad){
+        if(it->isMatrixType(rValueLoad)) {
+            llvm::Type *rType = it->getMatrixElementType(rValueLoad);
+            llvm::Value *rRowSize = it->getValFromStruct(rValueLoad, MATRIX_NUMROW_INDEX);
+            llvm::Value *rColSize = it->getValFromStruct(rValueLoad, MATRIX_NUMCOL_INDEX);
 
-    if(lValueLoad->getName() == "IdnNode")
-        lValueLoad = it->getIdn(rValueLoad->getType());
-    else if(rValueLoad->getName() == "IdnNode")
-        rValueLoad = it->getIdn(lValueLoad->getType());
+            lValueLoad = et->getNewMatrix(it->getConstFromType(rType));
+            et->initMatrix(lValueLoad, rRowSize, rColSize);
+            lValueLoad = it->castMatrixToType(lValueLoad, rType);
+
+            et->setNullMatrix(lValueLoad);
+        } else if(it->isVectorType(rValueLoad)) {
+            llvm::Type *rType = it->getVectorElementType(rValueLoad);
+            llvm::Value *rSize = it->getValFromStruct(rValueLoad, VEC_LEN_INDEX);
+
+            lValueLoad = et->getNewVector(it->getConstFromType(rType));
+            et->initVector(lValueLoad, rSize);
+            lValueLoad = it->castVectorToType(lValueLoad, rType);
+
+            et->setNullVector(lValueLoad);
+        } else
+            lValueLoad = it->getNull(rValueLoad->getType());
+    }
+    else if(!rValueLoad) {
+        if(it->isMatrixType(lValueLoad)) {
+            llvm::Type *lType = it->getMatrixElementType(lValueLoad);
+            llvm::Value *lRowSize = it->getValFromStruct(lValueLoad, MATRIX_NUMROW_INDEX);
+            llvm::Value *lColSize = it->getValFromStruct(lValueLoad, MATRIX_NUMCOL_INDEX);
+
+            rValueLoad = et->getNewMatrix(it->getConstFromType(lType));
+            et->initMatrix(rValueLoad, lRowSize, lColSize);
+            rValueLoad = it->castMatrixToType(rValueLoad, lType);
+
+            et->setNullMatrix(rValueLoad);
+        } else if(it->isVectorType(lValueLoad)) {
+            llvm::Type *lType = it->getVectorElementType(lValueLoad);
+            llvm::Value *lSize = it->getValFromStruct(lValueLoad, VEC_LEN_INDEX);
+
+            rValueLoad = et->getNewVector(it->getConstFromType(lType));
+            et->initVector(rValueLoad, lSize);
+            rValueLoad = it->castVectorToType(rValueLoad, lType);
+
+            et->setNullVector(rValueLoad);
+        } else
+            rValueLoad = it->getNull(lValueLoad->getType());
+    }
+    else if(lValueLoad->getName() == "IdnNode") {
+        if(it->isMatrixType(rValueLoad)) {
+            llvm::Type *rType = it->getMatrixElementType(rValueLoad);
+            llvm::Value *rRowSize = it->getValFromStruct(rValueLoad, MATRIX_NUMROW_INDEX);
+            llvm::Value *rColSize = it->getValFromStruct(rValueLoad, MATRIX_NUMCOL_INDEX);
+
+            lValueLoad = et->getNewMatrix(it->getConstFromType(rType));
+            et->initMatrix(lValueLoad, rRowSize, rColSize);
+            lValueLoad = it->castMatrixToType(lValueLoad, rType);
+
+            et->setIdentityMatrix(lValueLoad);
+        } else if(it->isVectorType(rValueLoad)) {
+            llvm::Type *rType = it->getVectorElementType(rValueLoad);
+            llvm::Value *rSize = it->getValFromStruct(rValueLoad, VEC_LEN_INDEX);
+
+            lValueLoad = et->getNewVector(it->getConstFromType(rType));
+            et->initVector(lValueLoad, rSize);
+            lValueLoad = it->castVectorToType(lValueLoad, rType);
+
+            et->setIdentityVector(lValueLoad);
+        } else
+            lValueLoad = it->getIdn(rValueLoad->getType());
+    }
+    else if(rValueLoad->getName() == "IdnNode") {
+        if (it->isMatrixType(lValueLoad)) {
+            llvm::Type *lType = it->getMatrixElementType(lValueLoad);
+            llvm::Value *lRowSize = it->getValFromStruct(lValueLoad, MATRIX_NUMROW_INDEX);
+            llvm::Value *lColSize = it->getValFromStruct(lValueLoad, MATRIX_NUMCOL_INDEX);
+
+            rValueLoad = et->getNewMatrix(it->getConstFromType(lType));
+            et->initMatrix(rValueLoad, lRowSize, lColSize);
+            rValueLoad = it->castMatrixToType(rValueLoad, lType);
+
+            et->setIdentityMatrix(rValueLoad);
+        } else if (it->isVectorType(lValueLoad)) {
+            llvm::Type *lType = it->getVectorElementType(lValueLoad);
+            llvm::Value *lSize = it->getValFromStruct(lValueLoad, VEC_LEN_INDEX);
+
+            rValueLoad = et->getNewVector(it->getConstFromType(lType));
+            et->initVector(rValueLoad, lSize);
+            rValueLoad = it->castVectorToType(rValueLoad, lType);
+
+            et->setIdentityVector(rValueLoad);
+        }else
+            rValueLoad = it->getIdn(lValueLoad->getType());
+    }
 
     if(it->isVectorType(lValueLoad) || it->isVectorType(rValueLoad)) {
         return vectorTypePromotion(lValueLoad, rValueLoad, line, opt);
