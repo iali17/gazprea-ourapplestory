@@ -1,0 +1,96 @@
+typedef character intege;
+
+//THIS IS AN INSIDE JOKE PLS NO DOCK MARKS :eyes: :mom:
+/*/_/_***/
+procedure oldMom() returns integer vector[6] {
+    integer vector Bb[6];
+    integer i = 0;
+	integer vector v = 0..0;
+	integer vector r;
+	integer s = 0;
+	integer c = 0;
+	integer matrix g = [[]];
+	integer vector gg;
+
+	if (020!=4) {
+		integer i = i + 2;
+		integer vector v = [i in i..(i*(175/(i+(0-(0-14))))) | i];
+		Bb[1] = v[10 - 1 + i + as<integer>(9==(10-1))];
+	}
+
+	r = [i in (0-2147483647)..(2*12-2147483647) | as<integer>(0==(i - ((i/2)*2)))];
+
+	loop while(c < 50){
+	  if(c < length(r) + 1){
+ 		s = s + r[c];
+	  }
+	  c = c -2 +3;
+	}
+
+    Bb[2] = s;
+
+	i = (0-2147483647);
+	i = i - 1;
+	Bb[3] = i/2147483647 + 5;
+
+	i = (0-2147483647);
+	i = i - 1;
+	r = as<integer vector [25]>(i..i);
+	
+	Bb[4] = (2..5 by 1 )[as<integer>(0==r[2]) + 1];
+
+	//Bb[5] = g[1, *];
+
+	gg = (114..180 by 1) / (( 4..30 by 1) || [i in 1..40 | 1]);
+	
+	r = as<integer vector[25]>(gg * (0-1) +21);
+	Bb[6] = 0-r[length([i in 1..4 & false].1) + 1];
+	return Bb;
+}
+
+procedure scanf(intege r) returns intege{
+    var out = std_output();
+    var f = as<integer>(r);
+    f = f - 32;
+    r = as<intege>(f);
+    r->out; '\n'->out;
+    return r;
+}
+
+procedure printf() {
+    // Sorry??
+    return;
+    return;
+}
+
+procedure main() returns integer {
+    character b;
+    character r;
+    character a;
+    character e;
+    character d;
+    character y;
+
+    var out = std_output();
+    
+    integer vector[*] xd;
+	integer wow;
+	string yourName = "LETS GET THIS BREAD(Y)";
+	character matrix huhu[2,3]= null;
+    character x[26] = as<character vector>(97..122 by 1);
+
+    xd = oldMom();
+	b = x[xd[1]+1];
+	call scanf(b);
+	
+	x[as<integer>(yourName[rows(huhu)])] = as<character>( as<integer>(yourName[7])+32 );
+	r = x[as<integer>(yourName[rows(huhu)])];
+	call scanf(r);
+
+	xd = reverse(xd);
+	wow = length(xd) + rows(huhu)*2 + (44-45+3);
+	a = x[wow];
+	call scanf(a);
+    
+    return 0;
+}
