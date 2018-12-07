@@ -395,6 +395,12 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         else if(isNull && (intervalTy->getPointerTo() == types[i]->getPointerElementType())){
             element = et->getNewInterval(it->getConsi32(0), it->getConsi32(0));
         }
+        else if(isNull){
+            element = it->getNull(types[i]->getPointerElementType());
+        }
+        else if(isIdn){
+            element = it->getIdn(types[i]->getPointerElementType());
+        }
         else
             element = visit(node->getElements()->at(i));
 

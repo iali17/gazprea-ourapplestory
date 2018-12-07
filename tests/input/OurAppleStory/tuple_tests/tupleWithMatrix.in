@@ -1,0 +1,23 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    tuple(integer matrix[2,2], real matrix[2,2], character matrix[2,2])
+        a = ([[11,22],[33,44]], [[55.5,66],[77,88.8]],[['d','\0'],[')','y']]);
+
+    a.1->out;'\n'->out;
+    a.2->out;'\n'->out;
+    a.3->out;'\n'->out;
+
+    a.1[1, *] = [99,110];
+    a.1->out;'\n'->out;
+
+    a.2[1, *] = a.1[2, *] + 3.21;
+    a.2[2, *] = a.2[2, *] + 54.4;
+
+    a.2->out;'\n'->out;
+
+    a.3[1, *] = ['4', 'm'];
+    a.3->out;'\n'->out;
+
+    return 0;
+}

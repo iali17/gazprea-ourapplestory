@@ -1,0 +1,23 @@
+
+
+procedure main() returns integer{
+    var out = std_output();
+
+    tuple(integer, real, character, interval, integer vector[2], real vector[2], character vector[2], integer matrix[2,2], real matrix[2,2], character matrix[2,2]) a = (null, null, null, null, null, null, null, null, null, null);
+
+    a.1->out; '\n' ->out;
+    a.2->out; '\n' ->out;
+    a.3->out; '\n' ->out;
+    a.4->out; '\n' ->out;
+    a.5->out; '\n' ->out;
+    a.6->out; '\n' ->out;
+    a.7->out; '\n' ->out;
+    a.8->out; '\n' ->out;
+    a.9->out; '\n' ->out;
+    a.10->out; '\n' ->out;
+
+    return 0;
+}
+
+
+
