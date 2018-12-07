@@ -360,16 +360,20 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
         sizeName.erase(std::remove(sizeName.begin(), sizeName.end(), ']'), sizeName.end());
         sizeLeft = std::stoi(sizeName);
         strRetType = nameSize[0];
+        auto rename = split(strRetType, 'v');
+        strRetType = rename[0] + "vector";
         retType = it->getDeclVectorType(strRetType);
     } else if (gType == MATRIX) {
-            auto nameSize = split(strRetType, '[');
-            auto fullSize = nameSize[1];
-            fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
-            auto sizes = split(fullSize, ',');
-            sizeLeft = std::stoi(sizes[0]);
-            sizeRight = std::stoi(sizes[1]);
-            strRetType = nameSize[0];
-            retType = it->getDeclMatrixType(strRetType);
+        auto nameSize = split(strRetType, '[');
+        auto fullSize = nameSize[1];
+        fullSize.erase(std::remove(fullSize.begin(), fullSize.end(), ']'), fullSize.end());
+        auto sizes = split(fullSize, ',');
+        sizeLeft = std::stoi(sizes[0]);
+        sizeRight = std::stoi(sizes[1]);
+        strRetType = nameSize[0];
+        auto rename = split(strRetType, 'm');
+        strRetType = rename[0] + "matrix";
+        retType = it->getDeclMatrixType(strRetType);
     } else if (gType == INTERVAL){
        retType = intervalTy;
     } else {
@@ -400,10 +404,14 @@ llvm::Function* CodeGenerator::declareFuncOrProc(std::string functionName, std::
         } else if (pNode->getGType() == VECTOR_T) {
             auto nameVec = split(typeName, '[');
             typeName = nameVec[0];
+            auto rename = split(typeName, 'v');
+            typeName = rename[0] + "vector";
             params.push_back(it->getDeclVectorType(typeName)->getPointerTo());
         } else if (pNode->getGType() == MATRIX) {
             auto nameVec = split(typeName, '[');
             typeName = nameVec[0];
+            auto rename = split(typeName, 'm');
+            typeName = rename[0] + "matrix";
             params.push_back(it->getDeclMatrixType(typeName)->getPointerTo());
         } else if (pNode->getGType() == INTERVAL) {
             params.push_back(intervalTy->getPointerTo());
