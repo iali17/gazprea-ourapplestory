@@ -1,0 +1,14 @@
+procedure main() returns integer {
+    var out = std_output();
+	tuple(character, real[5,3], integer vector[2], integer interval) a = ('2', 1, 1..2 by 1, 4..9);
+
+	a = ('a', identity, null, identity);
+
+	a.1 -> out; '\n' -> out;
+	a.2 -> out; '\n' -> out;
+	a.3 -> out; '\n' -> out;
+	a.4 by 1 -> out; '\n' -> out;
+
+    return 0;
+}
+
