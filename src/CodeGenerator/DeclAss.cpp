@@ -52,7 +52,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant());
     } else if (node->getTypeIds()->empty() && it->isTupleType(val)) {
         ptr = ir->CreateAlloca(val->getType()->getPointerElementType());
-        ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+        ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
         symbolTable->addSymbol(node->getID(), node->getType(), node->isConstant(), ptr);
     } else if (node->getTypeIds()->empty()) {
         ptr = ir->CreateAlloca(val->getType());
@@ -98,7 +98,7 @@ llvm::Value *CodeGenerator::visit(DeclNode *node) {
         }
 
         if (it->isTupleType(ptr)) {
-            ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+            ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
         } else if (it->isVectorType(ptr) || it->isMatrixType(ptr)) {
             ptr = ct->typeAssCast(ptr->getType(), val, node->getLine());
         } else if (it->isIntervalType(ptr)) {
@@ -255,7 +255,7 @@ llvm::Value *CodeGenerator::visit(AssignNode *node) {
 
     if (val) {
         if (it->isTupleType(left->getPtr())) {
-            ptr = it->initTuple(ptr, it->getValueVectorFromTuple(val));
+            ptr = initTuple(ptr, it->getValueVectorFromTuple(val));
             left->setPtr(ptr);
         } else {
             val = ct->typeAssCast(ptr->getType()->getPointerElementType(), val, node->getLine());

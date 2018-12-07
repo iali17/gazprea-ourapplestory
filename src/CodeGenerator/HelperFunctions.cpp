@@ -66,7 +66,7 @@ std::vector<llvm::Value *> CodeGenerator::getParamVec(std::vector<ASTNode *> *pa
             if(argNode || constant) {
                 assert(constant);
                 newParamPtr = ir->CreateAlloca(paramType);
-                newParamPtr = it->initTuple(newParamPtr, it->getValueVectorFromTuple(argPtr));
+                newParamPtr = initTuple(newParamPtr, it->getValueVectorFromTuple(argPtr));
                 paramVector.push_back(newParamPtr);
                 continue;
             } else if(!constant) {
@@ -573,4 +573,60 @@ void CodeGenerator::freeMem(std::vector<llvm::Value *> *ptrs) {
 
         ptrs->at(i) = nullptr;
     }
+}
+
+llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
+    //fill new structure
+    auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
+    auto types   = structType->elements();
+    GazpreaTupleType *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(structType));
+    //UserType         *userType         = dynamic_cast<UserType *>(symbolTable->resolveTupleType(structType));
+    llvm::Value *element;
+    llvm::Type * nType, * oType;
+    std::unordered_map<int, std::pair<int, int>> *dims = nullptr;
+    for(unsigned long i = 0; i < values->size(); ++i){
+        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
+
+        if(gazpreaTupleType && gazpreaTupleType->getDims()){
+            dims = gazpreaTupleType->getDims();
+            auto p =  dims->find(i);
+
+            if(p != dims->end()){
+                int left  = p->second.first;
+                int right = p->second.second;
+
+                if(it->isVectorType(structElem)){
+                    llvm::Type * vecElmtTy = it->getDeclScalarTypeFromVec(structElem->getType());
+                    llvm::Value *consTy = it->getConstFromType(vecElmtTy);
+
+                    llvm::Value * vec = et->getNewVector(consTy);
+                    et->initVector(vec, it->getConsi32(left));
+                    vec = it->castVectorToType(vec, vecElmtTy);
+
+                    llvm::Value *rawVec = ir->CreateLoad(vec);
+                    ir->CreateStore(rawVec, structElem);
+
+                }
+                else if(it->isMatrixType(structElem)){
+
+                }
+                else if(it->isIntervalType(structElem)){
+
+                }
+                continue;
+            }
+        }
+        
+        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
+
+        nType = types[i]->getPointerElementType();
+        oType = values->at(i)->getType();
+        element = values->at(i);
+        if((nType != oType) && (nType == realTy)&& (oType == intTy))
+            element = ir->CreateSIToFP(element, realTy);
+
+        ir->CreateStore(element, ptr);
+        ir->CreateStore(ptr, structElem);
+    }
+    return tuplePtr ;
 }

@@ -272,28 +272,6 @@ llvm::Value *InternalTools::getIdn(llvm::Type *type) {
         return nullptr;
 }
 
-llvm::Value *InternalTools::initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values) {
-    //fill new structure
-    auto *structType = llvm::cast<llvm::StructType>(tuplePtr->getType()->getPointerElementType());
-    auto types   = structType->elements();
-    llvm::Value *element;
-    llvm::Type * nType, * oType;
-    for(unsigned long i = 0; i < values->size(); ++i){
-        llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
-        llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
-
-        nType = types[i]->getPointerElementType();
-        oType = values->at(i)->getType();
-        element = values->at(i);
-        if((nType != oType) && (nType == realTy)&& (oType == intTy))
-            element = ir->CreateSIToFP(element, realTy);
-
-        ir->CreateStore(element, ptr);
-        ir->CreateStore(ptr, structElem);
-    }
-    return tuplePtr ;
-}
-
 llvm::Value *InternalTools::initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs) {
     for(unsigned long i = 0; i < ptrs->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {getConsi32(0), getConsi32(i)});
@@ -766,7 +744,7 @@ llvm::Type *InternalTools::getDeclScalarTypeFromVec(llvm::Type *type) {
         return realTy;
     } else if ((type == strTy) || type == strTy->getPointerTo()) {
         return charTy;
-    } else if((type == charVecTy) || type == charVecTy->getPointerTo()) {
+    } else if((type == charVecTy) || type == charVecTy->getPointerTo() || (type == strTy->getPointerTo())) {
         return charTy;
     } else if(type == boolVecTy || type == boolVecTy->getPointerTo()) {
         return boolTy;

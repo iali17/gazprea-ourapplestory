@@ -45,7 +45,7 @@ public:
 	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, llvm::Value *idx);
 	llvm::Value *getValFromStruct(llvm::Value * sPtr, int idx);
 	llvm::Value *getPtrFromStruct(llvm::Value * sPtr, int idx);
-	llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
+	//llvm::Value *initTuple(llvm::Value *tuplePtr, std::vector<llvm::Value *> *values);
 	llvm::Value *initTupleFromPtrs(llvm::Value *tuplePtr, std::vector<llvm::Value *> *ptrs);
 	std::vector<llvm::Value *> *getPtrVectorFromStruct(llvm::Value *structPtr);
 	llvm::Value *geti1(int64_t val);
