@@ -1,0 +1,14 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    var x = as<integer vector>("abcdefghijklmnopqrstuvwxyz");
+
+    x->out; '\n'->out;
+    x[1]->out; '\n'->out;
+    x[26]->out; '\n'->out;
+
+    as<character vector>(x) || "\n" ->out;
+	as<character vector>(x) || '\n' ->out;
+
+    return 0;
+}

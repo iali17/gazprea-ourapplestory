@@ -1,0 +1,17 @@
+procedure foo(integer matrix k[2,2]){
+	var out = std_output();
+	k -> out; '\n' -> out;
+}
+
+procedure bar(integer[2] k){
+	var out = std_output();
+	k -> out; '\n' -> out;
+}
+
+procedure main() returns integer {
+    var out = std_output();
+	call foo([i in 1..2, j in 1..2 | i]); 
+	call bar([i in 1..2 | i]); 
+    return 0;
+}
+

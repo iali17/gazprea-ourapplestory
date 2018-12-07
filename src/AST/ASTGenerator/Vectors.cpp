@@ -5,7 +5,7 @@
 #include <AST/ASTGenerator.h>
 
 antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeContext *ctx) {
-    if (ctx->extension() == nullptr) {
+    if (ctx->extension() == nullptr && ctx->explicitVectorExtension() == nullptr) {
         if (ctx->getText().at(0) == 'b')
             return (ASTNode *) new VectorTypeNode(nullptr, "booleanvector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'i')
@@ -16,7 +16,16 @@ antlrcpp::Any ASTGenerator::visitVectorType(gazprea::GazpreaParser::VectorTypeCo
             return (ASTNode *) new VectorTypeNode(nullptr, "realvector", (int)ctx->getStart()->getLine());
 
     }
-    else {
+    else if(ctx->explicitVectorExtension()) {
+        if (ctx->getText().at(0) == 'b')
+            return (ASTNode *) new VectorTypeNode(visit(ctx->explicitVectorExtension()->expr()), "booleanvector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'i')
+            return (ASTNode *) new VectorTypeNode(visit(ctx->explicitVectorExtension()->expr()), "integervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'c')
+            return (ASTNode *) new VectorTypeNode(visit(ctx->explicitVectorExtension()->expr()), "charactervector", (int)ctx->getStart()->getLine());
+        else if (ctx->getText().at(0) == 'r')
+            return (ASTNode *) new VectorTypeNode(visit(ctx->explicitVectorExtension()->expr()), "realvector", (int)ctx->getStart()->getLine());
+    } else {
         if (ctx->getText().at(0) == 'b')
             return (ASTNode *) new VectorTypeNode(visit(ctx->extension()), "booleanvector", (int)ctx->getStart()->getLine());
         else if (ctx->getText().at(0) == 'i')

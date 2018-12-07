@@ -33,7 +33,44 @@ Outcome: This test case checks if a user is trying to cast a tuple to another ty
 
 Test Case: errorReturningVector.in
 Outcome: This test case checks to see that they are returning the same size vector to what they expect
-         -Type error: Cannot convert from and integer vector [3] to integer vector [2] on line 1
 
-          In this test case, the user is returning a vector of a larger size than what is expected from the return
-          statement so it returns the errors above.
+         - Type error: Cannot convert from and integer vector [3] to integer vector [2] on line 1
+
+         In this test case, the user is returning a vector of a larger size than what is expected from the return
+         statement so it returns the errors above.
+
+Test Case: errorVecTypePromotion.in
+Outcome: This test case checks to see if vector type promotion is happening for different size vectors
+
+	 - Type error: Cannot convert between integer vector[3] and integer vector[2] on line 4
+
+	 In this test case, the user is trying to add two vectors of different size, so it returns the error above.
+
+Test Case: errorMatTypePromotion.in
+Outcome: This test case checks to see if matrix type promotion is happening for different size matrices
+
+	 - Type error: Cannot convert between integer matrix[1,1] and integer matrix[2,2] on line 4
+
+	 In this test case, the user is trying to add two matrices of different size, so it returns the error above.
+
+Test Case: errorScalarSliceAssign.in
+Outcome: This test case checks to see if user is trying to assign a scalar slice another type
+
+	 - Type error: Cannot convert between int and real on line 6
+
+	 In this test case, the user is trying to assign a real to an integer slice, so it returns the error above.
+
+Test Case: errorStringAssign.in
+Outcome: This test case checks if string is trying to be assigned a different sized string
+
+	 - Type error: Cannot convert between character vector[6] and character vector[5] on line 6
+
+	 In this test case, the user is trying to assign a string of size 6 to one of size 5, so it returns the error above.
+
+Test Case: errorElemVecInit.in
+Outcome: This test case checks if the vector elements can be promoted to the same type
+
+	 - Not all elements have viable type promotion inside vector!
+
+	 In this test case, the user is trying to create a integer vector literal with a character element inside the vector,
+	 so this returns the error above.

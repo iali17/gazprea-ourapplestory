@@ -1,0 +1,14 @@
+procedure main() returns integer {
+    var out = std_output();
+
+    var x = "abcdefghijklmnopqrstuvwxyz";
+    integer len;
+
+    x->out; '\n'->out;
+    x = reverse(x);
+    len = length(x);
+    x->out; '\n'->out;
+    len->out; '\n'->out;
+
+    return 0;
+}
