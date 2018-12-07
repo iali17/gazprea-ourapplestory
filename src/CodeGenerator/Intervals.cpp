@@ -271,36 +271,10 @@ llvm::Value *CodeGenerator::IntervalArith(ASTNode * node, llvm::Value *left, llv
     }
 
     else if(dynamic_cast<EQNode *>(node)) {
-        auto *cb = new CondBuilder(globalCtx, ir, mod);
-        llvm::Value * resultLeft = ir->CreateAlloca(intTy);
-        llvm::Value * resultRight = ir->CreateAlloca(intTy);
-
-        cb->beginIf(it->getAnd(ir->CreateICmpEQ(a, c), ir->CreateICmpEQ(b, d)));
-        ir->CreateStore(it->getConsi32(1), resultLeft);
-        ir->CreateStore(it->getConsi32(1), resultRight);
-        cb->endIf();
-        cb->beginElse();
-        ir->CreateStore(it->getConsi32(0), resultLeft);
-        ir->CreateStore(it->getConsi32(0), resultRight);
-        cb->finalize();
-
-        return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
+        return it->getAnd(ir->CreateICmpEQ(a, c), ir->CreateICmpEQ(b, d));
     }
     else if(dynamic_cast<NEQNode *>(node)) {
-        auto *cb = new CondBuilder(globalCtx, ir, mod);
-        llvm::Value * resultLeft = ir->CreateAlloca(intTy);
-        llvm::Value * resultRight = ir->CreateAlloca(intTy);
-
-        cb->beginIf(it->getAnd(ir->CreateICmpNE(a, c), ir->CreateICmpNE(b, d)));
-        ir->CreateStore(it->getConsi32(1), resultLeft);
-        ir->CreateStore(it->getConsi32(1), resultRight);
-        cb->endIf();
-        cb->beginElse();
-        ir->CreateStore(it->getConsi32(0), resultLeft);
-        ir->CreateStore(it->getConsi32(0), resultRight);
-        cb->finalize();
-
-        return et->getNewInterval(ir->CreateLoad(resultLeft), ir->CreateLoad(resultRight));
+        return it->getAnd(ir->CreateICmpNE(a, c), ir->CreateICmpNE(b, d));
     }
     std::cerr << "invalid arithmetic operation on line: " << node->getLine() << ". Aborting...";
     exit(1);

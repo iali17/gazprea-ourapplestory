@@ -14,7 +14,7 @@ integer interval d10 = (-3)..-2;
 integer interval d11 = (-3) ..-2;
 integer interval d12 = (-13)..-13;
 integer interval d13 = 1 + 1 .. 2 * 2;
-integer interval d14 = 1 == 1 .. 2 != 2;
+boolean d14 = 1 == 1 .. 2 != true;
 
 d1 by 1->out;'\n'->out;
 d2 by 1->out;'\n'->out;
@@ -29,7 +29,7 @@ d10 by 1->out;'\n'->out;
 d11 by 1->out;'\n'->out;
 d12 by 1->out;'\n'->out;
 d13 by 1->out;'\n'->out;
-d14 by 1->out;'\n'->out;
+d14 ->out;'\n'->out;
 
 return 0;
 }
