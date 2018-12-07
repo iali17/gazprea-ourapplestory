@@ -11,6 +11,17 @@ extern llvm::Type *i8Ty;
 extern llvm::Type *charTy;
 extern llvm::Type *realTy;
 extern llvm::Type *boolTy;
+extern llvm::Type *vecTy;
+extern llvm::Type *matrixTy;
+extern llvm::Type *intVecTy;
+extern llvm::Type *intMatrixTy;
+extern llvm::Type *charVecTy;
+extern llvm::Type *charMatrixTy;
+extern llvm::Type *boolVecTy;
+extern llvm::Type *boolMatrixTy;
+extern llvm::Type *realVecTy;
+extern llvm::Type *realMatrixTy;
+extern llvm::Type *intervalTy;
 
 /**
  * THIS RETURNS THE VALUE NOT THE POINTER
@@ -39,8 +50,46 @@ llvm::Value *CodeGenerator::visit(TupleMemberAssNode *node) {
     llvm::Value *ptr       = symbol->getPtr();
     llvm::Value *idx       = getIndexForTuple(node->getLHS()->getIndex(), ptr);
     llvm::Value *val       = visit(node->getExpr());
+    llvm::Value *destPtr   = it->getPtrFromTuple(ptr,idx);
+    llvm::Value *loaded    = ir->CreateLoad(destPtr);
 
-    ir->CreateStore(val, it->getPtrFromTuple(ptr,idx));
+
+    if(it->isVectorType(loaded)){
+        llvm::Value * len;
+        if(it->isVectorType(val))
+            len = it->getValFromStruct(val, VEC_LEN_INDEX);
+        else
+            len = it->getValFromStruct(loaded, VEC_LEN_INDEX);
+
+        val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), len);
+        et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
+
+        return nullptr;
+    }
+    else if(it->isMatrixType(loaded)){
+        llvm::Value *rows;
+        llvm::Value *cols;
+
+        if(it->isMatrixType(val)){
+            rows = it->getValFromStruct(val, MATRIX_NUMROW_INDEX);
+            cols = it->getValFromStruct(val, MATRIX_NUMCOL_INDEX);
+        }
+        else{
+            rows = it->getValFromStruct(loaded, MATRIX_NUMROW_INDEX);
+            cols = it->getValFromStruct(loaded, MATRIX_NUMCOL_INDEX);
+        }
+        
+        val = ct->typeAssCast(loaded->getType()->getPointerElementType(), val, node->getLine(), rows, cols);
+        et->strictCopyVectorElements(loaded, val, it->getConsi32(node->getLine()), it->getConsi32(0));
+        return nullptr;
+    }
+    else if(it->isIntervalType(destPtr)){
+
+    }
+
+
+    val = ct->typeAssCast(destPtr->getType()->getPointerElementType(), val, node->getLine());
+    ir->CreateStore(val, destPtr);
     return nullptr;
 }
 
@@ -82,9 +131,54 @@ llvm::Value *CodeGenerator::visit(TupleInputNode *node) {
 llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
+    GazpreaTupleType *gazpreaTupleType = dynamic_cast<GazpreaTupleType *>(symbolTable->resolveTupleType(tuple));
+    std::unordered_map<int, std::pair<int, int>> *dims = nullptr;
     llvm::Value *element = nullptr;
+    int i = 0;
 
     for (auto type : types) {
+        if(gazpreaTupleType && gazpreaTupleType->getDims()){
+            dims = gazpreaTupleType->getDims();
+            auto p =  dims->find(i);
+
+            if(p != dims->end()){
+                int left  = (p->second.first  >= 0) ? p->second.first  : 0;
+                int right = (p->second.second >= 0) ? p->second.second : 0;
+
+                if(it->isDeclVectorType(types[i]->getPointerElementType())){
+                    llvm::Type * vecElmtTy = it->getDeclScalarTypeFromVec(type->getPointerElementType());
+                    llvm::Value *consTy = it->getConstFromType(vecElmtTy);
+
+                    llvm::Value * vec = et->getNewVector(consTy);
+                    et->initVector(vec, it->getConsi32(left));
+                    vec = it->castVectorToType(vec, vecElmtTy);
+
+                    if (INIT == IDENTITY)
+                        setIdentityVecOrMat(vec);
+
+                    values->push_back(vec);
+
+                }
+                else if(it->isDeclMatrixType(types[i]->getPointerElementType())){
+                    llvm::Type * matElmtTy = it->getDeclScalarTypeFromMat(type->getPointerElementType());
+                    llvm::Value *consTy = it->getConstFromType(matElmtTy);
+
+                    llvm::Value * mat = et->getNewMatrix(consTy);
+                    et->initMatrix(mat, it->getConsi32(left), it->getConsi32(right));
+                    mat = it->castMatrixToType(mat, matElmtTy);
+
+                    if (INIT == IDENTITY)
+                        setIdentityVecOrMat(mat);
+
+                    values->push_back(mat);
+                }
+                /*else if(it->isIntervalType(structElem)){
+
+                }*/
+
+                continue;
+            }
+        }
         if (INIT == NULLTY){
             element = it->getNull(type->getPointerElementType());
         }
@@ -92,6 +186,7 @@ llvm::Value *CodeGenerator::initTuple(int INIT, llvm::StructType *tuple) {
             element = it->getIdn(type->getPointerElementType());
         }
         values->push_back(element);
+        ++i;
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
@@ -179,6 +274,8 @@ llvm::Value *CodeGenerator::visit(TupleNode *node) {
 llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
     auto *values = new std::vector<llvm::Value *>();
     auto types   = tuple->elements();
+    //auto * dims = new std::unordered_map<int, std::pair<int, int>>;
+    auto *gazTy = symbolTable->resolveTupleType(tuple);
 
     for(unsigned long i = 0; i < types.size(); ++i){
         llvm::Value * element;
@@ -188,12 +285,35 @@ llvm::Value *CodeGenerator::visit(TupleNode *node, llvm::StructType *tuple) {
         else
             element = visit(node->getElements()->at(i));
 
+        llvm::Value * len1 = nullptr;
+        llvm::Value * len2 = nullptr;
+
         llvm::Type *memberType  = types[i]->getPointerElementType();
-        element = ct->typeAssCast(memberType, element, node->getLine());
+        if(memberType->isPointerTy())
+            memberType = memberType->getPointerElementType();
+
+        auto dims = gazTy->getDims()->find(i);
+        if(dims != gazTy->getDims()->end() && dims->second.first >= 0)
+            len1 = it->getConsi32(dims->second.first);
+
+        if(dims != gazTy->getDims()->end() && dims->second.second >= 0)
+            len2 = it->getConsi32(dims->second.second);
+/*
+        if(it->getDeclScalarTypeFromVec(memberType)){
+            len1 = it->getConsi32(gazTy->getDims()->at(i).first);
+        }
+        else if(it->getDeclScalarTypeFromMat(memberType)){
+            len1 = it->getConsi32((symbolTable->resolveTupleType(tuple))->getDims()->at(i).first);
+            len2 = it->getConsi32((symbolTable->resolveTupleType(tuple))->getDims()->at(i).second);
+        }*/
+
+        element = ct->typeAssCast(memberType, element, node->getLine(), len1, len2);
+        //element = ct->typeAssCast(realVecTy, element, node->getLine(), len1, len2);
         values->push_back(element);
     }
 
     llvm::Value *tuplePtr = ir->CreateAlloca(tuple);
+    llvm::Value * element;
     //fill new structure
     for(unsigned long i = 0; i < node->getElements()->size(); ++i){
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});

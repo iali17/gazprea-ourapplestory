@@ -596,6 +596,10 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
         llvm::Value *structElem = ir->CreateInBoundsGEP(tuplePtr, {it->getConsi32(0), it->getConsi32(i)});
         llvm::Value *ptr        = ir->CreateAlloca(types[i]->getPointerElementType());
 
+        nType = types[i]->getPointerElementType();
+        oType = values->at(i)->getType();
+        element = values->at(i);
+
         if(gazpreaTupleType && gazpreaTupleType->getDims()){
             dims = gazpreaTupleType->getDims();
             auto p =  dims->find(i);
@@ -611,6 +615,9 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
                     llvm::Value * vec = et->getNewVector(consTy);
                     et->initVector(vec, it->getConsi32(left));
                     vec = it->castVectorToType(vec, vecElmtTy);
+                    element = ct->typeAssCast(vec->getType()->getPointerElementType(), element, -1, it->getConsi32(left));
+
+                    et->strictCopyVectorElements(vec, element, it->getConsi32(-1), it->getConsi32(0));
 
                     ir->CreateStore(ptr, structElem);
                     ir->CreateStore(vec, ptr);
@@ -623,6 +630,13 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
                     et->initMatrix(mat, it->getConsi32(left), it->getConsi32(right));
                     mat = it->castMatrixToType(mat, matElmtTy);
 
+                    llvm::Value *rows, *cols;
+                    rows = it->getConsi32(left);
+                    cols = it->getConsi32(right);
+                    element = ct->typeAssCast(mat->getType()->getPointerElementType(), element, -1, rows, cols);
+
+                    et->strictCopyMatrixElements(mat, element, it->getConsi32(-1), it->getConsi32(0));
+
                     ir->CreateStore(ptr, structElem);
                     ir->CreateStore(mat, ptr);
                 }
@@ -633,9 +647,6 @@ llvm::Value *CodeGenerator::initTuple(llvm::Value *tuplePtr, std::vector<llvm::V
             }
         }
 
-        nType = types[i]->getPointerElementType();
-        oType = values->at(i)->getType();
-        element = values->at(i);
         if((nType != oType) && (nType == realTy)&& (oType == intTy))
             element = ir->CreateSIToFP(element, realTy);
 
